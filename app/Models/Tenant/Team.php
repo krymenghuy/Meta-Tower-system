@@ -9,6 +9,7 @@ use DBX;
 use XPublicStorage;
 use Carbon\Carbon;
 
+
 class Team
 {
     protected $id = null;
@@ -156,7 +157,7 @@ class Team
             ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
             ->orderBy('s.created_at', 'desc');
         
-        return $query->get();
+        return $query->first();
     }
 
     public function deleteTeam($id, $ss = null){
@@ -222,12 +223,6 @@ class Team
         $inputs = $res->values;
         $d = (object) $inputs;
 
-        // $team_id = $d->team_id ?? $arr['team_id'] ?? null;   // Check both sources
-        // if ($team_id && is_numeric($team_id)) {
-        //     $inputs['team_id'] = (int)$team_id;
-        // }
-
-        // 1. Email Validations
         $email = $d->email ?? null;
         if ($email !== null && $email !== '') {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -269,12 +264,12 @@ class Team
         $national_id = $d->national_id ?? null;
         $passport = $d->passport_number ?? null;
 
-        if ($nationality_id === 14) {
+       if ($nationality_id === 14) {
             if (empty($national_id)) return DV::error('national_id_required');
             if (empty($d->nid_issue_date)) return DV::error('nid_issue_date');
         } else {
             if (empty($passport)) return DV::error('passport_number_required');
-            $inputs['nid_issue_date'] = null;
+            $inputs['nid_issue_date'] = null;   // ← forced null
         }
 
         if (!empty($national_id)) {
@@ -366,8 +361,6 @@ class Team
 
     public function getListTeamMemberPaginate($arr, $ss = null)
     {
-
-        \Log::info($arr);
         $d = (object) $arr;
         $v_rule = [
             'team_id' => '1|integer|text=team_id_required',
@@ -403,15 +396,15 @@ class Team
         }
 
         $query = DB::table('team_member as s')
-            ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
+            ->join('team_member_statuses as ts', 'ts.id', '=', 's.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->where('s.team_id', $team_id)
             ->selectRaw("
                 s.id, s.name, s.sex, s.date_of_birth, s.nationality_id,
-                s.code, s.national_id, s.photo_file_name, s.position, s.start_date,
+                s.code, s.national_id, s.photo_file_name, s.position, s.start_date,s.nid_issue_date,
                 s.passport_number, s.phone_number, s.email, s.address,
-                s.status_id, ss.name as status,
+                s.status_id, ts.name as status,
                 s.updated_at, s.update_user
             ")
             ->orderBy('s.status_id', 'asc')
@@ -455,11 +448,8 @@ class Team
         return url('') . '/assets/images/default/placeholder.svg';
     }
 
-    public static function getFormOptions($id, $ss)
-
-    
+    public static function getFormOptions($id, $ss)  
     {
-        \Log::info($id);
         $teamDetails = $id ? self::getTeamDetails($id) : null;
         return (object) [
             'team'         => $teamDetails,
@@ -468,24 +458,39 @@ class Team
         ];
     }
 
-    // public static function getDetails($id, $ss = null)
-    // {
-    //     $date_of_birth = DBX::formatDate("s.date_of_birth", 'date_of_birth');
-    //     $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
-        
-    //     $row = DB::table('team_member as s')
-    //         ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
-    //         ->where('s.id', $id)
-    //         ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,$date_of_birth,$nid_issue_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
-    //         ->first();
-            
-    //     if ($row) {
-    //         $img = self::profilePicture($id, $ss);
-    //         $row->image_url = $img;
-    //         $row->photo = $img;
-    //     }
-    //     return $row;
-    // }
+    public static function getFormOptionsMember($id, $ss)
+    {
+        $member = $id ? self::getMemberDetails($id) : null;
+        return (object) [
+            'member' => $member,
+            'nationalities' => GeneralSettings::options_nationality($ss),
+            'statuses' => GeneralSettings::options_team_member_status($ss),
+
+        ];
+    }
+
+    
+
+
+   public static function getMemberDetails($id, $ss = null)
+    {
+        $date_of_birth  = DBX::formatDate("s.date_of_birth", 'date_of_birth');
+        $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
+        $start_date     = DBX::formatDate("s.start_date", 'start_date');   
+
+        $row = DB::table('team_member as s')
+            ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
+            ->where('s.id', $id)
+            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,s.position,$date_of_birth,$nid_issue_date,$start_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
+            ->first();
+
+        if ($row) {
+            $img = self::profilePicture($id, $ss);
+            $row->image_url = $img;
+            $row->photo = $img;
+        }
+        return $row;
+    }
 
     public function deleteTeamMember($id)  // rename if needed
         {
@@ -498,7 +503,7 @@ class Team
                 $this->updateTeamMemberCount($team_id);
             }
 
-            return DV::depends(1, ['id' => $id]);
+            return DV::depends(1, ['id' => $id, 'team_id' => $team_id]);
         }
 
     public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
