@@ -3,7 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    font-family: 'Inter', 'Battambang', sans-serif;
+    font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
+
     /* Improved default settings */
     font-size: 0.95rem;
     /* line-height: 1.5; */
@@ -156,7 +157,7 @@
     border-color: 2px solid #38373a;
 }
 .border-prm-custom {
-    border-color:  #27444a !important;;
+    border-color:  #1a1647 !important;;
 }
 .box-shadow{
     box-shadow: 0 2px 8px -4px #0006;
@@ -2147,8 +2148,8 @@ tr.row-selected td {
 
 /* ── Header ── */
 .table--white thead th {
-    color: #1a1647 !important;
-    background-color:#eaeff2;
+    color: #ffffff !important;
+    background-color:#1a1647;
     font-size: 14px !important;
     font-weight: 500;
     /* letter-spacing: 0.02em; */

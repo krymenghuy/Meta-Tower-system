@@ -66,6 +66,16 @@ class TeamController extends Controller
         }
         return JDV::result($this->teams->getTeamDetails($req->id));
     }
+    public function getMemberDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->teams->getMemberDetails($req->id));
+    }
     public function getFormOptions(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
@@ -73,6 +83,14 @@ class TeamController extends Controller
         }
         $team = new Team();
         return JDV::result($team->getFormOptions($req->id,$ss));
+    }
+      public function getFormOptionsMember(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $team = new Team();
+        return JDV::result($team->getFormOptionsMember($req->id,$ss));
     }
 
     public function deleteTeam(Request $req){
@@ -82,6 +100,16 @@ class TeamController extends Controller
         }
         $id = $req->id ?? $req->staff_id;
         $res = $this->teams->deleteTeam($id);
+        return JDV::raw($res);
+    }
+
+      public function deleteTeamMember(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->staff_id;
+        $res = $this->teams->deleteTeamMember($id);
         return JDV::raw($res);
     }
 
