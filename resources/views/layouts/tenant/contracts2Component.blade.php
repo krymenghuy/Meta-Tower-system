@@ -248,8 +248,8 @@
 }
 
 .contract2-card__detail-wrap {
-    margin-top: auto;
-    padding-top: 12px;
+    /* margin-top: auto; */
+    padding: 20px 12px 10px 12px;
 }
 
 .contract2-card__detail-wrap .contract2-card__action--detail {
