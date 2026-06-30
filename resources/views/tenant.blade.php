@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 44);
+    StyleManager::render('tenant-style', 1, 47);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -90,7 +90,8 @@
 
             /* font-family: 'Segoe UI', sans-serif; */
             /* font-family: Arial, sans-serif; */
-            font-family: "Marcellus", serif;
+            font-family: 'Inter', sans-serif;
+
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
         .svg-white {
@@ -103,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('tenant-components', 1, 254);
+    ScriptManager::render('tenant-components', 1, 257);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -323,7 +324,7 @@
                             @include('layouts.tenant.contractsComponent')
                             @include('layouts.tenant.contracts2Component')
                             @include('layouts.tenant.invoicesComponent')
-                            @include('layouts.tenant.receiptsComponent')
+                            @include('layouts.tenant.transactionComponent')
                             @include('layouts.tenant.requestServiceComponent')
                             @include('layouts.tenant.announcementComponent')
                             @include('layouts.tenant.bookAmenityComponent')

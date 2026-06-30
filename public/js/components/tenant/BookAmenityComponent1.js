@@ -81,6 +81,93 @@ var BookAmenityComponent = (() => {
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </a>`;
     };
+
+    mThis.renderReservationList = (container, items) => {
+        items = items ?? [];
+        container.innerHTML = "";
+
+        if (!items.length) {
+            container.innerHTML = `
+                <div class="reservation-list-empty text-center py-5 px-3">
+                    <span class="reservation-list-empty__icon d-inline-flex align-items-center justify-content-center mb-3">
+                        <i class="fa-regular fa-calendar-check"></i>
+                    </span>
+                    <p class="mb-1 fw-semibold text-prm-custom">No reservations found</p>
+                    <small class="text-muted">Try adjusting your search or filters.</small>
+                </div>`;
+            return;
+        }
+
+        let rowsHtml = "";
+        items.forEach((data) => {
+            const status = mThis.getStatusMeta(data);
+            const amenityName = mThis.escapeHtml(data.amenity_name ?? "—");
+            const bookingDate = mThis.escapeHtml(data.booking_date ?? "—");
+            const start12 = mThis.to12h((data.start_time ?? "").substring(0, 5));
+            const end12 = mThis.to12h((data.end_time ?? "").substring(0, 5));
+            const remarksRaw = (data.remarks ?? "").trim();
+            const remarks = remarksRaw
+                ? mThis.escapeHtml(remarksRaw)
+                : "—";
+            const rowCls = status.rowCls ? ` ${status.rowCls}` : "";
+
+            rowsHtml += `
+            <div class="reservation-row${rowCls} reservation" id="reservation_id${data.id}" data-statusid="${data.status_id ?? ""}">
+                <div class="reservation-row__accent"></div>
+                <div class="reservation-row__grid">
+                    <div class="reservation-row__cell reservation-row__cell--amenity">
+                        <span class="reservation-row__amenity">${amenityName}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--date">
+                        <i class="fa-regular fa-calendar reservation-row__icon"></i>
+                        <span>${bookingDate}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--time">
+                        <i class="fa-regular fa-clock reservation-row__icon"></i>
+                        <span>${start12} - ${end12}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--notes">
+                        <span class="reservation-row__notes-pill">${remarks}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--status">
+                        <span class="${status.badgeCls}">${mThis.escapeHtml(status.label)}</span>
+                    </div>
+                </div>
+                <div class="reservation-row__action">
+                    ${mThis.renderReservationAction(data)}
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = `
+            <div class="reservation-list">
+                <div class="reservation-list__header">
+                    <div class="reservation-list__header-accent"></div>
+                    <div class="reservation-list__header-grid">
+                        <div class="reservation-list__header-cell reservation-list__header-cell--amenity">
+                            <span class="reservation-list__header-en">Amenity</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--date">
+                            <span class="reservation-list__header-en">Date</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--time">
+                            <span class="reservation-list__header-en">Time Detail</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--notes">
+                            <span class="reservation-list__header-en">Administrative Notes</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--status">
+                            <span class="reservation-list__header-en">Status</span>
+                        </div>
+                    </div>
+                    <div class="reservation-list__header-action"></div>
+                </div>
+                <div class="reservation-list__rows">
+                    ${rowsHtml}
+                </div>
+            </div>`;
+    };
+
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -93,9 +180,8 @@ var BookAmenityComponent = (() => {
             fetchApi: `${main_view.base_url}/tenant/reservation/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
-
-            renderItems: (items, list_container) => {
-                mThis.renderBookAmenityList(list_container, items);
+            renderItems: (items, container) => {
+                mThis.renderReservationList(container, items);
             },
             listContainerClass: null,
         });
@@ -140,118 +226,7 @@ var BookAmenityComponent = (() => {
 
         mThis.initAlready = true;
     };
-    mThis.renderBookAmenityList = (div,items) => {
-        items = items ?? [];
-        if(!AuthManager)
-        {
-            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
-            return;
-        }
-        //AuthManager() provides current user information
-        // console.log(AuthManager.init);
 
-        AuthManager.init().then(user => {
-            // console.log(user);
-           mThis.beginRenderBookAmenity(div,items,user)
-        });
-    }
-     mThis.renderHeaderList = () =>{
-        return [`<div class="w-100 rounded-3 bg-prm-custom p-3 text-white mb-3 box-shadow">
-            <div class="row align-items-center">
-
-                <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Amenity</h6>
-                </div>
-
-                <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Booking Date</h6>
-                </div>
-
-                <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Schedule Time</h6>
-                </div>
-
-                <div class="col-3">
-                    <h6 class="mb-0 text-uppercase">Remark</h6>
-                </div>
-
-                <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Status</h6>
-                </div>
-
-                <div class="col-1 text-end">
-                    <h6 class="mb-0 text-uppercase">Action</h6>
-                </div>
-
-            </div>
-        </div>`].join('');
-    } 
-
-    mThis.beginRenderBookAmenity = (div, items, current_user) => {
-    let html = mThis.renderHeaderList();
-        items.forEach(item => {
-            const start12 = mThis.to12h((item.start_time ?? "").substring(0, 5));
-            const end12 = mThis.to12h((item.end_time ?? "").substring(0, 5));
-
-            const status = mThis.getStatusMeta(item);
-
-            const remarksRaw = (item.remarks ?? "").trim();
-            const remarks = remarksRaw
-                ? mThis.escapeHtml(remarksRaw)
-                : "—";
-
-            html += `
-            <div data-id="${item.id}" class="w-100 rounded-3 border-start border-5 border-prm-custom p-3 box-shadow bg-white mb-3 position-relative">
-                <div class="row align-items-center gy-2">
-                    <div class="col-2">
-                        <p class="mb-0 text-nowrap">
-                            ${mThis.escapeHtml(item.amenity_name ?? "N/A")}
-                        </p>
-                    </div>
-
-                    <div class="col-2">
-                        <p class="mb-0 text-nowrap">
-                            ${item.booking_date ?? "N/A"}
-                        </p>
-                    </div>
-
-                    <div class="col-2">
-                        <p class="mb-0 text-nowrap">
-                            ${start12} - ${end12}
-                        </p>
-                    </div>
-
-                    <div class="col-3">
-                        <p class="mb-0 text-truncate"
-                        style="max-width:200px;"
-                        title="${remarks}">
-                            ${remarks}
-                        </p>
-                    </div>
-
-                    <div class="col-2">
-                        <span class="${status.badgeCls}">
-                            ${mThis.escapeHtml(status.label)}
-                        </span>
-                    </div>
-
-                    <div class="col-1">
-                        <div class="d-flex justify-content-end">
-                            ${mThis.renderReservationAction(item)}
-                        </div>
-                    </div>
-
-                </div>
-            </div>`;
-        });
-        div.innerHTML = html;
-        const parent = div.parentElement;
-        const resize = () => {
-            parent.style.height = (window.innerHeight - 200) + "px";
-        };
-        resize();
-        window.onresize = resize;
-    };
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
