@@ -264,7 +264,7 @@ var TransactionComponent = new (function () {
         if (!mThis.bindDom()) {
             console.error("ReceiptsComponent: #_main_receipts_component not found.");
             return;
-            
+
         }
 
         mThis.options = options;
