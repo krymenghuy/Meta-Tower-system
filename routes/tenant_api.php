@@ -116,8 +116,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('team')->group
     Route::post('/list', [TeamController::class, 'getTeamList']);
     Route::post('/member-list', [TeamController::class, 'getListTeamMemberPaginate']);
     Route::post('/details', [TeamController::class, 'getTeamDetails']);
+    Route::post('/member-details', [TeamController::class, 'getMemberDetails']);
     Route::post('/form-options', [TeamController::class, 'getFormOptions']);
+    Route::post('/form-options-member', [TeamController::class, 'getFormOptionsMember']);
     Route::post('/delete', [TeamController::class, 'deleteTeam']);
+    Route::post('/delete-member', [TeamController::class, 'deleteTeamMember']);
     Route::post('/profile/photo/delete', [TeamController::class, 'deleteProfilePhoto']);
     Route::post('/profile/photo/save', [TeamController::class, 'saveProfilePhoto']);
     Route::post('/update-status', [TeamController::class, 'updateTeamStatus']);
