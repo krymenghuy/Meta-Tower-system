@@ -281,47 +281,86 @@ var TeamComponent = new (function() {
         };
         CreateTeamMemberDialog.show(op);
     };
+    // mThis.deleteMember = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.renderView();
+    //         }
+    //     };
+    //     // if (!AuthManager.allowed(221, false)) return;
+    //     cv_interact.confirm(
+    //         "confirm_delete",
+    //         {
+    //             title: "deleted",
+    //             context: "delete",
+    //             confirmButtonText: "Delete"
+    //         },
+    //         function(e) {
+    //             if (e) {
+    //                 vsapi
+    //                     .call(
+    //                         `${main_view.base_url}/tenant/team/delete-member`,
+    //                         op,
+    //                         false,
+    //                         false,
+    //                         false
+    //                     )
+    //                     .then(res => {
+    //                         if (res.status_code == 200) {
+    //                             TeamComponent.staffListView.showPage({
+    //                                 ...TeamComponent.getFilterData(),
+    //                                 team_id: res.data.team_id
+    //                             });
+    //                             cv_interact.success("delete_success_tenant");
+    //                         } else {
+    //                             cv_interact.error(res.error_message);
+    //                         }
+    //                     });
+    //             }
+    //         }
+    //     );
+    // };
+
     mThis.deleteMember = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            }
-        };
-        // if (!AuthManager.allowed(221, false)) return;
-        cv_interact.confirm(
-            "confirm_delete",
-            {
-                title: "deleted",
-                context: "delete",
-                confirmButtonText: "Delete"
-            },
-            function(e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/tenant/team/delete-member`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
-                        .then(res => {
-                            if (res.status_code == 200) {
-                                TeamComponent.staffListView.showPage({
-                                    ...TeamComponent.getFilterData(),
-                                    team_id: res.data.team_id
-                                });
-                                cv_interact.success("delete_success_tenant");
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                }
-            }
-        );
+    let op = {
+        id: id,
+        btn: menuLink,
+        onClose: () => {
+            mThis.renderView();
+        }
     };
+    cv_interact.confirm(
+        "confirm_delete",
+        { title: "deleted", context: "delete", confirmButtonText: "Delete" },
+        function (e) {
+            if (e) {
+                vsapi
+                    .call(`${main_view.base_url}/tenant/team/delete-member`, op, false, false, false)
+                    .then(res => {
+                        if (res.status_code == 200) {
+                            const teamId = res.data.team_id;
+
+                            TeamComponent.staffListView.showPage({
+                                ...TeamComponent.getFilterData(),
+                                team_id: teamId
+                            });
+
+                            // ✅ ADD: keep the team card's member count in sync
+                            if (teamId && res.data.member_count !== undefined) {
+                                updateCardMemberCount(teamId, res.data.member_count);
+                            }
+
+                            cv_interact.success("delete_success_tenant");
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+            }
+        }
+    );
+};
 
     mThis.renderTeamCards = (container, data) => {
         console.log(11, data);
