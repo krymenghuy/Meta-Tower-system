@@ -37,7 +37,7 @@ var BookAmenityComponent = (() => {
         const status = (data.status ?? "").toLowerCase();
         const statusId = parseInt(data.status_id, 10);
         const map = {
-            upcoming: {
+            "upcoming": {
                 label: "Upcoming",
                 rowCls: "reservation-row--upcoming",
                 badgeCls: "reservation-row__status-badge reservation-row__status-badge--upcoming",
@@ -47,12 +47,12 @@ var BookAmenityComponent = (() => {
                 rowCls: "reservation-row--in-progress",
                 badgeCls: "reservation-row__status-badge reservation-row__status-badge--in-progress",
             },
-            completed: {
+            "completed": {
                 label: "Completed",
                 rowCls: "reservation-row--completed",
                 badgeCls: "reservation-row__status-badge reservation-row__status-badge--completed",
             },
-            cancelled: {
+            "cancelled": {
                 label: "Cancelled",
                 rowCls: "reservation-row--cancelled",
                 badgeCls: "reservation-row__status-badge reservation-row__status-badge--cancelled",
