@@ -2,7 +2,7 @@
 
 var Contracts2Component = new (function () {
     const mThis = this;
-    mThis.title_prop = "Contract 2";
+    mThis.title_prop = "Contract";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract2_component");
     mThis.elBusinessType = mThis.self.querySelector("#business_type2_id");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_contract2");

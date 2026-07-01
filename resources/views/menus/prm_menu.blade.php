@@ -243,7 +243,7 @@ function v_display($mod_id, $module_ids = null)
                     <a href="AnnouncementComponent" modid="217" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
-                                src="{{ asset('assets/images/icons/service_price.svg') }}" />
+                                src="{{ asset('assets/images/icons/banner.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Announcements"></span>
                     </a>
