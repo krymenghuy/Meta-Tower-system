@@ -1,20 +1,22 @@
-<div id="_main_announ_component" class="mobile-padding px-3" style="display:none;">
-    <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-2" style="background-color:#ffffff;" id="_divFilter_announ">
-        <div class="d-flex justify-content-start gap-3 w-50">
-            <div class="d-flex justify-content-start w-50 position-relative">
-                <input type="text" class="form-control rounded-2 filter-field pe-5" id="_search_anoun_info" placeholder="Search">
-                <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+<div id="_main_announcement_component" class="p-3 mobile-padding" style="display:none;">
+    <div id="_divFilter_announcement" class="bg-white shadow-sm p-3 rounded-2">
+        <div class="align-items-center row g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_announcement" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('Search announcement', 'titles') }}">
             </div>
-             <div class="d-flex">
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
-                </div>
-        </div>
-        <div class="d-flex align-items-center justify-content-end w-50">
-            <button type="button" class="btnAddNewPrm d-flex align-items-center gap-2" id="_btnAddAnnoun">
-                <i class="fa fa-user-plus"></i>
-                <span vslang="buttons.Export Contract"></span>
-            </button>
+            
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_filter_category" class="filter-field data-input" data-field="category" placeholder=""></select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_filter_priority" class="filter-field data-input" data-field="priority" placeholder=""></select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_filter_sort" class="filter-field data-input" data-field="sort" placeholder=""></select>
+            </div>
         </div>
     </div>
-    <div id="_announ_info_list" class="mt-3"></div>
+    <div id="_announcement_list" class="mt-3 rounded-2"></div>
 </div>
