@@ -5,18 +5,25 @@
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_announcement" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('Search announcement', 'titles') }}">
             </div>
             
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="ms-lg-auto text-md-end col-12 col-md-6 col-lg-2">
                 <select type="id" id="_filter_category" class="filter-field data-input" data-field="category" placeholder=""></select>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-2">
+            {{-- <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_filter_priority" class="filter-field data-input" data-field="priority" placeholder=""></select>
-            </div>
+            </div> --}}
 
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="text-md-end col-12 col-md-6 col-lg-2">
                 <select type="id" id="_filter_sort" class="filter-field data-input" data-field="sort" placeholder=""></select>
             </div>
         </div>
     </div>
     <div id="_announcement_list" class="mt-3 rounded-2"></div>
 </div>
+
+
+<style>
+    .announcement-desc i, .announcement-desc em {
+        font-style: italic !important;
+    }
+</style>

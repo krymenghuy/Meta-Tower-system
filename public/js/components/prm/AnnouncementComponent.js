@@ -62,7 +62,8 @@ var AnnouncementComponent = (() => {
             mThis.AnnouncementListView.showPage(mThis.getFilterData());
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = () => mThis.AnnouncementListView.showPage(mThis.getFilterData());
+            el.onchange = () =>
+                mThis.AnnouncementListView.showPage(mThis.getFilterData());
         });
 
         mThis.initAlready = true;
@@ -70,7 +71,7 @@ var AnnouncementComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {};
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             if (f) {
                 p[f] = el.value;
@@ -83,7 +84,20 @@ var AnnouncementComponent = (() => {
         if (!sqlDate) return "";
         const d = new Date(sqlDate.replace(/-/g, "/"));
         if (isNaN(d.getTime())) return sqlDate;
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
         const monthStr = months[d.getMonth()];
         const day = d.getDate();
         let hours = d.getHours();
@@ -105,38 +119,54 @@ var AnnouncementComponent = (() => {
                 const titleLower = (d.title || "").toLowerCase();
 
                 let iconClass = "fa-solid fa-bullhorn";
-                let themeColor = "#3b82f6"; 
+                let themeColor = "#3b82f6";
                 let iconBg = "#eff6ff";
                 let iconColor = "#3b82f6";
 
-                // Specific keyword mappings to match mockups exactly
-                if (titleLower.includes("building water maintenance") || (titleLower.includes("maintenance") && titleLower.includes("water") && !titleLower.includes("interruption"))) {
+                if (
+                    titleLower.includes("building water maintenance") ||
+                    (titleLower.includes("maintenance") &&
+                        titleLower.includes("water") &&
+                        !titleLower.includes("interruption"))
+                ) {
                     iconClass = "fa-solid fa-bullhorn";
-                    themeColor = "#ef4444"; 
+                    themeColor = "#ef4444";
                     iconBg = "#fef2f2";
                     iconColor = "#ef4444";
-                } else if (titleLower.includes("water") || titleLower.includes("plumbing")) {
+                } else if (
+                    titleLower.includes("water") ||
+                    titleLower.includes("plumbing")
+                ) {
                     iconClass = "fa-solid fa-droplet";
-                    themeColor = "#10b981"; 
+                    themeColor = "#10b981";
                     iconBg = "#ecfdf5";
                     iconColor = "#10b981";
-                } else if (titleLower.includes("parking") || titleLower.includes("car")) {
+                } else if (
+                    titleLower.includes("parking") ||
+                    titleLower.includes("car")
+                ) {
                     iconClass = "fa-solid fa-square-parking";
-                    themeColor = "#f97316"; 
+                    themeColor = "#f97316";
                     iconBg = "#fff7ed";
                     iconColor = "#f97316";
-                } else if (titleLower.includes("holiday") || titleLower.includes("closed") || titleLower.includes("office")) {
+                } else if (
+                    titleLower.includes("holiday") ||
+                    titleLower.includes("closed") ||
+                    titleLower.includes("office")
+                ) {
                     iconClass = "fa-solid fa-building";
-                    themeColor = "#3b82f6"; 
+                    themeColor = "#3b82f6";
                     iconBg = "#eff6ff";
                     iconColor = "#3b82f6";
-                } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
+                } else if (
+                    titleLower.includes("elevator") ||
+                    titleLower.includes("lift")
+                ) {
                     iconClass = "fa-solid fa-elevator";
-                    themeColor = "#8b5cf6"; 
+                    themeColor = "#8b5cf6";
                     iconBg = "#f5f3ff";
                     iconColor = "#8b5cf6";
                 } else {
-                    // Fallbacks based on category if no keyword matches
                     if (categoryLower === "maintenance") {
                         iconClass = "fa-solid fa-screwdriver-wrench";
                         themeColor = "#10b981";
@@ -152,7 +182,10 @@ var AnnouncementComponent = (() => {
                         themeColor = "#8b5cf6";
                         iconBg = "#f5f3ff";
                         iconColor = "#8b5cf6";
-                    } else if (categoryLower === "policy update" || categoryLower === "policy") {
+                    } else if (
+                        categoryLower === "policy update" ||
+                        categoryLower === "policy"
+                    ) {
                         iconClass = "fa-solid fa-square-parking";
                         themeColor = "#f97316";
                         iconBg = "#fff7ed";
@@ -162,33 +195,45 @@ var AnnouncementComponent = (() => {
 
                 let borderLeftColor = themeColor;
 
-                let priorityBadgeStyle = "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
+                let priorityBadgeStyle =
+                    "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
                 let priorityBadgeText = "Low Priority";
-                
+
                 if (priorityLower === "high") {
-                    priorityBadgeStyle = "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; font-weight: 600;";
+                    priorityBadgeStyle =
+                        "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; font-weight: 600;";
                     priorityBadgeText = "High Priority";
                 } else if (priorityLower === "medium") {
-                    priorityBadgeStyle = "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important; font-weight: 600;";
+                    priorityBadgeStyle =
+                        "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important; font-weight: 600;";
                     priorityBadgeText = "Medium Priority";
                 } else if (priorityLower === "low") {
-                    priorityBadgeStyle = "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
+                    priorityBadgeStyle =
+                        "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
                     priorityBadgeText = "Low Priority";
                 } else if (priorityLower === "critical") {
-                    priorityBadgeStyle = "background-color: #fff1f2 !important; color: #e11d48 !important; border: 1px solid #ffe4e6 !important; font-weight: 700;";
+                    priorityBadgeStyle =
+                        "background-color: #fff1f2 !important; color: #e11d48 !important; border: 1px solid #ffe4e6 !important; font-weight: 700;";
                     priorityBadgeText = "Critical Priority";
                 }
 
-                let statusDotColor = d.status === "Active" ? "#10b981" : "#94a3b8";
+                let statusDotColor =
+                    d.status === "Active" ? "#10b981" : "#6a6787";
                 let statusText = d.status === "Active" ? "Active" : "Draft";
 
-                let pubDate = d.publish_date ? formatDateTime(d.publish_date) : "Not set";
-                let expDate = d.expiry_date ? "Expires: " + formatDateTime(d.expiry_date) : "No expiration";
+                let pubDate = d.publish_date
+                    ? formatDateTime(d.publish_date)
+                    : "Not set";
+                let expDate = d.expiry_date
+                    ? "Expires: " + formatDateTime(d.expiry_date)
+                    : "No expiration";
 
                 let buildingName = d.building_name || "All Buildings";
 
                 const isTenant = main_view.main_route === "tenant";
-                const infoColClass = isTenant ? "col-12 col-md-9 col-lg-9" : "col-12 col-md-7 col-lg-7";
+                const infoColClass = isTenant
+                    ? "col-12 col-md-9 col-lg-9"
+                    : "col-12 col-md-7 col-lg-7";
 
                 html += `
                     <div class="card mb-3 border shadow-sm rounded-3 overflow-hidden position-relative" style="border: 1px solid #e2e8f0 !important; border-left: 6px solid ${borderLeftColor} !important; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
@@ -202,19 +247,20 @@ var AnnouncementComponent = (() => {
                                         </div>
                                         
                                         <div>
-                                            <h5 class="fw-bold mb-1 font-size-15" style="color: #1e293b !important; font-weight: 700 !important; letter-spacing: -0.01em;">${d.title ?? ""}</h5>
-                                            <div class="mb-2 text-wrap" style="line-height: 1.6; font-size: 13.5px; color: #475569 !important;">
-                                                ${d.description ? d.description.replace(/<[^>]*>/g, '') : ""}
+                                            <h5 class="fw-bold mb-2 font-size-15" style="color: #1e293b !important; font-weight: 700 !important; letter-spacing: -0.01em;">${d.title ?? ""}</h5>
+                                            <div class="mb-2 text-wrap announcement-desc" style="line-height: 1.6; font-size: 13.5px; color: #1a1655 !important;">
+                                                ${d.description ?? ""}
                                             </div>
+
                                             <div class="d-flex flex-wrap gap-3 font-size-12">
-                                                <span class="d-flex align-items-center" style="color: #64748b !important;">
-                                                    <i class="fa-solid fa-building me-2" style="color: #94a3b8;"></i> ${buildingName}
+                                                <span class="d-flex align-items-center" style="color: #757575!important;">
+                                                    <i class="fa-solid fa-building me-2" style="color: #757575;"></i> ${buildingName}
                                                 </span>
-                                                <span class="d-flex align-items-center" style="color: #64748b !important;">
-                                                    <i class="fa-solid fa-users me-2" style="color: #94a3b8;"></i> ${d.audience || "All Tenants"}
+                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
+                                                    <i class="fa-solid fa-users me-2" style="color: #757575;"></i> ${d.audience || "All Tenants"}
                                                 </span>
-                                                <span class="d-flex align-items-center" style="color: #64748b !important;">
-                                                    <i class="fa-solid fa-folder me-2" style="color: #94a3b8;"></i> ${d.category || "General"}
+                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
+                                                    <i class="fa-solid fa-folder me-2" style="color: #757575;"></i> ${d.category || "General"}
                                                 </span>
                                             </div>
                                         </div>
@@ -223,21 +269,24 @@ var AnnouncementComponent = (() => {
                                 
                                 <div class="col-12 col-md-3 col-lg-3 px-4 border-start d-none d-md-block" style="border-color: #e2e8f0 !important;">
                                     <div class="mb-2">
-                                        <span class="badge font-size-11 px-3 py-2    rounded-5" style="${priorityBadgeStyle}">${priorityBadgeText}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center small mb-1.5 font-size-12" style="color: #64748b !important;">
+                                        <span class="badge font-size-11 px-3 py-2 rounded-5" style="${priorityBadgeStyle}">${priorityBadgeText}</span>
+                                    </div>  
+                                    <div class="d-flex align-items-center small mb-1.5 font-size-12" style="color: #757575 !important;">
                                         <span class="rounded-circle me-2" style="width: 8px; height: 8px; background-color: ${statusDotColor}; display: inline-block;"></span>
                                         <span>${statusText}</span>
                                     </div>
-                                    <div class="font-size-12 mb-1.5 d-flex align-items-center" style="color: #64748b !important;">
-                                        <i class="fa-solid fa-calendar me-2" style="color: #94a3b8;"></i> ${pubDate}
+                                    <div class="font-size-12 mb-1.5 d-flex align-items-center" style="color: #757575 !important;">
+                                        <i class="fa-solid fa-calendar me-2" style="color: #757575;"></i> ${pubDate}
                                     </div>
-                                    <div class="font-size-12 d-flex align-items-center" style="color: #64748b !important;">
-                                        <i class="fa-solid fa-clock me-2" style="color: #94a3b8;"></i> ${expDate}
+                                    <div class="font-size-12 d-flex align-items-center" style="color: #757575 !important;">
+                                        <i class="fa-solid fa-clock me-2" style="color: #757575;"></i> ${expDate}
                                     </div>
                                 </div>
 
-                                ${isTenant ? "" : `
+                                ${
+                                    isTenant
+                                        ? ""
+                                        : `
                                 <div class="col-12 col-md-2 col-lg-2 text-end ps-3 d-flex align-items-center justify-content-end">
                                     <a href="javascript:void(0)" class="btn-edit-announcement d-inline-flex align-items-center justify-content-center rounded-circle" data-id="${d.id}" style="width: 34px; height: 34px; background-color: #f1f5f9; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#e2e8f0'" onmouseout="this.style.backgroundColor='#f1f5f9'">
                                         <i class="fa-solid fa-pen text-primary" style="font-size: 13px;"></i>
@@ -246,7 +295,8 @@ var AnnouncementComponent = (() => {
                                         <i class="fa-solid fa-trash-can text-danger" style="font-size: 13px;"></i>
                                     </a>
                                 </div>
-                                `}
+                                `
+                                }
 
                             </div>
                         </div>
@@ -271,13 +321,15 @@ var AnnouncementComponent = (() => {
             };
         });
 
-        container.querySelectorAll(".btn-delete-announcement").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const id = btn.dataset.id;
-                mThis.deleteAnnouncement(id, btn);
-            };
-        });
+        container
+            .querySelectorAll(".btn-delete-announcement")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const id = btn.dataset.id;
+                    mThis.deleteAnnouncement(id, btn);
+                };
+            });
     };
 
     mThis.editAnnouncement = (id, menulink) => {
@@ -304,11 +356,11 @@ var AnnouncementComponent = (() => {
         cv_interact.confirm(
             "confirm_delete",
             {
-                'langSection': "message_box_default",
-                'translate': true,
-                'title': "deleted",
-                'context': "delete",
-                'confirmButtonText': "Delete",
+                langSection: "message_box_default",
+                translate: true,
+                title: "deleted",
+                context: "delete",
+                confirmButtonText: "Delete",
             },
             function (e) {
                 if (e) {
@@ -322,8 +374,12 @@ var AnnouncementComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_announcement");
-                                mThis.AnnouncementListView.showPage(mThis.getFilterData());
+                                cv_interact.success(
+                                    "delete_success_announcement",
+                                );
+                                mThis.AnnouncementListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -339,24 +395,24 @@ var AnnouncementComponent = (() => {
             { id: "Maintenance", name: "Maintenance" },
             { id: "Notice", name: "Notice" },
             { id: "Event", name: "Event" },
-            { id: "Policy Update", name: "Policy Update" }
+            { id: "Policy Update", name: "Policy Update" },
         ];
 
         const priorities = [
             { id: "Low", name: "Low" },
             { id: "Medium", name: "Medium" },
             { id: "High", name: "High" },
-            { id: "Critical", name: "Critical" }
+            { id: "Critical", name: "Critical" },
         ];
 
         const statuses = [
             { id: "Active", name: "Active" },
-            { id: "Draft", name: "Draft" }
+            { id: "Draft", name: "Draft" },
         ];
 
         const sortOptions = [
             { id: "newest", name: "Newest First" },
-            { id: "oldest", name: "Oldest First" }
+            { id: "oldest", name: "Oldest First" },
         ];
 
         VSUtil.setComboItems(
@@ -366,7 +422,7 @@ var AnnouncementComponent = (() => {
             "name",
             "",
             LocaleManager.trans("All Categories", "titles"),
-            ""
+            "",
         );
         VSUtil.setComboItems(
             mThis.elFilter_priority,
@@ -375,7 +431,7 @@ var AnnouncementComponent = (() => {
             "name",
             "",
             LocaleManager.trans("All Priorities", "titles"),
-            ""
+            "",
         );
         VSUtil.setComboItems(
             mThis.elFilter_status,
@@ -384,7 +440,7 @@ var AnnouncementComponent = (() => {
             "name",
             "",
             LocaleManager.trans("All Statuses", "titles"),
-            ""
+            "",
         );
         VSUtil.setComboItems(
             mThis.elFilter_sort,
@@ -393,7 +449,7 @@ var AnnouncementComponent = (() => {
             "name",
             "",
             LocaleManager.trans("Sort By", "titles"),
-            ""
+            "",
         );
 
         if (typeof onFinish === "function") onFinish();
@@ -492,16 +548,16 @@ const AnnouncementDialog = (() => {
                             </div>
                             
                             <div class="col-12">
-                                <div class="vs-material-field">
-                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label vslang="labels.Description"></label>
+                                <div class="form-group">
+                                    <label class="form-label small d-block" style="color:#757575;" vslang="labels.Description"></label>
+                                    <textarea name="description" id="description" class="data-input form-control" data-field="description" placeholder="Enter announcement description..."></textarea>
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" placeholder="${LocaleManager.trans('Category', 'labels')}" name="category" class="data-input form-control" data-field="category">
-                                        <option value="" disabled selected>${LocaleManager.trans('Category', 'labels')}</option>
+                                    <select data-style="material" placeholder="${LocaleManager.trans("Category", "labels")}" name="category" class="data-input form-control" data-field="category">
+                                        <option value="" disabled selected>${LocaleManager.trans("Category", "labels")}</option>
                                         <option value="General">General</option>
                                         <option value="Maintenance">Maintenance</option>
                                         <option value="Notice">Notice</option>
@@ -512,8 +568,8 @@ const AnnouncementDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" placeholder="${LocaleManager.trans('Priority', 'labels')}" name="priority" class="data-input form-control" data-field="priority">
-                                        <option value="" disabled selected>${LocaleManager.trans('Priority', 'labels')}</option>
+                                    <select data-style="material" placeholder="${LocaleManager.trans("Priority", "labels")}" name="priority" class="data-input form-control" data-field="priority">
+                                        <option value="" disabled selected>${LocaleManager.trans("Priority", "labels")}</option>
                                         <option value="Low">Low</option>
                                         <option value="Medium">Medium</option>
                                         <option value="High">High</option>
@@ -524,13 +580,13 @@ const AnnouncementDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" placeholder="${LocaleManager.trans('Building', 'labels')}" name="building_id" class="data-input form-control" data-field="building_id">
+                                    <select data-style="material" placeholder="${LocaleManager.trans("Building", "labels")}" name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" placeholder="${LocaleManager.trans('Audience', 'labels')}" name="audience" class="data-input form-control" data-field="audience">
+                                    <select data-style="material" placeholder="${LocaleManager.trans("Audience", "labels")}" name="audience" class="data-input form-control" data-field="audience">
                                         <option value="All Tenants">All Tenants</option>
                                         <option value="Staff Only">Staff Only</option>
                                         <option value="Owners Only">Owners Only</option>
@@ -553,7 +609,7 @@ const AnnouncementDialog = (() => {
 
 
                             <div class="col-12">
-                                <label class="form-label text-muted small fw-bold mb-2 d-block">Status</label>
+                                <label class="form-label text-muted small mb-2 d-block" style="color:#757575;" vslang="label.Status"></label>
                                 <div class="d-flex gap-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="status" id="_status_active" value="Active" checked>
@@ -572,21 +628,37 @@ const AnnouncementDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                   
-                    const textarea = me.divModal.querySelector('textarea[name="description"]');
+                    const textarea = me.divModal.querySelector(
+                        'textarea[name="description"]',
+                    );
                     if (textarea && typeof CKEDITOR !== "undefined") {
                         me.editor = CKEDITOR.replace(textarea, {
+                            versionCheck: false,
                             toolbar: [
-                                { name: 'styles', items: [ 'Format' ] },
-                                { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline' ] },
-                                { name: 'paragraph', items: [ 'BulletedList', 'NumberedList' ] },
-                                { name: 'links', items: [ 'Link' ] },
-                                { name: 'insert', items: [ 'Image' ] }
+                                { name: "styles", items: ["Format"] },
+                                {
+                                    name: "basicstyles",
+                                    items: ["Bold", "Italic", "Underline"],
+                                },
+                                {
+                                    name: "paragraph",
+                                    items: ["BulletedList", "NumberedList"],
+                                },
+                                {
+                                    name: "align",
+                                    items: [
+                                        "JustifyLeft",
+                                        "JustifyCenter",
+                                        "JustifyRight",
+                                    ],
+                                },
+                                { name: "links", items: ["Link"] },
+                                { name: "insert", items: ["Image"] },
                             ],
-                            removePlugins: 'elementspath',
+                            removePlugins: "elementspath",
                             resize_enabled: false,
                             height: 150,
-                            placeholder: 'Enter announcement description...'
+                            placeholder: "Enter announcement description...",
                         });
                     }
                 },
@@ -607,7 +679,7 @@ const AnnouncementDialog = (() => {
                             main_view.base_url,
                             "/prm/announcement/form-options",
                         ].join(""),
-                        params: (op) => {
+                        params: (me, op) => {
                             return { id: op.id };
                         },
                     },
@@ -623,19 +695,49 @@ const AnnouncementDialog = (() => {
                 extendMethod: {
                     setData: (me, data) => {
                         const divModal = me.divModal;
-                        const statusVal = data.status || 'Active';
-                        const radio = divModal.querySelector(`input[name="status"][value="${statusVal}"]`);
+                        const statusVal = data.status || "Active";
+                        const radio = divModal.querySelector(
+                            `input[name="status"][value="${statusVal}"]`,
+                        );
                         if (radio) {
                             radio.checked = true;
                         }
                     },
+
                     getData: (me) => {
                         const divModal = me.divModal;
-                        const activeRadio = divModal.querySelector('input[name="status"]:checked');
+                        const activeRadio = divModal.querySelector(
+                            'input[name="status"]:checked',
+                        );
                         return {
-                            status: activeRadio ? activeRadio.value : 'Active'
+                            title: divModal.querySelector('input[name="title"]')
+                                .value,
+                            description: me.editor
+                                ? me.editor.getData()
+                                : divModal.querySelector(
+                                      'textarea[name="description"]',
+                                  ).value,
+                            category: divModal.querySelector(
+                                'select[name="category"]',
+                            ).value,
+                            priority: divModal.querySelector(
+                                'select[name="priority"]',
+                            ).value,
+                            building_id: divModal.querySelector(
+                                'select[name="building_id"]',
+                            ).value,
+                            audience: divModal.querySelector(
+                                'select[name="audience"]',
+                            ).value,
+                            publish_date: divModal.querySelector(
+                                'input[name="publish_date"]',
+                            ).value,
+                            expiry_date: divModal.querySelector(
+                                'input[name="expiry_date"]',
+                            ).value,
+                            status: activeRadio ? activeRadio.value : "Active",
                         };
-                    }
+                    },
                 },
 
                 buttons: [
@@ -672,9 +774,13 @@ const AnnouncementDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success('update_success_announcement');
+                                            cv_interact.success(
+                                                "update_success_announcement",
+                                            );
                                         } else {
-                                            cv_interact.success('create_success_announcement');
+                                            cv_interact.success(
+                                                "create_success_announcement",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -684,6 +790,9 @@ const AnnouncementDialog = (() => {
                     },
                 ],
             });
+        if (dialog.editor) {
+            dialog.editor.setData("");
+        }
         dialog.show(op);
     };
     return self;
