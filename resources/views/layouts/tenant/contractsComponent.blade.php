@@ -1,5 +1,5 @@
 <div id="_main_contract_component" class="mobile-padding p-3" style="display: none;">
-    <div id="_divFilter_contract" class="contract-filter-bar rounded-2 p-2 shadow-sm">
+    <div id="_divFilter_contract" class="contract-filter-bar rounded-2 p-2 shadow-sm d-none">
         <div class="row g-2 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
