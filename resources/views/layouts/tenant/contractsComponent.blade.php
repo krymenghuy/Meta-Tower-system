@@ -1,5 +1,5 @@
 <div id="_main_contract_component" class="mobile-padding p-3" style="display: none;">
-    <div id="_divFilter_contract" class="contract-filter-bar rounded-2 p-2 shadow-sm">
+    <div id="_divFilter_contract" class="contract-filter-bar rounded-2 p-2 shadow-sm d-none">
         <div class="row g-2 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
@@ -305,7 +305,7 @@
     padding: 20px 10px 8px;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #fff;
+    color: #fffbeb;
     text-align: center;
     background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.65) 100%);
     z-index: 1;
@@ -377,7 +377,7 @@
 }
 
 .contract-card__section-title {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--c2-text);
     margin-bottom: 8px;
@@ -695,10 +695,10 @@
 
 .contract2-detail {
     position: relative;
-    display: grid;
+    /* display: grid; */
     grid-template-columns: 260px minmax(0, 1fr);
     gap: 14px;
-    padding: 14px;
+    /* padding: 14px; */
     align-items: stretch;
 }
 
@@ -1397,5 +1397,24 @@
     .contract2-renewal__item-box {
         grid-template-columns: 1fr;
     }
+}
+.contract-card__finance-card {
+    height: 100%;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.contract-card__finance-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.contract-card__finance-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
 }
 </style>

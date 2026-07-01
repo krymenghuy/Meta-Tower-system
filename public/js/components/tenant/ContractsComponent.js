@@ -45,8 +45,8 @@ var ContractsComponent = new (function () {
             data.price,
             data.currency_code ?? "USD",
         );
-        const suffix = data.price_type === "total" ? "/mon" : "/m²";
-        return `${price}<small>${suffix}</small>`;
+        const suffix = data.price_type === "Unit" ? "/mon" : "/m²";
+        return `${price}<span>${suffix}</span>`;
     };
 
     mThis.formatDeposit = (data) => {
@@ -61,7 +61,7 @@ var ContractsComponent = new (function () {
             data.price,
             data.currency_code ?? "USD",
         );
-        const suffix = data.price_type === "total" ? "/mon" : "/m²";
+        const suffix = data.price_type === "Unit" ? "/mon" : "/m²";
         return `${price}&nbsp;<small>${suffix}</small>`;
     };
 
@@ -187,26 +187,7 @@ var ContractsComponent = new (function () {
             </div>`;
     };
 
-    mThis.renderPaymentChart = (seed) => {
-        const heights = [42, 58, 48, 72, 65];
-        const months = ["Jun", "Jul", "Aug", "Sep", "Oct"];
-        const offset = (parseInt(seed, 10) || 0) % 3;
-        return `
-            <div class="contract-card__chart">
-                <div class="contract-card__chart-title">Recent Payment History</div>
-                <div class="contract-card__chart-bars">
-                    ${months
-                        .map((month, i) => {
-                            const h = heights[(i + offset) % heights.length];
-                            return `<div class="contract-card__chart-bar-wrap">
-                                <div class="contract-card__chart-bar" style="height:${h}%"></div>
-                                <span>${month}</span>
-                            </div>`;
-                        })
-                        .join("")}
-                </div>
-            </div>`;
-    };
+  
 
     mThis.renderContractCard = (data) => {
         const status = mThis.getStatusMeta(data);
@@ -218,17 +199,25 @@ var ContractsComponent = new (function () {
             mThis.formatDateRange(data.start_date, data.end_date),
         );
         const keyRenewalDate = mThis.escapeHtml(data.end_date ?? "—");
-        const sqmDisplay =
-            data.price_type === "total"
-                ? `${VSMoney.formatAmount(data.price, data.currency_code ?? "USD")} /mon`
-                : `${VSMoney.formatAmount(data.price, data.currency_code ?? "USD")} · ${mThis.formatAreaDetail(data.sqm_size) ?? "—"}`;
+        const sqmDisplay = `${mThis.formatAreaDetail(data.sqm_size) ?? "—"}`;
         const imageMeta = mThis.getSpaceImageMeta(data);
         const tenantName = mThis.escapeHtml(data.tenant_name ?? "—");
         const tenantRole = mThis.escapeHtml(data.legal_name || "Primary tenant");
         const tenantInitial = tenantName.charAt(0).toUpperCase() || "T";
+        const symbol = data.cur_symbol || "$";
+        const currency = data.currency_code ?? "USD";
+        const size = Number(data.sqm_size || 0);
+        const price = Number(data.price || 0);
+
+
+        const pricePerMonth =
+            data.price_type === "Unit" ? price : price * size;
+        const priceLabelPerMonth = VSMoney.formatAmount(
+            pricePerMonth,
+            currency,
+        );
 
         return `
-            <div class="col-12 col-xl-6">
                 <div class="contract-card" data-contract-id="${data.id}">
                     <div class="contract-card__header">
                         <div class="contract-card__header-left">
@@ -254,23 +243,28 @@ var ContractsComponent = new (function () {
                         <div class="row g-3 contract-card__body-grid">
                             <div class="col-12 col-md-4 contract-card__col-left">
                                 ${mThis.renderSpacePhoto(data, imageMeta)}
-                                <div class="contract-card__address">
+                              <div class="contract-card__address">
                                     <div class="contract-card__address-head">
-                                        <i class="fa-solid fa-location-dot"></i>
-                                        <span>Property Address</span>
+                                        <i class="fa-solid fa-building"></i>
+                                        <span>Unit Details</span>
                                     </div>
-                                    <p>Meta Tower, ${unitLabel}, Phnom Penh, Cambodia</p>
+
+                                    <div class="contract-card__sqft">
+                                        <span class="contract-card__sqft-label">Square footage</span>
+                                        <span class="contract-card__sqft-value">${sqmDisplay}</span>
+                                    </div>
+                                     <div class="contract-card__sqft">
+                                        <span class="contract-card__sqft-label">Address</span>
+                                        <span class="contract-card__sqft-value">${data.address || "—"}</span>
+                                    </div>
                                 </div>
-                                <div class="contract-card__floorplan">
-                                    <img class="contract-card__floorplan-img"
-                                        src="${main_view.base_url}/assets/images/contracts/floor-plan-default.png"
-                                        alt="Floor plan - ${unitLabel}"
-                                        loading="lazy">
+                                <div class="contract-card__detail-wrap">
+                                    <button type="button" class="contract-card__action contract-card__action--detail btn_contract2_detail"
+                                        data-id="${data.id}">
+                                        View detail
+                                    </button>
                                 </div>
-                                <div class="contract-card__sqft">
-                                    <span class="contract-card__sqft-label">Square footage</span>
-                                    <span class="contract-card__sqft-value">${sqmDisplay}</span>
-                                </div>
+                               
                             </div>
                             <div class="col-12 col-md-8 contract-card__col-right">
                                 <div class="contract-card__panel">
@@ -281,25 +275,39 @@ var ContractsComponent = new (function () {
                                     <div class="contract-card__status-block">
                                         <div class="contract-card__duration">
                                             <span>Duration:</span>
-                                            <strong>${duration}</strong>
+                                            <span>${duration}</span>
                                         </div>
                                         <div class="contract-card__renewal-date">
-                                            Key renewal date: <strong>${keyRenewalDate}</strong>
+                                            Key renewal date: <span>${keyRenewalDate}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--finance">
                                     <div class="contract-card__section-title">Financial Details</div>
                                     <div class="contract-card__finance-grid">
-                                        <div class="contract-card__finance-main">
-                                            <div class="contract-card__price-big">${priceBlock}</div>
-                                            <ul class="contract-card__finance-list">
-                                                <li><span>Total sum of Deposit:</span> <strong>${deposit}</strong></li>
-                                                <li><span>Utility Details:</span> <strong>Any</strong></li>
-                                                <li><span>Property type:</span> <strong>${mThis.escapeHtml(data.space_type ?? "—")}</strong></li>
-                                            </ul>
+                                        <div class="row g-3">
+                                            <div class="col-12 col-md-12">
+                                                <div class="contract-card__finance-card">
+                                                    <div class="contract-card__finance-label">
+                                                        Monthly Rent
+                                                    </div>
+                                                    <div class="contract-card__finance-value">
+                                                        ${priceLabelPerMonth}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-12">
+                                                <div class="contract-card__finance-card">
+                                                    <div class="contract-card__finance-label">
+                                                        Security Deposit
+                                                    </div>
+                                                    <div class="contract-card__finance-value">
+                                                        ${deposit}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        ${mThis.renderPaymentChart(data.id)}
                                     </div>
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--contacts">
@@ -314,18 +322,13 @@ var ContractsComponent = new (function () {
                                             <i class="fa-regular fa-user"></i>
                                         </button>
                                     </div>
-                                    <div class="contract-card__detail-wrap">
-                                        <button type="button" class="contract-card__action contract-card__action--detail btn_contract2_detail"
-                                            data-id="${data.id}">
-                                            View detail
-                                        </button>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>`;
+                `;
     };
 
     mThis.bindCardEvents = (container) => {
@@ -373,11 +376,15 @@ var ContractsComponent = new (function () {
                 </div>`;
             return;
         }
-
+        const colClass = items.length === 1 ? "col-12" : "col-12 col-xl-6";
         let html = '<div class="row g-3 contract-card-grid">';
         items.forEach((data) => {
             mThis.contractItemsMap[data.id] = data;
-            html += mThis.renderContractCard(data);
+            html += `
+                <div class="${colClass}">
+                    ${mThis.renderContractCard(data)}
+                </div>
+            `;
         });
         html += "</div>";
         container.innerHTML = html;
@@ -400,7 +407,7 @@ var ContractsComponent = new (function () {
         mThis.pr_tbl = mThis.Contract2ListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
-        sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         };
@@ -447,45 +454,11 @@ var ContractsComponent = new (function () {
                 <button type="button" class="contract2-detail__close-btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <aside class="contract2-detail__sidebar">
-                    <div class="contract2-detail__profile">
-                        <div class="contract2-detail__avatar">
-                            <i class="fa-solid fa-building-columns"></i>
-                        </div>
-                        <div class="contract2-detail__unit">${unitLabel}</div>
-                        <div class="contract2-detail__status-wrap">
-                            <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
-                        </div>
-                    </div>
-                    <div class="contract2-detail__mini-grid">
-                        <div class="contract2-detail__mini-box">
-                            <span class="contract2-detail__mini-label">Contract id</span>
-                            <span class="contract2-detail__mini-value">${mThis.escapeHtml(mThis.formatContractCode(data.id))}</span>
-                        </div>
-                        <div class="contract2-detail__mini-box">
-                            <span class="contract2-detail__mini-label">Tenant</span>
-                            <span class="contract2-detail__mini-value">${mThis.escapeHtml(data.tenant_name ?? "—")}</span>
-                        </div>
-                    </div>
-                    <div class="contract2-detail__lease-box">
-                        <div class="contract2-detail__lease-title">Lease terms</div>
-                        <div class="contract2-detail__lease-split">
-                            <div class="contract2-detail__lease-col">
-                                <span class="contract2-detail__mini-label">Start date</span>
-                                <span class="contract2-detail__lease-value">${mThis.escapeHtml(data.start_date ?? "—")}</span>
-                            </div>
-                            <div class="contract2-detail__lease-col">
-                                <span class="contract2-detail__mini-label">End date</span>
-                                <span class="contract2-detail__lease-value">${mThis.escapeHtml(data.end_date ?? "—")}</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
+                
                 <section class="contract2-detail__main">
                     <div class="contract2-detail__tabs">
                         <button type="button" class="contract2-detail__tab is-active" data-tab="overview">Overview</button>
                         <button type="button" class="contract2-detail__tab" data-tab="renew">View renew</button>
-                        <button type="button" class="contract2-detail__tab" data-tab="documents">Documents</button>
                     </div>
                     <div class="contract2-detail__panel">
                         <div class="contract2-detail__tab-panel" data-panel="overview">
@@ -522,13 +495,7 @@ var ContractsComponent = new (function () {
                         <div class="contract2-detail__tab-panel d-none" data-panel="renew">
                             <div id="_contract2_detail_renew_panel" class="contract2-detail__renew-panel"></div>
                         </div>
-                        <div class="contract2-detail__tab-panel d-none" data-panel="documents">
-                            <div class="contract2-detail__empty-tab">
-                                <span class="contract2-detail__empty-icon"><i class="fa-regular fa-folder-open"></i></span>
-                                <p class="mb-1 fw-semibold text-dark">No documents yet</p>
-                                <small>No documents linked to this contract.</small>
-                            </div>
-                        </div>
+                        
                     </div>
                 </section>
             </div>`;
