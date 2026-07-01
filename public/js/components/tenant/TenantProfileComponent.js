@@ -2,7 +2,7 @@
 
 var TenantProfileComponent =  new (function () {
     const mThis = this;
-    mThis.title_prop = "Tenant Profile";
+    mThis.title_prop = "Profile Overview";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_profile_component");
     mThis.init = function () {
@@ -180,7 +180,6 @@ var TenantProfileComponent =  new (function () {
     mThis.show = function () {
         mThis.init();
         main_view.setContentView(mThis.self, mThis.title_prop);
-       
         mThis.renderTenantProfile();
              
     };
