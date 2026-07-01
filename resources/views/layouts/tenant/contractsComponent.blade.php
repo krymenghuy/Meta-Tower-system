@@ -305,7 +305,7 @@
     padding: 20px 10px 8px;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #fff;
+    color: #fffbeb;
     text-align: center;
     background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.65) 100%);
     z-index: 1;
@@ -377,7 +377,7 @@
 }
 
 .contract-card__section-title {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--c2-text);
     margin-bottom: 8px;
@@ -695,10 +695,10 @@
 
 .contract2-detail {
     position: relative;
-    display: grid;
+    /* display: grid; */
     grid-template-columns: 260px minmax(0, 1fr);
     gap: 14px;
-    padding: 14px;
+    /* padding: 14px; */
     align-items: stretch;
 }
 
@@ -1397,5 +1397,24 @@
     .contract2-renewal__item-box {
         grid-template-columns: 1fr;
     }
+}
+.contract-card__finance-card {
+    height: 100%;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.contract-card__finance-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.contract-card__finance-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
 }
 </style>

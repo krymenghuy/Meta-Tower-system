@@ -359,9 +359,10 @@ class Contracts  //extends Model
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $row = DB::table('contracts as ct')
-            ->where('ct.id', $id)
-            ->selectRaw('ct.id,ct.name,ct.phone_number,ct.name_kh,ct.code,ct.email,ct.address,ct.remarks,ct.tenant_id,ct.update_user')->first();
+        $row = DB::table('contracts as c')
+            ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+            ->where('c.id', $id)
+            ->selectRaw('c.id,c.name,c.phone_number,c.name_kh,c.code,c.email,c.address,c.remarks,c.tenant_id,c.update_user')->first();
         return $row;
     }
 
@@ -370,7 +371,9 @@ class Contracts  //extends Model
         $contracts = $id ? self::contractDetails($id) : null;
         return (object)[
             'contracts' => $contracts,
-            'statuses' => GeneralSettings::options_acc_staff_status($ss),
+            'statuses'  => GeneralSettings::options_contract_status($ss),
+            'business_types'   => GeneralSettings::options_business_type($ss),
+
 
         ];
     }
