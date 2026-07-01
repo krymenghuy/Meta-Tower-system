@@ -484,7 +484,6 @@ const AnnouncementDialog = (() => {
                     return `
                 <div class="announcement-form">
                         <div class="col-12 row g-3">
-                            <!-- Title -->
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <input type="text" name="title" class="data-input form-control" data-field="title" placeholder=" " required />
@@ -492,7 +491,6 @@ const AnnouncementDialog = (() => {
                                 </div>
                             </div>
                             
-                            <!-- Description -->
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
@@ -500,7 +498,6 @@ const AnnouncementDialog = (() => {
                                 </div>
                             </div>
 
-                            <!-- Category & Priority -->
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <select data-style="material" placeholder="${LocaleManager.trans('Category', 'labels')}" name="category" class="data-input form-control" data-field="category">
