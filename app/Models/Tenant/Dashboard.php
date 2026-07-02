@@ -28,10 +28,52 @@ class Dashboard extends VSModel
     {
         $f = self::parseFilter($arr);
 
+        // Fetch announcements
+        $tenantId = $ss->official_id ?? null;
+        $buildingId = DB::table('contracts as c')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->where('c.tenant_id', $tenantId)
+            ->where('c.status_id', 2)
+            ->value('bs.building_id');
+
+        $nowStr = date('Y-m-d H:i:s');
+        $annQuery = DB::table('announcements as a')
+            ->leftJoin('buildings as b', 'b.id', '=', 'a.building_id')
+            ->where('a.status', 'Active')
+            ->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.publish_date')
+                  ->orWhere('a.publish_date', '')
+                  ->orWhere('a.publish_date', 'null')
+                  ->orWhere('a.publish_date', 'like', '0000%')
+                  ->orWhere('a.publish_date', '<=', $nowStr);
+            })
+            ->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.expiry_date')
+                  ->orWhere('a.expiry_date', '')
+                  ->orWhere('a.expiry_date', 'null')
+                  ->orWhere('a.expiry_date', 'like', '0000%')
+                  ->orWhereRaw("DATE(a.expiry_date) >= ?", [date('Y-m-d')]);
+            });
+
+        if ($buildingId) {
+            $annQuery->where(function ($q) use ($buildingId) {
+                $q->whereNull('a.building_id')
+                  ->orWhere('a.building_id', 0)
+                  ->orWhere('a.building_id', $buildingId);
+            });
+        }
+
+        $announcements = $annQuery
+            ->orderByDesc('a.id')
+            ->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, b.name as building_name")
+            ->limit(3)
+            ->get();
+
         return (object)[
-            'card_top'   => self::summarizeDashboardCardTop($f, $ss),
-            'cards'      => self::summarizeDashboardCards($f, $ss),
-            'activities' => self::getActivities($f, $ss),
+            'card_top'      => self::summarizeDashboardCardTop($f, $ss),
+            'cards'         => self::summarizeDashboardCards($f, $ss),
+            'activities'    => self::getActivities($f, $ss),
+            'announcements' => $announcements,
         ];
     }
 

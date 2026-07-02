@@ -57,6 +57,7 @@ var AnnouncementComponent = (() => {
     mThis.getFilterData = () => {
         let p = {
             status: "Active", //Tenants can only view Active announcements
+            is_tenant: 1,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -94,6 +95,68 @@ var AnnouncementComponent = (() => {
         hours = hours ? hours : 12;
         const hoursStr = String(hours).padStart(2, "0");
         return `${monthStr} ${day}, ${d.getFullYear()} ${hoursStr}:${minutes} ${ampm}`;
+    };
+
+    const formatRelativeTime = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
+        
+        let dateStr = sqlDate;
+        if (!dateStr.includes("T") && !dateStr.includes("+") && !dateStr.includes("Z")) {
+            dateStr = dateStr.replace(" ", "T") + "+07:00";
+        }
+        const targetDate = new Date(dateStr);
+        if (isNaN(targetDate.getTime())) return sqlDate;
+        
+        const now = new Date();
+        const diffMs = now.getTime() - targetDate.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+        
+        if (diffSec < 0) {
+            return formatDateOnly(sqlDate);
+        }
+        if (diffSec < 60) {
+            return "Just now";
+        }
+        
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) {
+            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+        }
+        
+        const diffHrs = Math.floor(diffMin / 60);
+        if (diffHrs < 24) {
+            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+        }
+        
+        const diffDays = Math.floor(diffHrs / 24);
+        if (diffDays < 7) {
+            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        }
+        
+        return formatDateOnly(sqlDate);
+    };
+
+    const formatDateOnly = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "";
+        const d = new Date(sqlDate.replace(/-/g, "/"));
+        if (isNaN(d.getTime())) return sqlDate;
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const monthStr = months[d.getMonth()];
+        const day = d.getDate();
+        return `${monthStr} ${day}, ${d.getFullYear()}`;
     };
 
     mThis.renderCards = (container, data) => {
@@ -177,29 +240,28 @@ var AnnouncementComponent = (() => {
                         iconColor = "#f97316";
                     }
                 }
-
+ 
                 let borderLeftColor = themeColor;
 
-                let priorityBadgeStyle =
+                let categoryBadgeStyle =
                     "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
-                let priorityBadgeText = "Low Priority";
+                let categoryBadgeText = d.category || "General";
 
-                if (priorityLower === "high") {
-                    priorityBadgeStyle =
+                if (categoryLower === "maintenance") {
+                    categoryBadgeStyle =
+                        "background-color: #ecfdf5 !important; color: #10b981 !important; border: 1px solid #d1fae5 !important; font-weight: 600;";
+                } else if (categoryLower === "notice") {
+                    categoryBadgeStyle =
                         "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; font-weight: 600;";
-                    priorityBadgeText = "High Priority";
-                } else if (priorityLower === "medium") {
-                    priorityBadgeStyle =
+                } else if (categoryLower === "event") {
+                    categoryBadgeStyle =
+                        "background-color: #f5f3ff !important; color: #8b5cf6 !important; border: 1px solid #ede9fe !important; font-weight: 600;";
+                } else if (
+                    categoryLower === "policy update" ||
+                    categoryLower === "policy"
+                ) {
+                    categoryBadgeStyle =
                         "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important; font-weight: 600;";
-                    priorityBadgeText = "Medium Priority";
-                } else if (priorityLower === "low") {
-                    priorityBadgeStyle =
-                        "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
-                    priorityBadgeText = "Low Priority";
-                } else if (priorityLower === "critical") {
-                    priorityBadgeStyle =
-                        "background-color: #fff1f2 !important; color: #e11d48 !important; border: 1px solid #ffe4e6 !important; font-weight: 700;";
-                    priorityBadgeText = "Critical Priority";
                 }
 
                 let statusDotColor =
@@ -207,10 +269,15 @@ var AnnouncementComponent = (() => {
                 let statusText = d.status === "Active" ? "Active" : "Draft";
 
                 let pubDate = d.publish_date
-                    ? formatDateTime(d.publish_date)
+                    ? formatRelativeTime(d.publish_date)
                     : "Not set";
-                let expDate = d.expiry_date
-                    ? "Expires: " + formatDateTime(d.expiry_date)
+                const hasExpiry = d.expiry_date && 
+                                  d.expiry_date !== "null" &&
+                                  d.expiry_date !== "0000-00-00" && 
+                                  d.expiry_date !== "0000-00-00 00:00:00" && 
+                                  d.expiry_date !== "0000-00-00 00:00";
+                let expDate = hasExpiry
+                    ? "Expires: " + formatDateOnly(d.expiry_date)
                     : "No expiration";
 
                 let buildingName = d.building_name || "All Buildings";
@@ -240,7 +307,7 @@ var AnnouncementComponent = (() => {
                                                     <i class="fa-solid fa-users me-2" style="color: #757575;"></i> ${d.audience || "All Tenants"}
                                                 </span>
                                                 <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-folder me-2" style="color: #757575;"></i> ${d.category || "General"}
+                                                    <i class="fa-solid fa-flag me-2" style="color: #757575;"></i> ${d.priority || "Low"} Priority
                                                 </span>
                                             </div>
                                         </div>
@@ -249,7 +316,7 @@ var AnnouncementComponent = (() => {
                                 
                                 <div class="col-12 col-md-3 col-lg-3 px-4 border-start d-none d-md-block" style="border-color: #e2e8f0 !important;">
                                     <div class="mb-2">
-                                        <span class="badge font-size-11 px-3 py-2    rounded-5" style="${priorityBadgeStyle}">${priorityBadgeText}</span>
+                                        <span class="badge font-size-11 px-3 py-2    rounded-5" style="${categoryBadgeStyle}">${categoryBadgeText}</span>
                                     </div>
                                     <div class="d-flex align-items-center small mb-1.5 font-size-12" style="color: #757575 !important;">
                                         <span class="rounded-circle me-2" style="width: 8px; height: 8px; background-color: ${statusDotColor}; display: inline-block;"></span>
@@ -309,15 +376,17 @@ var AnnouncementComponent = (() => {
             LocaleManager.trans("All Categories", "titles"),
             "",
         );
-        VSUtil.setComboItems(
-            mThis.elFilter_priority,
-            priorities,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("All Priorities", "titles"),
-            "",
-        );
+        if (mThis.elFilter_priority) {
+            VSUtil.setComboItems(
+                mThis.elFilter_priority,
+                priorities,
+                "id",
+                "name",
+                "",
+                LocaleManager.trans("All Priorities", "titles"),
+                "",
+            );
+        }
         VSUtil.setComboItems(
             mThis.elFilter_sort,
             sortOptions,
