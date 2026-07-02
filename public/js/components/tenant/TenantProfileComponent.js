@@ -1,1404 +1,205 @@
 "use strict";
 
-var TenantProfileComponent = new (function () {
-    const mThis = this;
-    mThis.title_prop = "Tenant Management";
-    this.defaultPage = "profile_view";
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_tenant_component",
-    );
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
-    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
-    mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
-    mThis.elStatus = mThis.self.querySelector("#_el_tenant_status");
-    mThis.btnBack = document.querySelector("#_btn_back_tenant");
-    mThis.divTenantListContainer = mThis.self.querySelector(
-        "#_tenant_list_container",
-    );
-    mThis.divProfileView = document.querySelector("#_ten_profile_view");
-    mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
-    mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
-    mThis.currentViewMode = "card";
-    mThis.paginationContainer = mThis.self.querySelector(
-        "#tenant_card_container_pagination",
-    );
-    this.pages = {
-        tenant_list: this.divTenantListContainer,
-        profile_view: this.divProfileView,
-    };
-    mThis.profile_info_tenant = this.divProfileView.querySelector(
-        "#profile_info_tenant",
-    );
+var TenantProfileComponent = (() => {
+    const mThis = {};
+    const PLACEHOLDER_IMG = `${main_view.base_url}/assets/images/default/placeholder.svg`;
+
+    mThis.title_prop = "Profile Overview";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_profile_component");
+    mThis.profileData = null;
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
-            perPage: 8,
-            apiCluster: main_view.apiCluster,
-            paginationContainer: mThis.paginationContainer,
-            renderItems: (items, container) => {
-                mThis.renderTenantCard(container, items);
-            },
-            listContainerClass: null,
-        });
-        mThis.tenantListView = new ListView(mThis.listViewContainer, {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
-            perPage: 8,
-            columns: mThis.cols,
-            apiCluster: main_view.apiCluster,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
-            rowCreated: (data, index, tr) => {
-                // console.log(9090,tr);
 
-                // tr.dataset.id = data.id;
-                // tr.dataset.statusid = data.status_id;
-                // mThis.initDropdownMenus(tr);
-                if (data.id !== 1) {
-                    tr.style.display = "none"; // hide rows that don't match
-                }
-                tr.dataset.id = data.id;
-                tr.dataset.statusid = data.status_id;
-                mThis.initDropdownMenus(tr);
-            },
-        });
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.renderView();
-                    mThis.tenantListView.showPage(mThis.getFilterData());
-                },
-            };
-            CreateTenantDialog.show(op);
-        };
-        mThis.btnBack.onclick = function (e) {
-            e.preventDefault();
-            mThis.showPage("tenant_list", mThis.getFilterData());
-        };
-        const cardTab = document.getElementById("tenantViewCard");
-        const listTab = document.getElementById("tenantViewList");
-        if (cardTab && listTab) {
-            cardTab.addEventListener("change", () => {
-                mThis.currentViewMode = "card";
-                mThis.renderView();
-            });
+        mThis.elLoading = mThis.self.querySelector("#_tp_loading");
+        mThis.elContent = mThis.self.querySelector("#_tp_profile_content");
+        mThis.elAvatar = mThis.self.querySelector("#_tp_profile_avatar");
+        mThis.elCameraBtn = mThis.self.querySelector("#_tp_avatar_camera");
+        mThis.elPhotoInput = mThis.self.querySelector("#_tp_photo_input");
+        mThis.elHeroName = mThis.self.querySelector("#_tp_hero_name");
+        mThis.elStatusBadge = mThis.self.querySelector("#_tp_status_badge");
+        mThis.elPillPhone = mThis.self.querySelector("#_tp_pill_phone");
+        mThis.elPillEmail = mThis.self.querySelector("#_tp_pill_email");
+        mThis.elPillAddress = mThis.self.querySelector("#_tp_pill_address");
+        mThis.elStatCode = mThis.self.querySelector("#_tp_stat_code");
+        mThis.elStatUnit = mThis.self.querySelector("#_tp_stat_unit");
+        mThis.elFieldName = mThis.self.querySelector("#_tp_field_name");
+        mThis.elFieldGender = mThis.self.querySelector("#_tp_field_gender");
+        mThis.elFieldLegalName = mThis.self.querySelector("#_tp_field_legal_name");
+        mThis.elFieldDob = mThis.self.querySelector("#_tp_field_dob");
+        mThis.elFieldNationalId = mThis.self.querySelector("#_tp_field_national_id");
+        mThis.elFieldEmail = mThis.self.querySelector("#_tp_field_email");
+        mThis.elFieldPassport = mThis.self.querySelector("#_tp_field_passport");
+        mThis.elFieldRelationship = mThis.self.querySelector("#_tp_field_relationship");
+        mThis.elFieldPhone = mThis.self.querySelector("#_tp_field_phone");
+        mThis.elFieldAddress = mThis.self.querySelector("#_tp_field_address");
 
-            listTab.addEventListener("change", () => {
-                mThis.currentViewMode = "list";
-                mThis.renderView();
-            });
-        }
-        mThis.pr_tbl = mThis.tenantListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
-        };
-        mThis.tblTenant = mThis.tenantListView.getTable();
-
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = () => {
-                mThis.renderView();
-            };
-        });
-        let timeOut = null;
-        mThis.elSearch.onkeyup = function (e) {
-            e.preventDefault();
-            clearTimeout(timeOut);
-            timeOut = setTimeout(() => {
-                mThis.renderView();
-            }, 250);
-        };
-
-        mThis.initDropdownMenus(mThis.cardViewContainer);
+        mThis.bindPhotoUpload();
         mThis.initAlready = true;
     };
 
-    mThis.initDropdownMenus = (listContainer) => {
-        const menuOptions = {
-            containerElement: listContainer,
-            actionButtonClass: "btn-tenant-dropdown-action",
-            cssClass: "bg-white shadow",
-            //menuItemClass:"",
-            menus: [
-                {
-                    html: '<span class="ps-2">View Details</span>',
-                    icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "view_profile",
-                },
-                {
-                    html: '<span class="ps-2">Modify Tenant</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_tenant",
-                },
-                {
-                    html: '<span class="ps-2">Delete Tenant</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_tenant",
-                },
-                {
-                    html: '<span class="ps-2">Upload Document</span>',
-                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "upload_document",
-                },
-                {
-                    html: '<span class="ps-2">Create Contract</span>',
-                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "create_contract",
-                },
-                {
-                    html: '<span class="ps-2">Service Requests</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "service_request",
-                },
-            ],
-            onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                // console.log(123456, status_id);
-
-                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display =
-                    Number(status_id) !== 2 ? "block" : "none";
-                menu.service_request.style.display = "none";
-                // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
-            },
-            // adjustPosition: {
-            //     top: -200,
-            //     left: -300
-            // },
-
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case "view_profile": {
-                        mThis.showPage("profile_view", { tenant_id: id });
-                        break;
-                    }
-                    case "create_contract": {
-                        mThis.createContract(id, menuLink);
-                        break;
-                    }
-                    case "upload_document": {
-                        mThis.uploadDocument(id, menuLink);
-                        break;
-                    }
-                    case "modify_document": {
-                        mThis.modifyDocument(id, menuLink);
-                        break;
-                    }
-                    case "modify_tenant": {
-                        mThis.editTenant(id, menuLink);
-                        break;
-                    }
-                    case "delete_tenant": {
-                        mThis.deleteTenant(id, menuLink);
-                        break;
-                    }
-                    case "service_request": {
-                        mThis.serviceRequest(id, menuLink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptions);
-    };
-    mThis.editTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        CreateTenantDialog.show(op);
-    };
-    mThis.serviceRequest = (id, menuLink) => {
-        let op = {
-            id: null, // id
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        CreateServiceRequestDialog.show(op);
-    };
-    mThis.createContract = (id, menuLink) => {
-        let op = {
-            id: null,
-            tenant_id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        ContractDialog.show(op);
-    };
-    mThis.uploadDocument = (id, menuLink) => {
-        let op = {
-            id: null,
-            tenant_id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        // console.log(111, op);
-
-        TenantDocumentDialog.show(op);
-    };
-    mThis.modifyDocument = (id, menuLink) => {
-        onClose: (() => {
-            mThis.renderView();
-        },
-            // mThis.showPage("profile_view", { tenant_id: id });
-            TenantDocumentDialog.show(op));
-    };
-    mThis.renewContract = (id, menuLink) => {
-        let op = {
-            id: null,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        // renewDialog.show(op);
-        // alert("coming soon!");
-    };
-    mThis.deleteTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm(
-            "Delete this Tenant?",
-            {
-                title: "Delete Tenant",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/prm/tenant/delete`,
-                            op,
-                            false,
-                            false,
-                            false,
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                mThis.renderView();
-                                cv_interact.success("Tenant has been deleted.");
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                }
-            },
-        );
-    };
-    mThis.renderTenantCard = (div, data) => {
-        data = data ?? [];
-        // if (!AuthManager) {
-        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
-        //     return;
-        // }
-        AuthManager.init().then((user) => {
-            mThis.renderCard(div, data);
-        });
-    };
-    mThis.renderCard = (container, data) => {
-        // console.log(8888, data);
-        container.innerHTML = "";
-        let html = `<div class="row g-3">`;
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach((d) => {
-                /** Backend: status_id 2 means tenant has a currently active contract. */
-                const hasContractAlready = Number(d.status_id) === 2;
-                const currentUnitCode =
-                    hasContractAlready && d.space_code ? d.space_code : "Unit";
-                const status = (d.status || "Pending").toLowerCase();
-                let statusClass = "";
-                switch (status) {
-                    case "active":
-                        statusClass =
-                            "badge text-success bg-success-subtle border border-success";
-
-                        break;
-                    case "inactive":
-                        statusClass =
-                            "badge text-danger bg-danger-subtle border border-danger";
-
-                        break;
-                    default:
-                        statusClass =
-                            "badge text-warning bg-warning-subtle border border-warning";
-
-                        break;
-                }
-                html += `
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                        <div class="card h-100 shadow-sm border-0 rounded-2">
-                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="d-flex gap-3 align-items-start">
-                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                            style="width:80px;height:80px;">
-                                            <img src="${d.image_url || main_view.asset_url + "/images/default/placeholder.svg"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
-                                        </div>
-                                        <div class="flex items-start justify-between mb-6">
-                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
-                                            <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                        </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
-                                <div class="row g-4 py-2 border-bottom border-gray">
-                                    <div class="col-5">
-                                        <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-1"></div>
-                                    <div class="col-6">
-                                        ${
-                                            hasContractAlready
-                                                ? `
-                                                <div class="d-flex flex-column text-center gap-1">
-                                                    <span class="text-prm-custom fw-semibold">
-                                                        Lease Expiry
-                                                    </span>
-                                                    <small class="text-muted">
-                                                        ${d.end_date || d.start_date || "—"}
-                                                    </small>
-                                                </div>
-                                            `
-                                                : `
-                                                <div class="text-end">
-                                                    <a href="javascript:void(0)"
-                                                    class="create-tenant-contract fw-semibold"
-                                                    data-id="${d.id}" data-name="${d.name}">
-                                                        <span class="tool-tip">
-                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-6"></i>
-                                                            <span class="tool-tiptext fs-6">Create Contract</span>
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            `
-                                        }
-
-                                    </div>
-                                </div>
-                                <div class="card_container" style="max-width: 250px;">
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span>${d.code ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
-                                        <span>${d.date_of_birth ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        ${d.phone_number || ""}
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "_"}
-                                    </p>
-
-
-                                </div>
-                            </div>
-                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
-                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
-
-                                    <span style="color: #64748b; font-size: 0.85rem;">
-                                        Last Updated :  ${d.update_user || "System"}
-                                    </span>
-
-                                    <a href="javascript:void(0)"
-                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;"
-                                    data-id="${d.id}">
-                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
-                                    </a>
-                                </div>
-
-                        </div>
-                    </div>
-                    `;
-            });
-        } else {
-            html += `
-            <div class="col-12">
-                <div class="text-center py-5 text-muted">
-                    No tenants found
-                </div>
-            </div>`;
-        }
-        html += `</div>`;
-        container.innerHTML = html;
-        const seeProfileInfo =
-            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
-        seeProfileInfo.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                const tenantId = e.currentTarget.dataset.id;
-                mThis.tenant_id = tenantId;
-                mThis.showPage("profile_view", tenantId);
-                //const employeeData = data.find((emp) => emp.id == employeeId);
-                // if (employeeData) {
-                //     let sub_content = mThis.self.querySelector("#sub_content");
-                //     sub_content.classList.add("d-none");
-                //     let view_see_info =
-                //         mThis.self.querySelector("#view_see_info__");
-                //     view_see_info.classList.remove("d-none");
-
-                //     mThis.renderProfile(employeeData);
-                //     mThis.renderCardCenter(employeeId);
-                //     mThis.renderCardLeft(employeeId);
-                //     mThis.renderCardRight(employeeId);
-                //     mThis.renderCardTaxAllowance(employeeId);
-                //     mThis.renderEmpDocuments(employeeId);
-                // } else {
-                //     console.error(
-                //         "Employee data not found for ID:",
-                //         employeeId
-                //     );
-                // }
-            });
-        });
-
-        const createContract = mThis.cardViewContainer.querySelectorAll(
-            ".create-tenant-contract",
-        );
-        createContract.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                const tenantId = e.currentTarget.dataset.id;
-                mThis.tenant_id = tenantId;
-                const op = {
-                    id: null,
-                    tenant_id: tenantId,
-                    btn: e.currentTarget,
-                    onClose: () => {
-                        mThis.renderView();
-                    },
-                };
-                ContractDialog.show(op);
-            });
-        });
-        const container_te = mThis.cardViewContainer;
-        const te_parent = container_te;
-        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-        te_parent.classList.add("overflow-y-auto");
-        te_parent.classList.add("overflow-x-hidden");
-
-        window.onresize = () => {
-            te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-        };
+    mThis._val = (v) => {
+        if (v == null || v === "") return "_";
+        return String(v);
     };
 
-    mThis.renderView = () => {
-        const params = mThis.getFilterData();
-
-        if (mThis.currentViewMode === "card") {
-            mThis.cardViewContainer.classList.remove("d-none");
-            mThis.listViewContainer.classList.add("d-none");
-            mThis.paginationContainer.style.display = "block";
-            mThis.tenantCardView.showPage(params);
-        } else {
-            mThis.cardViewContainer.classList.add("d-none");
-            mThis.listViewContainer.classList.remove("d-none");
-            mThis.paginationContainer.style.display = "none";
-            mThis.tenantListView.showPage(params);
-        }
+    mThis._sexLabel = (sex) => {
+        if (sex === "M") return LocaleManager.trans("Male", "labels");
+        if (sex === "F") return LocaleManager.trans("Female", "labels");
+        return "_";
     };
-    mThis.getFilterData = () => {
-        let p = {
-            search_value: mThis.elSearch.value,
-            // id: 1,
-        };
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            p[el.dataset.field] = el.value;
-        });
-
-        return p;
+    mThis._tenantTypeLabel = (tenantType) => {
+        if (!tenantType) return "_";
+        return LocaleManager.trans(tenantType, "labels");
     };
-    mThis.getPageContainer = (pageName) => {
-        return mThis.pages[pageName];
-    };
-    mThis.openTenantDocument = async (id, mode = "view") => {
-        const res = await vsapi.call(
-            [main_view.base_url, "/prm/tenant/document/download"].join(""),
-            { id },
-            false,
-            null,
-        );
-        if (res.status_code !== 200) {
-            cv_interact.error(res.error_message || "Failed to open document.");
-            return;
-        }
-        const { data_url, file_name } = res.data || {};
-        if (!data_url) {
-            cv_interact.error("Document URL is missing.");
-            return;
-        }
-        if (mode === "download") {
-            const a = document.createElement("a");
-            a.href = data_url;
-            a.download = file_name || "document";
-            a.target = "_blank";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            return;
-        }
 
-        const extFromName = (file_name || "").split(".").pop();
-        const ext = String(
-            (res.data && res.data.ext) || extFromName || "",
-        ).toLowerCase();
-
-        const overlay = document.createElement("div");
-        overlay.style.cssText =
-            "position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;";
-
-        const wrapper = document.createElement("div");
-        wrapper.style.cssText =
-            "position:relative; max-width:90vw; max-height:90vh;";
-
-        const isImage = ["png", "jpg", "jpeg"].includes(ext);
-        const isPdf = ext === "pdf";
-
-        if (isImage) {
-            const img = document.createElement("img");
-            img.src = data_url;
-            img.style.cssText =
-                "max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;";
-            wrapper.appendChild(img);
-        } else if (isPdf) {
-            const iframe = document.createElement("iframe");
-            iframe.src = data_url;
-            iframe.style.cssText =
-                "width:80vw; height:85vh; border:none; border-radius:8px;";
-            wrapper.appendChild(iframe);
-        } else {
-            window.open(data_url, "_blank");
-            return;
-        }
-
-        const btnClose = document.createElement("button");
-        btnClose.style.cssText =
-            "position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;";
-        btnClose.innerHTML = "&times;";
-        btnClose.onclick = (e) => {
-            e.stopPropagation();
-            document.body.removeChild(overlay);
-        };
-
-        wrapper.appendChild(btnClose);
-        overlay.appendChild(wrapper);
-        overlay.onclick = () => document.body.removeChild(overlay);
-        document.body.appendChild(overlay);
-    };
-    mThis.showPage = async (pageName, op = {}) => {
-        if (this.self.style.display !== "block") {
-            main_view.setContentView(this.self, this.title_prop);
-        }
-        switch (pageName) {
-            case "tenant_list": {
-                mThis.currentPage = "tenant_list";
-                mThis.renderView();
-                break;
-            }
-            case "profile_view": {
-                mThis.currentPage = "profile_view";
-                const tenant_id = op.tenant_id || op.id || op;
-                const p = { id: tenant_id };
-                const res = await vsapi.call(
-                    [
-                        main_view.base_url,
-                        "/prm/tenant/tenantProfile/details",
-                    ].join(""),
-                    p,
-                    false,
-                    null,
-                );
-                // const data = res.data || {};
-                // mThis.renderProfile(data);
-                // break;
-            }
-            case "profile_view": {
-                mThis.currentPage = "profile_view";
-                const tenant_id = op.tenant_id || op.id || op;
-                const p = { id: tenant_id };
-                const res = await vsapi.call(
-                    [
-                        main_view.base_url,
-                        "/prm/tenant/tenantProfile/details",
-                    ].join(""),
-                    p,
-                    false,
-                    null,
-                );
-                const data = res.data || {};
-                mThis.renderProfile(data);
-                break;
-            }
-
-            default: {
-                return;
-            }
-        }
-        const targetPage = mThis.getPageContainer(pageName);
-        const siblings = Array.from(targetPage.parentElement.children);
-        // Hide all siblings smoothly
-        siblings.forEach((div) => {
-            if (div !== targetPage && div.style.display !== "none") {
-                div.style.display = "none";
-            }
-        });
-        targetPage.style.display = "block";
-    };
     mThis._statusBadgeClass = (status) => {
-        switch (status) {
-            case "Pending":
-                return "badge text-warning bg-warning-subtle border border-warning";
-            case "Active":
-                return "badge text-success bg-success-subtle border border-success";
-            case "Inactive":
-                return "badge text-danger bg-danger-subtle border border-danger";
-            default:
-                return "badge text-muted bg-light";
-        }
+        if (status === "Active") return "is-active";
+        if (status === "Pending") return "is-pending";
+        if (status === "Inactive") return "is-inactive";
+        return "";
     };
-    mThis._profileGenderLabel = (sex) => {
-        if (sex === "M") return "Male";
-        if (sex === "F") return "Female";
-        return "—";
+
+    mThis._setText = (el, value) => {
+        if (el) el.textContent = mThis._val(value);
     };
-    mThis._profileFieldBox = (label, value, icon, iconBg = "#e7efff", iconColor = "#0c399e") => {
-        const safeLabel = mThis._escapeHtml(label);
-        const safeValue = value ?? "—";
-        return `<div class="col-md-4 col-sm-6">
-            <div class="profile-field-box d-flex gap-3 align-items-start">
-                <span class="profile-field-icon" style="background:${iconBg};color:${iconColor};">
-                    <i class="fa-solid ${icon}"></i>
-                </span>
-                <div class="flex-grow-1 min-w-0">
-                    <div class="profile-field-label">${safeLabel}</div>
-                    <div class="profile-field-value">${safeValue}</div>
-                </div>
-            </div>
-        </div>`;
+
+    mThis.showLoading = () => {
+        if (mThis.elLoading) mThis.elLoading.style.display = "flex";
+        if (mThis.elContent) mThis.elContent.style.display = "none";
     };
-    mThis._personalInfoSectionHtml = (data) => {
-        const phone = data.phone_number
-            ? `<a href="tel:${mThis._escapeHtml(data.phone_number)}">${mThis._escapeHtml(data.phone_number)}</a>`
-            : "—";
-        const email = data.email
-            ? `<a href="mailto:${mThis._escapeHtml(data.email)}">${mThis._escapeHtml(data.email)}</a>`
-            : "—";
-        const name = mThis._escapeHtml(data.name ?? "—");
-        const legalName = mThis._escapeHtml(data.legal_name ?? "—");
-        const dob = mThis._escapeHtml(data.date_of_birth ?? "—");
-        const nationalId = mThis._escapeHtml(data.national_id ?? "—");
-        const passport = mThis._escapeHtml(data.passport_number ?? "—");
-        const relationship = mThis._escapeHtml(data.relationship ?? "Partner");
-        const address = mThis._escapeHtml(data.address ?? "—");
 
-        return `<div class="tab-pane py-2 active" id="overview_tenant_detail">
-            <div class="profile-section-title">
-                <i class="fa-solid fa-user me-2 text-primary"></i>Personal Information
-            </div>
-            <div class="row g-3 mb-4">
-                ${mThis._profileFieldBox("Name", `<span class="text-capitalize">${name}</span>`, "fa-user")}
-                ${mThis._profileFieldBox("Gender", mThis._profileGenderLabel(data.sex), "fa-venus-mars", "#fce8f3", "#c2185b")}
-                ${mThis._profileFieldBox("Date of Birth", dob, "fa-cake-candles", "#fff3e0", "#e65100")}
-            </div>
-            <div class="profile-section-title">
-                <i class="fa-solid fa-id-card me-2 text-primary"></i>Identity Documents
-            </div>
-            <div class="row g-3 mb-4">
-                ${mThis._profileFieldBox("Legal Name", legalName, "fa-file-signature")}
-                ${mThis._profileFieldBox("National ID", nationalId, "fa-address-card", "#e8f5e9", "#2e7d32")}
-                ${mThis._profileFieldBox("Passport Number", passport, "fa-passport", "#e3f2fd", "#1565c0")}
-            </div>
-            <div class="profile-section-title">
-                <i class="fa-solid fa-address-book me-2 text-primary"></i>Contact & Relationship
-            </div>
-            <div class="row g-3">
-                ${mThis._profileFieldBox("Phone", phone, "fa-phone", "#e8f5e9", "#2e7d32")}
-                ${mThis._profileFieldBox("Email", email, "fa-envelope", "#e3f2fd", "#1565c0")}
-                ${mThis._profileFieldBox("Relationship", relationship, "fa-people-arrows", "#f3e5f5", "#7b1fa2")}
-                <div class="col-12">
-                    <div class="profile-field-box d-flex gap-3 align-items-start">
-                        <span class="profile-field-icon" style="background:#fff3e0;color:#e65100;">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </span>
-                        <div class="flex-grow-1 min-w-0">
-                            <div class="profile-field-label">Address</div>
-                            <div class="profile-field-value text-capitalize">${address}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+    mThis.showContent = () => {
+        if (mThis.elLoading) mThis.elLoading.style.display = "none";
+        if (mThis.elContent) mThis.elContent.style.display = "block";
     };
-    mThis.renderProfile = (data) => {
-        const statusClass = mThis._statusBadgeClass(data?.status);
-        const statusLabel = mThis._escapeHtml(data?.status ?? "—");
-        const name = mThis._escapeHtml(data?.name ?? "—");
-        const code = mThis._escapeHtml(data?.code ?? "");
-        const imageUrl =
-            data.image_url ||
-            `${main_view.base_url}/assets/images/default/placeholder.svg`;
-        const phoneLink = data.phone_number
-            ? `href="tel:${mThis._escapeHtml(data.phone_number)}"`
-            : 'href="#" class="disabled pe-none opacity-50" tabindex="-1"';
-        const emailLink = data.email
-            ? `href="mailto:${mThis._escapeHtml(data.email)}"`
-            : 'href="#" class="disabled pe-none opacity-50" tabindex="-1"';
 
-        let html = `
-        <div class="tenant-profile-layout">
-        <div class="row g-4 d-flex align-items-stretch">
-            <div class="col-12 col-lg-3">
-                <div class="card profile-sidebar-card h-100">
-                    <div class="profile-sidebar-banner"></div>
-                    <div class="card-body text-center d-flex flex-column pt-0 px-4 pb-4">
-                        <div class="profile-avatar-wrap d-inline-block mx-auto">
-                            <img src="${imageUrl}"
-                                class="rounded-circle profile-avatar"
-                                alt="${name}">
-                        </div>
-                        <h4 class="fw-bold mb-1 mt-3 text-capitalize text-prm-custom">${name}</h4>
-                        ${code ? `<p class="text-muted small mb-2">ID: ${code}</p>` : ""}
-                        <div class="mb-3">
-                            <span class="${statusClass} px-3 py-2 rounded-pill">${statusLabel}</span>
-                        </div>
-                        <div class="profile-quick-actions d-flex gap-2 justify-content-center mt-auto">
-                            <a ${phoneLink} class="btn btn-outline-success btn-sm flex-fill">
-                                <i class="fa-solid fa-phone me-1"></i> Call
-                            </a>
-                            <a ${emailLink} class="btn btn-outline-primary btn-sm flex-fill">
-                                <i class="fa-solid fa-envelope me-1"></i> Email
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    mThis.renderTenantProfile = (data) => {
+        mThis.profileData = data || {};
+        const d = mThis.profileData;
 
-            <div class="col-12 col-lg-9">
-                <div class="card profile-detail-card h-100">
-                    <div class="card-body tab-content">
-                        ${mThis._personalInfoSectionHtml(data)}
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    `;
-
-        mThis.profile_info_tenant.innerHTML = html;
-
-        // ===== Tabs JS =====
-        const tabLinks =
-            mThis.profile_info_tenant.querySelectorAll("#tenantTabs a");
-        const tabPanes =
-            mThis.profile_info_tenant.querySelectorAll(".tab-pane");
-
-        tabLinks.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                e.preventDefault();
-                const target = link.getAttribute("href").replace("#", "");
-
-                // remove active class
-                tabLinks.forEach((l) => l.classList.remove("active"));
-                tabPanes.forEach((p) => p.classList.remove("active"));
-
-                link.classList.add("active");
-                const profile_info_tenant =
-                    mThis.profile_info_tenant.querySelector(`#${target}`);
-                profile_info_tenant.classList.add("active");
-                mThis.renderOverView(profile_info_tenant, target, data);
-            });
-        });
-
-        mThis.setActionsProfileInfo(mThis.profile_info_tenant);
-    };
-    mThis._escapeHtml = (s) => {
-        if (s == null) return "";
-        return String(s)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
-    };
-    mThis._fmtMoney = (n) => {
-        if (n == null || n === "") return "—";
-        const x = Number(n);
-        if (Number.isNaN(x)) return String(n);
-        return x.toLocaleString(undefined, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-        });
-    };
-    mThis._getUnitCode = (row, fallback = "—") => {
-        if (!row) return fallback;
-        const value =
-            row.unit_code ??
-            row.space_code ??
-            row.unit ??
-            row.code ??
-            row.unit_number;
-        return value == null || value === "" ? fallback : value;
-    };
-    mThis._leaseHistoryContractsHtml = (renewalEntriesRaw) => {
-        const entries = Array.isArray(renewalEntriesRaw)
-            ? renewalEntriesRaw
-            : [];
-        if (!entries.length) {
-            return `<div class="text-center py-5 text-muted">
-                <i class="fa fa-file-text fa-2x mb-2 opacity-50 d-block"></i>
-                <p class="mb-0">No contract recorded for this tenant.</p>
-            </div>`;
+        if (mThis.elAvatar) {
+            mThis.elAvatar.src = d.image_url || PLACEHOLDER_IMG;
         }
 
-        // Group by contract_id so we render one card per contract.
-        const groupsByContractId = new Map();
-        entries.forEach((e) => {
-            const cid = e.contract_id ?? "0";
-            if (!groupsByContractId.has(cid)) groupsByContractId.set(cid, []);
-            groupsByContractId.get(cid).push(e);
-        });
+        mThis._setText(mThis.elHeroName, d.name);
 
-        let cards = "";
-        groupsByContractId.forEach((group) => {
-            if (!group.length) return;
-            const first = group[0];
-
-            const contractStatusName = String(
-                first.contract_status ?? "",
-            ).trim();
-            const contractStatusLower = contractStatusName.toLowerCase();
-
-            // const hasCurrent = group.some((r) => !!r.is_current);
-
-            let accent = "#adb5bd";
-            let circleBg = "#6c757d";
-            let headerBadgeHtml = "";
-            let priceColor = "#212529";
-            let depositBadgeStyle =
-                "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
-
-            if (contractStatusLower === "active") {
-                accent = "#0f49bd";
-                circleBg = "#0f49bd";
-                priceColor = "#3f51d8";
-
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
-            } else if (contractStatusLower === "pending") {
-                accent = "#fd7e14";
-                circleBg = "#fd7e14";
-                priceColor = "#fd7e14";
-
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
-            } else if (contractStatusLower === "terminated") {
-                accent = "#dc3545";
-                circleBg = "#dc3545";
-                priceColor = "#dc3545";
-
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
-            } else {
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
-            }
-
-            const start = mThis._escapeHtml(first.contract_start_date ?? "");
-            const end = mThis._escapeHtml(first.contract_end_date ?? "");
-            const title = `Contract: ${start} — ${end}`;
-
-            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
-            const sqmPart =
-                first.sqm_size != null && first.sqm_size !== ""
-                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
-                    : "—";
-            const bldg = first.building_name
-                ? mThis._escapeHtml(first.building_name)
-                : "";
-            const detailPillsHtml = `
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">Unit ${unitPart}</span>
-                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
-                    ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
-                </div>`;
-
-            const priceNum = Number(first.price ?? 0);
-            const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
-            const isTotalPriceType =
-                String(first.price_type ?? "sqm").toLowerCase() === "total";
-            const totalPriceNum = isTotalPriceType
-                ? priceNum
-                : sqmNum > 0
-                  ? priceNum * sqmNum
-                  : null;
-            const priceLine =
-                totalPriceNum != null && !Number.isNaN(totalPriceNum)
-                    ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
-                    : "—";
-            const depositSmallHtml =
-                first.deposit != null && first.deposit !== ""
-                    ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
-                    : "";
-            if (first.deposit_remarks) {
-                depositSmallHtml = dep
-                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
-                    : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
-            }
-            const depositBadgeHtml = depositSmallHtml
-                ? `<span class="badge rounded-2 px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
-                : "";
-
-            const renewalsTableRowsHtml = group
-                .map((r) => {
-                    const isInitial = !!r.is_initial;
-                    const renewalDate = r.renewal_date
-                        ? mThis._escapeHtml(r.renewal_date)
-                        : isInitial
-                          ? "Initial"
-                          : "—";
-
-                    const rowStart = mThis._escapeHtml(
-                        r.renewal_start_date ?? "—",
-                    );
-                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
-
-                    const rowUnitCode = mThis._escapeHtml(
-                        mThis._getUnitCode(first, "—"),
-                    );
-                    const currentBadgeHtml = r.is_current
-                        ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
-                        : "";
-
-                    const remarks =
-                        r.remarks != null && r.remarks !== ""
-                            ? mThis._escapeHtml(r.remarks)
-                            : "—";
-
-                    const updatedBy = r.update_user
-                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
-                        : "—";
-
-                    return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
-                        <td class="text-nowrap">${renewalDate}</td>
-                        <td class="text-nowrap">${rowStart}</td>
-                        <td class="text-nowrap">${rowEnd}</td>
-                        <td class="text-nowrap">
-                            <span class="fw-semibold text-prm-custom">${rowUnitCode}</span>
-                            ${currentBadgeHtml}
-                        </td>
-                        <td>${remarks}</td>
-                        <td class="text-nowrap">${updatedBy}</td>
-                    </tr>`;
-                })
-                .join("");
-
-            const renewalsCount = group.length;
-
-            cards += `<div class="d-flex position-relative mb-4">
-
-                <div class="flex-grow-1 ms-3">
-                    <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
-                                <div>
-                                    <h5 class="card-title mb-1">${title} ${headerBadgeHtml}</h5>
-                                    ${detailPillsHtml}
-                                </div>
-                                <div class="text-end mt-2 mt-md-0">
-                                    <small class="text-muted d-block mb-1">Monthly</small>
-                                    <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
-                                    <div class="mt-2">${depositBadgeHtml}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        });
-
-        return cards;
-    };
-    mThis.renderOverView = (div, target, data) => {
-        if (target == "overview_tenant_detail") {
-            const p = { id: data.id };
-
-            vsapi
-                .call(
-                    [
-                        main_view.base_url,
-                        "/prm/tenant/tenantProfile/details",
-                    ].join(""),
-                    p,
-                    false,
-                    null,
-                )
-                .then((res) => {
-                    const d = res.status_code == 200 ? res.data : {};
-
-                    div.innerHTML = mThis._personalInfoSectionHtml(data);
-                });
+        if (mThis.elStatusBadge) {
+            mThis.elStatusBadge.textContent = mThis._val(d.status);
+            mThis.elStatusBadge.className = `tp-status-badge ${mThis._statusBadgeClass(d.status)}`;
         }
-        if (target == "lease_tenant_history") {
-            const p = { id: data.id };
-            vsapi
-                .call(
-                    [main_view.base_url, "/prm/tenant/lease-history"].join(""),
-                    p,
-                    false,
-                    null,
-                )
-                .then((res) => {
-                    const raw =
-                        res.status_code == 200 && res.data != null
-                            ? res.data
-                            : [];
-                    const contracts = Array.isArray(raw) ? raw : [];
-                    const cardsHtml =
-                        mThis._leaseHistoryContractsHtml(contracts);
-                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
-                            <h5 class="fw-bold mb-2">
-                                <i class="fa fa-file-text me-1 text-primary"></i>
-                                Contract
-                            </h5>
-                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
-                                ${cardsHtml}
-                            </div>
-                        </div>`;
-                })
-                .catch((err) => {
-                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
-                            <h5 class="fw-bold mb-2">
-                                <i class="fa fa-file-text me-1 text-primary"></i>
-                                Contract
-                            </h5>
-                            <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
-                        </div>`;
-                });
-        }
-        if (target === "document_tenant_list") {
-            vsapi
-                .call(
-                    [main_view.base_url, "/prm/tenant/document/list"].join(""),
-                    { tenant_id: data.id },
-                    false,
-                    null,
-                )
-                .then((res) => {
-                    const documents =
-                        res.status_code === 200 && Array.isArray(res.data)
-                            ? res.data
-                            : [];
 
-                    let rows = "";
+        mThis._setText(mThis.elPillPhone, d.phone_number);
+        mThis._setText(mThis.elPillEmail, d.email);
+        mThis._setText(mThis.elPillAddress, d.address);
+        mThis._setText(mThis.elStatCode, d.code);
+        mThis._setText(mThis.elStatUnit, d.space_code);
+        mThis._setText(mThis.elFieldName, d.name);
+        mThis._setText(mThis.elFieldGender, mThis._sexLabel(d.sex));
+        mThis._setText(mThis.elFieldLegalName, d.legal_name);
+        mThis._setText(mThis.elFieldDob, d.date_of_birth);
+        mThis._setText(mThis.elFieldNationalId, d.national_id);
+        mThis._setText(mThis.elFieldEmail, d.email);
+        mThis._setText(mThis.elFieldPassport, d.passport_number);
+        mThis._setText(mThis.elFieldRelationship, mThis._tenantTypeLabel(d.tenant_type));
+        mThis._setText(mThis.elFieldPhone, d.phone_number);
+        mThis._setText(mThis.elFieldAddress, d.address);
 
-                    documents.forEach((doc) => {
-                        rows += `
-                    <tr class="border-bottom">
-                        <td class="ps-3 py-3" style="width: 20%; height: 55px; vertical-align: middle;">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <div class="text-dark">
-                                        ${doc.document_type || doc.document_type_id || "—"}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 20%; height: 55px; vertical-align: middle;">
-                            <div class="text-dark">
-                                ${doc.original_file_name || "—"}
-                            </div>
-                        </td>
-                        <td style="width: 12%; height: 55px; vertical-align: middle;">
-                            <div class="text-dark">
-                                ${doc.ext ? doc.ext.toUpperCase() : "—"}
-                            </div>
-                        </td>
-                        <td style="width: 30%; height: 65px; vertical-align: middle;">
-                            <span class="text-dark">
-                                ${doc.remarks || "_"}
-                            </span>
-                        </td>
-                        <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
-                            <div class="d-flex justify-content-start gap-2">
-                                <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
-                                    <span class="tool-tip">
-                                        <i class="fa-regular fa-eye text-success fs-6"></i>
-                                        <span class="tool-tiptext fs-6">View</span>
-                                    </span>
-                                </a>
-                                <a href="javascript:void(0)" class="modify-doc" data-id="${doc.id}">
-                                    <span class="tool-tip">
-                                        <i class="fa-regular fa-edit fs-6 text-warning"></i>
-                                        <span class="tool-tiptext fs-6">Modify</span>
-                                    </span>
-                                </a>
-                                <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
-                                    <span class="tool-tip">
-                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Download</span>
-                                    </span>
-                                </a>
-                                <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
-                                    <span class="tool-tip">
-                                        <i class="fa-regular fa-trash-can text-danger fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Delete</span>
-                                    </span>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                    });
-
-                    // Empty state
-                    if (documents.length === 0) {
-                        rows = `
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">
-                            No data to display
-                        </td>
-                    </tr>`;
-                    }
-
-                    const html = `
-                <div class="tab-pane active" id="document_tenant_list">
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> Identity Documents</h5>
-                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
-                            <span vslang="buttons.Upload Document">Upload Document</span>
-                        </button>
-                    </div>
-
-                    <div class="table-responsive " style="max-height: 290px; overflow-y: auto; scrollbar-width: thin;">
-                        <table class="table align-middle mb-3">
-                            <thead class="bg-light">
-                                <tr class="text-uppercase small">
-                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
-                                    <th class="border-0">File Name</th>
-                                    <th class="border-0">File Type</th>
-                                    <th class="border-0">Remark</th>
-                                    <th class="border-0 text-start">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rows}
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>`;
-
-                    div.innerHTML = html;
-                    const btnDocument = div.querySelector("#_btnDocument");
-                    if (btnDocument) {
-                        btnDocument.onclick = () => {
-                            TenantDocumentDialog.show({
-                                id: null,
-                                tenant_id: data.id,
-                                onClose: () => {
-                                    mThis.renderOverView(div, target, data);
-                                },
-                            });
-                        };
-                    }
-
-                    div.querySelectorAll(".view-doc").forEach((btn) => {
-                        btn.addEventListener("click", async (e) => {
-                            const id = e.currentTarget.dataset.id;
-                            mThis.openTenantDocument(id, "view");
-                        });
-                    });
-                    div.querySelectorAll(".download-doc").forEach((btn) => {
-                        btn.addEventListener("click", (e) => {
-                            const id = e.currentTarget.dataset.id;
-                            mThis.openTenantDocument(id, "download");
-                        });
-                    });
-
-                    document.querySelectorAll(".modify-doc").forEach((btn) => {
-                        btn.addEventListener("click", async function (e) {
-                            e.preventDefault();
-                            const op = {
-                                id: parseInt(this.dataset.id),
-                                tenant_id: data.id,
-                                btn: e.target,
-                                onClose: () => {
-                                    mThis.renderOverView(div, target, data);
-                                    mThis.tenantListView.showPage(
-                                        mThis.getFilterData(),
-                                    );
-                                },
-                            };
-                            TenantDocumentDialog.show(op);
-                        });
-                    });
-
-                    document
-                        .querySelectorAll(".delete-doc-btn")
-                        .forEach((btn) => {
-                            btn.addEventListener("click", async function (e) {
-                                const docId = this.dataset.id;
-
-                                const confirmed = await cv_interact.confirm(
-                                    "Are you sure you want to delete this document?",
-                                    {
-                                        title: "Delete Document",
-                                        context: "delete",
-                                    },
-                                );
-
-                                if (confirmed) {
-                                    const p = { id: docId };
-                                    vsapi
-                                        .call(
-                                            [
-                                                main_view.base_url,
-                                                "/prm/tenant/document/delete",
-                                            ].join(""),
-                                            p,
-                                            false,
-                                            false,
-                                        )
-                                        .then((res) => {
-                                            if (res.status_code === 200) {
-                                                cv_interact.success(
-                                                    "Document deleted.",
-                                                );
-                                                mThis.renderOverView(
-                                                    div,
-                                                    target,
-                                                    data,
-                                                );
-                                            } else {
-                                                cv_interact.error(
-                                                    res.error_message,
-                                                );
-                                            }
-                                        });
-                                }
-                            });
-                        });
-                })
-
-                .catch((err) => {
-                    div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
-                });
-        }
+        mThis.showContent();
+        LocaleManager.translateZone(mThis.self);
     };
 
-    mThis.setActionsProfileInfo = (divProfile) => {
-        // console.log(33, divProfile);
+    mThis.bindPhotoUpload = () => {
+        if (!mThis.elCameraBtn || !mThis.elPhotoInput || mThis.photoBound) return;
+        mThis.photoBound = true;
 
-        divProfile.addEventListener("click", (e) => {
-            // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
-            // if (btn) {
-            //     mThis.editTenantInfo(btn.dataset.id, btn);
-            //     return;
-            // }
-            // btn = VSUtil.closestLimited(e.target, ".delete_employee");
-            // if (btn) {
-            //     mThis.deleteEmployee(btn.dataset.id, btn);
-            //     return;
-            // }
-            // btn = VSUtil.closestLimited(e.target, ".set_resign");
-            // if (btn) {
-            //     mThis.setResign(btn.dataset.id, btn);
-            //     return;
-            // }
-            // btn = VSUtil.closestLimited(e.target, ".movement");
-            // if (btn) {
-            //     mThis.movement(btn.dataset.id, btn);
-            //     return;
-            // }
+        mThis.elCameraBtn.addEventListener("click", () => mThis.elPhotoInput.click());
+
+        mThis.elPhotoInput.addEventListener("change", () => {
+            const file = mThis.elPhotoInput.files && mThis.elPhotoInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fullResult = e.target.result;
+                if (mThis.elAvatar) mThis.elAvatar.src = fullResult;
+                mThis.saveProfilePhoto(fullResult);
+            };
+            reader.readAsDataURL(file);
+            mThis.elPhotoInput.value = "";
         });
     };
 
-    mThis.prepareFormOptions = (onFinish) => {
+    mThis._updateAvatar = (imageUrl) => {
+        if (mThis.elAvatar) mThis.elAvatar.src = imageUrl;
+        if (mThis.profileData) mThis.profileData.image_url = imageUrl;
+    };
+
+    mThis.saveProfilePhoto = (photo) => {
+        const id = mThis.profileData && mThis.profileData.id;
+        if (!id) return;
+
         vsapi
             .call(
-                `${main_view.base_url}/prm/tenant/tenantProfile/form-options`,
-                null,
-                null,
-                null,
+                `${main_view.base_url}/tenant/tenant/tenantProfile/profile/photo/create`,
+                { photo: photo, id: id },
+                false
             )
             .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.statuses,
-                    "id",
-                    "name",
-                    "",
-                    "All Statuses",
-                    "",
-                );
-                if (typeof onFinish === "function") onFinish();
+                if (res.status_code === 200) {
+                    const imageUrl =
+                        (res.data && res.data.image_url) ||
+                        (typeof res.data === "string" ? res.data : null);
+
+                    if (imageUrl) {
+                        mThis._updateAvatar(imageUrl);
+                    } else {
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/tenant/tenant/tenantProfile/profile/photo`,
+                                { id: id },
+                                false
+                            )
+                            .then((photoRes) => {
+                                if (photoRes.status_code === 200 && photoRes.data) {
+                                    const url =
+                                        typeof photoRes.data === "string"
+                                            ? photoRes.data
+                                            : photoRes.data.image_url;
+                                    if (url) mThis._updateAvatar(url);
+                                }
+                            });
+                    }
+                    cv_interact.success("Profile photo was saved!");
+                } else {
+                    cv_interact.error(res.error_message || "Failed to save photo");
+                }
             });
     };
-    // mThis.show = (options) => {
-    //     mThis.init();
-    //     mThis.options = options;
-    //     mThis.prepareFormOptions(() => {
-    //         // main_view.setContentView(mThis.self, mThis.title_prop);
-    //         // mThis.renderView();
-    //         // mThis.showPage(mThis.defaultPage, mThis.getFilterData());
-    //         mThis.showPage("profile_view", { tenant_id: tenantId });
-    //     });
-    // };
-    mThis.show = (options) => {
-        mThis.init();
-        mThis.options = options;
-        mThis.prepareFormOptions(() => {
-            AuthManager.init().then((user) => {
-                const tenantId = user.official_id || user.id;
-                if (!tenantId) {
-                    cv_interact.error("Could not identify tenant.");
-                    return;
+
+    mThis.loadProfile = () => {
+        mThis.showLoading();
+
+        vsapi
+            .call(`${main_view.base_url}/tenant/tenant/tenantProfile/details`, {}, false)
+            .then((res) => {
+                if (res.status_code === 200 && res.data) {
+                    mThis.renderTenantProfile(res.data);
+                } else {
+                    if (mThis.elLoading) {
+                        mThis.elLoading.innerHTML = `<span>${mThis._val(res.error_message || "Unable to load profile")}</span>`;
+                    }
+                    if (res.error_message) cv_interact.error(res.error_message);
                 }
-                mThis.showPage("profile_view", { tenant_id: tenantId });
             });
-        });
+    };
+
+    mThis.show = () => {
+        mThis.init();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.loadProfile();
     };
 
     return mThis;

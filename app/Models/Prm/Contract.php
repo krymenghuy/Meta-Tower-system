@@ -615,7 +615,7 @@ class Contract
         $end_date = DBX::formatDate('cr.end_date', 'end_date');
         $updated_at = DBX::formatTime('cr.updated_at', 'updated_at');
 
-        $selectCols = 'cr.id, cr.contract_id, cr.space_id, ' . $renewal_date . ', ' . $start_date . ', ' . $end_date . ', cr.status, cr.remarks, cr.update_user, ' . $updated_at . ', c.tenant_id, t.name as tenant_name, bs.code as space_code';
+        $selectCols = 'cr.id,cr.contract_id,cr.space_id, ' . $renewal_date . ', ' . $start_date . ', ' . $end_date . ', cr.status, cr.remarks, cr.update_user, ' . $updated_at . ', c.tenant_id, t.name as tenant_name, bs.code as space_code';
 
         $query = DB::table('contract_renewals as cr')
             ->join('contracts as c', 'c.id', '=', 'cr.contract_id')
