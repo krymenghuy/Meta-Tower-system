@@ -975,12 +975,12 @@ const ContractDialog = (() => {
                 },
 
                 configSelect: [
-                    // {
-                    //     name: "tenant_id",
-                    //     data: "tenants",
-                    //     textField: "tenant",
-                    //     valueField: "id",
-                    // },
+                    {
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
                     {
                         name: "business_type_id",
                         data: "business_types",
