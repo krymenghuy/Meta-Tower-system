@@ -640,7 +640,7 @@
     align-items: center;
     padding: 2px 10px;
     border-radius: 999px;
-    font-size: 0.72rem;
+    font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.4;
 }

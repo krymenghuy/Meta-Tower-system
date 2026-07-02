@@ -248,10 +248,13 @@ var ContractsComponent = new (function () {
                                         <i class="fa-solid fa-building"></i>
                                         <span>Unit Details</span>
                                     </div>
-
                                     <div class="contract-card__sqft">
                                         <span class="contract-card__sqft-label">Square footage</span>
                                         <span class="contract-card__sqft-value">${sqmDisplay}</span>
+                                    </div>
+                                    <div class="contract-card__sqft">
+                                        <span class="contract-card__sqft-label">Building</span>
+                                        <span class="contract-card__sqft-value">${data.building_name || "—"} , ${data.floor_name || "—"}</span>
                                     </div>
                                      <div class="contract-card__sqft">
                                         <span class="contract-card__sqft-label">Address</span>

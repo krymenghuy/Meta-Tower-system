@@ -267,19 +267,7 @@ var InvoicesComponent = (() => {
             },
         });
 
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
-                {},
-            )
-            .then((res) => {
-                InvoiceSetting = res.data;
-                console.log(111112, InvoiceSetting);
-                if (res.status_code !== 200) {
-                    cv_interact.error("Failed to load invoice details.");
-                    return;
-                }
-            });
+    
 
         mThis.initAlready = true;
     };
@@ -295,7 +283,6 @@ var InvoicesComponent = (() => {
                 }
                 mThis.renderInvoiceDetail(container, res.data || {});
 
-                console.log(1112345678, res.data);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice detail.</div>`;
