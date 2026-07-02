@@ -479,30 +479,41 @@ const CreateReservationDialog = (() => {
                 contentCreated: (me) => {
                     me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                         type: 'select',
-                        query: {
-                            from: 'tenants',
-                            select: ['id', 'name', 'phone_number'],
-                            where: [[ 'status_id', '=', 2 ]],
-                            orderBy: [[ 'id', 'DESC' ]],
-                            limit: 50,
-                            searchFields: {
-                                name: "LIKE",
-                                phone_number: "LIKE",
-                            },
-                        },
+                        // query: {
+                        //     from: 'tenants',
+                        //     select: ['id', 'name', 'phone_number'],
+                        //     where: [[ 'status_id', '=', 2 ]],
+                        //     orderBy: [[ 'id', 'DESC' ]],
+                        //     limit: 50,
+                        //     searchFields: {
+                        //         name: "LIKE",
+                        //         phone_number: "LIKE",
+                        //     },
+                        // },
                         prefetch: true,
+                          api: {
+                            endpoint: `${main_view.base_url}/prm/reservation/form-options`,
+                        },
+                        processResponse: (res) => {
+                            const tenants = res?.data?.tenants || [];
+                            return (Array.isArray(tenants) ? tenants : []).map(
+                               i => ({
+                            
+                                ...i,
+                                name: i.tenant || "",
+                                phone_number: i.phone_number || ""
+                            })
+                            );
+                        },
                         showColumnHeader: true,
                         columns: {
-                            name: "Name",
+                            tenant: "Name",
                             phone_number: "Phone",
                         },
 
                         onSelect: (tenant) => {
-                        console.log("Selected tenant:", tenant);
-
                             me._selectedTenantId = tenant.id;
 
-                            // Direct mapping from the search result
                             if (me.controls.phone_number) {
                                 me.controls.phone_number.value =
                                     tenant.phone_number || "";
