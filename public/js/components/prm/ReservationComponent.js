@@ -496,7 +496,10 @@ const CreateReservationDialog = (() => {
                             name: "Name",
                             phone_number: "Phone",
                         },
+
                         onSelect: (tenant) => {
+                        console.log("Selected tenant:", tenant);
+
                             me._selectedTenantId = tenant.id;
 
                             // Direct mapping from the search result
