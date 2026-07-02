@@ -235,6 +235,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
     Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
     Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
+    Route::post('/create-form-options', [TenantController::class, 'getFormOptionsForInvoice']);
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
     Route::post('/receive', [InvoiceController::class, 'receive']);
