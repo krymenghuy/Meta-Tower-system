@@ -58,6 +58,15 @@ class TenantController extends Controller
         return JDV::result($this->tenants->getFormOptions($req->id, $ss));
     }
 
+     public function getFormOptionsForInvoice(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->tenants->getActiveTenantOptions());
+    }
+
     public function delete(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
