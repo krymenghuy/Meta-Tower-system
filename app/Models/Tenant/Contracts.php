@@ -369,6 +369,7 @@ class Contracts  //extends Model
         $contracts = $id ? self::contractDetails($id) : null;
         return (object)[
             'contracts' => $contracts,
+            'tenants'        => GeneralSettings::options_tenant($ss),
             'statuses'  => GeneralSettings::options_contract_status($ss),
             'business_types'   => GeneralSettings::options_business_type($ss),
 

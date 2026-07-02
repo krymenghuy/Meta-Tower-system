@@ -942,15 +942,29 @@ const ContractDialog = (() => {
                         prefetch: true,
                         maxDropdownHeight: "380px",
                         // api:
-                        query: {
-                            from: 'tenants',
-                            select: ['id', 'name', 'code', 'legal_name'],
-                            searchFields: {
-                                name: 'LIKE',
-                                code: '=',
-                                legal_name: 'LIKE',
-                            },
-                            orderBy: [["id", "desc"]],
+                        // query: {
+                        //     from: 'tenants',
+                        //     select: ['id', 'name', 'code', 'legal_name'],
+                        //     searchFields: {
+                        //         name: 'LIKE',
+                        //         code: '=',
+                        //         legal_name: 'LIKE',
+                        //     },
+                        //     orderBy: [["id", "desc"]],
+                        // },
+                        api: {
+                            endpoint: `${main_view.base_url}/prm/contract/form-options`,
+                        },
+                        processResponse: (res) => {
+                            const tenants = res?.data?.tenants || [];
+                            return (Array.isArray(tenants) ? tenants : []).map(
+                               i => ({
+                            
+                                ...i,
+                                code: i.code || "",
+                                name: i.tenant || "",
+                            })
+                            );
                         },
                         showColumnHeader: true,
                         columns: {
@@ -960,7 +974,7 @@ const ContractDialog = (() => {
                         },
                         onSelect: (item) => {
                             const tenantId = item?.id || "";
-                            const tenantName = item?.name || "";
+                            const tenantName = item?.tenant || "";
                             const tenantCode = item?.code || "";
                             me.controls.tenant.value = tenantCode
                                 ? `${tenantName} (${tenantCode})`
