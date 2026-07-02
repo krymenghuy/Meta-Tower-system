@@ -43,10 +43,11 @@ class TenantProfileController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if (!isset($req->id) || !is_numeric($req->id)) {
+        $id = $req->id ?? $ss->official_id ?? null;
+        if (!isset($id) || !is_numeric($id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->tenants->getDetails($req->id));
+        return JDV::result($this->tenants->getDetails($id, $ss));
     }
     public function getFormOptions(Request $req)
     {
