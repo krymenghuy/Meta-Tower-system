@@ -1455,7 +1455,7 @@ const RenewDialog = (() => {
                             main_view.base_url,
                             "/prm/contract/form-options",
                         ].join(""),
-                        params: (op) => ({ id: op.id }),
+                        params: (me, op) => ({ id: op.id }),
                     },
                 },
                 configSelect: [
