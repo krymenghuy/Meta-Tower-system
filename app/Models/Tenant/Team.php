@@ -317,7 +317,21 @@ class Team
             }
         }
 
-        $inputs['status_id'] = $d->status_id ?? 1;
+        // 8b. Auto status: Pending (1) while start_date is in the future,
+        // Active (2) once start_date has arrived/passed. An explicit
+        // "Inactive" (3) choice from the form is always respected as-is.
+        $requested_status = isset($d->status_id) ? (int) $d->status_id : null;
+
+        if ($requested_status === 3) {
+            $inputs['status_id'] = 3;
+        } elseif (!empty($inputs['start_date'])) {
+            $startDt = new \DateTime($inputs['start_date']);
+            $today = new \DateTime('today');
+            $inputs['status_id'] = ($startDt > $today) ? 1 : 2;
+        } else {
+            $inputs['status_id'] = $requested_status ?? 1;
+        }
+
         $inputs['tenant_id'] = $ss->official_id;
 
 
@@ -335,7 +349,7 @@ class Team
         }
         // 10. Auto Code Generator
         if ($created) {
-            setOfficialCode($branch_id, 'staff_code_control', 'team_member', ['id' => $saved_id], 'S', 4, null);
+            setOfficialCode($branch_id, 'staff_code_control', 'team_member', ['id' => $saved_id], 'M', 4, null);
         }
 
         // Photo Storage
@@ -357,6 +371,18 @@ class Team
         
 
         return DV::depends(1, ['team_member' => $inputs, 'id' => $saved_id, 'count_number' => $count_munber]);
+    }
+
+
+    public function autoActivatePendingMembers()
+    {
+        return DB::table('team_member')
+            ->where('status_id', 1) // Pending
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->update([
+                'status_id' => 2, // Active
+                'updated_at' => Carbon::now(),
+            ]);
     }
 
     public function getListTeamMemberPaginate($arr, $ss = null)
@@ -407,7 +433,7 @@ class Team
                 s.status_id, ts.name as status,
                 s.updated_at, s.update_user
             ")
-            ->orderBy('s.status_id', 'asc')
+            ->orderBy('s.status_id', 'desc')
             ->orderBy('s.created_at', 'desc');
 
         $clone_query = clone $query;
