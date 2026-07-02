@@ -284,7 +284,7 @@ var ContractsComponent = new (function () {
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--finance">
                                     <div class="contract-card__section-title">Financial Details</div>
-                                    <div class="contract-card__finance-grid">
+                                    <div class="contract-card__finance">
                                         <div class="row g-3">
                                             <div class="col-6">
                                                 <div class="contract-card__finance-card">

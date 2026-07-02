@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    <div id="_contract_list" class="contract2-list-wrap mt-3"></div>
+    <div id="_contract_list" class="contract2-list-wrap"></div>
 </div>
 
 <style>
