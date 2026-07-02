@@ -3185,7 +3185,6 @@ const InvoiceDialog = (() => {
                             );
                             return;
                         }
-**
 
                         exchangeRate = res.data;
                     });
