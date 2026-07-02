@@ -491,7 +491,7 @@ const CreateReservationDialog = (() => {
                         //     },
                         // },
                         prefetch: true,
-                          api: {
+                        api: {
                             endpoint: `${main_view.base_url}/prm/reservation/form-options`,
                         },
                         processResponse: (res) => {
@@ -513,7 +513,6 @@ const CreateReservationDialog = (() => {
 
                         onSelect: (tenant) => {
                             me._selectedTenantId = tenant.id;
-
                             if (me.controls.phone_number) {
                                 me.controls.phone_number.value =
                                     tenant.phone_number || "";
