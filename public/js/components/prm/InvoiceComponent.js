@@ -3341,7 +3341,7 @@ const InvoiceDialog = (() => {
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
-                    params: (me,op) => {
+                    params: (op) => {
                         // console.log("API params op:", op);
                         return { id: op.id };
                     },

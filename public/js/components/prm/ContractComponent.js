@@ -943,19 +943,19 @@ const ContractDialog = (() => {
                         maxDropdownHeight: "380px",
                         // api:
                         query: {
-                            from: "tenants",
-                            select: ["id", "name", "code", "legal_name"],
+                            from: 'tenants',
+                            select: ['id', 'name', 'code', 'legal_name'],
                             searchFields: {
-                                name: "LIKE",
-                                code: "=",
-                                legal_name: "LIKE",
+                                name: 'LIKE',
+                                code: '=',
+                                legal_name: 'LIKE',
                             },
                             orderBy: [["id", "desc"]],
                         },
                         showColumnHeader: true,
                         columns: {
-                            code: "Code",
-                            name: "Name",
+                            code: 'Code',
+                            name: 'Name',
                             // legal_name: "Legal Name"
                         },
                         onSelect: (item) => {
@@ -975,12 +975,12 @@ const ContractDialog = (() => {
                 },
 
                 configSelect: [
-                    {
-                        name: "tenant_id",
-                        data: "tenants",
-                        textField: "tenant",
-                        valueField: "id",
-                    },
+                    // {
+                    //     name: "tenant_id",
+                    //     data: "tenants",
+                    //     textField: "tenant",
+                    //     valueField: "id",
+                    // },
                     {
                         name: "business_type_id",
                         data: "business_types",
@@ -1455,7 +1455,7 @@ const RenewDialog = (() => {
                             main_view.base_url,
                             "/prm/contract/form-options",
                         ].join(""),
-                        params: (me, op) => ({ id: op.id }),
+                        params: (op) => ({ id: op.id }),
                     },
                 },
                 configSelect: [
