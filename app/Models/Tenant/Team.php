@@ -499,11 +499,14 @@ class Team
 
             $deleted = DB::table('team_member')->where('id', $id)->delete();
 
+            $new_count = null;
             if ($deleted && $team_id) {
                 $this->updateTeamMemberCount($team_id);
+                $new_count = DB::table('team_member')->where('team_id', $team_id)->count();
             }
 
-            return DV::depends(1, ['id' => $id, 'team_id' => $team_id]);
+
+            return DV::depends(1, ['id' => $id, 'team_id' => $team_id, 'member_count' => $new_count]);
         }
 
     public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
