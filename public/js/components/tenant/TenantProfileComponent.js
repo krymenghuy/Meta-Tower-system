@@ -1,187 +1,205 @@
 "use strict";
 
-var TenantProfileComponent =  new (function () {
-    const mThis = this;
+var TenantProfileComponent = (() => {
+    const mThis = {};
+    const PLACEHOLDER_IMG = `${main_view.base_url}/assets/images/default/placeholder.svg`;
+
     mThis.title_prop = "Profile Overview";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_profile_component");
-    mThis.init = function () {
-        
+    mThis.profileData = null;
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.elLoading = mThis.self.querySelector("#_tp_loading");
+        mThis.elContent = mThis.self.querySelector("#_tp_profile_content");
+        mThis.elAvatar = mThis.self.querySelector("#_tp_profile_avatar");
+        mThis.elCameraBtn = mThis.self.querySelector("#_tp_avatar_camera");
+        mThis.elPhotoInput = mThis.self.querySelector("#_tp_photo_input");
+        mThis.elHeroName = mThis.self.querySelector("#_tp_hero_name");
+        mThis.elStatusBadge = mThis.self.querySelector("#_tp_status_badge");
+        mThis.elPillPhone = mThis.self.querySelector("#_tp_pill_phone");
+        mThis.elPillEmail = mThis.self.querySelector("#_tp_pill_email");
+        mThis.elPillAddress = mThis.self.querySelector("#_tp_pill_address");
+        mThis.elStatCode = mThis.self.querySelector("#_tp_stat_code");
+        mThis.elStatUnit = mThis.self.querySelector("#_tp_stat_unit");
+        mThis.elFieldName = mThis.self.querySelector("#_tp_field_name");
+        mThis.elFieldGender = mThis.self.querySelector("#_tp_field_gender");
+        mThis.elFieldLegalName = mThis.self.querySelector("#_tp_field_legal_name");
+        mThis.elFieldDob = mThis.self.querySelector("#_tp_field_dob");
+        mThis.elFieldNationalId = mThis.self.querySelector("#_tp_field_national_id");
+        mThis.elFieldEmail = mThis.self.querySelector("#_tp_field_email");
+        mThis.elFieldPassport = mThis.self.querySelector("#_tp_field_passport");
+        mThis.elFieldRelationship = mThis.self.querySelector("#_tp_field_relationship");
+        mThis.elFieldPhone = mThis.self.querySelector("#_tp_field_phone");
+        mThis.elFieldAddress = mThis.self.querySelector("#_tp_field_address");
+
+        mThis.bindPhotoUpload();
+        mThis.initAlready = true;
     };
- mThis.renderTenantProfile = function () {
-    const div = mThis.self;
 
-    // const imageUrl = data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`;
+    mThis._val = (v) => {
+        if (v == null || v === "") return "_";
+        return String(v);
+    };
 
-    // const cls_class = data.status === "Active"
-    //     ? "badge bg-success"
-    //     : data.status === "Inactive"
-    //         ? "badge bg-secondary"
-    //         : "badge bg-warning text-dark";
+    mThis._sexLabel = (sex) => {
+        if (sex === "M") return LocaleManager.trans("Male", "labels");
+        if (sex === "F") return LocaleManager.trans("Female", "labels");
+        return "_";
+    };
 
-    const html = `
-    <div class="meta-dashboard">
-        <div class="row g-4 align-items-stretch">
+    mThis._tenantTypeLabel = (tenantType) => {
+        if (!tenantType) return "_";
+        return LocaleManager.trans(tenantType, "labels");
+    };
 
-            <div class="col-12 col-lg-3">
-                <div class="card shadow-sm mb-3 h-100">
-                    <div class="card-body text-center d-flex flex-column">
+    mThis._statusBadgeClass = (status) => {
+        if (status === "Active") return "is-active";
+        if (status === "Pending") return "is-pending";
+        if (status === "Inactive") return "is-inactive";
+        return "";
+    };
 
-                        <div class="position-relative d-inline-block mb-3">
-                            <img src="${main_view.base_url}/assets/images/default/placeholder.svg"
-                                class="rounded-circle border shadow-sm"
-                                width="140"
-                                height="140"
-                                style="object-fit:cover;object-position:center;">
-                        </div>
+    mThis._setText = (el, value) => {
+        if (el) el.textContent = mThis._val(value);
+    };
 
-                        <h4 class="fw-bold mb-2 text-capitalize">Hong Heng</h4>
+    mThis.showLoading = () => {
+        if (mThis.elLoading) mThis.elLoading.style.display = "flex";
+        if (mThis.elContent) mThis.elContent.style.display = "none";
+    };
 
-                        <div class="mb-3">
-                            <span class=" px-3 py-2">Active</span>
-                        </div>
+    mThis.showContent = () => {
+        if (mThis.elLoading) mThis.elLoading.style.display = "none";
+        if (mThis.elContent) mThis.elContent.style.display = "block";
+    };
 
-                        <hr class="my-3">
+    mThis.renderTenantProfile = (data) => {
+        mThis.profileData = data || {};
+        const d = mThis.profileData;
 
-                        <div class="mt-auto">
-                            <div class="row g-3 text-center">
+        if (mThis.elAvatar) {
+            mThis.elAvatar.src = d.image_url || PLACEHOLDER_IMG;
+        }
 
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small" vslang="labels.ID">ID</div>
-                                        <div>T-10001</div>
-                                    </div>
-                                </div>
+        mThis._setText(mThis.elHeroName, d.name);
 
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small" vslang="labels.Unit">Unit</div>
-                                        <div>Zone14</div>
-                                    </div>
-                                </div>
+        if (mThis.elStatusBadge) {
+            mThis.elStatusBadge.textContent = mThis._val(d.status);
+            mThis.elStatusBadge.className = `tp-status-badge ${mThis._statusBadgeClass(d.status)}`;
+        }
 
-                                <div class="col-12">
-                                    <div class="p-3 bg-light rounded">
-                                        <h6 class="mb-3" vslang="labels.Lease Terms">Lease Terms</h6>
+        mThis._setText(mThis.elPillPhone, d.phone_number);
+        mThis._setText(mThis.elPillEmail, d.email);
+        mThis._setText(mThis.elPillAddress, d.address);
+        mThis._setText(mThis.elStatCode, d.code);
+        mThis._setText(mThis.elStatUnit, d.space_code);
+        mThis._setText(mThis.elFieldName, d.name);
+        mThis._setText(mThis.elFieldGender, mThis._sexLabel(d.sex));
+        mThis._setText(mThis.elFieldLegalName, d.legal_name);
+        mThis._setText(mThis.elFieldDob, d.date_of_birth);
+        mThis._setText(mThis.elFieldNationalId, d.national_id);
+        mThis._setText(mThis.elFieldEmail, d.email);
+        mThis._setText(mThis.elFieldPassport, d.passport_number);
+        mThis._setText(mThis.elFieldRelationship, mThis._tenantTypeLabel(d.tenant_type));
+        mThis._setText(mThis.elFieldPhone, d.phone_number);
+        mThis._setText(mThis.elFieldAddress, d.address);
 
-                                        <div class="row text-center">
-                                            <div class="col-6 border-end border-info">
-                                                <div class="text-muted mb-1 small" vslang="labels.Start Date">
-                                                    Start Date
-                                                </div>
-                                                <div class="small">10-06-2026</div>
-                                            </div>
+        mThis.showContent();
+        LocaleManager.translateZone(mThis.self);
+    };
 
-                                            <div class="col-6">
-                                                <div class="text-muted mb-1 small" vslang="labels.End Date">
-                                                    End Date
-                                                </div>
-                                                <div class="small">10-06-2026</div>
-                                            </div>
-                                        </div>
+    mThis.bindPhotoUpload = () => {
+        if (!mThis.elCameraBtn || !mThis.elPhotoInput || mThis.photoBound) return;
+        mThis.photoBound = true;
 
-                                    </div>
-                                </div>
+        mThis.elCameraBtn.addEventListener("click", () => mThis.elPhotoInput.click());
 
-                            </div>
-                        </div>
+        mThis.elPhotoInput.addEventListener("change", () => {
+            const file = mThis.elPhotoInput.files && mThis.elPhotoInput.files[0];
+            if (!file) return;
 
-                    </div>
-                </div>
-            </div>
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fullResult = e.target.result;
+                if (mThis.elAvatar) mThis.elAvatar.src = fullResult;
+                mThis.saveProfilePhoto(fullResult);
+            };
+            reader.readAsDataURL(file);
+            mThis.elPhotoInput.value = "";
+        });
+    };
 
-            <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body tab-content">
+    mThis._updateAvatar = (imageUrl) => {
+        if (mThis.elAvatar) mThis.elAvatar.src = imageUrl;
+        if (mThis.profileData) mThis.profileData.image_url = imageUrl;
+    };
 
-                        <div class="tab-pane py-2 active" id="overview_tenant_detail">
+    mThis.saveProfilePhoto = (photo) => {
+        const id = mThis.profileData && mThis.profileData.id;
+        if (!id) return;
 
-                            <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-user me-2 text-primary"></i>
-                                <span vslang="titles.Personal Information">Personal Information</span>
-                            </h5>
+        vsapi
+            .call(
+                `${main_view.base_url}/tenant/tenant/tenantProfile/profile/photo/create`,
+                { photo: photo, id: id },
+                false
+            )
+            .then((res) => {
+                if (res.status_code === 200) {
+                    const imageUrl =
+                        (res.data && res.data.image_url) ||
+                        (typeof res.data === "string" ? res.data : null);
 
-                            <div class="row g-4 mb-5">
+                    if (imageUrl) {
+                        mThis._updateAvatar(imageUrl);
+                    } else {
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/tenant/tenant/tenantProfile/profile/photo`,
+                                { id: id },
+                                false
+                            )
+                            .then((photoRes) => {
+                                if (photoRes.status_code === 200 && photoRes.data) {
+                                    const url =
+                                        typeof photoRes.data === "string"
+                                            ? photoRes.data
+                                            : photoRes.data.image_url;
+                                    if (url) mThis._updateAvatar(url);
+                                }
+                            });
+                    }
+                    cv_interact.success("Profile photo was saved!");
+                } else {
+                    cv_interact.error(res.error_message || "Failed to save photo");
+                }
+            });
+    };
 
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Name">Name</small>
-                                    <div class="text-capitalize">Hong Heng</div>
-                                </div>
+    mThis.loadProfile = () => {
+        mThis.showLoading();
 
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Gender">Gender</small>
-                                    <div>Male</div>
-                                </div>
+        vsapi
+            .call(`${main_view.base_url}/tenant/tenant/tenantProfile/details`, {}, false)
+            .then((res) => {
+                if (res.status_code === 200 && res.data) {
+                    mThis.renderTenantProfile(res.data);
+                } else {
+                    if (mThis.elLoading) {
+                        mThis.elLoading.innerHTML = `<span>${mThis._val(res.error_message || "Unable to load profile")}</span>`;
+                    }
+                    if (res.error_message) cv_interact.error(res.error_message);
+                }
+            });
+    };
 
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Date of Birth">Date of Birth</small>
-                                    <div>10-10-2026</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Legal Name">Legal Name</small>
-                                    <div>Hong Heng Shop</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.National ID">National ID</small>
-                                    <div>123456</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Passport Number">Passport Number</small>
-                                    <div>123456</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Phone">Phone</small>
-                                    <div class="text-primary">123456</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Email">Email</small>
-                                    <div class="text-primary">123456</div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <small class="text-muted" vslang="labels.Relationship">Relationship</small>
-                                    <div>1234567</div>
-                                </div>
-
-                                <div class="col-12">
-                                    <small class="text-muted" vslang="labels.Address">Address</small>
-                                    <div class="text-capitalize">Phnom Penh</div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-    `;
-
-    div.innerHTML = html;
-    LocaleManager.translateZone(div);
-};
-
-  
-
-
-
-
-
-  
-    mThis.show = function () {
+    mThis.show = () => {
         mThis.init();
         main_view.setContentView(mThis.self, mThis.title_prop);
-        mThis.renderTenantProfile();
-             
+        mThis.loadProfile();
     };
 
     return mThis;
