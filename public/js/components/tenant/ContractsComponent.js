@@ -286,7 +286,7 @@ var ContractsComponent = new (function () {
                                     <div class="contract-card__section-title">Financial Details</div>
                                     <div class="contract-card__finance-grid">
                                         <div class="row g-3">
-                                            <div class="col-12 col-md-12">
+                                            <div class="col-12">
                                                 <div class="contract-card__finance-card">
                                                     <div class="contract-card__finance-label">
                                                         Monthly Rent
@@ -297,7 +297,7 @@ var ContractsComponent = new (function () {
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 col-md-12">
+                                            <div class="col-12">
                                                 <div class="contract-card__finance-card">
                                                     <div class="contract-card__finance-label">
                                                         Security Deposit
