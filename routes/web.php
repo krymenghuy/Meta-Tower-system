@@ -130,17 +130,6 @@ Route::get('landingpoint', function () {
 //     return view('prm', $data);
 // });
 Route::get('tenant/{componentName?}', function ($componentName = null) {
-    if (!XAuthService::user()) {
-        // return redirect('/')
-        $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-        return;
-    };
-    $data = ['defaultComponent' => 'HomeComponent'];
-    return view('tenant', $data);
-});
- 
-Route::get('tenant/{componentName?}', function ($componentName = null) {
     $user = XAuthService::user();
     if (!$user) {
         // return redirect('/')
