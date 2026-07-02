@@ -609,9 +609,10 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
 
         $tenant = DB::table('tenants')
-            ->where('id', $id)
+            // ->where('id', $id)
+            ->where('status_id', 2)
             ->select('id', 'name', 'name_kh', 'legal_name', 'email', 'phone_number')
-            ->first();
+            ->get();
 
         // 1. Fetch Service Requests with status_id = 2 (Approved/Completed)
         $serviceRequests = DB::table('service_requests as sr')
@@ -708,6 +709,7 @@ class Tenant
             'service_requests' => $serviceRequests,
         ];
     }
+    
     function getList($arr, $ss)
     {
         $d = (object) $arr;
