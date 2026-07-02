@@ -646,7 +646,7 @@ class Contract
             ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
             ->join('space_types as st', 'st.id', '=', 'c.space_type_id')
             ->where('c.id', $id)
-            ->selectRaw('
+            ->selectRaw('l
                             c.id,
                             c.tenant_id,
                             c.legal_name,
