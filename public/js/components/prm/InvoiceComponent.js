@@ -3053,10 +3053,10 @@ const InvoiceDialog = (() => {
                     prefetch: true,
                     minChars: 0,
                     api: {
-                        endpoint: `${main_view.base_url}/prm/tenant/form-options`
+                        endpoint: `${main_view.base_url}/prm/invoice/create-form-options`
                     },
                     processResponse: res => {
-                        const tenants = res?.data?.tenant || [];
+                        const tenants = res?.data || [];
                         return (Array.isArray(tenants) ? tenants : []).map(
                             i => ({
                                 ...i,
