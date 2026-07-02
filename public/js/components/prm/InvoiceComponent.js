@@ -840,10 +840,10 @@ var InvoiceComponent = (() => {
                     const companyProfile = res.data?.company_info || {};
                     const invoiceSetting = invoiceDetails.settings;
 
-                    console.log("invoiceDetails: ", invoiceDetails);
-                    console.log("companyProfile: ", companyProfile);
-                    console.log("globalSetting: ", globalSetting);
-                    console.log("invoiceSetting: ", invoiceSetting);
+                    // console.log("invoiceDetails: ", invoiceDetails);
+                    // console.log("companyProfile: ", companyProfile);
+                    // console.log("globalSetting: ", globalSetting);
+                    // console.log("invoiceSetting: ", invoiceSetting);
 
                     const invType = invoiceDetails?.invoice_type;
 
@@ -1167,7 +1167,7 @@ const InvoiceDialog = (() => {
                             String(matchedSpace.contract_id)
                     );
 
-                    console.log("availableMonths", availableMonths);
+                    // console.log("availableMonths", availableMonths);
 
                     if (!availableMonths || availableMonths.length === 0) {
                         return cv_interact.error(
@@ -1479,7 +1479,7 @@ const InvoiceDialog = (() => {
                 };
 
                 me.controls.btnElectric.onclick = () => {
-                    console.log("Global Setting", globalSetting);
+                    // console.log("Global Setting", globalSetting);
                     if (!me._selectedTenantId) {
                         return cv_interact.error("select_tenant");
                     }
@@ -1492,7 +1492,7 @@ const InvoiceDialog = (() => {
                     // const exchangeRate = me.exchangeRate;
                     // console.log(1111111111111111111,exchangeRate);
                     const getRowItem = me.itemsView.getItems();
-                    console.log("getRowItem", getRowItem);
+                    // console.log("getRowItem", getRowItem);
 
                     // Fetch InvoiceSetting first, then open popup
                     const openElectricPopup = () => {
@@ -1682,12 +1682,12 @@ const InvoiceDialog = (() => {
                                     ? exchangeRate.exchange_rate ?? ""
                                     : "";
 
-                                console.log(
-                                    "InvoiceSetting.exchange_rate",
-                                    exchangeRate
-                                        ? exchangeRate.exchange_rate
-                                        : null
-                                );
+                                // console.log(
+                                //     "InvoiceSetting.exchange_rate",
+                                //     exchangeRate
+                                //         ? exchangeRate.exchange_rate
+                                //         : null
+                                // );
 
                                 // Currency conversion handlers
                                 elPriceKHR.addEventListener("input", e => {
@@ -2944,9 +2944,9 @@ const InvoiceDialog = (() => {
                         }
                     },
 
-                    afterDelete(rows, ctx) {
-                        console.log("afterDelete", rows, ctx);
-                    },
+                    // afterDelete(rows, ctx) {
+                    //     // console.log("afterDelete", rows, ctx);
+                    // },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
@@ -3053,30 +3053,54 @@ const InvoiceDialog = (() => {
                     prefetch: true,
                     minChars: 0,
                     api: {
-                        endpoint: `${main_view.base_url}/prm/tenant/option-tenant-with-contract`
+                        endpoint: `${main_view.base_url}/prm/tenant/form-options`
                     },
                     processResponse: res => {
                         const tenants = res?.data?.tenant || [];
-
-                        console.log(123, tenants);
-                        
                         return (Array.isArray(tenants) ? tenants : []).map(
                             i => ({
                                 ...i,
                                 tenant: i.name || "",
-                                phone_number: i.phone_number || "",
-                                email: i.email || ""
+                                phone_number: i.phone_number || ""
                             })
                         );
                     },
-                    columns: { tenant: "Name", phone_number: "Phone Number", email: "Email" },
+                    columns: { tenant: "Name", phone_number: "Phone Number" },
                     showColumnHeader: true,
                     placeholder: "Search Tenant",
                     onSelect: tenant => {
-                        const id = tenant?.id || "";
-                        me.controls.tenant.value = tenant?.tenant || "";
-                        me.tenant_id = id;
+                        vsapi
+                            .post(
+                                `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
+                                { tenant_id: tenant.id },
+                                {}
+                            )
+                            .then(res => {
+                                const d = res.data || {};
+                                me.controls.phone_number.value =
+                                    d.tenant?.phone_number || "";
+                                me.controls.email.value = d.tenant?.email || "";
+                                me._selectedTenantId = tenant.id;
+                                me._tenantData = d;
+                                me._tenantSpaces = d.spaces || [];
+                                me._tenantMonths = d.months || [];
+                                me._requestedServices =
+                                    d.service_requests || [];
+
+                                VSUtil.setComboItems(
+                                    me.controls.space,
+                                    d.spaces || [],
+                                    "space_id",
+                                    "space_code",
+                                    "",
+                                    "Select Space",
+                                    ""
+                                );
+                            });
                     }
+                    //     api: {
+                    //     endpoint: `${main_view.base_url}/prm/tenant/option-tenant-with-contract`
+                    // },
                 });
 
                 me.searchTenant.reset("");
@@ -3087,7 +3111,7 @@ const InvoiceDialog = (() => {
                         metaKeys: ["item_id", "type", "remark", "unit_type"]
                     }); // Retrieves all row data
 
-                    console.log("Items", items);
+                    // console.log("Items", items);
 
                     const totals = me.itemsView.getCurrentTotals?.() || {};
 
@@ -3161,7 +3185,7 @@ const InvoiceDialog = (() => {
                             );
                             return;
                         }
-                        console.log("Global Setting", res);
+**
 
                         exchangeRate = res.data;
                     });
@@ -3292,21 +3316,7 @@ const InvoiceDialog = (() => {
                                                                 }
                                                             )
                                                         );
-                                                        console.log(
-                                                            "space restored via option.selected:",
-                                                            opt.text
-                                                        );
-                                                    } else {
-                                                        console.warn(
-                                                            "space option not found for id:",
-                                                            detail.space_id
-                                                        );
                                                     }
-                                                } else {
-                                                    console.log(
-                                                        "space restored:",
-                                                        me.controls.space.value
-                                                    );
                                                 }
                                             }
                                         }, 100);
@@ -3314,11 +3324,6 @@ const InvoiceDialog = (() => {
                             }
 
                             me.itemsView.setData(detail);
-
-                            console.log(
-                                "Invoice items loaded into view:",
-                                detail.items
-                            );
                         });
                 }
             },
@@ -3715,7 +3720,7 @@ const ReceiveDialog = (() => {
                         .then(res => {
                             if (res.status_code === 200) {
                                 const d = res.data || {};
-                                console.log("data", d);
+                                // console.log("data", d);
                                 const bal = Number(d.balance || 0).toFixed(2);
                                 const set = (id, val) => {
                                     const el = me.divModal.querySelector(
@@ -3805,7 +3810,7 @@ const ReceiveDialog = (() => {
                                 }
                             })
                             .catch(err => {
-                                console.error(err);
+                                // console.error(err);
                                 cv_interact.error("Network error occurred.");
                             });
                     }
@@ -3826,7 +3831,7 @@ const InvoiceSettingDialog = (() => {
     let dialog = null;
 
     self.show = op => {
-        console.log(12, op);
+        // console.log(12, op);
 
         const currentData = op || {};
         const invoiceId = currentData.id || currentData.invoice_id || 0;
@@ -3938,8 +3943,8 @@ const InvoiceSettingDialog = (() => {
                         if (res && res.data) {
                             const settingsData = res.data.settings || {};
 
-                            console.log(13, settingsData);
-                            console.log(14, res);
+                            // console.log(13, settingsData);
+                            // console.log(14, res);
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
@@ -3970,14 +3975,14 @@ const InvoiceSettingDialog = (() => {
                                     }
                                 });
                         } else {
-                            console.error(
-                                "Failed to map configurations:",
-                                res.error_message
-                            );
+                            // console.error(
+                            //     "Failed to map configurations:",
+                            //     res.error_message
+                            // );
                         }
                     })
                     .catch(err => {
-                        console.error("AJAX Gateway Exception:", err);
+                        // console.error("AJAX Gateway Exception:", err);
                     });
             },
 
@@ -4007,10 +4012,10 @@ const InvoiceSettingDialog = (() => {
                             });
 
                         // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
-                        console.log(
-                            "Invoice Setting Payload gathered:",
-                            payload
-                        );
+                        // console.log(
+                        //     "Invoice Setting Payload gathered:",
+                        //     payload
+                        // );
 
                         vsapi
                             .call(

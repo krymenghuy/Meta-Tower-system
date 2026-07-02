@@ -332,11 +332,16 @@ class Tenant
         return $row;
     }
 
+    public static function getActiveTenantOptions($ss)
+    {
+        $row = DB::table('tenants as t')->where('t.status_id', 2)->select('t.id', 't.name', 't.email', 't.phone_number')->get();
+        return $row;
+    }
+
     public static function getFormOptions($id, $ss)
     {
-        $details = $id ? self::getDetails($id) : null;
         return (object) [
-            'tenant' => $details,
+            'tenant' => self::getActiveTenantOptions($ss),
             'nationalities' => GeneralSettings::options_nationality($ss),
             'statuses' => GeneralSettings::options_tenant_status($ss),
 
@@ -609,10 +614,9 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
 
         $tenant = DB::table('tenants')
-            // ->where('id', $id)
-            ->where('status_id', 2)
+            ->where('id', $id)
             ->select('id', 'name', 'name_kh', 'legal_name', 'email', 'phone_number')
-            ->get();
+            ->first();
 
         // 1. Fetch Service Requests with status_id = 2 (Approved/Completed)
         $serviceRequests = DB::table('service_requests as sr')
