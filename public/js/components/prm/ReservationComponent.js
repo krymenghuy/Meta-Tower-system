@@ -478,19 +478,19 @@ const CreateReservationDialog = (() => {
 
                 contentCreated: (me) => {
                     me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                        type: "select",
-                        prefetch: true,
+                        type: 'select',
                         query: {
-                            from: "tenants",
-                            select: ["id", "name", "phone_number"],
-                            where: [["status_id", "=", 2]],
-                            orderBy: [["id", "DESC"]],
+                            from: 'tenants',
+                            select: ['id', 'name', 'phone_number'],
+                            where: [[ 'status_id', '=', 2 ]],
+                            orderBy: [[ 'id', 'DESC' ]],
                             limit: 50,
                             searchFields: {
                                 name: "LIKE",
                                 phone_number: "LIKE",
                             },
                         },
+                        prefetch: true,
                         showColumnHeader: true,
                         columns: {
                             name: "Name",
