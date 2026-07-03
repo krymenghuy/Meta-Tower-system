@@ -31,12 +31,14 @@
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 22px;
-        align-items: start;
+        align-items: stretch;
     }
 
     .ann-card {
         display: flex;
         flex-direction: column;
+        height: 100%;
+        min-height: 300px;
         background: #fff;
         border: 1px solid #eaeef4;
         border-radius: 20px;
@@ -55,62 +57,38 @@
     .ann-card__banner {
         position: relative;
         display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        min-height: 150px;
-        padding: 18px 20px 20px;
+        align-items: center;
+        min-height: 60px;
+        padding: 22px 26px;
         overflow: hidden;
         color: #fff;
     }
 
     .ann-card__banner-icon {
         position: absolute;
-        right: 6px;
-        bottom: -18px;
-        font-size: 120px;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-10deg);
+        font-size: 72px;
         color: rgba(255, 255, 255, .14);
-        transform: rotate(-10deg);
         pointer-events: none;
     }
 
-    .ann-badge {
-        position: absolute;
+    .ann-banner-content {
+        position: relative;
         z-index: 2;
-        top: 16px;
-        left: 20px;
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: 7px;
-        padding: 6px 13px;
-        border-radius: 999px;
-        font-size: 12.5px;
-        font-weight: 700;
-        background: rgba(255, 255, 255, .95);
-        box-shadow: 0 2px 8px rgba(15, 23, 42, .14);
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
     }
-
-    .ann-badge:before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: currentColor;
-    }
-
-    .ann-badge--active { color: #10b981; }
-    .ann-badge--emergency { color: #ef4444; }
-    .ann-badge--scheduled { color: #64748b; }
-    .ann-badge--draft { color: #94a3b8; }
-    .ann-badge--expired { color: #ef4444; }
 
     .ann-cat {
-        position: absolute;
-        z-index: 2;
-        top: 16px;
-        right: 20px;
-        padding: 5px 12px;
+        flex-shrink: 0;
+        padding: 7px 15px;
         border-radius: 999px;
-        font-size: 11px;
+        font-size: 12.5px;
         font-weight: 700;
         letter-spacing: .02em;
         color: #fff;
@@ -119,46 +97,15 @@
         backdrop-filter: blur(4px);
     }
 
-    .ann-banner-content {
-        position: relative;
-        z-index: 2;
-        margin-top: 34px;
-    }
-
     .ann-card__title {
-        margin: 0 0 10px;
-        font-size: 22px;
-        font-weight: 800;
-        letter-spacing: -.02em;
-        line-height: 1.15;
+        margin: 0;
+        font-size: 26px;
+        font-weight: 500;
+        /* letter-spacing: -.02em; */
+        line-height: 1.2;
         text-transform: capitalize;
         word-break: break-word;
-    }
-
-    .ann-ref {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .ann-ref-label {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, .7);
-    }
-
-    .ann-card__id {
-        font-size: 12px;
-        font-weight: 700;
-        color: #fff;
-        background: rgba(255, 255, 255, .2);
-        border: 1px solid rgba(255, 255, 255, .28);
-        padding: 3px 10px;
-        border-radius: 7px;
-        white-space: nowrap;
+        min-width: 0;
     }
 
     /* ---------- Body ---------- */
@@ -166,23 +113,32 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 18px 20px 20px;
+        min-height: 0;
+        padding: 16px 20px 18px;
     }
 
     .ann-desc-block {
+        display: flex;
         padding-left: 14px;
         border-left: 3px solid var(--ann-accent, #4f46e5);
-        margin-bottom: 18px;
+        height: calc(1.6em * 3);
+        margin-bottom: 14px;
     }
 
     .ann-desc-text {
         font-size: 13.5px;
         line-height: 1.6;
         color: #64748b;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        width: 100%;
+        max-height: calc(1.6em * 3);
         display: -webkit-box;
         -webkit-line-clamp: 3;
+        line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        padding-right: 6px;
     }
 
     /* ---------- Meta panel ---------- */
@@ -190,14 +146,18 @@
         background: #f8fafc;
         border: 1px solid #eef2f7;
         border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 18px;
+        padding: 14px;
+        margin-bottom: 14px;
     }
 
     .ann-meta {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px 14px;
+    }
+
+    .ann-meta--two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .ann-meta__item {
@@ -251,6 +211,7 @@
         justify-content: space-between;
         gap: 12px;
         margin-top: auto;
+        padding-top: 14px;
     }
 
     .ann-priority {

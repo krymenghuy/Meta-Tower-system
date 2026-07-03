@@ -17,7 +17,7 @@ var AnnouncementComponent = (() => {
 
         mThis.AnnouncementListView = new ListView("_announcement_list", {
             fetchApi: `${main_view.base_url}/prm/announcement/list-paginate`,
-            perPage: 10,
+            perPage: 6,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
                 mThis.renderCards(container, items);
@@ -99,40 +99,40 @@ var AnnouncementComponent = (() => {
 
     const formatRelativeTime = (sqlDate) => {
         if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
-        
+
         let dateStr = sqlDate;
         if (!dateStr.includes("T") && !dateStr.includes("+") && !dateStr.includes("Z")) {
             dateStr = dateStr.replace(" ", "T") + "+07:00";
         }
         const targetDate = new Date(dateStr);
         if (isNaN(targetDate.getTime())) return sqlDate;
-        
+
         const now = new Date();
         const diffMs = now.getTime() - targetDate.getTime();
         const diffSec = Math.floor(diffMs / 1000);
-        
+
         if (diffSec < 0) {
             return formatDateOnly(sqlDate);
         }
         if (diffSec < 60) {
             return "Just now";
         }
-        
+
         const diffMin = Math.floor(diffSec / 60);
         if (diffMin < 60) {
             return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
         }
-        
+
         const diffHrs = Math.floor(diffMin / 60);
         if (diffHrs < 24) {
             return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
         }
-        
+
         const diffDays = Math.floor(diffHrs / 24);
         if (diffDays < 7) {
             return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
         }
-        
+
         return formatDateOnly(sqlDate);
     };
 
@@ -172,21 +172,6 @@ var AnnouncementComponent = (() => {
         return withYear ? `${base}, ${d.getFullYear()}` : base;
     };
 
-    const statusMeta = (status) => {
-        switch ((status || "").toLowerCase()) {
-            case "active":
-                return { cls: "ann-badge--active", label: "Active" };
-            case "emergency":
-                return { cls: "ann-badge--emergency", label: "Emergency" };
-            case "scheduled":
-                return { cls: "ann-badge--scheduled", label: "Scheduled" };
-            case "expired":
-                return { cls: "ann-badge--expired", label: "Expired" };
-            default:
-                return { cls: "ann-badge--draft", label: "Draft" };
-        }
-    };
-
     const escapeHtml = (str) => {
         if (str == null || str === "") return "";
         const el = document.createElement("div");
@@ -194,95 +179,85 @@ var AnnouncementComponent = (() => {
         return el.innerHTML;
     };
 
-    const CATEGORY_THEMES = {
-        maintenance: {
-            grad: "linear-gradient(135deg, #9AA4C2 0%, #5C6883 100%)",
-            accent: "#5c6883",
-            soft: "#eef1f6",
-            icon: "fa-solid fa-screwdriver-wrench",
-        },
-        emergency: {
-            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
-            accent: "#c9556a",
-            soft: "#fdecec",
-            icon: "fa-solid fa-triangle-exclamation",
-        },
-        notice: {
-            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
-            accent: "#c9556a",
-            soft: "#fdecec",
-            icon: "fa-solid fa-bullhorn",
-        },
-        event: {
-            grad: "linear-gradient(135deg, #9A8FE6 0%, #6E61C9 100%)",
-            accent: "#6d5fd0",
-            soft: "#f0eefb",
-            icon: "fa-solid fa-calendar-days",
-        },
-        "policy update": {
-            grad: "linear-gradient(135deg, #F4B183 0%, #E08A4A 100%)",
-            accent: "#dd8a3f",
-            soft: "#fdf1e6",
-            icon: "fa-solid fa-file-lines",
-        },
-        general: {
-            grad: "linear-gradient(135deg, #5D50E6 0%, #4436C7 100%)",
-            accent: "#4f46e5",
-            soft: "#eef0fe",
-            icon: "fa-solid fa-bullhorn",
-        },
+    const CATEGORY_ICONS = {
+        maintenance: "fa-solid fa-screwdriver-wrench",
+        emergency: "fa-solid fa-triangle-exclamation",
+        notice: "fa-solid fa-bullhorn",
+        event: "fa-solid fa-calendar-days",
+        "policy update": "fa-solid fa-file-lines",
+        policy: "fa-solid fa-file-lines",
+        general: "fa-solid fa-bullhorn",
     };
 
-    mThis.cardTheme = (d) => {
-        const categoryLower = (d.category || "").toLowerCase();
+    mThis.categoryIcon = (d) => {
+        const categoryLower = (d.category || "general").toLowerCase();
         const titleLower = (d.title || "").toLowerCase();
 
-        let theme =
-            CATEGORY_THEMES[categoryLower] ||
-            CATEGORY_THEMES[categoryLower.replace(" update", "")] ||
-            CATEGORY_THEMES.general;
-
-        theme = Object.assign({}, theme);
+        let icon =
+            CATEGORY_ICONS[categoryLower] ||
+            CATEGORY_ICONS[categoryLower.replace(" update", "")] ||
+            CATEGORY_ICONS.general;
 
         if (titleLower.includes("water") || titleLower.includes("plumbing")) {
-            theme.icon = "fa-solid fa-droplet";
+            icon = "fa-solid fa-droplet";
         } else if (titleLower.includes("parking") || titleLower.includes("car")) {
-            theme.icon = "fa-solid fa-square-parking";
+            icon = "fa-solid fa-square-parking";
         } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
-            theme.icon = "fa-solid fa-elevator";
+            icon = "fa-solid fa-elevator";
         } else if (titleLower.includes("fire")) {
-            theme.icon = "fa-solid fa-fire-extinguisher";
+            icon = "fa-solid fa-fire-extinguisher";
         }
 
-        return theme;
+        return icon;
+    };
+
+    mThis.normalizePriority = (priority) => {
+        const p = String(priority || "Low").trim().toLowerCase();
+        if (["critical", "high", "medium", "normal", "low"].includes(p)) return p;
+        return "low";
     };
 
     mThis.priorityMeta = (priority) => {
-        switch ((priority || "Low").toLowerCase()) {
+        switch (mThis.normalizePriority(priority)) {
             case "critical":
                 return {
                     label: "Urgent Action Required",
-                    style: "background:#fdeae4; color:#e2513a;",
+                    style: "background:#fde0dc; color:#8e1b12;",
+                    grad: "linear-gradient(135deg, #C0392B 0%, #7B1E14 100%)",
+                    accent: "#8e1b12",
+                    soft: "#fbe2df",
                 };
             case "high":
                 return {
                     label: "High Priority",
-                    style: "background:#fdeae4; color:#e2513a;",
+                    style: "background:#ffe9dc; color:#d9531e;",
+                    grad: "linear-gradient(135deg, #FB923C 0%, #EA580C 100%)",
+                    accent: "#ea580c",
+                    soft: "#ffeede",
                 };
             case "medium":
                 return {
                     label: "Medium Priority",
-                    style: "background:#fff4e6; color:#f97316;",
+                    style: "background:#fef7dd; color:#b8860b;",
+                    grad: "linear-gradient(135deg, #FCD34D 0%, #D4A017 100%)",
+                    accent: "#b8860b",
+                    soft: "#fdf6dc",
                 };
             case "normal":
                 return {
                     label: "Normal Priority",
                     style: "background:#eef0fe; color:#5b6bd6;",
+                    grad: "linear-gradient(135deg, #8B93E8 0%, #4F46E5 100%)",
+                    accent: "#4f46e5",
+                    soft: "#eef0fe",
                 };
             default:
                 return {
                     label: "Low Priority",
-                    style: "background:#eef5ff; color:#3b82f6;",
+                    style: "background:#eef5ff; color:#2563eb;",
+                    grad: "linear-gradient(135deg, #60A5FA 0%, #2563EB 100%)",
+                    accent: "#2563eb",
+                    soft: "#eaf1fd",
                 };
         }
     };
@@ -302,9 +277,8 @@ var AnnouncementComponent = (() => {
         let html = `<div class="ann-grid">`;
 
         data.forEach((d, index) => {
-            const theme = mThis.cardTheme(d);
-            const st = statusMeta(d.status);
             const pr = mThis.priorityMeta(d.priority);
+            const icon = mThis.categoryIcon(d);
 
             const buildingName = escapeHtml(d.building_name || "All Buildings");
             const audience = escapeHtml(d.audience || "All Tenants");
@@ -316,17 +290,12 @@ var AnnouncementComponent = (() => {
                 : "No expiration";
 
             html += `
-                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${theme.accent}; --ann-soft:${theme.soft};">
-                    <div class="ann-card__banner" style="background:${theme.grad}">
-                        <i class="${theme.icon} ann-card__banner-icon"></i>
-                        <span class="ann-badge ${st.cls}">${st.label}</span>
-                        <span class="ann-cat">${escapeHtml(d.category || "General")}</span>
+                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${pr.accent}; --ann-soft:${pr.soft};">
+                    <div class="ann-card__banner" style="background:${pr.grad}">
+                        <i class="${icon} ann-card__banner-icon"></i>
                         <div class="ann-banner-content">
                             <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
-                            <div class="ann-ref">
-                                <span class="ann-ref-label" vslang="labels.Tracking Reference">Tracking Reference</span>
-                                <span class="ann-card__id">ID: #ANN-${d.id}</span>
-                            </div>
+                            <span class="ann-cat">${escapeHtml(d.category || "General")}</span>
                         </div>
                     </div>
                     <div class="ann-card__body">
@@ -334,21 +303,7 @@ var AnnouncementComponent = (() => {
                             <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
                         </div>
                         <div class="ann-meta-panel">
-                            <div class="ann-meta">
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-building"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Building">Building</span>
-                                        <div class="ann-meta__value">${buildingName}</div>
-                                    </div>
-                                </div>
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-users"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Audience">Audience</span>
-                                        <div class="ann-meta__value">${audience}</div>
-                                    </div>
-                                </div>
+                            <div class="ann-meta ann-meta--two">
                                 <div class="ann-meta__item">
                                     <span class="ann-meta__icon"><i class="fa-solid fa-calendar"></i></span>
                                     <div class="ann-meta__text">
