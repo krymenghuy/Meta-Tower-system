@@ -248,10 +248,13 @@ var ContractsComponent = new (function () {
                                         <i class="fa-solid fa-building"></i>
                                         <span>Unit Details</span>
                                     </div>
-
                                     <div class="contract-card__sqft">
                                         <span class="contract-card__sqft-label">Square footage</span>
                                         <span class="contract-card__sqft-value">${sqmDisplay}</span>
+                                    </div>
+                                    <div class="contract-card__sqft">
+                                        <span class="contract-card__sqft-label">Building</span>
+                                        <span class="contract-card__sqft-value">${data.building_name || "—"} , ${data.floor_name || "—"}</span>
                                     </div>
                                      <div class="contract-card__sqft">
                                         <span class="contract-card__sqft-label">Address</span>
@@ -284,9 +287,9 @@ var ContractsComponent = new (function () {
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--finance">
                                     <div class="contract-card__section-title">Financial Details</div>
-                                    <div class="contract-card__finance-grid">
+                                    <div class="contract-card__finance">
                                         <div class="row g-3">
-                                            <div class="col-12">
+                                            <div class="col-6">
                                                 <div class="contract-card__finance-card">
                                                     <div class="contract-card__finance-label">
                                                         Monthly Rent
@@ -297,7 +300,7 @@ var ContractsComponent = new (function () {
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-6">
                                                 <div class="contract-card__finance-card">
                                                     <div class="contract-card__finance-label">
                                                         Security Deposit

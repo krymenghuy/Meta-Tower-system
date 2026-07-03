@@ -289,7 +289,7 @@ class TenantProfile
     {
         return url('') . '/assets/images/default/placeholder.svg';
     }
-    
+
     public static function getDetails($id, $ss = null)
     {
         // Contract::applyPendingRenewalUnitChanges();

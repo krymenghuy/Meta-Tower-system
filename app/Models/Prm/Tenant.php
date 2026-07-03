@@ -332,14 +332,27 @@ class Tenant
         return $row;
     }
 
+    public static function getActiveTenantOptions()
+    {
+        $row = DB::table('tenants as t')->where('t.status_id', 2)->select('t.id', 't.name', 't.email', 't.phone_number')->get();
+        return $row;
+    }
+
     public static function getFormOptions($id, $ss)
     {
-        $details = $id ? self::getDetails($id) : null;
+        $tenant = $id ? self::getDetails($id) : null;
         return (object) [
-            'tenant' => $details,
+            'tenant' => $tenant,
             'nationalities' => GeneralSettings::options_nationality($ss),
             'statuses' => GeneralSettings::options_tenant_status($ss),
 
+        ];
+    }
+
+    public static function getFormOptionsForInvoice($ss)
+    {
+        return (object) [
+            'tenant' => self::getActiveTenantOptions($ss),
         ];
     }
 
@@ -708,6 +721,7 @@ class Tenant
             'service_requests' => $serviceRequests,
         ];
     }
+
     function getList($arr, $ss)
     {
         $d = (object) $arr;
@@ -750,7 +764,6 @@ class Tenant
             $tenant->com_rep_nid_issue_date = $p->first_cp_nid_issue_date;
             $tenant->com_rep_address = $p->first_cp_address;
             $tenant->address_kh = $p->address_kh;
-            
         }
         return (object)[
             'contractInfo' => $tenant,

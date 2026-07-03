@@ -329,9 +329,9 @@ class GeneralSettings //extends Model
     {
         return DB::table('tenants as t')
             ->join('contracts as c', 'c.tenant_id', '=', 't.id')
-            // ->where('c.status_id', '=', 2)
-            ->where('t.branch_id', '=', $ss->branch_id)
-            ->select('t.id', 't.name as tenant', 'c.id as contract_id')
+            ->where('t.status_id', '=', 2)
+            // ->where('t.branch_id', '=', $ss->branch_id)
+            ->select('t.id', 't.name as tenant','t.phone_number', 'c.id as contract_id')
             ->distinct()  // In case tenant has multiple active contracts
             ->orderBy('t.name')
             ->get();
@@ -455,7 +455,7 @@ static function options_maintenance_amenity($ss)
     }
     static function options_tenant($ss)
     {
-        return DB::table('tenants')->selectRaw('id,name AS tenant,phone_number')->get();
+        return DB::table('tenants')->selectRaw('id,code,name AS tenant,phone_number,legal_name')->get();
     }
     static function options_tenant_status($ss)
     {

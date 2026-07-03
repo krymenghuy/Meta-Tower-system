@@ -153,7 +153,7 @@
 .choices__list--single {
     display: inline-block;
     padding: 4px 26px 4px 10px;
-    width: 90%;
+    width: 100%;
 }
 [dir="rtl"] .choices__list--single {
     padding-right: 4px;

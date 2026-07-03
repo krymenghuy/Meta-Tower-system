@@ -159,191 +159,225 @@ var AnnouncementComponent = (() => {
         return `${monthStr} ${day}, ${d.getFullYear()}`;
     };
 
+    const MONTHS = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+
+    const formatShortDate = (sqlDate, withYear = true) => {
+        if (!sqlDate) return "";
+        const d = new Date(sqlDate.replace(/-/g, "/"));
+        if (isNaN(d.getTime())) return sqlDate;
+        const base = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+        return withYear ? `${base}, ${d.getFullYear()}` : base;
+    };
+
+    const statusMeta = (status) => {
+        switch ((status || "").toLowerCase()) {
+            case "active":
+                return { cls: "ann-badge--active", label: "Active" };
+            case "emergency":
+                return { cls: "ann-badge--emergency", label: "Emergency" };
+            case "scheduled":
+                return { cls: "ann-badge--scheduled", label: "Scheduled" };
+            case "expired":
+                return { cls: "ann-badge--expired", label: "Expired" };
+            default:
+                return { cls: "ann-badge--draft", label: "Draft" };
+        }
+    };
+
+    const escapeHtml = (str) => {
+        if (str == null || str === "") return "";
+        const el = document.createElement("div");
+        el.textContent = String(str);
+        return el.innerHTML;
+    };
+
+    const CATEGORY_THEMES = {
+        maintenance: {
+            grad: "linear-gradient(135deg, #9AA4C2 0%, #5C6883 100%)",
+            accent: "#5c6883",
+            soft: "#eef1f6",
+            icon: "fa-solid fa-screwdriver-wrench",
+        },
+        emergency: {
+            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
+            accent: "#c9556a",
+            soft: "#fdecec",
+            icon: "fa-solid fa-triangle-exclamation",
+        },
+        notice: {
+            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
+            accent: "#c9556a",
+            soft: "#fdecec",
+            icon: "fa-solid fa-bullhorn",
+        },
+        event: {
+            grad: "linear-gradient(135deg, #9A8FE6 0%, #6E61C9 100%)",
+            accent: "#6d5fd0",
+            soft: "#f0eefb",
+            icon: "fa-solid fa-calendar-days",
+        },
+        "policy update": {
+            grad: "linear-gradient(135deg, #F4B183 0%, #E08A4A 100%)",
+            accent: "#dd8a3f",
+            soft: "#fdf1e6",
+            icon: "fa-solid fa-file-lines",
+        },
+        general: {
+            grad: "linear-gradient(135deg, #5D50E6 0%, #4436C7 100%)",
+            accent: "#4f46e5",
+            soft: "#eef0fe",
+            icon: "fa-solid fa-bullhorn",
+        },
+    };
+
+    mThis.cardTheme = (d) => {
+        const categoryLower = (d.category || "").toLowerCase();
+        const titleLower = (d.title || "").toLowerCase();
+
+        let theme =
+            CATEGORY_THEMES[categoryLower] ||
+            CATEGORY_THEMES[categoryLower.replace(" update", "")] ||
+            CATEGORY_THEMES.general;
+
+        theme = Object.assign({}, theme);
+
+        if (titleLower.includes("water") || titleLower.includes("plumbing")) {
+            theme.icon = "fa-solid fa-droplet";
+        } else if (titleLower.includes("parking") || titleLower.includes("car")) {
+            theme.icon = "fa-solid fa-square-parking";
+        } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
+            theme.icon = "fa-solid fa-elevator";
+        } else if (titleLower.includes("fire")) {
+            theme.icon = "fa-solid fa-fire-extinguisher";
+        }
+
+        return theme;
+    };
+
+    mThis.priorityMeta = (priority) => {
+        switch ((priority || "Low").toLowerCase()) {
+            case "critical":
+                return {
+                    label: "Urgent Action Required",
+                    style: "background:#fdeae4; color:#e2513a;",
+                };
+            case "high":
+                return {
+                    label: "High Priority",
+                    style: "background:#fdeae4; color:#e2513a;",
+                };
+            case "medium":
+                return {
+                    label: "Medium Priority",
+                    style: "background:#fff4e6; color:#f97316;",
+                };
+            case "normal":
+                return {
+                    label: "Normal Priority",
+                    style: "background:#eef0fe; color:#5b6bd6;",
+                };
+            default:
+                return {
+                    label: "Low Priority",
+                    style: "background:#eef5ff; color:#3b82f6;",
+                };
+        }
+    };
+
     mThis.renderCards = (container, data) => {
         container.innerHTML = "";
-        let html = `<div class="announcement-cards-list mt-3">`;
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach((d) => {
-                const priorityLower = (d.priority || "Low").toLowerCase();
-                const categoryLower = (d.category || "").toLowerCase();
-                const titleLower = (d.title || "").toLowerCase();
 
-                let iconClass = "fa-solid fa-bullhorn";
-                let themeColor = "#3b82f6";
-                let iconBg = "#eff6ff";
-                let iconColor = "#3b82f6";
-
-                if (
-                    titleLower.includes("building water maintenance") ||
-                    (titleLower.includes("maintenance") &&
-                        titleLower.includes("water") &&
-                        !titleLower.includes("interruption"))
-                ) {
-                    iconClass = "fa-solid fa-bullhorn";
-                    themeColor = "#ef4444";
-                    iconBg = "#fef2f2";
-                    iconColor = "#ef4444";
-                } else if (
-                    titleLower.includes("water") ||
-                    titleLower.includes("plumbing")
-                ) {
-                    iconClass = "fa-solid fa-droplet";
-                    themeColor = "#10b981";
-                    iconColor = "#10b981";
-                } else if (
-                    titleLower.includes("parking") ||
-                    titleLower.includes("car")
-                ) {
-                    iconClass = "fa-solid fa-square-parking";
-                    themeColor = "#f97316";
-                    iconBg = "#fff7ed";
-                    iconColor = "#f97316";
-                } else if (
-                    titleLower.includes("holiday") ||
-                    titleLower.includes("closed") ||
-                    titleLower.includes("office")
-                ) {
-                    iconClass = "fa-solid fa-building";
-                    themeColor = "#3b82f6";
-                    iconColor = "#3b82f6";
-                } else if (
-                    titleLower.includes("elevator") ||
-                    titleLower.includes("lift")
-                ) {
-                    iconClass = "fa-solid fa-elevator";
-                    themeColor = "#8b5cf6";
-                    iconBg = "#f5f3ff";
-                    iconColor = "#8b5cf6";
-                } else {
-                    if (categoryLower === "maintenance") {
-                        iconClass = "fa-solid fa-screwdriver-wrench";
-                        themeColor = "#10b981";
-                        iconBg = "#ecfdf5";
-                        iconColor = "#10b981";
-                    } else if (categoryLower === "notice") {
-                        iconClass = "fa-solid fa-bullhorn";
-                        themeColor = "#ef4444";
-                        iconBg = "#fef2f2";
-                        iconColor = "#ef4444";
-                    } else if (categoryLower === "event") {
-                        iconClass = "fa-solid fa-calendar-days";
-                        themeColor = "#8b5cf6";
-                        iconBg = "#f5f3ff";
-                        iconColor = "#8b5cf6";
-                    } else if (
-                        categoryLower === "policy update" ||
-                        categoryLower === "policy"
-                    ) {
-                        iconClass = "fa-solid fa-square-parking";
-                        themeColor = "#f97316";
-                        iconBg = "#fff7ed";
-                        iconColor = "#f97316";
-                    }
-                }
- 
-                let borderLeftColor = themeColor;
-
-                let categoryBadgeStyle =
-                    "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
-                let categoryBadgeText = d.category || "General";
-
-                if (categoryLower === "maintenance") {
-                    categoryBadgeStyle =
-                        "background-color: #ecfdf5 !important; color: #10b981 !important; border: 1px solid #d1fae5 !important; font-weight: 600;";
-                } else if (categoryLower === "notice") {
-                    categoryBadgeStyle =
-                        "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; font-weight: 600;";
-                } else if (categoryLower === "event") {
-                    categoryBadgeStyle =
-                        "background-color: #f5f3ff !important; color: #8b5cf6 !important; border: 1px solid #ede9fe !important; font-weight: 600;";
-                } else if (
-                    categoryLower === "policy update" ||
-                    categoryLower === "policy"
-                ) {
-                    categoryBadgeStyle =
-                        "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important; font-weight: 600;";
-                }
-
-                let statusDotColor =
-                    d.status === "Active" ? "#10b981" : "#94a3b8";
-                let statusText = d.status === "Active" ? "Active" : "Draft";
-
-                let pubDate = d.publish_date
-                    ? formatRelativeTime(d.publish_date)
-                    : "Not set";
-                const hasExpiry = d.expiry_date && 
-                                  d.expiry_date !== "null" &&
-                                  d.expiry_date !== "0000-00-00" && 
-                                  d.expiry_date !== "0000-00-00 00:00:00" && 
-                                  d.expiry_date !== "0000-00-00 00:00";
-                let expDate = hasExpiry
-                    ? "Expires: " + formatDateOnly(d.expiry_date)
-                    : "No expiration";
-
-                let buildingName = d.building_name || "All Buildings";
-
-                html += `
-                    <div class="card mb-3 border shadow-sm rounded-3 overflow-hidden position-relative" style="border: 1px solid #e2e8f0 !important; border-left: 6px solid ${borderLeftColor} !important; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                        <div class="card-body p-4">
-                            <div class="row align-items-center">
-                                
-                                <div class="col-12 col-md-9 col-lg-9">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background-color: ${iconBg}; transition: all 0.2s;">
-                                            <i class="${iconClass} fs-5" style="color: ${iconColor};"></i>
-                                        </div>
-                                        
-                                        <div>
-                                            <h5 class="fw-bold mb-1 font-size-15" style="color: #1e293b !important; font-weight: 700 !important; letter-spacing: -0.01em;">${d.title ?? ""}</h5>
-                                            <div class="mb-2 text-wrap announcement-desc" style="line-height: 1.6; font-size: 13.5px; color: #1a1655 !important;">
-                                                ${d.description ?? ""}
-                                            </div>
-
-                                            <div class="d-flex flex-wrap gap-3 font-size-12">
-                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-building me-2" style="color: #757575;"></i> ${buildingName}
-                                                </span>
-                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-users me-2" style="color: #757575;"></i> ${d.audience || "All Tenants"}
-                                                </span>
-                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-flag me-2" style="color: #757575;"></i> ${d.priority || "Low"} Priority
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12 col-md-3 col-lg-3 px-4 border-start d-none d-md-block" style="border-color: #e2e8f0 !important;">
-                                    <div class="mb-2">
-                                        <span class="badge font-size-11 px-3 py-2    rounded-5" style="${categoryBadgeStyle}">${categoryBadgeText}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center small mb-1.5 font-size-12" style="color: #757575 !important;">
-                                        <span class="rounded-circle me-2" style="width: 8px; height: 8px; background-color: ${statusDotColor}; display: inline-block;"></span>
-                                        <span>${statusText}</span>
-                                    </div>
-                                    <div class="font-size-12 mb-1.5 d-flex align-items-center" style="color: #757575 !important;">
-                                        <i class="fa-solid fa-calendar me-2" style="color: #757575;"></i> ${pubDate}
-                                    </div>
-                                    <div class="font-size-12 d-flex align-items-center" style="color: #757575 !important;">
-                                        <i class="fa-solid fa-clock me-2" style="color: #757575;"></i> ${expDate}
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        } else {
-            html += `
-                <div class="text-center text-muted py-5 bg-white shadow-sm rounded-3">
+        if (!Array.isArray(data) || data.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-5 bg-white shadow-sm rounded-3 mt-3">
                     No announcements found.
                 </div>
             `;
+            return;
         }
+
+        let html = `<div class="ann-grid">`;
+
+        data.forEach((d, index) => {
+            const theme = mThis.cardTheme(d);
+            const st = statusMeta(d.status);
+            const pr = mThis.priorityMeta(d.priority);
+
+            const buildingName = escapeHtml(d.building_name || "All Buildings");
+            const audience = escapeHtml(d.audience || "All Tenants");
+            const pubDate = d.publish_date
+                ? formatShortDate(d.publish_date)
+                : "Not set";
+            const expDate = d.expiry_date
+                ? formatShortDate(d.expiry_date)
+                : "No expiration";
+
+            html += `
+                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${theme.accent}; --ann-soft:${theme.soft};">
+                    <div class="ann-card__banner" style="background:${theme.grad}">
+                        <i class="${theme.icon} ann-card__banner-icon"></i>
+                        <span class="ann-badge ${st.cls}">${st.label}</span>
+                        <span class="ann-cat">${escapeHtml(d.category || "General")}</span>
+                        <div class="ann-banner-content">
+                            <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
+                            <div class="ann-ref">
+                                <span class="ann-ref-label" vslang="labels.Tracking Reference">Tracking Reference</span>
+                                <span class="ann-card__id">ID: #ANN-${d.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ann-card__body">
+                        <div class="ann-desc-block">
+                            <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
+                        </div>
+                        <div class="ann-meta-panel">
+                            <div class="ann-meta">
+                                <div class="ann-meta__item">
+                                    <span class="ann-meta__icon"><i class="fa-solid fa-building"></i></span>
+                                    <div class="ann-meta__text">
+                                        <span class="ann-meta__label" vslang="labels.Building">Building</span>
+                                        <div class="ann-meta__value">${buildingName}</div>
+                                    </div>
+                                </div>
+                                <div class="ann-meta__item">
+                                    <span class="ann-meta__icon"><i class="fa-solid fa-users"></i></span>
+                                    <div class="ann-meta__text">
+                                        <span class="ann-meta__label" vslang="labels.Audience">Audience</span>
+                                        <div class="ann-meta__value">${audience}</div>
+                                    </div>
+                                </div>
+                                <div class="ann-meta__item">
+                                    <span class="ann-meta__icon"><i class="fa-solid fa-calendar"></i></span>
+                                    <div class="ann-meta__text">
+                                        <span class="ann-meta__label" vslang="labels.Published">Published</span>
+                                        <div class="ann-meta__value">${pubDate}</div>
+                                    </div>
+                                </div>
+                                <div class="ann-meta__item">
+                                    <span class="ann-meta__icon"><i class="fa-solid fa-hourglass-half"></i></span>
+                                    <div class="ann-meta__text">
+                                        <span class="ann-meta__label" vslang="labels.Expires">Expires</span>
+                                        <div class="ann-meta__value">${expDate}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ann-card__footer">
+                            <span class="ann-priority" style="${pr.style}">${pr.label}</span>
+                            <span class="ann-card-count">Card View: ${index + 1} of ${data.length}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
         html += `</div>`;
         container.innerHTML = html;
+
+        LocaleManager.translateZone(container);
     };
 
     mThis.prepareFormOptions = (onFinish) => {

@@ -602,17 +602,34 @@ const CreateServiceRequestDialog = (() => {
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
-                    query: {
-                        from: 'tenants',
-                        where: [['status_id','=',2]],
-                        select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
-                        orderBy: [['id','DESC']],
-                        limit:50,
-                        searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
+                    // query: {
+                    //     from: 'tenants',
+                    //     where: [['status_id','=',2]],
+                    //     select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
+                    //     orderBy: [['id','DESC']],
+                    //     limit:50,
+                    //     searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
+                    // },
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/service-request/form-options`,
                     },
+                    processResponse: (res) => {
+                        const tenants = res?.data?.tenants || [];
+                        return (Array.isArray(tenants) ? tenants : []).map(
+                            i => ({
+                        
+                            ...i,
+                            name: i.tenant || "",
+                            phone_number: i.phone_number || ""
+                        })
+                        );
+                    },
+                    showColumnHeader: true,
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
                         me.controls.tenant_id.value = tenant.id;
+                        
+
                         me.loadTenantOptions(tenant.id);
                     }
                 });
