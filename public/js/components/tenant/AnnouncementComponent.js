@@ -280,8 +280,10 @@ var AnnouncementComponent = (() => {
             const pr = mThis.priorityMeta(d.priority);
             const icon = mThis.categoryIcon(d);
 
-            const pubDate = d.publish_date
-                ? formatShortDate(d.publish_date)
+            const buildingName = escapeHtml(d.building_name || "All Buildings");
+            const audience = escapeHtml(d.audience || "All Tenants");
+            const pubDate = d.created_at
+                ? formatRelativeTime(d.created_at)
                 : "Not set";
             const expDate = d.expiry_date
                 ? formatShortDate(d.expiry_date)
