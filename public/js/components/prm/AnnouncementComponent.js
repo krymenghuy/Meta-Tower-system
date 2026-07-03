@@ -171,119 +171,117 @@ var AnnouncementComponent = (() => {
         return `${monthStr} ${day}, ${d.getFullYear()}`;
     };
 
+    const CATEGORY_THEMES = {
+        general: {
+            iconClass: "fa-solid fa-bullhorn",
+            iconBg: "#f0f4f8",
+            iconColor: "#3f609f",
+            badgeClass: "ann-badge-general",
+        },
+        maintenance: {
+            iconClass: "fa-solid fa-screwdriver-wrench",
+            iconBg: "#ecfdf5",
+            iconColor: "#10b981",
+            badgeClass: "ann-badge-maintenance",
+        },
+        notice: {
+            iconClass: "fa-solid fa-bullhorn",
+            iconBg: "#fef2f2",
+            iconColor: "#ef4444",
+            badgeClass: "ann-badge-notice",
+        },
+        event: {
+            iconClass: "fa-solid fa-calendar-days",
+            iconBg: "#f5f3ff",
+            iconColor: "#8b5cf6",
+            badgeClass: "ann-badge-event",
+        },
+        policy: {
+            iconClass: "fa-solid fa-square-parking",
+            iconBg: "#fff7ed",
+            iconColor: "#f97316",
+            badgeClass: "ann-badge-policy",
+        },
+        "policy update": {
+            iconClass: "fa-solid fa-square-parking",
+            iconBg: "#fff7ed",
+            iconColor: "#f97316",
+            badgeClass: "ann-badge-policy-update",
+        }
+    };
+
+    mThis.resolveCardTheme = (d) => {
+        const categoryLower = (d.category || "").toLowerCase();
+        const titleLower = (d.title || "").toLowerCase();
+
+        const baseTheme = CATEGORY_THEMES[categoryLower] || CATEGORY_THEMES.general;
+        const theme = { ...baseTheme };
+
+        if (
+            titleLower.includes("building water maintenance") ||
+            (titleLower.includes("maintenance") &&
+                titleLower.includes("water") &&
+                !titleLower.includes("interruption"))
+        ) {
+            theme.iconClass = "fa-solid fa-bullhorn";
+            theme.iconBg = "#fef2f2";
+            theme.iconColor = "#ef4444";
+        } else if (titleLower.includes("water") || titleLower.includes("plumbing")) {
+            theme.iconClass = "fa-solid fa-droplet";
+            theme.iconBg = "#ecfdf5";
+            theme.iconColor = "#10b981";
+        } else if (titleLower.includes("parking") || titleLower.includes("car")) {
+            theme.iconClass = "fa-solid fa-square-parking";
+            theme.iconBg = "#fff7ed";
+            theme.iconColor = "#f97316";
+        } else if (
+            titleLower.includes("holiday") ||
+            titleLower.includes("closed") ||
+            titleLower.includes("office")
+        ) {
+            theme.iconClass = "fa-solid fa-building";
+            theme.iconBg = "#eff6ff";
+            theme.iconColor = "#3b82f6";
+        } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
+            theme.iconClass = "fa-solid fa-elevator";
+            theme.iconBg = "#f5f3ff";
+            theme.iconColor = "#8b5cf6";
+        }
+
+        return theme;
+    };
+
     mThis.renderCards = (container, data) => {
         container.innerHTML = "";
         let html = `<div class="announcement-cards-list mt-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
+                const theme = mThis.resolveCardTheme(d);
+                const categoryBadgeClass = theme.badgeClass;
+                const categoryBadgeText = d.category || "General";
+                const iconBg = theme.iconBg;
+                const iconClass = theme.iconClass;
+                const iconColor = theme.iconColor;
+
                 const priorityLower = (d.priority || "Low").toLowerCase();
-                const categoryLower = (d.category || "").toLowerCase();
-                const titleLower = (d.title || "").toLowerCase();
-
-                let iconClass = "fa-solid fa-bullhorn";
-                let themeColor = "#3b82f6";
-                let iconBg = "#eff6ff";
-                let iconColor = "#3b82f6";
-
-                if (
-                    titleLower.includes("building water maintenance") ||
-                    (titleLower.includes("maintenance") &&
-                        titleLower.includes("water") &&
-                        !titleLower.includes("interruption"))
-                ) {
-                    iconClass = "fa-solid fa-bullhorn";
-                    themeColor = "#ef4444";
-                    iconBg = "#fef2f2";
-                    iconColor = "#ef4444";
-                } else if (
-                    titleLower.includes("water") ||
-                    titleLower.includes("plumbing")
-                ) {
-                    iconClass = "fa-solid fa-droplet";
-                    themeColor = "#10b981";
-                    iconBg = "#ecfdf5";
-                    iconColor = "#10b981";
-                } else if (
-                    titleLower.includes("parking") ||
-                    titleLower.includes("car")
-                ) {
-                    iconClass = "fa-solid fa-square-parking";
-                    themeColor = "#f97316";
-                    iconBg = "#fff7ed";
-                    iconColor = "#f97316";
-                } else if (
-                    titleLower.includes("holiday") ||
-                    titleLower.includes("closed") ||
-                    titleLower.includes("office")
-                ) {
-                    iconClass = "fa-solid fa-building";
-                    themeColor = "#3b82f6";
-                    iconBg = "#eff6ff";
-                    iconColor = "#3b82f6";
-                } else if (
-                    titleLower.includes("elevator") ||
-                    titleLower.includes("lift")
-                ) {
-                    iconClass = "fa-solid fa-elevator";
-                    themeColor = "#8b5cf6";
-                    iconBg = "#f5f3ff";
-                    iconColor = "#8b5cf6";
-                } else {
-                    if (categoryLower === "maintenance") {
-                        iconClass = "fa-solid fa-screwdriver-wrench";
-                        themeColor = "#10b981";
-                        iconBg = "#ecfdf5";
-                        iconColor = "#10b981";
-                    } else if (categoryLower === "notice") {
-                        iconClass = "fa-solid fa-bullhorn";
-                        themeColor = "#ef4444";
-                        iconBg = "#fef2f2";
-                        iconColor = "#ef4444";
-                    } else if (categoryLower === "event") {
-                        iconClass = "fa-solid fa-calendar-days";
-                        themeColor = "#8b5cf6";
-                        iconBg = "#f5f3ff";
-                        iconColor = "#8b5cf6";
-                    } else if (
-                        categoryLower === "policy update" ||
-                        categoryLower === "policy"
-                    ) {
-                        iconClass = "fa-solid fa-square-parking";
-                        themeColor = "#f97316";
-                        iconBg = "#fff7ed";
-                        iconColor = "#f97316";
-                    }
+                let priorityBadgeClass = "ann-badge-low";
+                let cardPriorityClass = "ann-card-low";
+                if (priorityLower === "medium") {
+                    priorityBadgeClass = "ann-badge-medium";
+                    cardPriorityClass = "ann-card-medium";
+                } else if (priorityLower === "high") {
+                    priorityBadgeClass = "ann-badge-high";
+                    cardPriorityClass = "ann-card-high";
+                } else if (priorityLower === "critical") {
+                    priorityBadgeClass = "ann-badge-critical";
+                    cardPriorityClass = "ann-card-critical";
                 }
 
-                let borderLeftColor = themeColor;
-
-                let categoryBadgeStyle =
-                    "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; font-weight: 600;";
-                let categoryBadgeText = d.category || "General";
-
-                if (categoryLower === "maintenance") {
-                    categoryBadgeStyle =
-                        "background-color: #ecfdf5 !important; color: #10b981 !important; border: 1px solid #d1fae5 !important; font-weight: 600;";
-                } else if (categoryLower === "notice") {
-                    categoryBadgeStyle =
-                        "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; font-weight: 600;";
-                } else if (categoryLower === "event") {
-                    categoryBadgeStyle =
-                        "background-color: #f5f3ff !important; color: #8b5cf6 !important; border: 1px solid #ede9fe !important; font-weight: 600;";
-                } else if (
-                    categoryLower === "policy update" ||
-                    categoryLower === "policy"
-                ) {
-                    categoryBadgeStyle =
-                        "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important; font-weight: 600;";
-                }
-
-                let statusDotColor =
-                    d.status === "Active" ? "#10b981" : "#6a6787";
+                let statusBadgeClass = d.status === "Active" ? "ann-status-active" : "ann-status-draft";
                 let statusText = d.status === "Active" ? "Active" : "Draft";
 
                 let pubDate = d.publish_date
-                    ? formatRelativeTime(d.publish_date)
+                    ? formatDateOnly(d.publish_date)
                     : "Not set";
                 const hasExpiry = d.expiry_date && 
                                   d.expiry_date !== "null" &&
@@ -297,55 +295,57 @@ var AnnouncementComponent = (() => {
                 let buildingName = d.building_name || "All Buildings";
 
                 const isTenant = main_view.main_route === "tenant";
-                const infoColClass = isTenant
-                    ? "col-12 col-md-9 col-lg-9"
-                    : "col-12 col-md-7 col-lg-7";
 
                 html += `
-                    <div class="card mb-3 border shadow-sm rounded-3 overflow-hidden position-relative" style="border: 1px solid #e2e8f0 !important; border-left: 6px solid ${borderLeftColor} !important; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div class="card mb-3 shadow-sm rounded-3 overflow-hidden position-relative announcement-card ${cardPriorityClass}">
                         <div class="card-body p-4">
                             <div class="row align-items-center">
                                 
-                                <div class="${infoColClass}">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background-color: ${iconBg}; transition: all 0.2s;">
-                                            <i class="${iconClass} fs-5" style="color: ${iconColor};"></i>
-                                        </div>
-                                        
-                                        <div>
-                                            <h5 class="fw-bold mb-2 font-size-15" style="color: #1e293b !important; font-weight: 700 !important; letter-spacing: -0.01em;">${d.title ?? ""}</h5>
-                                            <div class="mb-2 text-wrap announcement-desc" style="line-height: 1.6; font-size: 13.5px; color: #1a1655 !important;">
-                                                ${d.description ?? ""}
-                                            </div>
-
-                                            <div class="d-flex flex-wrap gap-3 font-size-12">
-                                                <span class="d-flex align-items-center" style="color: #757575!important;">
-                                                    <i class="fa-solid fa-building me-2" style="color: #757575;"></i> ${buildingName}
-                                                </span>
-                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-users me-2" style="color: #757575;"></i> ${d.audience || "All Tenants"}
-                                                </span>
-                                                <span class="d-flex align-items-center" style="color: #757575 !important;">
-                                                    <i class="fa-solid fa-flag me-2" style="color: #757575;"></i> ${d.priority || "Low"} Priority
-                                                </span>
-                                            </div>
-                                        </div>
+                                <div class="col-auto d-flex align-items-center justify-content-center" style="width: 5%; min-width: 44px;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background-color: ${iconBg}; transition: all 0.2s;">
+                                        <i class="${iconClass} fs-5" style="color: ${iconColor};"></i>
                                     </div>
                                 </div>
                                 
-                                <div class="col-12 col-md-3 col-lg-3 px-4 border-start d-none d-md-block" style="border-color: #e2e8f0 !important;">
-                                    <div class="mb-2">
-                                        <span class="badge font-size-11 px-3 py-2 rounded-5" style="${categoryBadgeStyle}">${categoryBadgeText}</span>
-                                    </div>  
-                                    <div class="d-flex align-items-center small mb-1.5 font-size-12" style="color: #757575 !important;">
-                                        <span class="rounded-circle me-2" style="width: 8px; height: 8px; background-color: ${statusDotColor}; display: inline-block;"></span>
-                                        <span>${statusText}</span>
+                                <div class="ps-3 flex-grow-1" style="width: 65%; min-width: 0;">
+                                    <h5 class="fw-bold mb-2 font-size-15" style="color: #1e293b;font-weight: 700; letter-spacing: -0.01em;">${d.title ?? ""}</h5>
+                                    <div class="mb-2 text-wrap announcement-desc" style="line-height: 1.6; font-size: 13.5px; color: #1a1655; word-break: break-word; overflow-wrap: break-word;">
+                                        ${d.description ?? ""}
                                     </div>
-                                    <div class="font-size-12 mb-1.5 d-flex align-items-center" style="color: #757575 !important;">
-                                        <i class="fa-solid fa-calendar me-2" style="color: #757575;"></i> ${pubDate}
+
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        <span class="badge font-size-10 px-3 py-2 rounded-5 d-inline-flex align-items-center gap-2 ${priorityBadgeClass}">
+                                            <i class="fa-solid fa-flag"></i> ${d.priority || "Low"} Priority
+                                        </span>
+                                        
+                                        <span class="badge font-size-10 px-3 py-2 rounded-5 d-inline-flex align-items-center gap-2 ${categoryBadgeClass}">
+                                            <i class="${iconClass}"></i> ${categoryBadgeText}
+                                        </span>
+                                        
+                                        <span class="badge font-size-10 px-3 py-2 rounded-5 d-inline-flex align-items-center gap-2 ann-badge-neutral">
+                                            <i class="fa-solid fa-building"></i> ${buildingName}
+                                        </span>
+                                        
+                                        <span class="badge font-size-10 px-3 py-2 rounded-5 d-inline-flex align-items-center gap-2 ann-badge-neutral">
+                                            <i class="fa-solid fa-users"></i> ${d.audience || "All Tenants"}
+                                        </span>
                                     </div>
-                                    <div class="font-size-12 d-flex align-items-center" style="color: #757575 !important;">
-                                        <i class="fa-solid fa-clock me-2" style="color: #757575;"></i> ${expDate}
+                                </div>
+                                
+                                <div class="ps-4 pe-4 d-none d-md-flex ann-meta-sidebar">
+                                    <div class="ann-meta-item">
+                                        <span class="ann-status-badge ${statusBadgeClass}">
+                                            <span class="ann-status-dot"></span>
+                                            ${statusText}
+                                        </span>
+                                    </div>
+                                    <div class="ann-meta-item">
+                                        <i class="fa-solid fa-calendar"></i>
+                                        <span>${pubDate}</span>
+                                    </div>
+                                    <div class="ann-meta-item">
+                                        <i class="fa-solid fa-clock"></i>
+                                        <span>${expDate}</span>
                                     </div>
                                 </div>
 
@@ -353,7 +353,7 @@ var AnnouncementComponent = (() => {
                                     isTenant
                                         ? ""
                                         : `
-                                <div class="col-12 col-md-2 col-lg-2 text-end ps-3 d-flex align-items-center justify-content-end">
+                                <div class="text-end ps-3 d-flex align-items-center justify-content-end" style="width: 10%;">
                                     <a href="javascript:void(0)" class="btn-edit-announcement d-inline-flex align-items-center justify-content-center rounded-circle" data-id="${d.id}" style="width: 34px; height: 34px; background-color: #f1f5f9; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#e2e8f0'" onmouseout="this.style.backgroundColor='#f1f5f9'">
                                         <i class="fa-solid fa-pen text-primary" style="font-size: 13px;"></i>
                                     </a>
@@ -537,65 +537,6 @@ const AnnouncementDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        const styleId = "_cke_custom_announcement_style";
-        if (!document.getElementById(styleId)) {
-            const style = document.createElement("style");
-            style.id = styleId;
-            style.textContent = `
-                .cke_chrome {
-                    border: 1px solid #e5e7eb !important;
-                    border-radius: 12px !important;
-                    box-shadow: none !important;
-                    overflow: hidden !important;
-                    background: #fff !important;
-                }
-                .cke_top {
-                    background: #f8fafc !important;
-                    border-bottom: 1px solid #f1f5f9 !important;
-                    padding: 8px 12px !important;
-                }
-                .cke_toolgroup {
-                    background: none !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    display: inline-flex !important;
-                    align-items: center !important;
-                    gap: 4px !important;
-                    margin: 0 !important;
-                }
-                .cke_button {
-                    border-radius: 6px !important;
-                    padding: 4px 6px !important;
-                    transition: background 0.15s ease !important;
-                }
-                .cke_button:hover, .cke_button_on {
-                    background: #e2e8f0 !important;
-                    box-shadow: none !important;
-                    border: none !important;
-                }
-                .cke_combo {
-                    margin: 0 !important;
-                }
-                .cke_combo_button {
-                    background: none !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    border-radius: 6px !important;
-                    padding: 4px 8px !important;
-                }
-                .cke_combo_button:hover {
-                    background: #e2e8f0 !important;
-                }
-                .cke_bottom {
-                    display: none !important;
-                }
-                .cke_wysiwyg_frame, .cke_wysiwyg_div {
-                    background-color: #fff !important;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
         dialog =
             dialog ||
             new GeneralDialog({

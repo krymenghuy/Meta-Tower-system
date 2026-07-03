@@ -551,7 +551,6 @@ var DashboardComponent = new (function () {
             }
         }
 
-        /* Modern Announcement Alert styles */
         .md-announcement-alert {
             position: relative;
             height: 100%;
@@ -562,22 +561,11 @@ var DashboardComponent = new (function () {
             overflow: hidden;
             transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
-        
+
         .md-announcement-alert:hover {
             transform: translateY(-2px);
             border-color: rgba(79,70,229,.22) !important;
             box-shadow: 0 18px 42px rgba(15, 23, 42, 0.11) !important;
-        }
-
-        .md-announcement-alert::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--alert-color, #ef4444), transparent);
-            border-radius: 24px 24px 0 0;
         }
 
         .md-alert-icon-container {
@@ -601,15 +589,19 @@ var DashboardComponent = new (function () {
         }
 
         .md-badge-new {
+            position: absolute;
+            top: 0;
+            left: 0;
             background: var(--alert-color) !important;
             color: #fff !important;
             font-family: inherit !important;
             font-weight: 800 !important;
             letter-spacing: 0.05em;
             font-size: 9px !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
+            padding: 5px 12px !important;
+            border-radius: 0 0 12px 0 !important;
             box-shadow: 0 2px 6px var(--alert-soft);
+            z-index: 10;
         }
 
         .md-alert-title {
@@ -649,6 +641,7 @@ var DashboardComponent = new (function () {
         }
 
         .md-view-btn {
+            width: 100%;
             background: var(--alert-color) !important;
             color: white !important;
             font-family: inherit !important;
@@ -659,6 +652,12 @@ var DashboardComponent = new (function () {
             border-radius: 12px !important;
             box-shadow: 0 4px 14px var(--alert-soft) !important;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        @media (min-width: 576px) {
+            .md-view-btn {
+                width: auto;
+            }
         }
 
         .md-view-btn:hover {
@@ -1038,6 +1037,7 @@ var DashboardComponent = new (function () {
 
         return `
             <div class="md-announcement-alert mb-4 p-4 position-relative" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
+                <span class="badge md-badge-new text-uppercase text-white">New</span>
                 <button type="button" class="md-alert-close-btn position-absolute" onclick="
                     const dismissed = JSON.parse(localStorage.getItem('dismissed_announcements') || '[]');
                     dismissed.push(${a.id});
@@ -1050,9 +1050,6 @@ var DashboardComponent = new (function () {
                             <i class="fa-solid fa-bullhorn md-alert-pulse" style="color: var(--alert-color); font-size: 1.25rem;"></i>
                         </div>
                         <div>
-                            <div class="mb-1.5">
-                                <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
-                            </div>
                             <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
                                 <h5 class="fw-bold mb-0 md-alert-title">${title}</h5>
                                 <span class="badge font-size-10 px-2 py-0.5 rounded-pill" style="${badgeStyle}">${priority}</span>
@@ -1075,7 +1072,7 @@ var DashboardComponent = new (function () {
                                 ${building}
                             </span>
                         </div>
-                        <button class="btn md-view-btn w-100 w-sm-auto" onclick="AnnouncementComponent.show()">View Announcement</button>
+                        <button class="btn md-view-btn" onclick="AnnouncementComponent.show()">View Announcement</button>
                     </div>
                 </div>
             </div>
