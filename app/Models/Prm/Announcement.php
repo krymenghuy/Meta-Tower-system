@@ -158,13 +158,6 @@ class Announcement
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
 
-        $isTenant = !empty($ss->official_id) || !empty($arr['is_tenant']);
-        if ($isTenant) {
-            $count = min($count, 3);
-            $rows = $query->take(3)->get();
-            return new LengthAwarePaginator($rows, $count, 3, 1);
-        }
-
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
