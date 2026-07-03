@@ -1626,11 +1626,11 @@ const EditUserDialog = new function(){
     {
         e.preventDefault();
         let op = mThis.getDataForm();
-        console.log(222,op);
+        // console.log(222,op);
         vsapi.call(`${main_view.base_url}/api/user/update`,op,null).then(res => {
             if(res.status_code === 200)
             {
-                // mThis.self.modal('hide');
+                mThis.modal.hide();
                 if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
             }
             else
