@@ -1,7 +1,7 @@
 "use strict";
-var BookAmenityComponent = (() => {
+var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Book Amenity";
+    mThis.title_prop = "Reservations";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_book_amenity_component",
@@ -164,7 +164,7 @@ var BookAmenityComponent = (() => {
                 </div>
 
                 <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Booking Date</h6>
+                    <h6 class="mb-0 text-uppercase">Reservation Date</h6>
                 </div>
 
                 <div class="col-2">
@@ -511,7 +511,7 @@ const CreateReservationDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
-                                    <label>Booking Date</label>
+                                    <label>Reservation Date</label>
                                 </div>
                             </div>
                             <div class="col-3">
@@ -587,7 +587,7 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Book Now",
+                    createTitle: "Reservation Now",
                     modifyTitle: "Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
