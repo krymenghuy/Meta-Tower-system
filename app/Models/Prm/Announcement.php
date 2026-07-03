@@ -38,7 +38,7 @@ class Announcement
         $desc_char = ['&', '.', '/', '-', ' ', '?', '!', '(', ')', '[', ']', ',', ':', ';', '"', '<', '>', '=', '_', '+', '%', '$', '#', '@', '\'', '*', '{', '}', '|', '\\', '~', '`', '^'];
         $clean_char = [' ', '-', '_'];
         $res = DBX::validateObject($arr, $v_rule, 1, [
-            'title' => $title_char, 
+            'title' => $title_char,
             'description' => $desc_char,
             'category' => $clean_char,
             'priority' => $clean_char,

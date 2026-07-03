@@ -247,6 +247,15 @@
     flex-direction: column;
 }
 
+.contract-card__renewal-panel {
+    margin-top: 12px;
+    min-height: 80px;
+}
+
+.contract-card__renewal-panel .contract2-renewal--inline {
+    background: #fff;
+}
+
 .contract-card__detail-wrap {
     /* margin-top: auto; */
     padding: 20px 12px 10px 12px;
@@ -1311,7 +1320,7 @@
     border-radius: 12px;
     padding: 11px 12px;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px 12px;
 }
 

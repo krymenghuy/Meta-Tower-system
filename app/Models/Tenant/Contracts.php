@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use App\Models\Prm\GeneralSettings;
+use App\Models\Prm\Contract as PrmContract;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -349,6 +350,31 @@ class Contracts  //extends Model
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    public function getListRenewalsPaginate($arr, $ss = null)
+    {
+        $d = (object) $arr;
+        $contract_id = isset($d->contract_id) && is_numeric($d->contract_id) ? $d->contract_id : null;
+        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? $d->per_page : 10;
+        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? $d->current_page : 1;
+
+        if (!$contract_id) {
+            return new LengthAwarePaginator([], 0, $per_page, $current_page);
+        }
+
+        $tenant_id = $ss->official_id ?? null;
+        $owned = DB::table('contracts')
+            ->where('id', $contract_id)
+            ->where('tenant_id', $tenant_id)
+            ->exists();
+
+        if (!$owned) {
+            return new LengthAwarePaginator([], 0, $per_page, $current_page);
+        }
+
+        $prmContract = new PrmContract();
+        return $prmContract->getListRenewalsPaginate($arr, $ss);
     }
 
 
