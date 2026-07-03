@@ -126,8 +126,28 @@ class Announcement
             $query->where('a.priority', $priority);
         }
 
-        if ($status) {
-            $query->where('a.status', $status);
+        $isTenant = !empty($ss->official_id) || !empty($arr['is_tenant']);
+        if ($isTenant) {
+            $nowStr = date('Y-m-d H:i:s');
+            $query->where('a.status', 'Active');
+            $query->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.publish_date')
+                  ->orWhere('a.publish_date', '')
+                  ->orWhere('a.publish_date', 'null')
+                  ->orWhere('a.publish_date', 'like', '0000%')
+                  ->orWhere('a.publish_date', '<=', $nowStr);
+            });
+            $query->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.expiry_date')
+                  ->orWhere('a.expiry_date', '')
+                  ->orWhere('a.expiry_date', 'null')
+                  ->orWhere('a.expiry_date', 'like', '0000%')
+                  ->orWhereRaw("DATE(a.expiry_date) >= ?", [date('Y-m-d')]);
+            });
+        } else {
+            if ($status) {
+                $query->where('a.status', $status);
+            }
         }
 
         $orderDirection = ($sort === 'oldest') ? 'asc' : 'desc';
@@ -137,6 +157,14 @@ class Announcement
 
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
+
+        $isTenant = !empty($ss->official_id) || !empty($arr['is_tenant']);
+        if ($isTenant) {
+            $count = min($count, 3);
+            $rows = $query->take(3)->get();
+            return new LengthAwarePaginator($rows, $count, 3, 1);
+        }
+
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

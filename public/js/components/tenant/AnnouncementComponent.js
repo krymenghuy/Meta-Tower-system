@@ -57,6 +57,7 @@ var AnnouncementComponent = (() => {
     mThis.getFilterData = () => {
         let p = {
             status: "Active", //Tenants can only view Active announcements
+            is_tenant: 1,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -94,6 +95,68 @@ var AnnouncementComponent = (() => {
         hours = hours ? hours : 12;
         const hoursStr = String(hours).padStart(2, "0");
         return `${monthStr} ${day}, ${d.getFullYear()} ${hoursStr}:${minutes} ${ampm}`;
+    };
+
+    const formatRelativeTime = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
+        
+        let dateStr = sqlDate;
+        if (!dateStr.includes("T") && !dateStr.includes("+") && !dateStr.includes("Z")) {
+            dateStr = dateStr.replace(" ", "T") + "+07:00";
+        }
+        const targetDate = new Date(dateStr);
+        if (isNaN(targetDate.getTime())) return sqlDate;
+        
+        const now = new Date();
+        const diffMs = now.getTime() - targetDate.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+        
+        if (diffSec < 0) {
+            return formatDateOnly(sqlDate);
+        }
+        if (diffSec < 60) {
+            return "Just now";
+        }
+        
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) {
+            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+        }
+        
+        const diffHrs = Math.floor(diffMin / 60);
+        if (diffHrs < 24) {
+            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+        }
+        
+        const diffDays = Math.floor(diffHrs / 24);
+        if (diffDays < 7) {
+            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        }
+        
+        return formatDateOnly(sqlDate);
+    };
+
+    const formatDateOnly = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "";
+        const d = new Date(sqlDate.replace(/-/g, "/"));
+        if (isNaN(d.getTime())) return sqlDate;
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const monthStr = months[d.getMonth()];
+        const day = d.getDate();
+        return `${monthStr} ${day}, ${d.getFullYear()}`;
     };
 
     const MONTHS = [
@@ -347,15 +410,17 @@ var AnnouncementComponent = (() => {
             LocaleManager.trans("All Categories", "titles"),
             "",
         );
-        VSUtil.setComboItems(
-            mThis.elFilter_priority,
-            priorities,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("All Priorities", "titles"),
-            "",
-        );
+        if (mThis.elFilter_priority) {
+            VSUtil.setComboItems(
+                mThis.elFilter_priority,
+                priorities,
+                "id",
+                "name",
+                "",
+                LocaleManager.trans("All Priorities", "titles"),
+                "",
+            );
+        }
         VSUtil.setComboItems(
             mThis.elFilter_sort,
             sortOptions,
