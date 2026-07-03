@@ -61,7 +61,12 @@ class Announcement
 
         // Format dates
         if (!empty($inputs['publish_date'])) {
-            $inputs['publish_date'] = date('Y-m-d H:i:s', strtotime($inputs['publish_date']));
+            $publishDateOnly = date('Y-m-d', strtotime($inputs['publish_date']));
+            if ($publishDateOnly === date('Y-m-d')) {
+                $inputs['publish_date'] = date('Y-m-d H:i:s');
+            } else {
+                $inputs['publish_date'] = date('Y-m-d H:i:s', strtotime($inputs['publish_date']));
+            }
         }
         if (!empty($inputs['expiry_date'])) {
             $inputs['expiry_date'] = date('Y-m-d H:i:s', strtotime($inputs['expiry_date']));
@@ -153,17 +158,12 @@ class Announcement
         $orderDirection = ($sort === 'oldest') ? 'asc' : 'desc';
         $query->orderBy('a.id', $orderDirection);
 
-        $query->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id, b.name as building_name");
+        $query->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id, a.created_at, b.name as building_name");
 
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
 
-        $isTenant = !empty($ss->official_id) || !empty($arr['is_tenant']);
-        if ($isTenant) {
-            $count = min($count, 3);
-            $rows = $query->take(3)->get();
-            return new LengthAwarePaginator($rows, $count, 3, 1);
-        }
+
 
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
