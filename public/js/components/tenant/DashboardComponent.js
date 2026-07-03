@@ -619,25 +619,58 @@ var DashboardComponent = new (function () {
             line-height: 1.6 !important;
         }
 
-        .md-meta-pill {
-            display: inline-flex;
+        .md-meta-card {
+            display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 12px !important;
-            background-color: rgba(241, 245, 249, 0.8) !important;
-            border: 1px solid rgba(226, 232, 240, 0.8) !important;
-            border-radius: 10px !important;
-            color: #64748b !important;
-            font-family: inherit !important;
-            font-weight: 600 !important;
-            font-size: 11px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-            transition: all 0.2s;
+            gap: 12px;
+            padding: 8px 14px;
+            background: #ffffff;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.015);
         }
 
-        .md-meta-pill:hover {
-            background-color: #f1f5f9 !important;
-            color: #475569 !important;
+        .md-meta-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .md-meta-card-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.05em;
+            margin-bottom: 1px;
+            line-height: 1;
+        }
+
+        .md-meta-card-value {
+            font-size: 12.5px;
+            font-weight: 750;
+            color: #1e293b;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+
+        .md-meta-divider {
+            width: 1px;
+            height: 28px;
+            background-color: #cbd5e1;
+            align-self: center;
+            opacity: 0.4;
+        }
+
+        @media (max-width: 768px) {
+            .md-meta-divider {
+                display: none;
+            }
         }
 
         .md-view-btn {
@@ -646,12 +679,16 @@ var DashboardComponent = new (function () {
             color: white !important;
             font-family: inherit !important;
             font-weight: 700 !important;
-            font-size: 12px !important;
-            padding: 10px 18px !important;
+            font-size: 13px !important;
+            padding: 12px 24px !important;
             border: none !important;
-            border-radius: 12px !important;
+            border-radius: 999px !important;
             box-shadow: 0 4px 14px var(--alert-soft) !important;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         @media (min-width: 576px) {
@@ -673,24 +710,68 @@ var DashboardComponent = new (function () {
         .md-alert-close-btn {
             top: 16px;
             right: 16px;
-            width: 28px;
-            height: 28px;
-            border: none !important;
-            background: rgba(241, 245, 249, 0.8) !important;
-            border-radius: 50% !important;
+            height: 32px;
+            min-width: 32px;
+            width: 32px;
+            border: 1px solid #e2e8f0 !important;
+            background: #ffffff !important;
+            border-radius: 999px !important;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: #64748b !important;
             font-size: 16px !important;
-            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 15;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .md-close-text {
+            max-width: 0;
+            opacity: 0;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .md-close-x {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            line-height: 1;
+            transition: transform 0.3s;
         }
 
         .md-alert-close-btn:hover {
+            width: auto;
+            padding: 0 12px;
             background-color: #fee2e2 !important;
             color: #ef4444 !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+        }
+
+        .md-alert-close-btn:hover .md-close-text {
+            max-width: 120px;
+            opacity: 1;
+            margin-right: 6px;
+        }
+
+        .md-alert-close-btn:hover .md-close-x {
             transform: rotate(90deg);
+        }
+
+        @media (min-width: 992px) {
+            .ann-alert-right-col {
+                margin-top: 36px;
+            }
         }
     `;
 
@@ -960,6 +1041,49 @@ var DashboardComponent = new (function () {
         return `${monthStr} ${day}, ${d.getFullYear()}`;
     };
 
+    mThis.formatRelativeTime = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
+
+        let dateStr = sqlDate;
+        if (
+            !dateStr.includes("T") &&
+            !dateStr.includes("+") &&
+            !dateStr.includes("Z")
+        ) {
+            dateStr = dateStr.replace(" ", "T") + "+07:00";
+        }
+        const targetDate = new Date(dateStr);
+        if (isNaN(targetDate.getTime())) return sqlDate;
+
+        const now = new Date();
+        const diffMs = now.getTime() - targetDate.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+
+        if (diffSec < 0) {
+            return mThis.formatDateOnly(sqlDate);
+        }
+        if (diffSec < 60) {
+            return "Just now";
+        }
+
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) {
+            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+        }
+
+        const diffHrs = Math.floor(diffMin / 60);
+        if (diffHrs < 24) {
+            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+        }
+
+        const diffDays = Math.floor(diffHrs / 24);
+        if (diffDays < 7) {
+            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        }
+
+        return mThis.formatDateOnly(sqlDate);
+    };
+
     mThis.formatAlertTimeRange = (pubDate, expDate) => {
         if (!pubDate || pubDate.startsWith("0000-00-00")) return "All Day";
 
@@ -999,6 +1123,22 @@ var DashboardComponent = new (function () {
         }
     };
 
+    mThis.dismissAnnouncement = (el) => {
+        const card = el.closest(".md-announcement-alert");
+        const id = card ? card.dataset.announcementId : null;
+        if (!id) return;
+        
+        const dismissed = JSON.parse(
+            localStorage.getItem("dismissed_announcements") || "[]",
+        );
+        dismissed.push(Number(id));
+        localStorage.setItem(
+            "dismissed_announcements",
+            JSON.stringify(dismissed),
+        );
+        card.remove();
+    };
+
     mThis.renderCriticalAnnouncementAlert = function (announcements) {
         const dismissedIds = JSON.parse(
             localStorage.getItem("dismissed_announcements") || "[]",
@@ -1017,37 +1157,43 @@ var DashboardComponent = new (function () {
         const rawDesc = mThis.cleanHtmlText(a.description);
         const description = h(rawDesc);
         const priority = h(a.priority);
-        const date = a.publish_date
-            ? mThis.formatDateOnly(a.publish_date)
+        const publishRelative = a.publish_date
+            ? mThis.formatRelativeTime(a.publish_date)
             : "Not set";
+        const hasExpiry =
+            a.expiry_date &&
+            a.expiry_date !== "null" &&
+            !a.expiry_date.startsWith("0000-00-00");
+        const expiryDateFormatted = hasExpiry
+            ? mThis.formatDateOnly(a.expiry_date)
+            : "";
         const time = mThis.formatAlertTimeRange(a.publish_date, a.expiry_date);
         const building = h(a.building_name || "All Buildings");
 
         let alertColor = "#ef4444";
         let alertSoft = "rgba(239, 68, 68, 0.12)";
         let badgeStyle =
-            "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important;";
+            "background-color: #fef2f2; color: #ef4444; border: 1px solid #fee2e2";
 
         if (a.priority === "High") {
             alertColor = "#f59e0b";
             alertSoft = "rgba(245, 158, 11, 0.14)";
             badgeStyle =
-                "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important;";
+                "background-color: #fff7ed; color: #f97316; border: 1px solid #ffedd5";
         }
 
         return `
-            <div class="md-announcement-alert mb-4 p-4 position-relative" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
-                <span class="badge md-badge-new text-uppercase text-white">New</span>
-                <button type="button" class="md-alert-close-btn position-absolute" onclick="
-                    const dismissed = JSON.parse(localStorage.getItem('dismissed_announcements') || '[]');
-                    dismissed.push(${a.id});
-                    localStorage.setItem('dismissed_announcements', JSON.stringify(dismissed));
-                    this.closest('.md-announcement-alert').remove();
-                ">&times;</button>
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
-                    <div class="d-flex align-items-start gap-3 flex-grow-1">
+            <div class="col-6 md-announcement-alert mb-4 p-4 position-relative" data-announcement-id="${a.id}" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
+                <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
+                <button type="button" class="md-alert-close-btn position-absolute" onclick="DashboardComponent.dismissAnnouncement(this)">
+                    <span class="md-close-text">Don't show again</span>
+                    <span class="md-close-x">&times;</span>
+                </button>
+                
+                <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4">
+                    <div class="d-flex align-items-start gap-3 flex-grow-1 pt-3 pb-lg-0">
                         <div class="md-alert-icon-container flex-shrink-0">
-                            <i class="fa-solid fa-bullhorn md-alert-pulse" style="color: var(--alert-color); font-size: 1.25rem;"></i>
+                            <i class="fa-solid fa-bullhorn md-alert-pulse" ></i>
                         </div>
                         <div>
                             <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
@@ -1057,22 +1203,33 @@ var DashboardComponent = new (function () {
                             <p class="mb-0 md-alert-description">${description}</p>
                         </div>
                     </div>
-                    <div class="d-flex flex-column flex-sm-row flex-lg-column align-items-start align-items-sm-center align-items-lg-end gap-3 flex-shrink-0">
-                        <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
-                            <span class="md-meta-pill">
-                                <i class="fa-solid fa-calendar" style="color: var(--alert-color); width: 12px;"></i>
-                                ${date}
-                            </span>
-                            <span class="md-meta-pill">
-                                <i class="fa-solid fa-clock" style="color: var(--alert-color); width: 12px;"></i>
-                                ${time}
-                            </span>
-                            <span class="md-meta-pill">
-                                <i class="fa-solid fa-building" style="color: var(--alert-color); width: 12px;"></i>
-                                ${building}
-                            </span>
+                    <div class="d-flex flex-column align-items-start align-items-lg-end">
+                        <div class="pt-5 d-flex flex-wrap align-items-center gap-3 justify-content-start justify-content-lg-end">
+                            <div class="md-meta-card">
+                                <div class="md-meta-card-icon" style="background-color: #fef2f2; color: #ef4444;">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
+                                <div>
+                                    <div class="md-meta-card-label">Published</div>
+                                    <div class="md-meta-card-value">${publishRelative}</div>
+                                </div>
+                            </div>
+                            ${
+                                hasExpiry
+                                    ? `
+                            <div class="md-meta-card">
+                                <div class="md-meta-card-icon" style="background-color: #eff6ff; color: #3b82f6;">
+                                    <i class="fa-solid fa-calendar"></i>
+                                </div>
+                                <div>
+                                    <div class="md-meta-card-label">Expires</div>
+                                    <div class="md-meta-card-value">${expiryDateFormatted}</div>
+                                </div>
+                            </div>
+                            `
+                                    : ""
+                            }
                         </div>
-                        <button class="btn md-view-btn" onclick="AnnouncementComponent.show()">View Announcement</button>
                     </div>
                 </div>
             </div>
