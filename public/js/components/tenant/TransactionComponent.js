@@ -148,7 +148,7 @@ var TransactionComponent = new (function () {
 
         mThis.ReceiptListView = new ListView("_receipts_list", {
             fetchApi: `${main_view.base_url}/tenant/receipt/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -161,10 +161,10 @@ var TransactionComponent = new (function () {
         });
         mThis.listContainer = mThis.ReceiptListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         };
 
         mThis.tblReceipt = mThis.ReceiptListView.getTable();

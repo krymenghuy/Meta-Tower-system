@@ -19,7 +19,6 @@ var InvoicesComponent = (() => {
 
 
     mThis.cols = [
-        { transTitle: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Invoice No",
             className: "align-middle text-start text-nowrap",
@@ -216,7 +215,7 @@ var InvoicesComponent = (() => {
 
         mThis.InvoiceListView = new ListView("_invoices_list", {
             fetchApi: `${main_view.base_url}/tenant/invoice/list-paginate`,
-            perPage: 10,
+            perPage: 5,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -234,11 +233,11 @@ var InvoicesComponent = (() => {
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
