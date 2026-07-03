@@ -94,6 +94,8 @@ const InvoiceNoTaxDialog = (() => {
     };
 
     const buildInvoiceHTML = (invoice, setting,company) => {
+        console.log(4,setting);
+        
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
@@ -455,7 +457,7 @@ const InvoiceNoTaxDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
+                container.innerHTML = buildInvoiceHTML(op.invoice_id, op.setting, op.company);
                 wireButtons(container);
             },
             buttons: [{ label: '<span vslang="buttons.Close"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide() }]

@@ -82,7 +82,7 @@ var TransactionComponent = new (function () {
             data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
+                        <span class="small text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
                     </div>`;
             },
         },
