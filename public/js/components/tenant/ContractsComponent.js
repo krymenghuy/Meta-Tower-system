@@ -187,7 +187,7 @@ var ContractsComponent = new (function () {
             </div>`;
     };
 
-  
+
 
     mThis.renderContractCard = (data) => {
         const status = mThis.getStatusMeta(data);
@@ -201,9 +201,6 @@ var ContractsComponent = new (function () {
         const keyRenewalDate = mThis.escapeHtml(data.end_date ?? "—");
         const sqmDisplay = `${mThis.formatAreaDetail(data.sqm_size) ?? "—"}`;
         const imageMeta = mThis.getSpaceImageMeta(data);
-        const tenantName = mThis.escapeHtml(data.tenant_name ?? "—");
-        const tenantRole = mThis.escapeHtml(data.legal_name || "Primary tenant");
-        const tenantInitial = tenantName.charAt(0).toUpperCase() || "T";
         const symbol = data.cur_symbol || "$";
         const currency = data.currency_code ?? "USD";
         const size = Number(data.sqm_size || 0);
@@ -261,13 +258,7 @@ var ContractsComponent = new (function () {
                                         <span class="contract-card__sqft-value">${data.address || "—"}</span>
                                     </div>
                                 </div>
-                                <div class="contract-card__detail-wrap">
-                                    <button type="button" class="contract-card__action contract-card__action--detail btn_contract2_detail"
-                                        data-id="${data.id}">
-                                        View detail
-                                    </button>
-                                </div>
-                               
+
                             </div>
                             <div class="col-12 col-md-8 contract-card__col-right">
                                 <div class="contract-card__panel">
@@ -281,7 +272,7 @@ var ContractsComponent = new (function () {
                                             <span>${duration}</span>
                                         </div>
                                         <div class="contract-card__renewal-date">
-                                            Key renewal date: <span>${keyRenewalDate}</span>
+                                            Renewed date: <span>${keyRenewalDate}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -314,17 +305,6 @@ var ContractsComponent = new (function () {
                                     </div>
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--contacts">
-                                    <div class="contract-card__section-title">Tenant Contacts</div>
-                                    <div class="contract-card__contact">
-                                        <span class="contract-card__contact-avatar">${tenantInitial}</span>
-                                        <div class="contract-card__contact-info">
-                                            <strong>${tenantName}</strong>
-                                            <span>${tenantRole}</span>
-                                        </div>
-                                        <button type="button" class="contract-card__contact-btn" title="Contact">
-                                            <i class="fa-regular fa-user"></i>
-                                        </button>
-                                    </div>
                                     <div class="contract-card__renewal-panel" data-contract-renewal="${data.id}"></div>
                                 </div>
                             </div>
@@ -352,12 +332,6 @@ var ContractsComponent = new (function () {
                 const expanded = input.checked;
                 card.classList.toggle("is-collapsed", !expanded);
                 input.setAttribute("aria-expanded", expanded ? "true" : "false");
-            });
-        });
-
-        container.querySelectorAll(".btn_contract2_detail").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                mThis.showContractDetailDialog(btn.dataset.id);
             });
         });
 
@@ -464,7 +438,7 @@ var ContractsComponent = new (function () {
                 <button type="button" class="contract2-detail__close-btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                
+
                 <section class="contract2-detail__main">
                     <div class="contract2-detail__panel">
                             <div class="contract2-detail__section-card">

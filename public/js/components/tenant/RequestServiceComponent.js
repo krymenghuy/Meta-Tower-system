@@ -32,11 +32,35 @@ var RequestServiceComponent = (function () {
         return `${h12}:${minute} ${ampm}`;
     };
 
-    mThis.formatDuration = (hours) => {
-        const h = parseFloat(hours);
-        if (!hours || isNaN(h)) return "—";
-        const val = h % 1 === 0 ? h.toFixed(0) : String(h);
-        return `${val} Hour${parseFloat(val) === 1 ? "" : "s"}`;
+    mThis.formatDurationDisplay = (data) => {
+        const unitType = String(data?.unit_type ?? "").toLowerCase();
+        const isHourly =
+            unitType === "2" || unitType === "hour" || unitType === "hourly";
+        const hours = parseFloat(data?.duration_hours);
+
+        if (
+            isHourly &&
+            data?.duration_hours != null &&
+            data.duration_hours !== "" &&
+            !isNaN(hours)
+        ) {
+            return `${hours % 1 === 0 ? hours.toFixed(0) : hours}H`;
+        }
+
+        const unitMap = {
+            1: "One Time",
+            2: "Hour",
+            3: "Unit",
+            "one time": "One Time",
+            one_time: "One Time",
+            once: "One Time",
+            hour: "Hour",
+            hourly: "Hour",
+            unit: "Unit",
+            per_unit: "Unit",
+        };
+
+        return unitMap[unitType] || data?.unit_type || "—";
     };
 
     mThis.formatSchedule = (data) => {
@@ -136,7 +160,7 @@ var RequestServiceComponent = (function () {
             const serviceName = mThis.escapeHtml(data.service_name ?? "—");
             const code = mThis.escapeHtml(data.code ?? "N/A");
             const duration = mThis.escapeHtml(
-                mThis.formatDuration(data.duration_hours),
+                mThis.formatDurationDisplay(data),
             );
             const schedule = mThis.escapeHtml(mThis.formatSchedule(data));
             const remarksRaw = (data.remarks ?? "").trim();

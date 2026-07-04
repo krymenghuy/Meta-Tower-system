@@ -38,7 +38,8 @@
 }
 
 .contract-card-grid > [class*="col-"] {
-    align-self: flex-start;
+    align-self: stretch;
+    display: flex;
 }
 
 .contract-card {
@@ -48,6 +49,7 @@
     box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
     overflow: hidden;
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     transition: box-shadow 0.35s ease;
@@ -248,7 +250,6 @@
 }
 
 .contract-card__renewal-panel {
-    margin-top: 12px;
     min-height: 80px;
 }
 
@@ -1409,7 +1410,7 @@
 }
 .contract-card__finance-card {
     height: 100%;
-    padding: 16px;
+    padding: 8px;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     background: #fff;
