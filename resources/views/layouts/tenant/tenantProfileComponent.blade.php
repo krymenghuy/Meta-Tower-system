@@ -161,6 +161,11 @@
 </div>
 
 <style>
+#_main_tenant_profile_component {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .tp-profile {
     --tp-primary: #1A1647;
     --tp-primary2: #2E2A72;

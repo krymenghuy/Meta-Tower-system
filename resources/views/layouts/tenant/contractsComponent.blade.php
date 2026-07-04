@@ -1410,7 +1410,7 @@
 }
 .contract-card__finance-card {
     height: 100%;
-    padding: 16px;
+    padding: 8px;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     background: #fff;
