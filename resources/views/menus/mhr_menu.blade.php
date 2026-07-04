@@ -164,6 +164,89 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Overview"></span>
                     </a>
                 </li>
+                <li class="mb-2 kt-menu__section">
+                    <h4 class="kt-menu__section-text" vslang="menus.Main Menu"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
+                    <a href="TeamComponent" modid="307" class=" menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/group.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Management">Employee Management</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
+                    <a href="ContractsComponent" modid="309" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Leave Requests">Leave Requests</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(301); ?>>
+                    <a href="ReservationComponent" modid="301" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Movements">Employee Movements</span>
+                    </a>
+                </li>
+                <li class="mb-2 kt-menu__section">
+                    <h4 class="kt-menu__section-text" vslang="menus.Employee Benefits"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(302); ?>>
+                    <a href="InvoicesComponent" modid="302" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Benefit List">Benefit List</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(303); ?>>
+                    <a href="TransactionComponent" modid="303" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/transaction.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Benefits">Employee Benefits</span>
+                    </a>
+                </li>
+                <li class="mb-2 kt-menu__section">
+                    <h4 class="kt-menu__section-text" vslang="menus.FINANCE & ACCOUNTING"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(302); ?>>
+                    <a href="InvoicesComponent" modid="302" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Payroll Account">Payroll Account</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(303); ?>>
+                    <a href="TransactionComponent" modid="303" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/transaction.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Payroll">Payroll</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(304); ?>>
+                    <a href="RequestServiceComponent" modid="304" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons"
+                                src="{{ asset('assets/images/icons/google-task.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Payroll List">Payroll List</span>
+                    </a>
+                </li>
 
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                     data-ktmenu-submenu-toggle="hover">

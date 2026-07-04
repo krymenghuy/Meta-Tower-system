@@ -36,7 +36,19 @@ var TenantProfileComponent = (() => {
         mThis.elFieldAddress = mThis.self.querySelector("#_tp_field_address");
 
         mThis.bindPhotoUpload();
+        mThis.initScroll();
         mThis.initAlready = true;
+    };
+
+    mThis.initScroll = () => {
+        const scrollEl = mThis.self;
+        const setHeight = () => {
+            scrollEl.style.maxHeight = window.innerHeight - 160 + "px";
+        };
+
+        setHeight();
+        scrollEl.classList.add("overflow-y-auto", "overflow-x-hidden");
+        window.addEventListener("resize", setHeight);
     };
 
     mThis._val = (v) => {
