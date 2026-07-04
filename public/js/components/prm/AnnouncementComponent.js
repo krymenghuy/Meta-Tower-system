@@ -709,6 +709,16 @@ const AnnouncementDialog = (() => {
                         if (radio) {
                             radio.checked = true;
                         }
+
+                        const pubInput = divModal.querySelector('input[name="publish_date"]');
+                        const expInput = divModal.querySelector('input[name="expiry_date"]');
+                        
+                        if (pubInput && pubInput.value) {
+                            pubInput.value = pubInput.value.split(" ")[0];
+                        }
+                        if (expInput && expInput.value) {
+                            expInput.value = expInput.value.split(" ")[0];
+                        }
                     },
 
                     getData: (me) => {

@@ -1128,14 +1128,28 @@ var DashboardComponent = new (function () {
         const id = card ? card.dataset.announcementId : null;
         if (!id) return;
         
-        const dismissed = JSON.parse(
-            localStorage.getItem("dismissed_announcements") || "[]",
-        );
-        dismissed.push(Number(id));
-        localStorage.setItem(
-            "dismissed_announcements",
-            JSON.stringify(dismissed),
-        );
+        const hasExpiry = card.dataset.hasExpiry === "true";
+        if (hasExpiry) {
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const dismissedDaily = JSON.parse(
+                localStorage.getItem("dismissed_announcements_daily") || "{}",
+            );
+            dismissedDaily[id] = todayStr;
+            localStorage.setItem(
+                "dismissed_announcements_daily",
+                JSON.stringify(dismissedDaily),
+            );
+        } else {
+            const dismissed = JSON.parse(
+                localStorage.getItem("dismissed_announcements") || "[]",
+            );
+            dismissed.push(Number(id));
+            localStorage.setItem(
+                "dismissed_announcements",
+                JSON.stringify(dismissed),
+            );
+        }
         card.remove();
     };
 
@@ -1143,97 +1157,115 @@ var DashboardComponent = new (function () {
         const dismissedIds = JSON.parse(
             localStorage.getItem("dismissed_announcements") || "[]",
         );
-        const a = (announcements || []).find(
-            (x) =>
-                !dismissedIds.includes(x.id) &&
-                (x.priority === "Critical" || x.priority === "High"),
+        const dismissedDaily = JSON.parse(
+            localStorage.getItem("dismissed_announcements_daily") || "{}",
+        );
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        const activeAlerts = (announcements || []).filter(
+            (x) => {
+                if (x.priority !== "Critical" && x.priority !== "High") {
+                    return false;
+                }
+                if (dismissedIds.includes(x.id)) {
+                    return false;
+                }
+                if (dismissedDaily[x.id] === todayStr) {
+                    return false;
+                }
+                return true;
+            }
         );
 
-        if (!a) return "";
+        if (!activeAlerts.length) return "";
 
         const h = mThis.escapeHtml;
-        const title = h(a.title);
-        // Stripping HTML tags from description
-        const rawDesc = mThis.cleanHtmlText(a.description);
-        const description = h(rawDesc);
-        const priority = h(a.priority);
-        const publishRelative = a.publish_date
-            ? mThis.formatRelativeTime(a.publish_date)
-            : "Not set";
-        const hasExpiry =
-            a.expiry_date &&
-            a.expiry_date !== "null" &&
-            !a.expiry_date.startsWith("0000-00-00");
-        const expiryDateFormatted = hasExpiry
-            ? mThis.formatDateOnly(a.expiry_date)
-            : "";
-        const time = mThis.formatAlertTimeRange(a.publish_date, a.expiry_date);
-        const building = h(a.building_name || "All Buildings");
 
-        let alertColor = "#ef4444";
-        let alertSoft = "rgba(239, 68, 68, 0.12)";
-        let badgeStyle =
-            "background-color: #fef2f2; color: #ef4444; border: 1px solid #fee2e2";
+        return activeAlerts.map((a) => {
+            const title = h(a.title);
+            // Stripping HTML tags from description
+            const rawDesc = mThis.cleanHtmlText(a.description);
+            const description = h(rawDesc);
+            const priority = h(a.priority);
+            const publishRelative = a.publish_date
+                ? mThis.formatRelativeTime(a.publish_date)
+                : "Not set";
+            const hasExpiry =
+                a.expiry_date &&
+                a.expiry_date !== "null" &&
+                !a.expiry_date.startsWith("0000-00-00");
+            const expiryDateFormatted = hasExpiry
+                ? mThis.formatDateOnly(a.expiry_date)
+                : "";
+            const time = mThis.formatAlertTimeRange(a.publish_date, a.expiry_date);
+            const building = h(a.building_name || "All Buildings");
 
-        if (a.priority === "High") {
-            alertColor = "#f59e0b";
-            alertSoft = "rgba(245, 158, 11, 0.14)";
-            badgeStyle =
-                "background-color: #fff7ed; color: #f97316; border: 1px solid #ffedd5";
-        }
+            let alertColor = "#ef4444";
+            let alertSoft = "rgba(239, 68, 68, 0.12)";
+            let badgeStyle =
+                "background-color: #fca5a5; color: #b91c1c; border: 1px solid #f87171";
 
-        return `
-            <div class="col-6 md-announcement-alert mb-4 p-4 position-relative" data-announcement-id="${a.id}" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
-                <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
-                <button type="button" class="md-alert-close-btn position-absolute" onclick="DashboardComponent.dismissAnnouncement(this)">
-                    <span class="md-close-text">Don't show again</span>
-                    <span class="md-close-x">&times;</span>
-                </button>
-                
-                <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4">
-                    <div class="d-flex align-items-start gap-3 flex-grow-1 pt-3 pb-lg-0">
-                        <div class="md-alert-icon-container flex-shrink-0">
-                            <i class="fa-solid fa-bullhorn md-alert-pulse" ></i>
+            if (a.priority === "High") {
+                alertColor = "#f59e0b";
+                alertSoft = "rgba(245, 158, 11, 0.14)";
+                badgeStyle =
+                    "background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5";
+            }
+
+            return `
+                <div class="col-12 md-announcement-alert mb-4 p-4 position-relative" data-announcement-id="${a.id}" data-has-expiry="${hasExpiry}" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
+                    <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
+                    <button type="button" class="md-alert-close-btn position-absolute" onclick="DashboardComponent.dismissAnnouncement(this)">
+                        <span class="md-close-text">Don't show again</span>
+                        <span class="md-close-x">&times;</span>
+                    </button>
+                    
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4">
+                        <div class="d-flex align-items-start gap-3 flex-grow-1 pt-3 pb-lg-0">
+                            <div class="md-alert-icon-container flex-shrink-0">
+                                <i class="fa-solid fa-bullhorn md-alert-pulse" ></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                                    <h5 class="fw-bold mb-0 md-alert-title">${title}</h5>
+                                    <span class="badge font-size-10 px-2 py-0.5 rounded-pill" style="${badgeStyle}">${priority}</span>
+                                </div>
+                                <p class="mb-0 md-alert-description">${description}</p>
+                            </div>
                         </div>
-                        <div>
-                            <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                                <h5 class="fw-bold mb-0 md-alert-title">${title}</h5>
-                                <span class="badge font-size-10 px-2 py-0.5 rounded-pill" style="${badgeStyle}">${priority}</span>
+                        <div class="d-flex flex-column align-items-start align-items-lg-end">
+                            <div class="pt-5 d-flex flex-wrap align-items-center gap-3 justify-content-start justify-content-lg-end">
+                                <div class="md-meta-card">
+                                    <div class="md-meta-card-icon" style="background-color: #fef2f2; color: #ef4444;">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div>
+                                        <div class="md-meta-card-label">Published</div>
+                                        <div class="md-meta-card-value">${publishRelative}</div>
+                                    </div>
+                                </div>
+                                ${
+                                    hasExpiry
+                                        ? `
+                                <div class="md-meta-card">
+                                    <div class="md-meta-card-icon" style="background-color: #eff6ff; color: #3b82f6;">
+                                        <i class="fa-solid fa-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <div class="md-meta-card-label">Expires</div>
+                                        <div class="md-meta-card-value">${expiryDateFormatted}</div>
+                                    </div>
+                                </div>
+                                `
+                                        : ""
+                                }
                             </div>
-                            <p class="mb-0 md-alert-description">${description}</p>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column align-items-start align-items-lg-end">
-                        <div class="pt-5 d-flex flex-wrap align-items-center gap-3 justify-content-start justify-content-lg-end">
-                            <div class="md-meta-card">
-                                <div class="md-meta-card-icon" style="background-color: #fef2f2; color: #ef4444;">
-                                    <i class="fa-solid fa-calendar-days"></i>
-                                </div>
-                                <div>
-                                    <div class="md-meta-card-label">Published</div>
-                                    <div class="md-meta-card-value">${publishRelative}</div>
-                                </div>
-                            </div>
-                            ${
-                                hasExpiry
-                                    ? `
-                            <div class="md-meta-card">
-                                <div class="md-meta-card-icon" style="background-color: #eff6ff; color: #3b82f6;">
-                                    <i class="fa-solid fa-calendar"></i>
-                                </div>
-                                <div>
-                                    <div class="md-meta-card-label">Expires</div>
-                                    <div class="md-meta-card-value">${expiryDateFormatted}</div>
-                                </div>
-                            </div>
-                            `
-                                    : ""
-                            }
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }).join("");
     };
 
     mThis.renderDashboard = function (data) {
@@ -1260,19 +1292,19 @@ var DashboardComponent = new (function () {
                             items: (data.announcements || []).map((a) => {
                                 let level = "info";
                                 let badgeStyle =
-                                    "background-color: #f1f5f9 !important; color: #64748b !important; border: 1px solid #e2e8f0 !important;";
+                                    "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important;";
                                 if (a.priority === "Critical") {
                                     level = "danger";
                                     badgeStyle =
-                                        "background-color: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important;";
+                                        "background-color: #fca5a5 !important; color: #b91c1c !important; border: 1px solid #f87171 !important;";
                                 } else if (a.priority === "High") {
                                     level = "warning";
                                     badgeStyle =
-                                        "background-color: #fff7ed !important; color: #f97316 !important; border: 1px solid #ffedd5 !important;";
+                                        "background-color: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fca5a5 !important;";
                                 } else if (a.priority === "Medium") {
                                     level = "success";
                                     badgeStyle =
-                                        "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important;";
+                                        "background-color: #fef3c7 !important; color: #d97706 !important; border: 1px solid #fde68a !important;";
                                 }
 
                                 const building =
