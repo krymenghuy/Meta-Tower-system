@@ -911,8 +911,8 @@ const CreateServiceRequestDialog = (() => {
             },
 
             prepareFormOptions: {
-                createTitle: "Create Service Request",
-                modifyTitle: "Modify Service Request",
+                createTitle: "Request Service",
+                modifyTitle: "Modify Request",
                 targetProp: "request_details",
                 api: {
                     endpoint: `${main_view.base_url}/tenant/request-service/form-options`,

@@ -14,7 +14,7 @@ return [
             'used' => 1,
             'name' => 'Tenant',
             'token_age' => null,
-            'login_type' => 'phone',
+            'login_type' => 'name',
             'new_user_password_required' => 1
         ]
     ],
