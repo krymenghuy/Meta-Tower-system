@@ -48,35 +48,54 @@ var ServiceRequestComponent = (function () {
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_category ?? ""}</span>
                  <small class="d-block text-primary text-nowrap">${data.service_name ?? ""}</small>`,
         },
-        // {
-        //     transTitle: "titles.Charge As",
-        //     className: "align-middle text-nowrap ",
-        //     data: (data) => {
-        //         return `<span class="badge text-primary bg-primary-subtle border border-primary text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
-        //     }
-        // },
         {
-            transTitle: "titles.Duration",
-            className: "align-middle",
+            transTitle: "titles.Charge As",
+            className: "align-middle text-nowrap",
             data: (data) => {
-                const hours = parseFloat(data.duration_hours);
+                const unitMap = {
+                    1: "Once",
+                    2: "Hour",
+                    3: "Unit",
+                    "one time": "once",
+                    one_time: "Once",
+                    once: "Once",
+                    hour: "Hour",
+                    hourly: "Hour",
+                    unit: "Unit",
+                    per_unit: "Unit",
+                    month: "Month",
+                    monthly: "Month",
+                };
 
-                if (!data.duration_hours || isNaN(hours)) {
-                    return `<span class="text-nowrap">_</span>`;
-                }
+                const unitType = String(data.unit_type ?? '').toLowerCase();
+                const unit = unitMap[unitType] || unitType || "-";
+                const price = parseFloat(data.service_price ?? data.price ?? 0);
+                const formattedPrice = price > 0 ? VSMoney.formatAmount(price, data.currency_code ?? 'USD') : "-";
+                const label = unit === "-" ? formattedPrice : `${formattedPrice}/${unit}`;
 
-                const display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
-                return `<span class="text-nowrap">${display}</span>`;
+                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
             }
         },
         {
             transTitle: "titles.Amount",
-            className: "align-middle text-nowrap text-end",
+            className: "align-middle text-nowrap text-center",
             data: (data) =>{
                 const service_price = VSMoney.formatAmount(data.total_price,data.currency_code ?? 'USD');
                 const text = service_price;
                 const cls_color = data.total_price > 0 ? 'text-prm-custom' : 'text-danger';
-                    return `<span class="d-block ${cls_color}">${text}</span>`;
+                const unitType = String(data.unit_type ?? '').toLowerCase();
+                const isHourly = unitType === '2' || unitType === 'hour' || unitType === 'hourly';
+                const hours = parseFloat(data.duration_hours);
+                const durationText = isHourly && !isNaN(hours)
+                    ? `<small class="d-block text-primary mt-1">${hours % 1 === 0 ? hours.toFixed(0) : hours}H</small>`
+                    : '';
+
+                return `
+                    <div class="d-inline-flex flex-column align-items-center">
+                        <span class="d-block fw-semibold ${cls_color}">${text}</span>
+                        ${durationText}
+                    </div>
+                `;
 
             }
         },
@@ -617,7 +636,7 @@ const CreateServiceRequestDialog = (() => {
                         const tenants = res?.data?.tenants || [];
                         return (Array.isArray(tenants) ? tenants : []).map(
                             i => ({
-                        
+
                             ...i,
                             name: i.tenant || "",
                             phone_number: i.phone_number || ""
@@ -628,7 +647,7 @@ const CreateServiceRequestDialog = (() => {
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
                         me.controls.tenant_id.value = tenant.id;
-                        
+
 
                         me.loadTenantOptions(tenant.id);
                     }
