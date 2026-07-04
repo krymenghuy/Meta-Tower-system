@@ -45,6 +45,7 @@
         overflow: hidden;
         box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
         transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        cursor: pointer;
     }
 
     .ann-card:hover {
@@ -241,5 +242,65 @@
     @media (max-width: 640px) {
         .ann-grid { grid-template-columns: 1fr; }
         .ann-meta { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- Detail modal (matches booking details layout) ---------- */
+    .ann-detail-profile {
+        border: 1px solid #d8dee8;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(15, 23, 42, .06);
+        padding: 6px;
+        width: 100%;
+        background: #fff;
+    }
+
+    .ann-detail-profile__title {
+        text-align: center;
+        padding: 10px 12px 18px;
+        color: #2b3991;
+        font-weight: 700;
+    }
+
+    .ann-detail-profile__body {
+        border: 1px solid #d8dee8;
+        border-radius: 6px;
+        padding: 14px 16px;
+    }
+
+    .ann-detail-profile__row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+        margin-bottom: 8px;
+    }
+
+    .ann-detail-profile__label {
+        flex: 0 0 118px;
+        color: #94a3b8;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .ann-detail-profile__sep {
+        padding: 0 10px;
+        color: #94a3b8;
+    }
+
+    .ann-detail-profile__value {
+        flex: 1;
+        min-width: 0;
+        color: #1e293b;
+        font-size: 14px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .ann-detail-profile__remark {
+        margin-top: 4px;
+        padding-top: 4px;
+    }
+
+    .ann-detail-profile__remark .ann-detail-profile__value {
+        text-transform: none;
     }
 </style>

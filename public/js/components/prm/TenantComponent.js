@@ -1999,19 +1999,19 @@ const CreateTenantDialog = (() => {
                         const nationalIdInput = me.divModal.querySelector('[name="national_id"]');
                         const passportInput = me.divModal.querySelector('[name="passport_number"]');
                         const issueInput = me.divModal.querySelector('[name="issue_date"]');
-                        
+
                         if (!natSelect) return;
-                        
+
                         const selectedOption = natSelect.options[natSelect.selectedIndex];
                         const selectedText = (selectedOption?.text || '').trim().toLowerCase();
-                        
+
                         const nidCol = nationalIdInput?.closest('.col-12');
                         const passportCol = passportInput?.closest('.col-12');
                         const issueCol = issueInput?.closest('.col-12');
-                        
+
                         // Khmer or Cambodian, or default to Khmer if empty
                         const isKhmer = selectedText === 'khmer' || selectedText === 'cambodian' || selectedText === '';
-                        
+
                         if (isKhmer) {
                             if (nidCol) {
                                 nidCol.classList.remove('d-none', 'col-md-4');
@@ -2069,10 +2069,10 @@ const CreateTenantDialog = (() => {
                         },
                     },
 
-                    
-                    
+
+
                 },
-                
+
 
                 onPrepareForm: (me, data) => {
                     if (!me.dataOptions.id) {

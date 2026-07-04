@@ -222,26 +222,26 @@ var AnnouncementComponent = (() => {
             case "critical":
                 return {
                     label: "Urgent Action Required",
-                    style: "background:#fde0dc; color:#8e1b12;",
-                    grad: "linear-gradient(135deg, #C0392B 0%, #7B1E14 100%)",
-                    accent: "#8e1b12",
+                    style: "background:#fde0dc; color:#b91c1c;",
+                    grad: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+                    accent: "#b91c1c",
                     soft: "#fbe2df",
                 };
             case "high":
                 return {
                     label: "High Priority",
-                    style: "background:#ffe9dc; color:#d9531e;",
-                    grad: "linear-gradient(135deg, #FB923C 0%, #EA580C 100%)",
-                    accent: "#ea580c",
-                    soft: "#ffeede",
+                    style: "background:#fde8e8; color:#dc2626;",
+                    grad: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                    accent: "#dc2626",
+                    soft: "#fdecec",
                 };
             case "medium":
                 return {
                     label: "Medium Priority",
-                    style: "background:#fef7dd; color:#b8860b;",
-                    grad: "linear-gradient(135deg, #FCD34D 0%, #D4A017 100%)",
-                    accent: "#b8860b",
-                    soft: "#fdf6dc",
+                    style: "background:#fef3d9; color:#b8860b;",
+                    grad: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
+                    accent: "#f59e0b",
+                    soft: "#fdf3da",
                 };
             case "normal":
                 return {
@@ -254,12 +254,95 @@ var AnnouncementComponent = (() => {
             default:
                 return {
                     label: "Low Priority",
-                    style: "background:#eef5ff; color:#2563eb;",
-                    grad: "linear-gradient(135deg, #60A5FA 0%, #2563EB 100%)",
-                    accent: "#2563eb",
+                    style: "background:#eaf1fd; color:#2563eb;",
+                    grad: "linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)",
+                    accent: "#3b82f6",
                     soft: "#eaf1fd",
                 };
         }
+    };
+
+    mThis.announcementItemsMap = {};
+
+    mThis.renderDetailField = (label, value) => `
+        <div class="ann-detail-profile__row">
+            <span class="ann-detail-profile__label">${escapeHtml(label)}</span>
+            <span class="ann-detail-profile__sep">:</span>
+            <span class="ann-detail-profile__value">${value}</span>
+        </div>`;
+
+    mThis.buildAnnouncementDetailHtml = (data) => {
+        const pubDate = data.publish_date
+            ? formatShortDate(data.publish_date)
+            : data.created_at
+              ? formatShortDate(data.created_at)
+              : "—";
+        const expDate = data.expiry_date
+            ? formatShortDate(data.expiry_date)
+            : "No expiration";
+        const buildingName = escapeHtml(data.building_name || "All Buildings");
+        const audience = escapeHtml(data.audience || "All Tenants");
+        const category = escapeHtml(data.category || "General");
+        const priority = escapeHtml(data.priority || "Low");
+        const title = escapeHtml(data.title || "—");
+        const description = data.description
+            ? `<div class="announcement-desc">${data.description}</div>`
+            : "—";
+
+        return `
+            <div class="ann-detail-profile overflow-y-auto overflow-x-hidden">
+                <div class="ann-detail-profile__title">
+                    <h5 class="mb-0">${title}</h5>
+                </div>
+                <div class="ann-detail-profile__body">
+                    <div class="row g-3 mb-0">
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Category", category)}
+                            ${mThis.renderDetailField("Published", escapeHtml(pubDate))}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Priority", priority)}
+                            ${mThis.renderDetailField("Expires", escapeHtml(expDate))}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Building", buildingName)}
+                            ${mThis.renderDetailField("Audience", audience)}
+                        </div>
+                        <div class="col-12 ann-detail-profile__remark">
+                            ${mThis.renderDetailField("Remark", description)}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    mThis.showAnnouncementDetail = (id) => {
+        const openDialog = (data) => {
+            AnnouncementViewDialog.show({
+                contentHtml: mThis.buildAnnouncementDetailHtml(data),
+            });
+        };
+
+        const cached = mThis.announcementItemsMap[id];
+        if (cached) {
+            openDialog(cached);
+            return;
+        }
+
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/announcement/details`,
+                { id },
+                null,
+                null,
+            )
+            .then((res) => {
+                if (res.status_code !== 200 || !res.data) {
+                    cv_interact.error(res.error_message || "Announcement not found.");
+                    return;
+                }
+                openDialog(res.data);
+            });
     };
 
     mThis.renderCards = (container, data) => {
@@ -277,6 +360,7 @@ var AnnouncementComponent = (() => {
         let html = `<div class="ann-grid">`;
 
         data.forEach((d, index) => {
+            mThis.announcementItemsMap[d.id] = d;
             const pr = mThis.priorityMeta(d.priority);
             const icon = mThis.categoryIcon(d);
 
@@ -331,6 +415,13 @@ var AnnouncementComponent = (() => {
 
         html += `</div>`;
         container.innerHTML = html;
+
+        container.querySelectorAll(".ann-card").forEach((card) => {
+            card.addEventListener("click", () => {
+                const id = card.dataset.id;
+                if (id) mThis.showAnnouncementDetail(id);
+            });
+        });
 
         LocaleManager.translateZone(container);
     };
@@ -398,4 +489,31 @@ var AnnouncementComponent = (() => {
         });
     };
     return mThis;
+})();
+
+const AnnouncementViewDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        const dialog = new GeneralDialog({
+            title: LocaleManager.trans("Announcement Details", "titles"),
+            cssClass: "modal-xl vs-modal modal-content-vs-dialog",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => op.contentHtml || "",
+            contentCreated: (me) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Close"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me) => me.hide(false),
+                },
+            ],
+        });
+        dialog.show(op);
+    };
+
+    return self;
 })();
