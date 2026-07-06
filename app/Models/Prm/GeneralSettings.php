@@ -718,4 +718,37 @@ static function options_maintenance_amenity($ss)
 
         return $months;
     }
+    static function options_position($ss) {
+        $q = DB::table('positions')
+            ->selectRaw('id, name as position_name');
+
+        return $q->get();
+    }
+    static function options_work_shift($ss){
+        $q = DB::table('work_shifts')
+            ->where('subs_id', hex2bin($ss->subs_id))
+            ->selectRaw('id, name');
+
+        return $q->get();
+    }
+    static function options_employee($emp_status_ids, $ss)
+    {
+        $q = DB::table('employees as e')
+            ->where('e.subs_id', hex2bin($ss->subs_id))
+            ->selectRaw('id, name, sex, name_kh, phone_number, email, position_id, photo_file_name');
+
+        if (!empty($emp_status_ids)) {
+            $q->whereIn('e.status_id', (array) $emp_status_ids);
+        }
+
+        $rows = $q->get();
+
+        foreach ($rows as $row) {
+            $position_title = DB::table('positions')->where('id', $row->position_id)->value('name');
+            $row->position = $position_title;
+            unset($row->photo_file_name);
+        }
+
+        return $rows;
+    }
 }
