@@ -297,7 +297,7 @@ var AnnouncementComponent = (() => {
         const expDate = data.expiry_date
             ? formatShortDate(data.expiry_date)
             : "No expiration";
-        const buildingName = escapeHtml(data.building_name || "All Buildings");
+        // const buildingName = escapeHtml(data.building_name || "All Buildings");
         const audience = escapeHtml(data.audience || "All Tenants");
         const category = escapeHtml(data.category || "General");
         const priority = escapeHtml(data.priority || "Low");
@@ -313,20 +313,16 @@ var AnnouncementComponent = (() => {
                 </div>
                 <div class="ann-detail-profile__body">
                     <div class="row g-3 mb-0">
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6">
                             ${mThis.renderDetailField("Category", category)}
                             ${mThis.renderDetailField("Published", escapeHtml(pubDate))}
                         </div>
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6">
                             ${mThis.renderDetailField("Priority", priority)}
                             ${mThis.renderDetailField("Expires", escapeHtml(expDate))}
                         </div>
-                        <div class="col-12 col-md-4">
-                            ${mThis.renderDetailField("Building", buildingName)}
-                            ${mThis.renderDetailField("Audience", audience)}
-                        </div>
                         <div class="col-12 ann-detail-profile__remark">
-                            ${mThis.renderDetailField("Remark", description)}
+                            ${mThis.renderDetailField("Description", description)}
                         </div>
                     </div>
                 </div>
@@ -334,6 +330,21 @@ var AnnouncementComponent = (() => {
     };
 
     mThis.showAnnouncementDetail = (id) => {
+        try {
+            const viewedSession = JSON.parse(sessionStorage.getItem("viewed_announcements") || "[]");
+            if (!viewedSession.includes(Number(id))) {
+                viewedSession.push(Number(id));
+                sessionStorage.setItem("viewed_announcements", JSON.stringify(viewedSession));
+            }
+            const viewedLocal = JSON.parse(localStorage.getItem("viewed_announcements") || "[]");
+            if (!viewedLocal.includes(Number(id))) {
+                viewedLocal.push(Number(id));
+                localStorage.setItem("viewed_announcements", JSON.stringify(viewedLocal));
+            }
+        } catch (e) {
+            console.error("Error saving viewed announcement:", e);
+        }
+
         const openDialog = (data) => {
             AnnouncementViewDialog.show({
                 contentHtml: mThis.buildAnnouncementDetailHtml(data),
@@ -401,7 +412,7 @@ var AnnouncementComponent = (() => {
                         </div>
                     </div>
                     <div class="ann-card__body">
-                        <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
+                        <div class="ann-desc-text announcement-desc collapsed">${d.description ?? ""}</div>
                         
                         <div class="ann-card__footer">
                             <div class="ann-meta-item">
@@ -420,6 +431,35 @@ var AnnouncementComponent = (() => {
 
         html += `</div>`;
         container.innerHTML = html;
+
+        container.querySelectorAll(".ann-desc-text").forEach((descEl) => {
+            descEl.classList.remove("collapsed");
+            const fullHeight = descEl.offsetHeight;
+
+            descEl.classList.add("collapsed");
+            const clampedHeight = descEl.offsetHeight;
+
+            if (clampedHeight > 0 && fullHeight > clampedHeight) {
+                const readMoreBtn = document.createElement("a");
+                readMoreBtn.href = "javascript:void(0)";
+                readMoreBtn.className = "btn-read-more";
+                readMoreBtn.innerText = (typeof LocaleManager !== "undefined" && LocaleManager.trans("Read More", "labels")) || "Read More";
+                
+                readMoreBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const card = descEl.closest(".ann-card");
+                    const id = card.dataset.id;
+                    if (id) mThis.showAnnouncementDetail(id);
+                });
+                
+                const cardBody = descEl.closest(".ann-card__body");
+                if (cardBody) {
+                    cardBody.appendChild(readMoreBtn);
+                }
+            } else {
+                descEl.classList.remove("collapsed");
+            }
+        });
 
         container.querySelectorAll(".ann-card").forEach((card) => {
             card.addEventListener("click", () => {
@@ -502,7 +542,7 @@ const AnnouncementViewDialog = (() => {
     self.show = (op) => {
         const dialog = new GeneralDialog({
             title: LocaleManager.trans("Announcement Details", "titles"),
-            cssClass: "modal-xl vs-modal modal-content-vs-dialog",
+            cssClass: "modal-lg vs-modal modal-content-vs-dialog",
             backdrop: "static",
             keyboard: true,
             createContent: () => op.contentHtml || "",

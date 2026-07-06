@@ -43,9 +43,8 @@
         border-top: 4px solid var(--ann-accent, #4f46e5);
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
-        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-        cursor: pointer;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
     .ann-card:hover {
@@ -127,6 +126,28 @@
         word-break: break-word;
         margin-bottom: 16px;
     }
+    .ann-desc-text.collapsed {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+    .btn-read-more {
+        color: #1a1647;
+        font-size: 13.0px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 14px;
+        display: inline-block;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+    .btn-read-more:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+        color: #1a1647;
+    }
     .ann-meta-item {
         display: flex;
         align-items: center;
@@ -174,7 +195,6 @@
         .ann-grid { grid-template-columns: 1fr; }
     }
 
-    /* ---------- Detail modal (matches booking details layout) ---------- */
     .ann-detail-profile {
         border: 1px solid #d8dee8;
         border-radius: 8px;
