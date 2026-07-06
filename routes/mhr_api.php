@@ -23,7 +23,7 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
     Route::post('/save', [EmployeeController::class, 'saveEmployee']);
 
-    
+
 });
 
 
