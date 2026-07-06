@@ -183,9 +183,7 @@
     background:
         radial-gradient(circle at top right, rgba(79,70,229,.08), transparent 28%),
         linear-gradient(180deg, #FAFBFF 0%, var(--tp-bg) 100%);
-}
-
-.tp-profile * {
+}.tp-profile * {
     box-sizing: border-box;
 }
 
