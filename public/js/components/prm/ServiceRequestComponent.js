@@ -73,7 +73,7 @@ var ServiceRequestComponent = (function () {
                 const formattedPrice = price > 0 ? VSMoney.formatAmount(price, data.currency_code ?? 'USD') : "-";
                 const label = unit === "-" ? formattedPrice : `${formattedPrice}/${unit}`;
 
-                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
+                return `<span class="badge text-success bg-success-subtle border border-success text-nowrap" style="min-width:90px;">${label}</span>`;
             }
         },
         {
