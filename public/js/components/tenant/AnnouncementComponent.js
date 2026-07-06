@@ -101,7 +101,11 @@ var AnnouncementComponent = (() => {
         if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
 
         let dateStr = sqlDate;
-        if (!dateStr.includes("T") && !dateStr.includes("+") && !dateStr.includes("Z")) {
+        if (
+            !dateStr.includes("T") &&
+            !dateStr.includes("+") &&
+            !dateStr.includes("Z")
+        ) {
             dateStr = dateStr.replace(" ", "T") + "+07:00";
         }
         const targetDate = new Date(dateStr);
@@ -160,8 +164,18 @@ var AnnouncementComponent = (() => {
     };
 
     const MONTHS = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
     ];
 
     const formatShortDate = (sqlDate, withYear = true) => {
@@ -189,6 +203,44 @@ var AnnouncementComponent = (() => {
         general: "fa-solid fa-bullhorn",
     };
 
+    const PRIORITY_THEMES = {
+        critical: {
+            label: "Urgent Action Required",
+            style: "background:#fca5a5; color:#b91c1c; border: 1px solid #f87171;",
+            grad: "linear-gradient(135deg, #b91c1c 0%, #8b1414 100%)",
+            accent: "#b91c1c",
+            soft: "#fca5a5",
+        },
+        high: {
+            label: "High Priority",
+            style: "background:#fee2e2; color:#dc2626; border: 1px solid #fca5a5;",
+            grad: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+            accent: "#dc2626",
+            soft: "#fee2e2",
+        },
+        medium: {
+            label: "Medium Priority",
+            style: "background:#fef3c7; color:#d97706; border: 1px solid #fde68a;",
+            grad: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
+            accent: "#d97706",
+            soft: "#fef3c7",
+        },
+        normal: {
+            label: "Normal Priority",
+            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
+            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            accent: "#3b82f6",
+            soft: "#eff6ff",
+        },
+        low: {
+            label: "Low Priority",
+            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
+            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            accent: "#3b82f6",
+            soft: "#eff6ff",
+        }
+    };
+
     mThis.categoryIcon = (d) => {
         const categoryLower = (d.category || "general").toLowerCase();
         const titleLower = (d.title || "").toLowerCase();
@@ -200,9 +252,15 @@ var AnnouncementComponent = (() => {
 
         if (titleLower.includes("water") || titleLower.includes("plumbing")) {
             icon = "fa-solid fa-droplet";
-        } else if (titleLower.includes("parking") || titleLower.includes("car")) {
+        } else if (
+            titleLower.includes("parking") ||
+            titleLower.includes("car")
+        ) {
             icon = "fa-solid fa-square-parking";
-        } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
+        } else if (
+            titleLower.includes("elevator") ||
+            titleLower.includes("lift")
+        ) {
             icon = "fa-solid fa-elevator";
         } else if (titleLower.includes("fire")) {
             icon = "fa-solid fa-fire-extinguisher";
@@ -212,54 +270,13 @@ var AnnouncementComponent = (() => {
     };
 
     mThis.normalizePriority = (priority) => {
-        const p = String(priority || "Low").trim().toLowerCase();
-        if (["critical", "high", "medium", "normal", "low"].includes(p)) return p;
-        return "low";
+        const p = String(priority || "low").trim().toLowerCase();
+        return PRIORITY_THEMES[p] ? p : "low";
     };
 
     mThis.priorityMeta = (priority) => {
-        switch (mThis.normalizePriority(priority)) {
-            case "critical":
-                return {
-                    label: "Urgent Action Required",
-                    style: "background:#fde0dc; color:#b91c1c;",
-                    grad: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
-                    accent: "#b91c1c",
-                    soft: "#fbe2df",
-                };
-            case "high":
-                return {
-                    label: "High Priority",
-                    style: "background:#fde8e8; color:#dc2626;",
-                    grad: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-                    accent: "#dc2626",
-                    soft: "#fdecec",
-                };
-            case "medium":
-                return {
-                    label: "Medium Priority",
-                    style: "background:#fef3d9; color:#b8860b;",
-                    grad: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
-                    accent: "#f59e0b",
-                    soft: "#fdf3da",
-                };
-            case "normal":
-                return {
-                    label: "Normal Priority",
-                    style: "background:#eef0fe; color:#5b6bd6;",
-                    grad: "linear-gradient(135deg, #8B93E8 0%, #4F46E5 100%)",
-                    accent: "#4f46e5",
-                    soft: "#eef0fe",
-                };
-            default:
-                return {
-                    label: "Low Priority",
-                    style: "background:#eaf1fd; color:#2563eb;",
-                    grad: "linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)",
-                    accent: "#3b82f6",
-                    soft: "#eaf1fd",
-                };
-        }
+        const p = mThis.normalizePriority(priority);
+        return PRIORITY_THEMES[p];
     };
 
     mThis.announcementItemsMap = {};
@@ -373,40 +390,28 @@ var AnnouncementComponent = (() => {
                 ? formatShortDate(d.expiry_date)
                 : "No expiration";
 
+            const catClass = `ann-cat-${(d.category || "General").toLowerCase().replace(" ", "-")}`;
+
             html += `
                 <div class="ann-card" data-id="${d.id}" style="--ann-accent:${pr.accent}; --ann-soft:${pr.soft};">
-                    <div class="ann-card__banner" style="background:${pr.grad}">
-                        <i class="${icon} ann-card__banner-icon"></i>
-                        <div class="ann-banner-content">
+                    <div class="ann-card__banner">
+                        <div class="d-flex align-items-start justify-content-between gap-3">
                             <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
-                            <span class="ann-cat">${escapeHtml(d.category || "General")}</span>
+                            <span class="ann-cat ${catClass}">${escapeHtml(d.category || "General")}</span>
                         </div>
                     </div>
                     <div class="ann-card__body">
-                        <div class="ann-desc-block">
-                            <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
-                        </div>
-                        <div class="ann-meta-panel">
-                            <div class="ann-meta ann-meta--two">
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-calendar"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Published">Published</span>
-                                        <div class="ann-meta__value">${pubDate}</div>
-                                    </div>
-                                </div>
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-hourglass-half"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Expires">Expires</span>
-                                        <div class="ann-meta__value">${expDate}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
+                        
                         <div class="ann-card__footer">
-                            <span class="ann-priority" style="${pr.style}">${pr.label}</span>
-                            <span class="ann-card-count">Card View: ${index + 1} of ${data.length}</span>
+                            <div class="ann-meta-item">
+                                <span class="ann-meta-icon"><i class="fa-solid fa-calendar"></i></span>
+                                <span>Announced: <strong>${pubDate}</strong></span>
+                            </div>
+                            <div class="ann-meta-item">
+                                <span class="ann-meta-icon"><i class="fa-solid fa-hourglass-half"></i></span>
+                                <span>Expires: <strong>${expDate}</strong></span>
+                            </div>
                         </div>
                     </div>
                 </div>

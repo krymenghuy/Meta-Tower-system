@@ -457,7 +457,7 @@ const InvoiceNoTaxDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice_id, op.setting, op.company);
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 wireButtons(container);
             },
             buttons: [{ label: '<span vslang="buttons.Close"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide() }]
