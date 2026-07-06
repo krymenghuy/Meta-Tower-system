@@ -23,10 +23,52 @@ class EmployeeController extends Controller
         }
 
         $id = $req->id ?? $req->employee_id;
-        $employee = new Employee($id, $ss);
+        $emp = new Employee($id, $ss);
 
-        $res = $employee->upsert($req->all());
+        $res = $emp->upsert($req->all());
 
+        return JDV::raw($res);
+    }
+    
+    function getListPaginate(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->employees->getListPaginate($req->all(), $ss));
+    }
+
+    public function getDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->employees->getDetails($req->id, $ss));
+    }
+
+    public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->employees->getFormOptions($req->id, $ss));
+    }
+
+    public function deleteEmployee(Request $req){
+        $ss =XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);   
+        }
+
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        $emp = new Employee($req->id, $ss);
+        $res = $emp->deleteEmployee();
         return JDV::raw($res);
     }
 
