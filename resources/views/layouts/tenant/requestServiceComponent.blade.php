@@ -250,11 +250,23 @@
 
 .sr-card__fee-value {
     display: block;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.sr-card__fee-amount {
     font-size: 20px;
     font-weight: 800;
     color: var(--sr-navy);
-    line-height: 1.1;
-    white-space: nowrap;
+}
+
+.sr-card__fee-unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sr-muted);
+    margin-left: 2px;
+    font-family: inherit;
+    text-transform: lowercase;
 }
 
 .sr-card__menu-btn {
