@@ -42,6 +42,16 @@ class ContractsController extends Controller
         return JDV::result($contracts->contractsDetails($req->id,$ss));
     }
 
+    public function getListRenewals(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $contracts = new Contracts();
+        return JDV::result($contracts->getListRenewalsPaginate($req->all(), $ss));
+    }
+
     public function getFormOptions(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){

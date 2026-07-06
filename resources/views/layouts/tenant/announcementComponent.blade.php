@@ -30,135 +30,84 @@
     .ann-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 22px;
-        align-items: start;
+        gap: 24px;
+        align-items: stretch;
     }
 
     .ann-card {
         display: flex;
         flex-direction: column;
-        background: #fff;
-        border: 1px solid #eaeef4;
-        border-radius: 20px;
+        height: 100%;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-top: 4px solid var(--ann-accent, #4f46e5);
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
-        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
     .ann-card:hover {
-        transform: translateY(-4px);
-        border-color: #dfe5ef;
-        box-shadow: 0 20px 40px rgba(15, 23, 42, .13);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        border-color: #cbd5e1;
     }
 
-    /* ---------- Banner ---------- */
     .ann-card__banner {
-        position: relative;
+        padding: 20px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        min-height: 150px;
-        padding: 18px 20px 20px;
-        overflow: hidden;
-        color: #fff;
-    }
-
-    .ann-card__banner-icon {
-        position: absolute;
-        right: 6px;
-        bottom: -18px;
-        font-size: 120px;
-        color: rgba(255, 255, 255, .14);
-        transform: rotate(-10deg);
-        pointer-events: none;
-    }
-
-    .ann-badge {
-        position: absolute;
-        z-index: 2;
-        top: 16px;
-        left: 20px;
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 13px;
-        border-radius: 999px;
-        font-size: 12.5px;
-        font-weight: 700;
-        background: rgba(255, 255, 255, .95);
-        box-shadow: 0 2px 8px rgba(15, 23, 42, .14);
-    }
-
-    .ann-badge:before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: currentColor;
-    }
-
-    .ann-badge--active { color: #10b981; }
-    .ann-badge--emergency { color: #ef4444; }
-    .ann-badge--scheduled { color: #64748b; }
-    .ann-badge--draft { color: #94a3b8; }
-    .ann-badge--expired { color: #ef4444; }
-
-    .ann-cat {
-        position: absolute;
-        z-index: 2;
-        top: 16px;
-        right: 20px;
-        padding: 5px 12px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .02em;
-        color: #fff;
-        background: rgba(255, 255, 255, .18);
-        border: 1px solid rgba(255, 255, 255, .3);
-        backdrop-filter: blur(4px);
-    }
-
-    .ann-banner-content {
-        position: relative;
-        z-index: 2;
-        margin-top: 34px;
+        gap: 8px;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .ann-card__title {
-        margin: 0 0 10px;
-        font-size: 22px;
-        font-weight: 800;
-        letter-spacing: -.02em;
-        line-height: 1.15;
-        text-transform: capitalize;
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.4;
+        color: #0f172a;
         word-break: break-word;
     }
 
-    .ann-ref {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .ann-ref-label {
-        font-size: 10px;
+    /* ---------- Category Badge ---------- */
+    .ann-cat {
+        align-self: flex-start;
+        font-size: 11px;
         font-weight: 700;
-        letter-spacing: .08em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, .7);
+        padding: 3px 10px;
+        border-radius: 999px;
+        display: inline-block;
     }
 
-    .ann-card__id {
-        font-size: 12px;
-        font-weight: 700;
-        color: #fff;
-        background: rgba(255, 255, 255, .2);
-        border: 1px solid rgba(255, 255, 255, .28);
-        padding: 3px 10px;
-        border-radius: 7px;
-        white-space: nowrap;
+    /* Category styles */
+    .ann-cat-notice {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+    .ann-cat-policy,
+    .ann-cat-policy-update {
+        background-color: #ffedd5;
+        color: #c2410c;
+        border: 1px solid #fed7aa;
+    }
+    .ann-cat-maintenance {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    .ann-cat-event {
+        background-color: #f3e8ff;
+        color: #6b21a8;
+        border: 1px solid #e9d5ff;
+    }
+    .ann-cat-general {
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
     }
 
     /* ---------- Body ---------- */
@@ -166,82 +115,25 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 18px 20px 20px;
-    }
-
-    .ann-desc-block {
-        padding-left: 14px;
-        border-left: 3px solid var(--ann-accent, #4f46e5);
-        margin-bottom: 18px;
+        padding: 20px;
     }
 
     .ann-desc-text {
         font-size: 13.5px;
         line-height: 1.6;
-        color: #64748b;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        color: #475569;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        margin-bottom: 16px;
     }
-
-    /* ---------- Meta panel ---------- */
-    .ann-meta-panel {
-        background: #f8fafc;
-        border: 1px solid #eef2f7;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 18px;
-    }
-
-    .ann-meta {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px 14px;
-    }
-
-    .ann-meta__item {
+    .ann-meta-item {
         display: flex;
         align-items: center;
-        gap: 11px;
-        min-width: 0;
+        gap: 6px;
     }
 
-    .ann-meta__icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        background: var(--ann-soft, #eef0fe);
-        color: var(--ann-accent, #4f46e5);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 15px;
-        flex-shrink: 0;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
-    }
-
-    .ann-meta__text {
-        min-width: 0;
-    }
-
-    .ann-meta__label {
-        display: block;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .06em;
-        text-transform: uppercase;
+    .ann-meta-icon {
         color: #94a3b8;
-        margin-bottom: 2px;
-    }
-
-    .ann-meta__value {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #1e293b;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     /* ---------- Footer ---------- */
@@ -251,25 +143,25 @@
         justify-content: space-between;
         gap: 12px;
         margin-top: auto;
+        border-top: 1px dashed #e2e8f0;
+        padding-top: 14px;
+        font-size: 12px;
+        color: #64748b;
     }
 
     .ann-priority {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 13px;
+        padding: 4px 10px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
     }
 
     .ann-card-count {
-        color: #64748b;
-        font-size: 12px;
-        font-style: italic;
-        font-weight: 600;
-        letter-spacing: .02em;
-        white-space: nowrap;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 500;
     }
 
     /* ---------- Responsive columns ---------- */
@@ -279,6 +171,65 @@
 
     @media (max-width: 640px) {
         .ann-grid { grid-template-columns: 1fr; }
-        .ann-meta { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- Detail modal (matches booking details layout) ---------- */
+    .ann-detail-profile {
+        border: 1px solid #d8dee8;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(15, 23, 42, .06);
+        padding: 6px;
+        width: 100%;
+        background: #fff;
+    }
+
+    .ann-detail-profile__title {
+        text-align: center;
+        padding: 10px 12px 18px;
+        color: #2b3991;
+        font-weight: 700;
+    }
+
+    .ann-detail-profile__body {
+        border: 1px solid #d8dee8;
+        border-radius: 6px;
+        padding: 14px 16px;
+    }
+
+    .ann-detail-profile__row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+        margin-bottom: 8px;
+    }
+
+    .ann-detail-profile__label {
+        flex: 0 0 118px;
+        color: #94a3b8;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .ann-detail-profile__sep {
+        padding: 0 10px;
+        color: #94a3b8;
+    }
+
+    .ann-detail-profile__value {
+        flex: 1;
+        min-width: 0;
+        color: #1e293b;
+        font-size: 14px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .ann-detail-profile__remark {
+        margin-top: 4px;
+        padding-top: 4px;
+    }
+
+    .ann-detail-profile__remark .ann-detail-profile__value {
+        text-transform: none;
     }
 </style>

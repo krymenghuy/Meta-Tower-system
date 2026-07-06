@@ -39,8 +39,6 @@ class BookAmenityController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-                \Log::info(json_encode($ss));
-
         $params = $req->all();
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $params['tenant_id'] = $ss->tenant_id;

@@ -17,7 +17,7 @@ var AnnouncementComponent = (() => {
 
         mThis.AnnouncementListView = new ListView("_announcement_list", {
             fetchApi: `${main_view.base_url}/prm/announcement/list-paginate`,
-            perPage: 10,
+            perPage: 6,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
                 mThis.renderCards(container, items);
@@ -57,6 +57,7 @@ var AnnouncementComponent = (() => {
     mThis.getFilterData = () => {
         let p = {
             status: "Active", //Tenants can only view Active announcements
+            is_tenant: 1,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -96,9 +97,85 @@ var AnnouncementComponent = (() => {
         return `${monthStr} ${day}, ${d.getFullYear()} ${hoursStr}:${minutes} ${ampm}`;
     };
 
+    const formatRelativeTime = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
+
+        let dateStr = sqlDate;
+        if (
+            !dateStr.includes("T") &&
+            !dateStr.includes("+") &&
+            !dateStr.includes("Z")
+        ) {
+            dateStr = dateStr.replace(" ", "T") + "+07:00";
+        }
+        const targetDate = new Date(dateStr);
+        if (isNaN(targetDate.getTime())) return sqlDate;
+
+        const now = new Date();
+        const diffMs = now.getTime() - targetDate.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+
+        if (diffSec < 0) {
+            return formatDateOnly(sqlDate);
+        }
+        if (diffSec < 60) {
+            return "Just now";
+        }
+
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) {
+            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+        }
+
+        const diffHrs = Math.floor(diffMin / 60);
+        if (diffHrs < 24) {
+            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+        }
+
+        const diffDays = Math.floor(diffHrs / 24);
+        if (diffDays < 7) {
+            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        }
+
+        return formatDateOnly(sqlDate);
+    };
+
+    const formatDateOnly = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "";
+        const d = new Date(sqlDate.replace(/-/g, "/"));
+        if (isNaN(d.getTime())) return sqlDate;
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const monthStr = months[d.getMonth()];
+        const day = d.getDate();
+        return `${monthStr} ${day}, ${d.getFullYear()}`;
+    };
+
     const MONTHS = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
     ];
 
     const formatShortDate = (sqlDate, withYear = true) => {
@@ -109,21 +186,6 @@ var AnnouncementComponent = (() => {
         return withYear ? `${base}, ${d.getFullYear()}` : base;
     };
 
-    const statusMeta = (status) => {
-        switch ((status || "").toLowerCase()) {
-            case "active":
-                return { cls: "ann-badge--active", label: "Active" };
-            case "emergency":
-                return { cls: "ann-badge--emergency", label: "Emergency" };
-            case "scheduled":
-                return { cls: "ann-badge--scheduled", label: "Scheduled" };
-            case "expired":
-                return { cls: "ann-badge--expired", label: "Expired" };
-            default:
-                return { cls: "ann-badge--draft", label: "Draft" };
-        }
-    };
-
     const escapeHtml = (str) => {
         if (str == null || str === "") return "";
         const el = document.createElement("div");
@@ -131,97 +193,173 @@ var AnnouncementComponent = (() => {
         return el.innerHTML;
     };
 
-    const CATEGORY_THEMES = {
-        maintenance: {
-            grad: "linear-gradient(135deg, #9AA4C2 0%, #5C6883 100%)",
-            accent: "#5c6883",
-            soft: "#eef1f6",
-            icon: "fa-solid fa-screwdriver-wrench",
-        },
-        emergency: {
-            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
-            accent: "#c9556a",
-            soft: "#fdecec",
-            icon: "fa-solid fa-triangle-exclamation",
-        },
-        notice: {
-            grad: "linear-gradient(135deg, #E7A199 0%, #BE5E6B 100%)",
-            accent: "#c9556a",
-            soft: "#fdecec",
-            icon: "fa-solid fa-bullhorn",
-        },
-        event: {
-            grad: "linear-gradient(135deg, #9A8FE6 0%, #6E61C9 100%)",
-            accent: "#6d5fd0",
-            soft: "#f0eefb",
-            icon: "fa-solid fa-calendar-days",
-        },
-        "policy update": {
-            grad: "linear-gradient(135deg, #F4B183 0%, #E08A4A 100%)",
-            accent: "#dd8a3f",
-            soft: "#fdf1e6",
-            icon: "fa-solid fa-file-lines",
-        },
-        general: {
-            grad: "linear-gradient(135deg, #5D50E6 0%, #4436C7 100%)",
-            accent: "#4f46e5",
-            soft: "#eef0fe",
-            icon: "fa-solid fa-bullhorn",
-        },
+    const CATEGORY_ICONS = {
+        maintenance: "fa-solid fa-screwdriver-wrench",
+        emergency: "fa-solid fa-triangle-exclamation",
+        notice: "fa-solid fa-bullhorn",
+        event: "fa-solid fa-calendar-days",
+        "policy update": "fa-solid fa-file-lines",
+        policy: "fa-solid fa-file-lines",
+        general: "fa-solid fa-bullhorn",
     };
 
-    mThis.cardTheme = (d) => {
-        const categoryLower = (d.category || "").toLowerCase();
+    const PRIORITY_THEMES = {
+        critical: {
+            label: "Urgent Action Required",
+            style: "background:#fca5a5; color:#b91c1c; border: 1px solid #f87171;",
+            grad: "linear-gradient(135deg, #b91c1c 0%, #8b1414 100%)",
+            accent: "#b91c1c",
+            soft: "#fca5a5",
+        },
+        high: {
+            label: "High Priority",
+            style: "background:#fee2e2; color:#dc2626; border: 1px solid #fca5a5;",
+            grad: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+            accent: "#dc2626",
+            soft: "#fee2e2",
+        },
+        medium: {
+            label: "Medium Priority",
+            style: "background:#fef3c7; color:#d97706; border: 1px solid #fde68a;",
+            grad: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
+            accent: "#d97706",
+            soft: "#fef3c7",
+        },
+        normal: {
+            label: "Normal Priority",
+            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
+            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            accent: "#3b82f6",
+            soft: "#eff6ff",
+        },
+        low: {
+            label: "Low Priority",
+            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
+            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            accent: "#3b82f6",
+            soft: "#eff6ff",
+        }
+    };
+
+    mThis.categoryIcon = (d) => {
+        const categoryLower = (d.category || "general").toLowerCase();
         const titleLower = (d.title || "").toLowerCase();
 
-        let theme =
-            CATEGORY_THEMES[categoryLower] ||
-            CATEGORY_THEMES[categoryLower.replace(" update", "")] ||
-            CATEGORY_THEMES.general;
-
-        theme = Object.assign({}, theme);
+        let icon =
+            CATEGORY_ICONS[categoryLower] ||
+            CATEGORY_ICONS[categoryLower.replace(" update", "")] ||
+            CATEGORY_ICONS.general;
 
         if (titleLower.includes("water") || titleLower.includes("plumbing")) {
-            theme.icon = "fa-solid fa-droplet";
-        } else if (titleLower.includes("parking") || titleLower.includes("car")) {
-            theme.icon = "fa-solid fa-square-parking";
-        } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
-            theme.icon = "fa-solid fa-elevator";
+            icon = "fa-solid fa-droplet";
+        } else if (
+            titleLower.includes("parking") ||
+            titleLower.includes("car")
+        ) {
+            icon = "fa-solid fa-square-parking";
+        } else if (
+            titleLower.includes("elevator") ||
+            titleLower.includes("lift")
+        ) {
+            icon = "fa-solid fa-elevator";
         } else if (titleLower.includes("fire")) {
-            theme.icon = "fa-solid fa-fire-extinguisher";
+            icon = "fa-solid fa-fire-extinguisher";
         }
 
-        return theme;
+        return icon;
+    };
+
+    mThis.normalizePriority = (priority) => {
+        const p = String(priority || "low").trim().toLowerCase();
+        return PRIORITY_THEMES[p] ? p : "low";
     };
 
     mThis.priorityMeta = (priority) => {
-        switch ((priority || "Low").toLowerCase()) {
-            case "critical":
-                return {
-                    label: "Urgent Action Required",
-                    style: "background:#fdeae4; color:#e2513a;",
-                };
-            case "high":
-                return {
-                    label: "High Priority",
-                    style: "background:#fdeae4; color:#e2513a;",
-                };
-            case "medium":
-                return {
-                    label: "Medium Priority",
-                    style: "background:#fff4e6; color:#f97316;",
-                };
-            case "normal":
-                return {
-                    label: "Normal Priority",
-                    style: "background:#eef0fe; color:#5b6bd6;",
-                };
-            default:
-                return {
-                    label: "Low Priority",
-                    style: "background:#eef5ff; color:#3b82f6;",
-                };
+        const p = mThis.normalizePriority(priority);
+        return PRIORITY_THEMES[p];
+    };
+
+    mThis.announcementItemsMap = {};
+
+    mThis.renderDetailField = (label, value) => `
+        <div class="ann-detail-profile__row">
+            <span class="ann-detail-profile__label">${escapeHtml(label)}</span>
+            <span class="ann-detail-profile__sep">:</span>
+            <span class="ann-detail-profile__value">${value}</span>
+        </div>`;
+
+    mThis.buildAnnouncementDetailHtml = (data) => {
+        const pubDate = data.publish_date
+            ? formatShortDate(data.publish_date)
+            : data.created_at
+              ? formatShortDate(data.created_at)
+              : "—";
+        const expDate = data.expiry_date
+            ? formatShortDate(data.expiry_date)
+            : "No expiration";
+        const buildingName = escapeHtml(data.building_name || "All Buildings");
+        const audience = escapeHtml(data.audience || "All Tenants");
+        const category = escapeHtml(data.category || "General");
+        const priority = escapeHtml(data.priority || "Low");
+        const title = escapeHtml(data.title || "—");
+        const description = data.description
+            ? `<div class="announcement-desc">${data.description}</div>`
+            : "—";
+
+        return `
+            <div class="ann-detail-profile overflow-y-auto overflow-x-hidden">
+                <div class="ann-detail-profile__title">
+                    <h5 class="mb-0">${title}</h5>
+                </div>
+                <div class="ann-detail-profile__body">
+                    <div class="row g-3 mb-0">
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Category", category)}
+                            ${mThis.renderDetailField("Published", escapeHtml(pubDate))}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Priority", priority)}
+                            ${mThis.renderDetailField("Expires", escapeHtml(expDate))}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            ${mThis.renderDetailField("Building", buildingName)}
+                            ${mThis.renderDetailField("Audience", audience)}
+                        </div>
+                        <div class="col-12 ann-detail-profile__remark">
+                            ${mThis.renderDetailField("Remark", description)}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    mThis.showAnnouncementDetail = (id) => {
+        const openDialog = (data) => {
+            AnnouncementViewDialog.show({
+                contentHtml: mThis.buildAnnouncementDetailHtml(data),
+            });
+        };
+
+        const cached = mThis.announcementItemsMap[id];
+        if (cached) {
+            openDialog(cached);
+            return;
         }
+
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/announcement/details`,
+                { id },
+                null,
+                null,
+            )
+            .then((res) => {
+                if (res.status_code !== 200 || !res.data) {
+                    cv_interact.error(res.error_message || "Announcement not found.");
+                    return;
+                }
+                openDialog(res.data);
+            });
     };
 
     mThis.renderCards = (container, data) => {
@@ -239,72 +377,41 @@ var AnnouncementComponent = (() => {
         let html = `<div class="ann-grid">`;
 
         data.forEach((d, index) => {
-            const theme = mThis.cardTheme(d);
-            const st = statusMeta(d.status);
+            mThis.announcementItemsMap[d.id] = d;
             const pr = mThis.priorityMeta(d.priority);
+            const icon = mThis.categoryIcon(d);
 
             const buildingName = escapeHtml(d.building_name || "All Buildings");
             const audience = escapeHtml(d.audience || "All Tenants");
-            const pubDate = d.publish_date
-                ? formatShortDate(d.publish_date)
+            const pubDate = d.created_at
+                ? formatRelativeTime(d.created_at)
                 : "Not set";
             const expDate = d.expiry_date
                 ? formatShortDate(d.expiry_date)
                 : "No expiration";
 
+            const catClass = `ann-cat-${(d.category || "General").toLowerCase().replace(" ", "-")}`;
+
             html += `
-                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${theme.accent}; --ann-soft:${theme.soft};">
-                    <div class="ann-card__banner" style="background:${theme.grad}">
-                        <i class="${theme.icon} ann-card__banner-icon"></i>
-                        <span class="ann-badge ${st.cls}">${st.label}</span>
-                        <span class="ann-cat">${escapeHtml(d.category || "General")}</span>
-                        <div class="ann-banner-content">
+                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${pr.accent}; --ann-soft:${pr.soft};">
+                    <div class="ann-card__banner">
+                        <div class="d-flex align-items-start justify-content-between gap-3">
                             <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
-                            <div class="ann-ref">
-                                <span class="ann-ref-label" vslang="labels.Tracking Reference">Tracking Reference</span>
-                                <span class="ann-card__id">ID: #ANN-${d.id}</span>
-                            </div>
+                            <span class="ann-cat ${catClass}">${escapeHtml(d.category || "General")}</span>
                         </div>
                     </div>
                     <div class="ann-card__body">
-                        <div class="ann-desc-block">
-                            <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
-                        </div>
-                        <div class="ann-meta-panel">
-                            <div class="ann-meta">
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-building"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Building">Building</span>
-                                        <div class="ann-meta__value">${buildingName}</div>
-                                    </div>
-                                </div>
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-users"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Audience">Audience</span>
-                                        <div class="ann-meta__value">${audience}</div>
-                                    </div>
-                                </div>
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-calendar"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Published">Published</span>
-                                        <div class="ann-meta__value">${pubDate}</div>
-                                    </div>
-                                </div>
-                                <div class="ann-meta__item">
-                                    <span class="ann-meta__icon"><i class="fa-solid fa-hourglass-half"></i></span>
-                                    <div class="ann-meta__text">
-                                        <span class="ann-meta__label" vslang="labels.Expires">Expires</span>
-                                        <div class="ann-meta__value">${expDate}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="ann-desc-text announcement-desc">${d.description ?? ""}</div>
+                        
                         <div class="ann-card__footer">
-                            <span class="ann-priority" style="${pr.style}">${pr.label}</span>
-                            <span class="ann-card-count">Card View: ${index + 1} of ${data.length}</span>
+                            <div class="ann-meta-item">
+                                <span class="ann-meta-icon"><i class="fa-solid fa-calendar"></i></span>
+                                <span>Announced: <strong>${pubDate}</strong></span>
+                            </div>
+                            <div class="ann-meta-item">
+                                <span class="ann-meta-icon"><i class="fa-solid fa-hourglass-half"></i></span>
+                                <span>Expires: <strong>${expDate}</strong></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -313,6 +420,13 @@ var AnnouncementComponent = (() => {
 
         html += `</div>`;
         container.innerHTML = html;
+
+        container.querySelectorAll(".ann-card").forEach((card) => {
+            card.addEventListener("click", () => {
+                const id = card.dataset.id;
+                if (id) mThis.showAnnouncementDetail(id);
+            });
+        });
 
         LocaleManager.translateZone(container);
     };
@@ -347,15 +461,17 @@ var AnnouncementComponent = (() => {
             LocaleManager.trans("All Categories", "titles"),
             "",
         );
-        VSUtil.setComboItems(
-            mThis.elFilter_priority,
-            priorities,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("All Priorities", "titles"),
-            "",
-        );
+        if (mThis.elFilter_priority) {
+            VSUtil.setComboItems(
+                mThis.elFilter_priority,
+                priorities,
+                "id",
+                "name",
+                "",
+                LocaleManager.trans("All Priorities", "titles"),
+                "",
+            );
+        }
         VSUtil.setComboItems(
             mThis.elFilter_sort,
             sortOptions,
@@ -378,4 +494,31 @@ var AnnouncementComponent = (() => {
         });
     };
     return mThis;
+})();
+
+const AnnouncementViewDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        const dialog = new GeneralDialog({
+            title: LocaleManager.trans("Announcement Details", "titles"),
+            cssClass: "modal-xl vs-modal modal-content-vs-dialog",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => op.contentHtml || "",
+            contentCreated: (me) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Close"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me) => me.hide(false),
+                },
+            ],
+        });
+        dialog.show(op);
+    };
+
+    return self;
 })();

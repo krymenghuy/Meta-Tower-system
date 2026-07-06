@@ -198,8 +198,51 @@ return [
                 '/js/components/tenant/TransactionComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
-                '/js/components/tenant/BookAmenityComponent.js',
+                '/js/components/tenant/ReservationComponent.js',
                 '/js/components/tenant/ServicesComponent.js',
+
+
+
+            ]
+        ],
+        'mhr-components' => [
+            'attr' => 'defer',
+            'single_file' => 1,
+            'output_file' => '/dist/js/mhr.components.js',
+            'files' => [
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
+
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
+                'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
+
+                'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
+
+                '/js/layout/mhr/main.js',
+                '/assets/js/SearchWidget.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
+                //'/assets/js/ImageHelper.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+                //'/assets/js/ImageBox.js',
+
+                'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
+
+                //'/assets/js/xlsx/xlsx.full.min.js',
+                '/js/components/umt/ChangePasswordDialog.js',
+                'assets/js/pusher/pusher.min.js',
+                '/js/components/common/FindPersonDialog.js',
+                '/js/components/common/pusher_client.js',
+                '/js/components/mhr/DashboardComponent.js',
+                '/js/components/mhr/TenantProfileComponent.js',
+                '/js/components/mhr/TeamComponent.js',
+                '/js/components/mhr/ContractsComponent.js',
+                '/js/components/mhr/InvoicesComponent.js',
+                '/js/components/mhr/TransactionComponent.js',
+                '/js/components/mhr/RequestServiceComponent.js',
+                '/js/components/mhr/AnnouncementComponent.js',
+                '/js/components/mhr/ReservationComponent.js',
+                '/js/components/mhr/ServicesComponent.js',
 
 
 

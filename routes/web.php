@@ -113,6 +113,22 @@ Route::get('landingpoint', function () {
 //     $data = ['defaultComponent' => 'HomeComponent'];
 //     return view('prm', $data);
 // });
+Route::get('mhr/{componentName?}', function ($componentName = null) {
+     $user = XAuthService::user();
+    if (!$user) {
+        // return redirect('/')
+        $base_url = url('/');
+        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        return;
+    };
+    if($user->user_class != 'admin'){
+        $base_url = url('/');
+        echo "You are not admin staff !<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        return;
+    }
+    $data = ['defaultComponent' => 'HomeComponent'];
+    return view('mhr', $data);
+});
 Route::get('prm/{componentName?}', function ($componentName = null) {
      $user = XAuthService::user();
     if (!$user) {
@@ -131,19 +147,20 @@ Route::get('prm/{componentName?}', function ($componentName = null) {
 });
 Route::get('tenant/{componentName?}', function ($componentName = null) {
     $user = XAuthService::user();
+
     if (!$user) {
-        // return redirect('/')
         $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-        return;
-    };
-    if($user->user_class != 'tenant'){
-        $base_url = url('/');
-        echo "You are not tenant!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        echo "There was a problem processing your user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
         return;
     }
-    $data = ['defaultComponent' => 'HomeComponent'];
-    return view('tenant', $data);
+    if (!in_array($user->user_class, ['tenant', 'tenant_member'])) {
+        $base_url = url('/');
+        echo "You are not authorized to access this page!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        return;
+    }
+    return view('tenant', [
+        'defaultComponent' => 'HomeComponent'
+    ]);
 });
 
 Route::get('umt/{componentName?}', function ($componentName = null) {

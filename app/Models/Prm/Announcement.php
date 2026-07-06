@@ -38,7 +38,7 @@ class Announcement
         $desc_char = ['&', '.', '/', '-', ' ', '?', '!', '(', ')', '[', ']', ',', ':', ';', '"', '<', '>', '=', '_', '+', '%', '$', '#', '@', '\'', '*', '{', '}', '|', '\\', '~', '`', '^'];
         $clean_char = [' ', '-', '_'];
         $res = DBX::validateObject($arr, $v_rule, 1, [
-            'title' => $title_char, 
+            'title' => $title_char,
             'description' => $desc_char,
             'category' => $clean_char,
             'priority' => $clean_char,
@@ -61,7 +61,12 @@ class Announcement
 
         // Format dates
         if (!empty($inputs['publish_date'])) {
-            $inputs['publish_date'] = date('Y-m-d H:i:s', strtotime($inputs['publish_date']));
+            $publishDateOnly = date('Y-m-d', strtotime($inputs['publish_date']));
+            if ($publishDateOnly === date('Y-m-d')) {
+                $inputs['publish_date'] = date('Y-m-d H:i:s');
+            } else {
+                $inputs['publish_date'] = date('Y-m-d H:i:s', strtotime($inputs['publish_date']));
+            }
         }
         if (!empty($inputs['expiry_date'])) {
             $inputs['expiry_date'] = date('Y-m-d H:i:s', strtotime($inputs['expiry_date']));
@@ -126,17 +131,40 @@ class Announcement
             $query->where('a.priority', $priority);
         }
 
-        if ($status) {
-            $query->where('a.status', $status);
+        $isTenant = !empty($ss->official_id) || !empty($arr['is_tenant']);
+        if ($isTenant) {
+            $nowStr = date('Y-m-d H:i:s');
+            $query->where('a.status', 'Active');
+            $query->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.publish_date')
+                  ->orWhere('a.publish_date', '')
+                  ->orWhere('a.publish_date', 'null')
+                  ->orWhere('a.publish_date', 'like', '0000%')
+                  ->orWhere('a.publish_date', '<=', $nowStr);
+            });
+            $query->where(function ($q) use ($nowStr) {
+                $q->whereNull('a.expiry_date')
+                  ->orWhere('a.expiry_date', '')
+                  ->orWhere('a.expiry_date', 'null')
+                  ->orWhere('a.expiry_date', 'like', '0000%')
+                  ->orWhereRaw("DATE(a.expiry_date) >= ?", [date('Y-m-d')]);
+            });
+        } else {
+            if ($status) {
+                $query->where('a.status', $status);
+            }
         }
 
         $orderDirection = ($sort === 'oldest') ? 'asc' : 'desc';
         $query->orderBy('a.id', $orderDirection);
 
-        $query->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id, b.name as building_name");
+        $query->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id, a.created_at, b.name as building_name");
 
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
+
+
+
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

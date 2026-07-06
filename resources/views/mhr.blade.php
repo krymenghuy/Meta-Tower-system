@@ -6,7 +6,7 @@
 <head>
     <base href="../">
     <meta charset="utf-8" />
-    <title>Meta Client</title>
+    <title>Meta HR</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/meta/Meta_logo1.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -14,8 +14,8 @@
     <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
     <meta name="sess_user_id" content="{{ sess_user_id() }}" />
     <meta name="base_url" content="{{ url('/') }}" />
-    <meta name="main_route" content="tenant" />
-    <meta name="app_id" content="{{ sess_app_id('tenant') }}" />
+    <meta name="main_route" content="mhr" />
+    <meta name="app_id" content="{{ sess_app_id('mhr') }}" />
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
     <meta name="asset_url" content="{{ asset('assets') }}" />
@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 62);
+    StyleManager::render('tenant-style', 1, 60);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('tenant-components', 1, 272);
+    ScriptManager::render('mhr-components', 1, 270);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -142,7 +142,7 @@
         <div class="kt-grid kt-grid--ver kt-grid__item kt-grid__item--fluid kt-page">
             <div class="kt-aside--fixed kt-grid kt-grid--desktop kt-grid--hor-desktop kt-aside kt-grid__item"
                 id="kt_aside">
-                @include('menus.tenant_menu')
+                @include('menus.mhr_menu')
             </div>
             <div class="kt-grid kt-grid--hor kt-grid__item kt-grid__item--fluid kt-wrapper" id="kt_wrapper">
                 <div id="kt_header" class="kt-header--fixed kt-header kt-grid__item">
@@ -319,16 +319,8 @@
                 <div id="_p2" class="h-100" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
-                            @include('layouts.tenant.dashboardComponent')
-                            @include('layouts.tenant.teamComponent')
-                            @include('layouts.tenant.contractsComponent')
-                            @include('layouts.tenant.invoicesComponent')
-                            @include('layouts.tenant.transactionComponent')
-                            @include('layouts.tenant.requestServiceComponent')
-                            @include('layouts.tenant.announcementComponent')
-                            @include('layouts.tenant.reservationComponent')
-                            @include('layouts.tenant.tenantProfileComponent')
-                            @include('layouts.tenant.servicesComponent')
+                            @include('layouts.mhr.dashboardComponent')
+                            
 
 
 

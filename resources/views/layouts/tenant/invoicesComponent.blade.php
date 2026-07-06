@@ -24,7 +24,7 @@
 
     </div>
 
-    <div id="_invoices_list" class="bg-white mt-3 border rounded-2"></div>
+    <div id="_invoices_list" class="table-responsive mt-3  rounded-2"></div>
 </div>
 
 <script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>

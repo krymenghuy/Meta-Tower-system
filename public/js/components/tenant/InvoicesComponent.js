@@ -19,7 +19,6 @@ var InvoicesComponent = (() => {
 
 
     mThis.cols = [
-        { transTitle: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Invoice No",
             className: "align-middle text-start text-nowrap",
@@ -216,7 +215,7 @@ var InvoicesComponent = (() => {
 
         mThis.InvoiceListView = new ListView("_invoices_list", {
             fetchApi: `${main_view.base_url}/tenant/invoice/list-paginate`,
-            perPage: 10,
+            perPage: 5,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -234,11 +233,11 @@ var InvoicesComponent = (() => {
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
@@ -497,34 +496,58 @@ var InvoicesComponent = (() => {
 
         new VSDropdownMenu(menuOptions);
     };
-    mThis.printInvoice = (id, invoice_type, menulink) => {
-        if (!invoice_type || invoice_type === "undefined") {
-            console.warn(
-                "Type missing for ID " + id + ". Fetching from server...",
-            );
+   mThis.printInvoice = (id, menulink) => {
+        // if (!AuthManager.allowed(238, false)) return;
 
-            vsapi
-                .call(`${main_view.base_url}/tenant/invoice/details`, { id: id })
-                .then((res) => {
-                    if (res.status_code === 200) {
-                        mThis.printInvoice(id, res.data.invoice_type, menulink);
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+            .then(res => {
+                if (res.status_code === 200) {
+                    console.log(9999,res.data);
+                    
+                    const invoiceDetails = res.data?.invoice_details;
+                    const globalSetting = res.data?.invoice_setting || {};
+                    const companyProfile = res.data?.company_info || {};
+                    const invoiceSetting = invoiceDetails.settings;
+
+                    // console.log("invoiceDetails: ", invoiceDetails);
+                    // console.log("companyProfile: ", companyProfile);
+                    // console.log("globalSetting: ", globalSetting);
+                    // console.log("invoiceSetting: ", invoiceSetting);
+
+                    const invType = invoiceDetails?.invoice_type;
+
+                    // Initialize params object
+                    const params = {
+                        invoice_id: id,
+                        btn: menulink,
+                        invoice: invoiceDetails,
+                        global: globalSetting,
+                        company: companyProfile,
+                        setting: invoiceSetting
+                    };
+
+                    if (invoiceSetting.show_balance !== null) {
+                        params.setting = invoiceSetting;
                     } else {
-                        cv_interact.error("Could not determine invoice type.");
+                        params.setting = globalSetting;
                     }
-                });
-            return;
-        }
 
-        const invType = parseInt(invoice_type);
-        const params = { invoice_id: id, btn: menulink };
-
-        if (invType === 1) {
-            InvoiceTaxDialog.show(params);
-        } else if (invType === 2) {
-            InvoiceNoTaxDialog.show(params);
-        } else if (invType === 3) {
-            InvoiceCommercialDialog.show(params);
-        }
+                    if (invType === 1) {
+                        InvoiceTaxDialog.show(params);
+                    } else if (invType === 2) {
+                        InvoiceNoTaxDialog.show(params);
+                    } else if (invType === 3) {
+                        InvoiceCommercialDialog.show(params);
+                    } else {
+                        cv_interact.error("Unknown invoice type variant.");
+                    }
+                } else {
+                    cv_interact.error(
+                        res.message || "Could not determine invoice type."
+                    );
+                }
+            });
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi

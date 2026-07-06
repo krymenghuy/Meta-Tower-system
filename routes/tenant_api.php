@@ -94,6 +94,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/save', [ContractsController::class, 'saveContracts']);
     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
     Route::post('/details', [ContractsController::class, 'contractsDetails']);
+    Route::post('/list-renewals', [ContractsController::class, 'getListRenewals']);
     Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
     Route::post('/delete', [ContractsController::class, 'deleteContracts']);
 });
