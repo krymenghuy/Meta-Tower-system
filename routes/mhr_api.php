@@ -22,6 +22,10 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
     Route::post('/save', [EmployeeController::class, 'saveEmployee']);
+    Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
+    Route::post('/details', [EmployeeController::class, 'getDetails']);
+    Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
 
 
 });
