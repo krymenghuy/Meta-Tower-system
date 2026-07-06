@@ -50,17 +50,46 @@ var RequestServiceComponent = (function () {
         const unitMap = {
             1: "One Time",
             2: "Hour",
-            3: "Unit",
+            3: "One Time",
             "one time": "One Time",
             one_time: "One Time",
             once: "One Time",
             hour: "Hour",
             hourly: "Hour",
-            unit: "Unit",
-            per_unit: "Unit",
+            unit: "One Time",
+            per_unit: "One Time",
         };
 
         return unitMap[unitType] || data?.unit_type || "—";
+    };
+
+    mThis.formatChargeAsDisplay = (data) => {
+        const unitMap = {
+            1: "once",
+            2: "hour",
+            3: "unit",
+            "one time": "once",
+            one_time: "once",
+            once: "once",
+            hour: "hour",
+            hourly: "hour",
+            unit: "unit",
+            per_unit: "unit",
+            month: "month",
+            monthly: "month",
+        };
+
+        const unitType = String(data?.unit_type ?? "").toLowerCase();
+        const unit = unitMap[unitType] || unitType || "-";
+        const price = parseFloat(data?.service_price ?? data?.price ?? 0);
+        const formattedPrice =
+            price > 0
+                ? VSMoney.formatAmount(price, data?.currency_code ?? "USD")
+                : "—";
+
+        if (unit === "-") return formattedPrice;
+
+        return `<span class="sr-card__fee-amount">${formattedPrice}</span><span class="sr-card__fee-unit">/${unit}</span>`;
     };
 
     mThis.formatSchedule = (data) => {
@@ -167,10 +196,7 @@ var RequestServiceComponent = (function () {
             const remarks = remarksRaw
                 ? mThis.escapeHtml(remarksRaw)
                 : "No additional notes added";
-            const totalFee = VSMoney.formatAmount(
-                data.total_price,
-                data.currency_code ?? "USD",
-            );
+            const totalFee = mThis.formatChargeAsDisplay(data);
             const statusLabel = mThis.escapeHtml(status.label);
 
             rowsHtml += `
