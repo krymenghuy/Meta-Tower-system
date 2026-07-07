@@ -174,7 +174,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/group.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Management">Employee Management</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee">Employee</span>
                     </a>
                 </li>
 
@@ -183,7 +183,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Leave Requests">Leave Requests</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Leave">Leave</span>
                     </a>
                 </li>
 

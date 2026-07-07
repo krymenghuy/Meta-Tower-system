@@ -19,7 +19,7 @@ class Leave extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    public function save($arr = [], $id = null, $ss = null) {
+    public function upsert($arr = [], $id = null, $ss = null) {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
@@ -173,9 +173,7 @@ class Leave extends VSModel
         ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
-            ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.name, l.leave_type_id, lt.name as leave_type,'
-            . $col_dates
-                . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo,'
+            ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee_name, emp.sex, p.name as position,l.start_date, l.end_date, l.leave_type_id, lt.name as leave_type, ls.name as status, l.remarks, l.update_user, l.updated_at, l.status_id, emp.photo_file_name as emp_photo,'
                 . $leave_days_calc)
             ->orderBy('l.id', 'DESC');
         if ($leave_type) {
@@ -192,6 +190,7 @@ class Leave extends VSModel
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
+            $row = setOfficialDates($row, ['start_date', 'end_date'],['updated_at'],['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

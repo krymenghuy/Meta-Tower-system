@@ -2,7 +2,7 @@
 
 var LeaveComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Leave Requests";
+    mThis.title_prop = "Leaves";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
     
@@ -14,113 +14,133 @@ var LeaveComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_leave");
 
     mThis.cols = [
-
+        {
+            title: "",
+            className: 'align-middle',
+        },
         {
             title: "Employee ID",
-            className: 'align-middle text-capitalize',
+            className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class=""><span class="text-primary-custom">${data.emp_code ?? 'null'}</span></span>`;
+                return `<span>${data.emp_code ?? '-'}</span>`;
              }
         },
 
         {
-            title: "Employee Info",
-            className: "align-middle text-start",
-            data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
-                         <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span style="font-size: 12px; font-weight: bold;">${
-                                    data.employee ?? ""
-                                }</span>
-                                <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${
-                                    data.title ?? ""
-                                }</span>
-                            </div>
+            title: "Name",
+            className: "align-middle text-nowrap",
+            data: (data, index) => {
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.employee_name ?? "-"}
+                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
                         </div>`;
-            }
+            },
         },
 
         {
             title: "Leave Type",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</span>`;
-            }
-        },
-
-        {
-            title: "Duration",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                            <small class="p-0 m-0 text-primary" style="font-size:11px;">${data.start_date} - ${data.end_date}</small>
-                            <span class="text-success" style="font-size:11px;">(${data.leave_days} day)</span>
-                        </div>`;
+                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
             }
         },
         {
-            title: "Remarks",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</span>`;
-            }
-        },
-        {
-            title: "Created By",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                    <span class="fw-semibold">${data.update_user}</span>
-                    <span>
-                        <small class="text-muted">${data.update_date}</small>
-                    </span>
-                </div>`;
-
-            }
-        },
-       {
-            title: "Status",
-            className: 'align-middle status',
-            data: function (data, index, tr) {
-                const status = (data.status || '').toLowerCase();
-                let bgColor = '#dee2e6';
-                let textColor = '#000';
-
-                if (status === 'approved') {
-                    bgColor = '#d4edda';
-                    textColor = '#155724';
-                } else if (status === 'pending') {
-                    bgColor = '#fff3cd';
-                    textColor = '#856404';
-                } else if (status === 'rejected') {
-                    bgColor = '#f8d7da';
-                    textColor = '#721c24';
-                }
-
+            transTitle: "titles.Start Date",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
                 return `
-                    <span 
-                        class="d-inline-block text-center text-capitalize" 
-                        style="
-                            background-color: ${bgColor};
-                            color: ${textColor};
-                            padding: 4px 12px;
-                            border-radius: 20px;
-                            font-size: 0.875rem;
-                            min-width: 90px;
-                        "
-                        data-status="${data.status}" 
-                        data-statusid="${data.status_id}" 
-                        data-id="${data.id}">
-                        ${data.status}
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${data.start_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.End Date",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar-check me-1"></i>
+                        ${data.end_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            title: "Leave Duration",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
+                const days = Number(data.leave_days ?? 0);
+                return `
+                    <span style="min-width: 100px;" class="badge bg-light text-danger-emphasis border px-2 py-2">
+                        <i class="fa-regular fa-clock me-1"></i>
+                        ${days} ${days === 1 ? "Day" : "Days"}
                     </span>
                 `;
             }
         },
-
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:250px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle",
+            data: (data) => {
+                const statusId = data.status_id;
+                const statusKey = (data.status ?? "").toLowerCase();
+                const map = {
+                    1: {
+                        text: "Pending",
+                        cls: "bg-warning-subtle text-warning border border-warning",
+                    },
+                    2: {
+                        text: "Approved",
+                        cls: "bg-success-subtle text-success border border-success",
+                    },
+                    3: {
+                        text: "Rejected",
+                        cls: "bg-danger-subtle text-danger border border-danger",
+                    },
+                };
+                const byName = {
+                    pending:
+                        "bg-warning-subtle text-warning border border-warning",
+                    approved: "bg-success-subtle text-success border border-success",
+                    rejected:
+                        "bg-danger-subtle text-danger border border-danger",
+                };
+                const m = map[statusId] || null;
+                const label =
+                    m?.text ||
+                    (statusKey === "terminated"
+                        ? "Terminated"
+                        : (data.status ?? "—"));
+                const cls =
+                    m?.cls || byName[statusKey] || "bg-light text-muted";
+                return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                </div>`;
+            },
+        },
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
@@ -128,7 +148,7 @@ var LeaveComponent = (function () {
                    <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
                                 <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                                 <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
                     </div>
@@ -146,7 +166,7 @@ var LeaveComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated:(data,index,tr)=>{
               tr.dataset.statusid = data.status_id;
               tr.classList.add('leave');
@@ -166,7 +186,7 @@ var LeaveComponent = (function () {
                     mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                 }
             };
-            if (!AuthManager.allowed(240)) return;
+            // if (!AuthManager.allowed(240)) return;
             LeaveRequestDialog.show(op);
         };
 
@@ -175,11 +195,10 @@ var LeaveComponent = (function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         mThis.pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+            sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
         }
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
@@ -224,43 +243,31 @@ var LeaveComponent = (function () {
             //menuItemClass:"",
             menus:[
                 {
-                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa fa-exchange fs-5"></i>`,
-
+                    html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"change_leave_request_status"
+                    name:"edit_leave"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave Request">Modify Leave Request</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    html:'<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_leave_request"
-                },
-                {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave Request">Delete Leave Request</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_leave_request"
+                    name:"delete_leave"
                 },
             ],
-            adjustPosition:{
-                top:-200 ,
-                left:-300
-           },
+        //     adjustPosition:{
+        //         top:-200 ,
+        //         left:-300
+        //    },
 
             onClick:(menuLink, id, name)=>{
                 switch(name){
-
-                    case 'change_leave_request_status':{
-                        mThis.changeStatus(id,menuLink);
-                        break;
-                    }
-                    case 'edit_leave_request':{
-                      mThis.editLeaveRequest(id, menuLink);
+                    case 'edit_leave':{
+                      mThis.editLeave(id, menuLink);
                       break;
                     }
-                    case 'delete_leave_request':{
-                        mThis.deleteLeaveRequest(id, menuLink);
+                    case 'delete_leave':{
+                        mThis.deleteLeave(id, menuLink);
                         break;
                       }
 
@@ -273,62 +280,9 @@ var LeaveComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk)=>{
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
-        let tr = lnk.closest('tr');
+   
 
-        let status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-        
-
-        let inputOptions = {
-            title: 'Set Leave Request Status',
-            dataLabel: "Leave status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText:"Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [{
-                status_id: "1",
-                name: "Pending"
-            },
-            {
-                status_id: "2",
-                name: "Approved"
-            },
-            {
-                status_id: "3",
-                name: "Rejected"
-            }],
-            defaultValue: status_id
-        };
-
-        InputBox2.show(inputOptions,(d)=>{
-            if(d){
-                let p = {
-                    id: id,
-                    status_id: d.value
-                };
-                if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/mhr/leave/update-status`,p).then(res => {
-                    if(res.status_code === 200){
-                        // mThis.elFilter_leave_request_status.value = d.value;
-                        InputBox2.close();
-                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
-                        cv_interact.success('The leave request status has been updated');
-                        // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
-    }
-
-    mThis.editLeaveRequest = (id, menuLink) => {
+    mThis.editLeave = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -337,11 +291,11 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(241)) return;
+        // if (!AuthManager.allowed(241)) return;
         LeaveRequestDialog.show(op);
     }
 
-    mThis.deleteLeaveRequest = (id, menuLink) => {
+    mThis.deleteLeave = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -349,7 +303,7 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(242)) return;
+        // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this leave request?',{
             title: 'Delete Leave Request',
             context: 'delete',
@@ -370,12 +324,11 @@ var LeaveComponent = (function () {
     }
 
     mThis.prepareFormOptions = () => {
-
         vsapi.call(`${main_view.base_url}/mhr/leave/form-options`, null, null, null)
             .then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
-            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',true,'All Types',null);
+            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',"",LocaleManager.trans("All Statuses", "titles"),"");
+            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',"",LocaleManager.trans("All Types", "titles"),"");
         })
     }
 
@@ -390,7 +343,6 @@ var LeaveComponent = (function () {
     return mThis;
 })();
 
-//begin::LeaveRequestDialog using GeneralDialog
 const LeaveRequestDialog = (()=>{
 
     const self = {};
@@ -400,42 +352,39 @@ const LeaveRequestDialog = (()=>{
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     return [
-                        `<div class="row">
-                    <div class="form-group col-12">
-                        <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                        <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
-                    </div>
-                    <div class="form-group  col-12 d.none">
-                        <div id="info"></div>
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                        <input type="vsdate" name="start_date" class="form-control data-input" data-field="start_date" placeholder="select start date" />
-                    </div>
-                    <div class="form-group col-6">
-                      <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                      <input type="vsdate" name="end_date" class="form-control data-input" data-field="end_date" placeholder="select end date"  />
-                    </div>
-                    <div class="form-group col-12">
-                      <label for="remarks" class="form-label" vslang="titles.remarks"></label>
-                      <input name="remarks" class="form-control data-input" data-field="remarks" />
-                    </div>
-                    <div class="form-group col-12">
-                        <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
-                        <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
-                    </div>
-              </div>`,
-                    ].join("");
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee"  data-field="emp_id"></select>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" name="leave_type" class="form-control data-input" placeholder="Leave Type"  data-field="leave_type_id"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
+                                    <label>Start Date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
+                                    <label>End Date</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remarks</label>
+                                </div>
+                            </div>
+                        </div>`,].join("");
                 },
                 contentCreated: (me) => {
-                    //Convert field to be DatePicker : start_date and end_date
-                    DateTimePicker.init(me.controls.start_date);
-                    DateTimePicker.init(me.controls.end_date);
                 },
                 configSelect: [
                     {
@@ -455,20 +404,17 @@ const LeaveRequestDialog = (()=>{
                 ],
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => {
-                            //Close with Cancel button
-                            me.hide(false);
-                        },
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => me.hide(false),
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id;
 
                             vsapi
                                 .call(
@@ -484,11 +430,11 @@ const LeaveRequestDialog = (()=>{
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated leave request successfully");
+                                            cv_interact.success("Updated set leave successfully");
                                         }
                                         else
                                         {
-                                            cv_interact.success("Added leave request successfully");
+                                            cv_interact.success("Set leave successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -496,8 +442,8 @@ const LeaveRequestDialog = (()=>{
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Leave Request",
-                    modifyTitle: "Edit Leave Request",
+                    createTitle: "Set Leave",
+                    modifyTitle: "Edit Leave",
                     targetProp: "leave_request",
                     api: {
                         endpoint: [
@@ -512,7 +458,6 @@ const LeaveRequestDialog = (()=>{
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                 },
             });
 
