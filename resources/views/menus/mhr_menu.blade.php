@@ -161,7 +161,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Overview"></span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Dashboard"></span>
                     </a>
                 </li>
                 <li class="mb-2 kt-menu__section">
@@ -174,16 +174,16 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/group.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Management">Employee Management</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee">Employee</span>
                     </a>
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
-                    <a href="ContractsComponent" modid="309" class="menu-item kt-menu__link">
+                    <a href="LeaveComponent" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Leave Requests">Leave Requests</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Leave">Leave</span>
                     </a>
                 </li>
 
@@ -192,7 +192,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Movements">Employee Movements</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Movements">Movements</span>
                     </a>
                 </li>
                 <li class="mb-2 kt-menu__section">

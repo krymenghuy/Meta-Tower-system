@@ -246,7 +246,7 @@ class GeneralSettings //extends Model
 
     static function options_leave_type($ss)
     {
-        return DB::table('leave_types')->where('subs_id', hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
+        return DB::table('leave_types')->selectRaw('id,name AS leave_type')->get();
     }
 
     static function options_organization($ss)

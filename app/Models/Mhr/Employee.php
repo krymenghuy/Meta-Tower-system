@@ -95,6 +95,13 @@ class Employee extends VSModel
         if ($x) return 'National ID ?? has been used by another employee::'. $nid;
         return null;
     }
+    static function isOnLeave($id){
+        $today = date('Y-m-d');
+        $start_date = DBX::convertToDate('l.start_date');
+        $end_date = DBX::convertToDate('l.end_date');
+        $str_dates = $today . " BETWEEN $start_date AND $end_date";
+        return DB::table('leaves as l')->where('l.id',$id)->whereRaw($str_dates)->value('id');
+    }
     public function upsert($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -429,7 +436,7 @@ class Employee extends VSModel
             'positions' => GeneralSettings::options_position($ss),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => GeneralSettings::options_work_shift($ss),
-            'branches' => GeneralSettings::options_branch($ss),
+            // 'branches' => GeneralSettings::options_branch($ss),
             'employee' => $employee,
             'employees' => $emp,
         ];

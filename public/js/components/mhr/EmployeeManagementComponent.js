@@ -2,136 +2,47 @@
 
 var EmployeeManagementComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Employee Management";
+    mThis.title_prop = "Employee";
+    mThis.defaultPage = 'employee_list';
+
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_employee_management_component",
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnAddEmployee");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_employee");
-    mThis.elBranch = mThis.self.querySelector("#_emp_branch_id");
     mThis.elEmpType = mThis.self.querySelector("#_emp_type_id");
     mThis.elStatus = mThis.self.querySelector("#_emp_status_id");
     mThis.elSearch = mThis.self.querySelector("#_search_employee");
-    mThis.paginationContainer = mThis.self.querySelector(
-        "#employee_container_pagination",
-    );
-
-    mThis._sexLabel = (sex) => {
-        if (sex === "M") return LocaleManager.trans("Male", "titles");
-        if (sex === "F") return LocaleManager.trans("Female", "titles");
-        return sex || "_";
-    };
-
-    mThis.cols = [
-        { transTitle: "", className: "align-middle" },
-        {
-            transTitle: "titles.Photo",
-            className: "align-middle",
-            data: (data) =>
-                `<img src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff.png`}" alt="" style="width:50px;height:50px;border-radius:6px;object-fit:cover;" />`,
-        },
-        {
-            transTitle: "titles.Code",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.Name",
-            className: "align-middle",
-            data: (data) => `
-                <div class="text-prm-custom" style="min-width:120px;">
-                    <span class="text-capitalize">${data.name ?? "_"}</span>
-                    <span class="d-block text-primary" style="font-size:12px;">${mThis._sexLabel(data.sex)}</span>
-                </div>`,
-        },
-        {
-            transTitle: "titles.Position",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.position ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.Type",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.type ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.Contact Info",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid fa-phone text-success px-1" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
-                 <span class="d-block text-primary"><i class="fa-solid fa-envelope px-1" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.Joining Date",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.joining_date ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle text-center",
-            data: (data) => {
-                const status = (data.status || "").toLowerCase();
-                let cls =
-                    "badge text-warning bg-warning-subtle border border-warning";
-                if (status.includes("active")) {
-                    cls =
-                        "badge text-success bg-success-subtle border border-success";
-                } else if (
-                    status.includes("inactive") ||
-                    status.includes("terminated")
-                ) {
-                    cls =
-                        "badge text-danger bg-danger-subtle border border-danger";
-                }
-                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">${data.status ?? ""}</span>`;
-            },
-        },
-        {
-            className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)"
-                        class="btn-employee-dropdown-action"
-                        data-id="${data.id}"
-                        data-statusid="${data.status_id}"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        style="cursor:pointer;padding:8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
-                    </a>
-                </div>`,
-        },
-    ];
+    mThis.divlistView = mThis.self.querySelector("#_employee_list");
+    mThis.paginationContainer = mThis.self.querySelector( "#container_pagination");
+    mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.EmployeeListView = new ListView("_employee_list", {
+        mThis.EmployeeListView = new ListView(mThis.divlistView, {
             fetchApi: `${main_view.base_url}/mhr/employee/list-paginate`,
-            perPage: 10,
-            apiCluster: main_view.apiCluster,
+            perPage: 8,
             paginationContainer: mThis.paginationContainer,
-            columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
-            rowCreated: (data, index, tr) => {
-                tr.dataset.id = data.id;
-                tr.dataset.statusid = data.status_id;
+            apiCluster: main_view.apiCluster,
+            renderItems: (data, list_container) => {
+                mThis.renderEmployeeList(list_container, data);
             },
             listContainerClass: null,
         });
-
-        mThis.btnAdd.onclick = (e) => {
+         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            EmployeeDialog.show({
+
+            const op = {
                 id: null,
+                // branch_id: mThis.el_branch.value,
                 btn: e.target,
-                onClose: () => mThis.applyListFilters(),
-            });
+                onClose: () => {
+                    mThis.EmployeeListView.showPage(mThis.getFilterData());
+                },
+            };
+            
+            EmployeeDialog.show(op);
         };
 
         mThis.pr_tbl = mThis.EmployeeListView.getListContainer();
@@ -143,187 +54,195 @@ var EmployeeManagementComponent = (function () {
         };
 
         mThis.tblEmployee = mThis.EmployeeListView.getTable();
-        mThis.initDropdownMenus(mThis.tblEmployee);
-        mThis.bindFilterListeners();
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.applyListFilters();
             }, 250);
         });
 
         mThis.initAlready = true;
     };
-
-    mThis.getFilterData = () => {
-        const nz = (v) =>
-            v === "" || v === null || v === undefined ? "0" : String(v);
-        const p = {
-            search_value: mThis.elSearch.value || "",
-            branch_id: nz(mThis.elBranch && mThis.elBranch.value),
-            status_id: nz(mThis.elStatus && mThis.elStatus.value),
-            emp_type_id: nz(mThis.elEmpType && mThis.elEmpType.value),
-        };
-
-        mThis.divFilter.querySelectorAll(".emp-filter-control").forEach((el) => {
-            const f = el.dataset.field;
-            if (!f) return;
-            if (
-                ["branch_id", "status_id", "emp_type_id"].includes(f)
-            ) {
-                p[f] = nz(el.value);
-            } else {
+      mThis.getFilterData = () => {
+        const p = {"search_value":mThis.elSearch.value};
+        const elements =  mThis.div_filter_fields.querySelectorAll(".filter-field");
+        elements.forEach((el) => {
+                const f = el.dataset.field;
                 p[f] = el.value;
-            }
-        });
+            });
 
         return p;
     };
-
-    mThis.applyListFilters = () => {
-        const d = mThis.getFilterData();
-        if (
-            mThis.EmployeeListView &&
-            typeof mThis.EmployeeListView.setParams === "function"
-        ) {
-            mThis.EmployeeListView.setParams(d);
-        }
-        mThis.EmployeeListView.showPage(d);
+    mThis.getPageContainer =(pageName)=>{
+        return mThis.pages[pageName];
     };
-
-    mThis.bindFilterListeners = () => {
-        if (mThis._filterListenersBound) return;
-        mThis._filterListenersBound = true;
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.applyListFilters();
+    mThis.renderEmployeeList = (div, data) => {
+        console.log(123, data);
+        data = data ?? [];
+        // if (!AuthManager) {
+        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+        //     return;
+        // }
+        AuthManager.init().then((user) => {
+            mThis.renderEmployee(data, user);
         });
     };
+    mThis.renderEmployee = (data) => {
+        let html = `<div class="row g-3">`;
+        let cmt = 0;
 
-    mThis.initDropdownMenus = (table) => {
-        const menuOptions = {
-            containerElement: table,
-            actionButtonClass: "btn-employee-dropdown-action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify Employee">Modify Employee</span>',
-                    icon: '<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>',
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_employee",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Delete Employee">Delete Employee</span>',
-                    icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>',
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_employee",
-                },
-            ],
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case "modify_employee":
-                        EmployeeDialog.show({
-                            id,
-                            btn: menuLink,
-                            onClose: () => mThis.applyListFilters(),
-                        });
+        if (Array.isArray(data) && data[0]) {
+            data.forEach((d) => {
+                const status = d.status || "Active";
+
+                let statusColor;
+
+                switch (status) {
+                    case "Terminated":
+                        statusColor =
+                            "background: linear-gradient(rgb(12 32 126), rgb(172 53 39); color: #fff; border:1px solid rgb(201, 38, 17);";
                         break;
-                    case "delete_employee":
-                        mThis.deleteEmployee(id, menuLink);
+                    case "Resigned":
+                        statusColor =
+                            "background: linear-gradient(rgb(12 32 126), rgb(224 203 48); color: #fff; border:1px solid rgb(225, 225, 14);";
                         break;
                     default:
+                        statusColor =
+                            "background: linear-gradient(rgb(12 32 126), rgb(22 119 196)); color: #fff; border:1px solid #fffbff;";
                         break;
                 }
-            },
-        };
-        new VSDropdownMenu(menuOptions);
-    };
+ html += `
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-2">
+                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
+                                <div class="d-flex justify-content-center align-items-start mt-3">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                            style="width:100px;height:100px;">
+                                            <img src="${d.image_url || main_view.asset_url + "/images/default/default-tenant.jpg"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                        </div>
+                                        <!-- <div class="flex items-start justify-between mb-6">
+                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name ?? '-'}</span>
+                                            <div class="d-flex align-items-center mt-1 gap-2">
+                                                    <span class="text-muted small" style="min-width:70px; text-transform: capitalize;">${d.position ?? '-'}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                            </a>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
+                                <div class="row g-3 border-bottom border-gray">
+                                    <div class="col-6 mt-3">
+                                        <div class="card bg-prm-custom text-center shadow-sm">
+                                                <div class="fs-6 py-1 text-gold-custom">${d.name}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1"></div>
+                                    <div class="col-6">
+                                       
 
-    mThis.deleteEmployee = (id, btn) => {
-        cv_interact.confirm(
-            "confirm_delete",
-            {
-                title: "deleted",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            (confirmed) => {
-                if (!confirmed) return;
-                vsapi
-                    .call(
-                        `${main_view.base_url}/mhr/employee/delete`,
-                        { id },
-                        btn,
-                    )
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            cv_interact.success("delete_success");
-                            mThis.applyListFilters();
-                        } else {
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-            },
-        );
-    };
+                                    </div>
+                                </div>
+                                <div class="card_container" style="max-width: 250px;">
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
+                                        <span>${d.code ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
+                                        <span>${d.date_of_birth ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                                        ${d.phone_number || ""}
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-at me-2 text-muted"></i>
+                                        ${d.email || "_"}
+                                    </p>
 
-    mThis.populateFilterSelect = (el, items, valueKey, textKey, defaultLabel) => {
-        if (!el) return;
-        const current = el.value;
-        el.innerHTML = "";
-        const emptyOpt = document.createElement("option");
-        emptyOpt.value = "";
-        emptyOpt.textContent = defaultLabel;
-        el.appendChild(emptyOpt);
-        (items || []).forEach((item) => {
-            const opt = document.createElement("option");
-            opt.value = item[valueKey];
-            opt.textContent = item[textKey];
-            el.appendChild(opt);
-        });
-        if (current && el.querySelector(`option[value="${current}"]`)) {
-            el.value = current;
+
+                                </div>
+                            </div>
+                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
+                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
+                                    <span style="color: #64748b; font-size: 0.85rem;">
+                                        <span class="small" vslang="titles.Last Updated">Last Updated</span>:
+                                        ${d.update_user || "System"}
+                                    </span>
+                                    <a href="javascript:void(0)" class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;" data-id="${d.id}">
+                                        <span vslang="titles.View Details">View Details</span> <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
+                                    </a>
+                                </div>
+
+                        </div>
+                    </div>
+                    `;
+                   
+                cmt++;
+            });
         }
-    };
 
+        if (cmt === 0) {
+            html = [
+                `<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">`,
+                `<div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>`,
+                `</div>`,
+            ].join("");
+        }
+
+        html += `</div>`;
+        mThis.divlistView.innerHTML = html;
+
+    };
+  
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/mhr/employee/form-options`, null)
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                mThis.populateFilterSelect(
-                    mThis.elBranch,
-                    d.branches,
-                    "id",
-                    "branch_name",
-                    LocaleManager.trans("All Branches", "titles"),
-                );
-                mThis.populateFilterSelect(
-                    mThis.elStatus,
-                    d.status,
-                    "id",
-                    "name",
-                    LocaleManager.trans("All Statuses", "titles"),
-                );
-                mThis.populateFilterSelect(
-                    mThis.elEmpType,
-                    d.types,
-                    "id",
-                    "name",
-                    LocaleManager.trans("All Types", "titles"),
-                );
+                VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',"",LocaleManager.trans("All Statuses", "titles"),"");
+                VSUtil.setComboItems(mThis.elEmpType,d.types,'id','name',"",LocaleManager.trans("All Types", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
+    };
+      mThis.showPage = async (pageName, op = {})=>{
+       if(mThis.self.style.display !=='block'){
+         main_view.setContentView(mThis.self, mThis.title_prop);
+       }
+       switch(pageName){
+         case 'employee_list':{
+            mThis.currentPage = 'employee_list';
+            mThis.EmployeeListView.showPage(op);
+            break;
+         }
+        
+          default:{
+             return;
+          }
+       }
+       const targetPage = mThis.getPageContainer(pageName);
+       const siblings = Array.from(targetPage.parentElement.children);
+       // Hide all siblings smoothly
+       siblings.forEach((div) => {
+           if (div !== targetPage && div.style.display !== 'none') {
+               div.style.display = 'none';
+           }
+       });
+       targetPage.style.display = 'block';
     };
 
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.applyListFilters();
+            mThis.showPage(mThis.defaultPage,mThis.getFilterData());
         });
     };
 

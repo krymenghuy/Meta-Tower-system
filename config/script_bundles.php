@@ -242,7 +242,7 @@ return [
                 '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/AnnouncementComponent.js',
                 '/js/components/mhr/ReservationComponent.js',
-                '/js/components/mhr/ServicesComponent.js',
+                '/js/components/mhr/LeaveComponent.js',
 
 
 
