@@ -35,7 +35,7 @@ class Employee extends VSModel
        DBX::saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
     }
 
-    protected static function resolveWorkShiftId($ss)
+    public static function resolveWorkShiftId($ss)
     {
         $subsId = $ss->subs_id ?? null;
         $subsBin = $subsId ? @hex2bin($subsId) : null;
