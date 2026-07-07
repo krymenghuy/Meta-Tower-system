@@ -34,6 +34,36 @@ class Employee extends VSModel
        ];
        DBX::saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
     }
+
+    public static function resolveWorkShiftId($ss)
+    {
+        $subsId = $ss->subs_id ?? null;
+        $subsBin = $subsId ? @hex2bin($subsId) : null;
+
+        if ($subsBin) {
+            $id = DB::table('work_shifts')
+                ->where('subs_id', $subsBin)
+                ->orderBy('id')
+                ->value('id');
+            if ($id) {
+                return $id;
+            }
+        }
+
+        $id = DB::table('work_shifts')->orderBy('id')->value('id');
+        if ($id) {
+            return $id;
+        }
+
+        $now = getNowTime();
+        return DB::table('work_shifts')->insertGetId([
+            'name' => 'Default',
+            'subs_id' => $subsBin,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -92,7 +122,7 @@ class Employee extends VSModel
             'emp_type_id' => '1|number',
             'salary' => '0|number',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
-            'work_shift_id' => '1|number|exists=work_shifts.id',
+            'work_shift_id' => '0|number|exists=work_shifts.id',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-30',
             'nid' => '1|string|1-30|text=national_id_required',
@@ -116,7 +146,11 @@ class Employee extends VSModel
 
         $inputs = $res->values;
         $d = (object) $inputs;
-        if($d->currency_code !== VSMoney::$base_currency) return DV::error('The salary currency must be ??::'.VSMoney::$base_currency);
+        if (empty($inputs['work_shift_id'])) {
+            $inputs['work_shift_id'] = self::resolveWorkShiftId($ss);
+        }
+        $inputs['currency_code'] = VSMoney::$base_currency ?: 'KHR';
+        $d->currency_code = $inputs['currency_code'];
         $nid = $d->nid ?? null;
         if($nid){
             $expire_date = $d->nid_expiry_date ?? null;
@@ -220,16 +254,24 @@ class Employee extends VSModel
         $skip_rows = ($current_page - 1) * $per_page;
         $branch_id = $ss->branch_id;
         $status_id = $d->status_id ?? null;
+        $branch_id_filter = $d->branch_id ?? null;
+        $emp_type_id = $d->emp_type_id ?? null;
         $search_value = $d->search_value ?? null;
         $str_search = "1=1";
-        $str_moreWhere = "2=2";
+        $str_moreWhere = "1=1";
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.phone_number LIKE '%" . $search_value . "%' OR emp.nid LIKE '%" . $search_value . "%')";
+            $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%' OR emp.phone_number LIKE '%" . $search_value . "%' OR emp.nid LIKE '%" . $search_value . "%')";
         }
         if ($status_id) {
-            $str_moreWhere .= ' AND t.status_id =' . $status_id;
+            $str_moreWhere .= ' AND emp.status_id =' . (int) $status_id;
+        }
+        if ($branch_id_filter) {
+            $str_moreWhere .= ' AND emp.branch_id =' . (int) $branch_id_filter;
+        }
+        if ($emp_type_id) {
+            $str_moreWhere .= ' AND emp.emp_type_id =' . (int) $emp_type_id;
         }
         $countries = Country::listAll($ss);
 
@@ -394,6 +436,7 @@ class Employee extends VSModel
             'positions' => GeneralSettings::options_position($ss),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => GeneralSettings::options_work_shift($ss),
+            // 'branches' => GeneralSettings::options_branch($ss),
             'employee' => $employee,
             'employees' => $emp,
         ];

@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('mhr-components', 1, 270);
+    ScriptManager::render('mhr-components', 1, 276);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -320,8 +320,9 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.mhr.dashboardComponent')
+                            @include('layouts.mhr.employeeManagementComponent')
                             @include('layouts.mhr.leaveComponent')
-                            
+
 
 
 

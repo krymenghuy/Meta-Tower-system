@@ -28,7 +28,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
 
-    
+
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
     Route::post('/save', [LeaveController::class, 'saveLeave']);
