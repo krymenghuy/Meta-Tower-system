@@ -179,7 +179,7 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
-                    <a href="ContractsComponent" modid="309" class="menu-item kt-menu__link">
+                    <a href="LeaveComponent" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
