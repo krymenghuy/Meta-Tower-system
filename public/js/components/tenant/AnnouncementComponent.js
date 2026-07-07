@@ -9,8 +9,8 @@ var AnnouncementComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_announcement");
     mThis.elSearch = mThis.self.querySelector("#_search_announcement");
     mThis.elFilter_category = mThis.self.querySelector("#_filter_category");
-    mThis.elFilter_priority = mThis.self.querySelector("#_filter_priority");
     mThis.elFilter_sort = mThis.self.querySelector("#_filter_sort");
+    mThis.announcementItemsMap = {};
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -34,24 +34,21 @@ var AnnouncementComponent = (() => {
         };
 
         let timeOut = null;
-        mThis.elSearch.onkeyup = function (e) {
-            e.preventDefault();
+        mThis.elSearch.addEventListener("keyup", () => {
             clearTimeout(timeOut);
             timeOut = setTimeout(() => {
-                mThis.AnnouncementListView.showPage(mThis.getFilterData());
+                mThis.refresh();
             }, 250);
-        };
-
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.AnnouncementListView.showPage(mThis.getFilterData());
         });
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = () =>
-                mThis.AnnouncementListView.showPage(mThis.getFilterData());
+        mThis.divFilter.addEventListener("change", () => {
+            mThis.refresh();
         });
 
         mThis.initAlready = true;
+    };
+
+    mThis.refresh = () => {
+        mThis.AnnouncementListView.showPage(mThis.getFilterData());
     };
 
     mThis.getFilterData = () => {
@@ -68,101 +65,7 @@ var AnnouncementComponent = (() => {
         return p;
     };
 
-    const formatDateTime = (sqlDate) => {
-        if (!sqlDate) return "";
-        const d = new Date(sqlDate.replace(/-/g, "/"));
-        if (isNaN(d.getTime())) return sqlDate;
-        const months = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ];
-        const monthStr = months[d.getMonth()];
-        const day = d.getDate();
-        let hours = d.getHours();
-        const minutes = String(d.getMinutes()).padStart(2, "0");
-        const ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        const hoursStr = String(hours).padStart(2, "0");
-        return `${monthStr} ${day}, ${d.getFullYear()} ${hoursStr}:${minutes} ${ampm}`;
-    };
-
-    const formatRelativeTime = (sqlDate) => {
-        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
-
-        let dateStr = sqlDate;
-        if (
-            !dateStr.includes("T") &&
-            !dateStr.includes("+") &&
-            !dateStr.includes("Z")
-        ) {
-            dateStr = dateStr.replace(" ", "T") + "+07:00";
-        }
-        const targetDate = new Date(dateStr);
-        if (isNaN(targetDate.getTime())) return sqlDate;
-
-        const now = new Date();
-        const diffMs = now.getTime() - targetDate.getTime();
-        const diffSec = Math.floor(diffMs / 1000);
-
-        if (diffSec < 0) {
-            return formatDateOnly(sqlDate);
-        }
-        if (diffSec < 60) {
-            return "Just now";
-        }
-
-        const diffMin = Math.floor(diffSec / 60);
-        if (diffMin < 60) {
-            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
-        }
-
-        const diffHrs = Math.floor(diffMin / 60);
-        if (diffHrs < 24) {
-            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
-        }
-
-        const diffDays = Math.floor(diffHrs / 24);
-        if (diffDays < 7) {
-            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-        }
-
-        return formatDateOnly(sqlDate);
-    };
-
-    const formatDateOnly = (sqlDate) => {
-        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "";
-        const d = new Date(sqlDate.replace(/-/g, "/"));
-        if (isNaN(d.getTime())) return sqlDate;
-        const months = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ];
-        const monthStr = months[d.getMonth()];
-        const day = d.getDate();
-        return `${monthStr} ${day}, ${d.getFullYear()}`;
-    };
-
+    // Date formatting helpers
     const MONTHS = [
         "Jan",
         "Feb",
@@ -183,7 +86,43 @@ var AnnouncementComponent = (() => {
         const d = new Date(sqlDate.replace(/-/g, "/"));
         if (isNaN(d.getTime())) return sqlDate;
         const base = `${MONTHS[d.getMonth()]} ${d.getDate()}`;
-        return withYear ? `${base}, ${d.getFullYear()}` : base;
+        return withYear
+            ? `${base}, ${d.getFullYear()}`
+            : `${base}`;
+    };
+
+    const formatRelativeTime = (sqlDate) => {
+        if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
+
+        const dateStr =
+            !sqlDate.includes("T") &&
+            !sqlDate.includes("+") &&
+            !sqlDate.includes("Z")
+                ? sqlDate.replace(" ", "T") + "+07:00"
+                : sqlDate;
+        const targetDate = new Date(dateStr);
+        if (isNaN(targetDate.getTime())) return sqlDate;
+
+        const diffSec = Math.floor((Date.now() - targetDate.getTime()) / 1000);
+        if (diffSec < 0) return formatShortDate(sqlDate);
+        if (diffSec < 60) return "Just now";
+
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) {
+            return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+        }
+
+        const diffHrs = Math.floor(diffMin / 60);
+        if (diffHrs < 24) {
+            return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+        }
+
+        const diffDays = Math.floor(diffHrs / 24);
+        if (diffDays < 7) {
+            return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        }
+
+        return formatShortDate(sqlDate);
     };
 
     const escapeHtml = (str) => {
@@ -193,169 +132,78 @@ var AnnouncementComponent = (() => {
         return el.innerHTML;
     };
 
-    const CATEGORY_ICONS = {
-        maintenance: "fa-solid fa-screwdriver-wrench",
-        emergency: "fa-solid fa-triangle-exclamation",
-        notice: "fa-solid fa-bullhorn",
-        event: "fa-solid fa-calendar-days",
-        "policy update": "fa-solid fa-file-lines",
-        policy: "fa-solid fa-file-lines",
-        general: "fa-solid fa-bullhorn",
-    };
-
+    // Theme config mapping
     const PRIORITY_THEMES = {
-        critical: {
-            label: "Urgent Action Required",
-            style: "background:#fca5a5; color:#b91c1c; border: 1px solid #f87171;",
-            grad: "linear-gradient(135deg, #b91c1c 0%, #8b1414 100%)",
-            accent: "#b91c1c",
-            soft: "#fca5a5",
-        },
-        high: {
-            label: "High Priority",
-            style: "background:#fee2e2; color:#dc2626; border: 1px solid #fca5a5;",
-            grad: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
-            accent: "#dc2626",
-            soft: "#fee2e2",
-        },
-        medium: {
-            label: "Medium Priority",
-            style: "background:#fef3c7; color:#d97706; border: 1px solid #fde68a;",
-            grad: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
-            accent: "#d97706",
-            soft: "#fef3c7",
-        },
-        normal: {
-            label: "Normal Priority",
-            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
-            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-            accent: "#3b82f6",
-            soft: "#eff6ff",
-        },
-        low: {
-            label: "Low Priority",
-            style: "background:#eff6ff; color:#3b82f6; border: 1px solid #dbeafe;",
-            grad: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-            accent: "#3b82f6",
-            soft: "#eff6ff",
-        }
+        critical: { accent: "#b91c1c", soft: "#fca5a5" },
+        high: { accent: "#dc2626", soft: "#fee2e2" },
+        medium: { accent: "#d97706", soft: "#fef3c7" },
+        normal: { accent: "#3b82f6", soft: "#eff6ff" },
+        low: { accent: "#3b82f6", soft: "#eff6ff" },
     };
 
-    mThis.categoryIcon = (d) => {
-        const categoryLower = (d.category || "general").toLowerCase();
-        const titleLower = (d.title || "").toLowerCase();
-
-        let icon =
-            CATEGORY_ICONS[categoryLower] ||
-            CATEGORY_ICONS[categoryLower.replace(" update", "")] ||
-            CATEGORY_ICONS.general;
-
-        if (titleLower.includes("water") || titleLower.includes("plumbing")) {
-            icon = "fa-solid fa-droplet";
-        } else if (
-            titleLower.includes("parking") ||
-            titleLower.includes("car")
-        ) {
-            icon = "fa-solid fa-square-parking";
-        } else if (
-            titleLower.includes("elevator") ||
-            titleLower.includes("lift")
-        ) {
-            icon = "fa-solid fa-elevator";
-        } else if (titleLower.includes("fire")) {
-            icon = "fa-solid fa-fire-extinguisher";
-        }
-
-        return icon;
+    const getPriorityMeta = (priority) => {
+        const p = String(priority || "low")
+            .trim()
+            .toLowerCase();
+        return PRIORITY_THEMES[p] || PRIORITY_THEMES.low;
     };
 
-    mThis.normalizePriority = (priority) => {
-        const p = String(priority || "low").trim().toLowerCase();
-        return PRIORITY_THEMES[p] ? p : "low";
-    };
-
-    mThis.priorityMeta = (priority) => {
-        const p = mThis.normalizePriority(priority);
-        return PRIORITY_THEMES[p];
-    };
-
-    mThis.announcementItemsMap = {};
-
-    mThis.renderDetailField = (label, value) => `
+    // Detail UI rendering
+    const renderDetailField = (label, value) => `
         <div class="ann-detail-profile__row">
             <span class="ann-detail-profile__label">${escapeHtml(label)}</span>
             <span class="ann-detail-profile__sep">:</span>
             <span class="ann-detail-profile__value">${value}</span>
         </div>`;
 
-    mThis.buildAnnouncementDetailHtml = (data) => {
-        const pubDate = data.publish_date
-            ? formatShortDate(data.publish_date)
-            : data.created_at
-              ? formatShortDate(data.created_at)
-              : "—";
-        const expDate = data.expiry_date
-            ? formatShortDate(data.expiry_date)
-            : "No expiration";
-        // const buildingName = escapeHtml(data.building_name || "All Buildings");
-        const audience = escapeHtml(data.audience || "All Tenants");
-        const category = escapeHtml(data.category || "General");
-        const priority = escapeHtml(data.priority || "Low");
-        const title = escapeHtml(data.title || "—");
-        const description = data.description
-            ? `<div class="announcement-desc">${data.description}</div>`
-            : "—";
-
+    const buildDetailHtml = (data) => {
+        const pub = data.publish_date || data.created_at;
         return `
             <div class="ann-detail-profile overflow-y-auto overflow-x-hidden">
                 <div class="ann-detail-profile__title">
-                    <h5 class="mb-0">${title}</h5>
+                    <h5 class="mb-0">${escapeHtml(data.title || "—")}</h5>
                 </div>
                 <div class="ann-detail-profile__body">
                     <div class="row g-3 mb-0">
                         <div class="col-12 col-md-6">
-                            ${mThis.renderDetailField("Category", category)}
-                            ${mThis.renderDetailField("Published", escapeHtml(pubDate))}
+                            ${renderDetailField("Category", escapeHtml(data.category || "General"))}
+                            ${renderDetailField("Published", escapeHtml(pub ? formatShortDate(pub) : "—"))}
                         </div>
                         <div class="col-12 col-md-6">
-                            ${mThis.renderDetailField("Priority", priority)}
-                            ${mThis.renderDetailField("Expires", escapeHtml(expDate))}
+                            ${renderDetailField("Priority", escapeHtml(data.priority || "Low"))}
+                            ${renderDetailField("Expires", escapeHtml(data.expiry_date ? formatShortDate(data.expiry_date) : "No expiration"))}
                         </div>
                         <div class="col-12 ann-detail-profile__remark">
-                            ${mThis.renderDetailField("Description", description)}
+                            ${renderDetailField("Description", data.description ? `<div class="announcement-desc">${data.description}</div>` : "—")}
                         </div>
                     </div>
                 </div>
             </div>`;
     };
 
-    mThis.showAnnouncementDetail = (id) => {
+    const trackViewed = (id) => {
         try {
-            const viewedSession = JSON.parse(sessionStorage.getItem("viewed_announcements") || "[]");
-            if (!viewedSession.includes(Number(id))) {
-                viewedSession.push(Number(id));
-                sessionStorage.setItem("viewed_announcements", JSON.stringify(viewedSession));
-            }
-            const viewedLocal = JSON.parse(localStorage.getItem("viewed_announcements") || "[]");
-            if (!viewedLocal.includes(Number(id))) {
-                viewedLocal.push(Number(id));
-                localStorage.setItem("viewed_announcements", JSON.stringify(viewedLocal));
-            }
+            const numId = Number(id);
+            [sessionStorage, localStorage].forEach((storage) => {
+                const list = JSON.parse(
+                    storage.getItem("viewed_announcements") || "[]",
+                );
+                if (!list.includes(numId)) {
+                    list.push(numId);
+                    storage.setItem(
+                        "viewed_announcements",
+                        JSON.stringify(list),
+                    );
+                }
+            });
         } catch (e) {
             console.error("Error saving viewed announcement:", e);
         }
+    };
 
-        const openDialog = (data) => {
-            AnnouncementViewDialog.show({
-                contentHtml: mThis.buildAnnouncementDetailHtml(data),
-            });
-        };
-
+    const loadDetails = (id, callback) => {
         const cached = mThis.announcementItemsMap[id];
-        if (cached) {
-            openDialog(cached);
-            return;
-        }
+        if (cached) return callback(cached);
 
         vsapi
             .call(
@@ -365,12 +213,85 @@ var AnnouncementComponent = (() => {
                 null,
             )
             .then((res) => {
-                if (res.status_code !== 200 || !res.data) {
-                    cv_interact.error(res.error_message || "Announcement not found.");
-                    return;
+                if (res?.status_code === 200 && res.data) {
+                    mThis.announcementItemsMap[id] = res.data;
+                    callback(res.data);
+                } else {
+                    cv_interact.error(
+                        res?.error_message || "Announcement not found.",
+                    );
                 }
-                openDialog(res.data);
             });
+    };
+
+    mThis.showAnnouncementDetail = (id) => {
+        trackViewed(id);
+        loadDetails(id, (data) => {
+            AnnouncementViewDialog.show({ contentHtml: buildDetailHtml(data) });
+        });
+    };
+
+    // Cards layout and rendering
+    const buildCardHtml = (d) => {
+        mThis.announcementItemsMap[d.id] = d;
+        const pr = getPriorityMeta(d.priority);
+        const pubDate = d.created_at
+            ? formatRelativeTime(d.created_at)
+            : "Not set";
+        const expDate = d.expiry_date
+            ? formatShortDate(d.expiry_date)
+            : "No expiration";
+        const catClass = `ann-cat-${(d.category || "General").toLowerCase().replace(" ", "-")}`;
+
+        return `
+            <div class="ann-card" data-id="${d.id}" style="--ann-accent:${pr.accent}; --ann-soft:${pr.soft};">
+                <div class="ann-card__banner">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                        <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
+                        <span class="ann-cat ${catClass}">${escapeHtml(d.category || "General")}</span>
+                    </div>
+                </div>
+                <div class="ann-card__body">
+                    <div class="ann-desc-text announcement-desc collapsed">${d.description ?? ""}</div>
+                    <div class="ann-card__footer">
+                        <div class="ann-meta-item">
+                            <span class="ann-meta-icon"><i class="fa-solid fa-calendar"></i></span>
+                            <span>Announced: <strong>${pubDate}</strong></span>
+                        </div>
+                        <div class="ann-meta-item">
+                            <span class="ann-meta-icon"><i class="fa-solid fa-hourglass-half"></i></span>
+                            <span>Expires: <strong>${expDate}</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    const setupReadMore = (descEl) => {
+        descEl.classList.remove("collapsed");
+        const fullHeight = descEl.offsetHeight;
+        descEl.classList.add("collapsed");
+        const clampedHeight = descEl.offsetHeight;
+
+        if (clampedHeight > 0 && fullHeight > clampedHeight) {
+            const btn = document.createElement("a");
+            btn.href = "javascript:void(0)";
+            btn.className = "btn-read-more";
+            btn.innerText =
+                (typeof LocaleManager !== "undefined" &&
+                    LocaleManager.trans("Read More", "labels")) ||
+                "Read More";
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const card = descEl.closest(".ann-card");
+                if (card?.dataset.id) {
+                    mThis.showAnnouncementDetail(card.dataset.id);
+                }
+            });
+            descEl.closest(".ann-card__body")?.appendChild(btn);
+        } else {
+            descEl.classList.remove("collapsed");
+        }
     };
 
     mThis.renderCards = (container, data) => {
@@ -380,147 +301,55 @@ var AnnouncementComponent = (() => {
             container.innerHTML = `
                 <div class="text-center text-muted py-5 bg-white shadow-sm rounded-3 mt-3">
                     No announcements found.
-                </div>
-            `;
+                </div>`;
             return;
         }
 
-        let html = `<div class="ann-grid">`;
-
-        data.forEach((d, index) => {
-            mThis.announcementItemsMap[d.id] = d;
-            const pr = mThis.priorityMeta(d.priority);
-            const icon = mThis.categoryIcon(d);
-
-            const buildingName = escapeHtml(d.building_name || "All Buildings");
-            const audience = escapeHtml(d.audience || "All Tenants");
-            const pubDate = d.created_at
-                ? formatRelativeTime(d.created_at)
-                : "Not set";
-            const expDate = d.expiry_date
-                ? formatShortDate(d.expiry_date)
-                : "No expiration";
-
-            const catClass = `ann-cat-${(d.category || "General").toLowerCase().replace(" ", "-")}`;
-
-            html += `
-                <div class="ann-card" data-id="${d.id}" style="--ann-accent:${pr.accent}; --ann-soft:${pr.soft};">
-                    <div class="ann-card__banner">
-                        <div class="d-flex align-items-start justify-content-between gap-3">
-                            <h5 class="ann-card__title">${escapeHtml(d.title)}</h5>
-                            <span class="ann-cat ${catClass}">${escapeHtml(d.category || "General")}</span>
-                        </div>
-                    </div>
-                    <div class="ann-card__body">
-                        <div class="ann-desc-text announcement-desc collapsed">${d.description ?? ""}</div>
-                        
-                        <div class="ann-card__footer">
-                            <div class="ann-meta-item">
-                                <span class="ann-meta-icon"><i class="fa-solid fa-calendar"></i></span>
-                                <span>Announced: <strong>${pubDate}</strong></span>
-                            </div>
-                            <div class="ann-meta-item">
-                                <span class="ann-meta-icon"><i class="fa-solid fa-hourglass-half"></i></span>
-                                <span>Expires: <strong>${expDate}</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-        container.innerHTML = html;
-
-        container.querySelectorAll(".ann-desc-text").forEach((descEl) => {
-            descEl.classList.remove("collapsed");
-            const fullHeight = descEl.offsetHeight;
-
-            descEl.classList.add("collapsed");
-            const clampedHeight = descEl.offsetHeight;
-
-            if (clampedHeight > 0 && fullHeight > clampedHeight) {
-                const readMoreBtn = document.createElement("a");
-                readMoreBtn.href = "javascript:void(0)";
-                readMoreBtn.className = "btn-read-more";
-                readMoreBtn.innerText = (typeof LocaleManager !== "undefined" && LocaleManager.trans("Read More", "labels")) || "Read More";
-                
-                readMoreBtn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    const card = descEl.closest(".ann-card");
-                    const id = card.dataset.id;
-                    if (id) mThis.showAnnouncementDetail(id);
-                });
-                
-                const cardBody = descEl.closest(".ann-card__body");
-                if (cardBody) {
-                    cardBody.appendChild(readMoreBtn);
-                }
-            } else {
-                descEl.classList.remove("collapsed");
-            }
-        });
-
+        container.innerHTML = `<div class="ann-grid">${data.map(buildCardHtml).join("")}</div>`;
+        container.querySelectorAll(".ann-desc-text").forEach(setupReadMore);
         container.querySelectorAll(".ann-card").forEach((card) => {
-            card.addEventListener("click", () => {
-                const id = card.dataset.id;
-                if (id) mThis.showAnnouncementDetail(id);
-            });
+            card.addEventListener("click", () =>
+                mThis.showAnnouncementDetail(card.dataset.id),
+            );
         });
 
         LocaleManager.translateZone(container);
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        const categories = [
-            { id: "General", name: "General" },
-            { id: "Maintenance", name: "Maintenance" },
-            { id: "Notice", name: "Notice" },
-            { id: "Event", name: "Event" },
-            { id: "Policy Update", name: "Policy Update" },
-        ];
-
-        const priorities = [
-            { id: "Low", name: "Low" },
-            { id: "Medium", name: "Medium" },
-            { id: "High", name: "High" },
-            { id: "Critical", name: "Critical" },
-        ];
-
-        const sortOptions = [
-            { id: "newest", name: "Newest First" },
-            { id: "oldest", name: "Oldest First" },
-        ];
-
-        VSUtil.setComboItems(
-            mThis.elFilter_category,
-            categories,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("All Categories", "titles"),
-            "",
-        );
-        if (mThis.elFilter_priority) {
+        const populate = (el, items, text) => {
+            if (!el) return;
             VSUtil.setComboItems(
-                mThis.elFilter_priority,
-                priorities,
+                el,
+                items.map((id) => ({ id, name: id })),
                 "id",
                 "name",
                 "",
-                LocaleManager.trans("All Priorities", "titles"),
+                LocaleManager.trans(text, "titles"),
+                "",
+            );
+        };
+
+        populate(
+            mThis.elFilter_category,
+            ["General", "Maintenance", "Notice", "Event", "Policy Update"],
+            "All Categories",
+        );
+
+        if (mThis.elFilter_sort) {
+            VSUtil.setComboItems(
+                mThis.elFilter_sort,
+                [
+                    { id: "newest", name: "Newest First" },
+                    { id: "oldest", name: "Oldest First" },
+                ],
+                "id",
+                "name",
+                "",
+                LocaleManager.trans("Sort By", "titles"),
                 "",
             );
         }
-        VSUtil.setComboItems(
-            mThis.elFilter_sort,
-            sortOptions,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("Sort By", "titles"),
-            "",
-        );
 
         if (typeof onFinish === "function") onFinish();
     };
@@ -530,25 +359,23 @@ var AnnouncementComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.AnnouncementListView.showPage(mThis.getFilterData());
+            mThis.refresh();
         });
     };
+
     return mThis;
 })();
 
 const AnnouncementViewDialog = (() => {
     const self = {};
-
     self.show = (op) => {
-        const dialog = new GeneralDialog({
+        new GeneralDialog({
             title: LocaleManager.trans("Announcement Details", "titles"),
             cssClass: "modal-lg vs-modal modal-content-vs-dialog",
             backdrop: "static",
             keyboard: true,
             createContent: () => op.contentHtml || "",
-            contentCreated: (me) => {
-                LocaleManager.translateZone(me.divModal);
-            },
+            contentCreated: (me) => LocaleManager.translateZone(me.divModal),
             buttons: [
                 {
                     label: '<span vslang="buttons.Close"></span>',
@@ -556,9 +383,7 @@ const AnnouncementViewDialog = (() => {
                     click: (me) => me.hide(false),
                 },
             ],
-        });
-        dialog.show(op);
+        }).show(op);
     };
-
     return self;
 })();
