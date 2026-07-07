@@ -554,11 +554,11 @@ var DashboardComponent = new (function () {
         .md-announcement-alert {
             position: relative;
             height: 100%;
-            background: rgba(255, 255, 255, 0.92) !important;
-            border: 1px solid var(--md-border) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055) !important;
-            overflow: hidden;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--md-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
+               overflow: hidden;
             transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
 
@@ -1503,10 +1503,16 @@ var DashboardComponent = new (function () {
             const prevArrow = e.target.closest(".prev-arrow");
             if (prevArrow) {
                 e.stopPropagation();
-                const currentSlides = Array.from(carousel.querySelectorAll(".carousel-item"));
-                const activeIdx = currentSlides.findIndex((item) => item.classList.contains("active"));
+                const currentSlides = Array.from(
+                    carousel.querySelectorAll(".carousel-item"),
+                );
+                const activeIdx = currentSlides.findIndex((item) =>
+                    item.classList.contains("active"),
+                );
                 if (currentSlides.length > 0) {
-                    let prev = (activeIdx - 1 + currentSlides.length) % currentSlides.length;
+                    let prev =
+                        (activeIdx - 1 + currentSlides.length) %
+                        currentSlides.length;
                     showSlide(prev);
                 }
                 return;
@@ -1515,8 +1521,12 @@ var DashboardComponent = new (function () {
             const nextArrow = e.target.closest(".next-arrow");
             if (nextArrow) {
                 e.stopPropagation();
-                const currentSlides = Array.from(carousel.querySelectorAll(".carousel-item"));
-                const activeIdx = currentSlides.findIndex((item) => item.classList.contains("active"));
+                const currentSlides = Array.from(
+                    carousel.querySelectorAll(".carousel-item"),
+                );
+                const activeIdx = currentSlides.findIndex((item) =>
+                    item.classList.contains("active"),
+                );
                 if (currentSlides.length > 0) {
                     let next = (activeIdx + 1) % currentSlides.length;
                     showSlide(next);
@@ -1525,8 +1535,6 @@ var DashboardComponent = new (function () {
             }
         });
     };
-
-
 
     mThis.renderDashboard = function (data) {
         const div = mThis.self;
