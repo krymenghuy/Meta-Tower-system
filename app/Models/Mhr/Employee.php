@@ -395,6 +395,7 @@ class Employee extends VSModel
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
             $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
+            $row->skills = EmployeeSkill::getListByEmployee($id, $ss);
         } else {
             $row = null;
         }
