@@ -7,6 +7,7 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\EmployeeController;
+use App\Http\Controllers\Mhr\EmployeeSkillController;
 use  App\Http\Controllers\Mhr\LeaveController;
 
 
@@ -27,6 +28,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
+    Route::post('/skills/list', [EmployeeSkillController::class, 'getList']);
+    Route::post('/skills/save', [EmployeeSkillController::class, 'save']);
+    Route::post('/skills/delete', [EmployeeSkillController::class, 'delete']);
+    Route::post('/skills/details', [EmployeeSkillController::class, 'getDetails']);
 
 
 });

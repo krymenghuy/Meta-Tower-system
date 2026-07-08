@@ -29,7 +29,7 @@ class EmployeeController extends Controller
 
         return JDV::raw($res);
     }
-    
+
     function getListPaginate(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -58,19 +58,19 @@ class EmployeeController extends Controller
         return JDV::result($this->employees->getFormOptions($req->id, $ss));
     }
 
-    public function deleteEmployee(Request $req){
-        $ss =XAuthService::verifyAuth($req,-1);
-        if($ss->status_code !== 200){
-            return JDV::raw($ss);   
-        }
+    // public function deleteEmployee(Request $req){
+    //     $ss =XAuthService::verifyAuth($req,-1);
+    //     if($ss->status_code !== 200){
+    //         return JDV::raw($ss);
+    //     }
 
-        if(!isset($req->id) || !is_numeric($req->id)){
-            return JDV::error('Invalid ID');
-        }
-        $emp = new Employee($req->id, $ss);
-        $res = $emp->deleteEmployee();
-        return JDV::raw($res);
-    }
+    //     if(!isset($req->id) || !is_numeric($req->id)){
+    //         return JDV::error('Invalid ID');
+    //     }
+    //     $emp = new Employee($req->id, $ss);
+    //     $res = $emp->deleteEmployee();
+    //     return JDV::raw($res);
+    // }
 
 
 }
