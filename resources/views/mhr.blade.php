@@ -322,6 +322,8 @@
                             @include('layouts.mhr.dashboardComponent')
                             @include('layouts.mhr.employeeManagementComponent')
                             @include('layouts.mhr.leaveComponent')
+                            @include('layouts.mhr.payrollComponent')
+                            @include('layouts.mhr.payrollListComponent')
 
 
 
