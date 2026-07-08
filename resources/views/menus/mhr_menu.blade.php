@@ -230,7 +230,7 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(303); ?>>
-                    <a href="TransactionComponent" modid="303" class="menu-item kt-menu__link">
+                    <a href="PayrollComponent" modid="303" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/transaction.svg') }}" />
                         </span>
@@ -239,7 +239,7 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(304); ?>>
-                    <a href="RequestServiceComponent" modid="304" class="menu-item kt-menu__link">
+                    <a href="PayrollListComponent" modid="304" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
                                 src="{{ asset('assets/images/icons/google-task.svg') }}" />

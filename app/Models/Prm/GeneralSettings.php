@@ -731,6 +731,9 @@ static function options_maintenance_amenity($ss)
 
         return $q->get();
     }
+    static function options_payroll($ss){
+        return DB::table('payrolls')->selectRaw('id,name AS payroll_name,month,year')->get();
+    }
     static function options_employee($emp_status_ids, $ss)
     {
         $q = DB::table('employees as e')

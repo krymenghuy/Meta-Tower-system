@@ -240,9 +240,9 @@ return [
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
-                '/js/components/mhr/AnnouncementComponent.js',
-                '/js/components/mhr/ReservationComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
+                '/js/components/mhr/PayrollComponent.js',
+                '/js/components/mhr/PayrollListComponent.js',
 
 
 
