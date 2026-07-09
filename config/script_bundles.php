@@ -236,7 +236,7 @@ return [
                 '/js/components/mhr/DashboardComponent.js',
                 '/js/components/mhr/EmployeeSkillComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
-                '/js/components/mhr/TenantProfileComponent.js',
+                '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/ContractsComponent.js',
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
