@@ -111,40 +111,44 @@ var AnnouncementComponent = (() => {
 
     const formatRelativeTime = (sqlDate) => {
         if (!sqlDate || sqlDate.startsWith("0000-00-00")) return "Not set";
-        
+
         let dateStr = sqlDate;
-        if (!dateStr.includes("T") && !dateStr.includes("+") && !dateStr.includes("Z")) {
+        if (
+            !dateStr.includes("T") &&
+            !dateStr.includes("+") &&
+            !dateStr.includes("Z")
+        ) {
             dateStr = dateStr.replace(" ", "T") + "+07:00";
         }
         const targetDate = new Date(dateStr);
         if (isNaN(targetDate.getTime())) return sqlDate;
-        
+
         const now = new Date();
         const diffMs = now.getTime() - targetDate.getTime();
         const diffSec = Math.floor(diffMs / 1000);
-        
+
         if (diffSec < 0) {
             return formatDateOnly(sqlDate);
         }
         if (diffSec < 60) {
             return "Just now";
         }
-        
+
         const diffMin = Math.floor(diffSec / 60);
         if (diffMin < 60) {
             return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
         }
-        
+
         const diffHrs = Math.floor(diffMin / 60);
         if (diffHrs < 24) {
             return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
         }
-        
+
         const diffDays = Math.floor(diffHrs / 24);
         if (diffDays < 7) {
             return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
         }
-        
+
         return formatDateOnly(sqlDate);
     };
 
@@ -207,14 +211,15 @@ var AnnouncementComponent = (() => {
             iconBg: "#fff7ed",
             iconColor: "#f97316",
             badgeClass: "ann-badge-policy-update",
-        }
+        },
     };
 
     mThis.resolveCardTheme = (d) => {
         const categoryLower = (d.category || "").toLowerCase();
         const titleLower = (d.title || "").toLowerCase();
 
-        const baseTheme = CATEGORY_THEMES[categoryLower] || CATEGORY_THEMES.general;
+        const baseTheme =
+            CATEGORY_THEMES[categoryLower] || CATEGORY_THEMES.general;
         const theme = { ...baseTheme };
 
         if (
@@ -226,11 +231,17 @@ var AnnouncementComponent = (() => {
             theme.iconClass = "fa-solid fa-bullhorn";
             theme.iconBg = "#fef2f2";
             theme.iconColor = "#ef4444";
-        } else if (titleLower.includes("water") || titleLower.includes("plumbing")) {
+        } else if (
+            titleLower.includes("water") ||
+            titleLower.includes("plumbing")
+        ) {
             theme.iconClass = "fa-solid fa-droplet";
             theme.iconBg = "#ecfdf5";
             theme.iconColor = "#10b981";
-        } else if (titleLower.includes("parking") || titleLower.includes("car")) {
+        } else if (
+            titleLower.includes("parking") ||
+            titleLower.includes("car")
+        ) {
             theme.iconClass = "fa-solid fa-square-parking";
             theme.iconBg = "#fff7ed";
             theme.iconColor = "#f97316";
@@ -242,7 +253,10 @@ var AnnouncementComponent = (() => {
             theme.iconClass = "fa-solid fa-building";
             theme.iconBg = "#eff6ff";
             theme.iconColor = "#3b82f6";
-        } else if (titleLower.includes("elevator") || titleLower.includes("lift")) {
+        } else if (
+            titleLower.includes("elevator") ||
+            titleLower.includes("lift")
+        ) {
             theme.iconClass = "fa-solid fa-elevator";
             theme.iconBg = "#f5f3ff";
             theme.iconColor = "#8b5cf6";
@@ -277,17 +291,21 @@ var AnnouncementComponent = (() => {
                     cardPriorityClass = "ann-card-critical";
                 }
 
-                let statusBadgeClass = d.status === "Active" ? "ann-status-active" : "ann-status-draft";
+                let statusBadgeClass =
+                    d.status === "Active"
+                        ? "ann-status-active"
+                        : "ann-status-draft";
                 let statusText = d.status === "Active" ? "Active" : "Draft";
 
                 let pubDate = d.publish_date
                     ? formatDateOnly(d.publish_date)
                     : "Not set";
-                const hasExpiry = d.expiry_date && 
-                                  d.expiry_date !== "null" &&
-                                  d.expiry_date !== "0000-00-00" && 
-                                  d.expiry_date !== "0000-00-00 00:00:00" && 
-                                  d.expiry_date !== "0000-00-00 00:00";
+                const hasExpiry =
+                    d.expiry_date &&
+                    d.expiry_date !== "null" &&
+                    d.expiry_date !== "0000-00-00" &&
+                    d.expiry_date !== "0000-00-00 00:00:00" &&
+                    d.expiry_date !== "0000-00-00 00:00";
                 let expDate = hasExpiry
                     ? "Expires: " + formatDateOnly(d.expiry_date)
                     : "No expiration";
@@ -710,9 +728,13 @@ const AnnouncementDialog = (() => {
                             radio.checked = true;
                         }
 
-                        const pubInput = divModal.querySelector('input[name="publish_date"]');
-                        const expInput = divModal.querySelector('input[name="expiry_date"]');
-                        
+                        const pubInput = divModal.querySelector(
+                            'input[name="publish_date"]',
+                        );
+                        const expInput = divModal.querySelector(
+                            'input[name="expiry_date"]',
+                        );
+
                         if (pubInput && pubInput.value) {
                             pubInput.value = pubInput.value.split(" ")[0];
                         }

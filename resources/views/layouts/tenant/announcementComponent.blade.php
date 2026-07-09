@@ -9,10 +9,6 @@
                 <select type="id" id="_filter_category" class="filter-field data-input" data-field="category" placeholder=""></select>
             </div>
 
-            {{-- <div class="col-12 col-md-6 col-lg-2">
-                <select type="id" id="_filter_priority" class="filter-field data-input" data-field="priority" placeholder=""></select>
-            </div> --}}
-
             <div class="text-md-end col-12 col-md-6 col-lg-2">
                 <select type="id" id="_filter_sort" class="filter-field data-input" data-field="sort" placeholder=""></select>
             </div>
@@ -21,9 +17,9 @@
     <div id="_announcement_list" class="mt-3 rounded-2"></div>
 </div>
 
-
 <style>
-    .announcement-desc i, .announcement-desc em {
+    .announcement-desc i,
+    .announcement-desc em {
         font-style: italic !important;
     }
 
@@ -44,7 +40,10 @@
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.025);
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
     }
 
     .ann-card:hover {
@@ -70,7 +69,7 @@
         word-break: break-word;
     }
 
-    /* ---------- Category Badge ---------- */
+    /* Category Badges */
     .ann-cat {
         align-self: flex-start;
         font-size: 11px;
@@ -82,35 +81,38 @@
         display: inline-block;
     }
 
-    /* Category styles */
     .ann-cat-notice {
         background-color: #fee2e2;
         color: #991b1b;
         border: 1px solid #fca5a5;
     }
+
     .ann-cat-policy,
     .ann-cat-policy-update {
         background-color: #ffedd5;
         color: #c2410c;
         border: 1px solid #fed7aa;
     }
+
     .ann-cat-maintenance {
         background-color: #d1fae5;
         color: #065f46;
         border: 1px solid #a7f3d0;
     }
+
     .ann-cat-event {
         background-color: #f3e8ff;
         color: #6b21a8;
         border: 1px solid #e9d5ff;
     }
+
     .ann-cat-general {
         background-color: #f1f5f9;
         color: #475569;
         border: 1px solid #e2e8f0;
     }
 
-    /* ---------- Body ---------- */
+    /* Card Body & Text */
     .ann-card__body {
         display: flex;
         flex-direction: column;
@@ -126,17 +128,33 @@
         word-break: break-word;
         margin-bottom: 16px;
     }
-    .ann-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
+
+    .ann-desc-text.collapsed {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 8px;
     }
 
-    .ann-meta-icon {
-        color: #94a3b8;
+    .btn-read-more {
+        color: #1a1647;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 14px;
+        display: inline-block;
+        text-decoration: none;
+        transition: opacity 0.2s;
     }
 
-    /* ---------- Footer ---------- */
+    .btn-read-more:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+        color: #1a1647;
+    }
+
+    /* Card Footer & Meta */
     .ann-card__footer {
         display: flex;
         align-items: center;
@@ -149,35 +167,34 @@
         color: #64748b;
     }
 
-    .ann-priority {
-        display: inline-flex;
+    .ann-meta-item {
+        display: flex;
         align-items: center;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
+        gap: 6px;
     }
 
-    .ann-card-count {
+    .ann-meta-icon {
         color: #94a3b8;
-        font-size: 11px;
-        font-weight: 500;
     }
 
-    /* ---------- Responsive columns ---------- */
+    /* Responsive Columns */
     @media (max-width: 1024px) {
-        .ann-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .ann-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
     }
 
     @media (max-width: 640px) {
-        .ann-grid { grid-template-columns: 1fr; }
+        .ann-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
-    /* ---------- Detail modal (matches booking details layout) ---------- */
+    /* Detail Modal Profile */
     .ann-detail-profile {
         border: 1px solid #d8dee8;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(15, 23, 42, .06);
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06);
         padding: 6px;
         width: 100%;
         background: #fff;
@@ -199,7 +216,6 @@
     .ann-detail-profile__row {
         display: flex;
         align-items: flex-start;
-        gap: 0;
         margin-bottom: 8px;
     }
 
@@ -227,9 +243,5 @@
     .ann-detail-profile__remark {
         margin-top: 4px;
         padding-top: 4px;
-    }
-
-    .ann-detail-profile__remark .ann-detail-profile__value {
-        text-transform: none;
     }
 </style>

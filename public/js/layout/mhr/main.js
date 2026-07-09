@@ -129,6 +129,10 @@ mThis.init_vsapi = async () => {
           window.ReceiptsComponent = ReceiptsComponent;
       }
 
+      if (typeof EmployeeManagementComponent !== 'undefined' && typeof TeamComponent === 'undefined') {
+          window.TeamComponent = EmployeeManagementComponent;
+      }
+
      //END:: process side menus click using VSRoute
 
         mThis.displayUserMenus();

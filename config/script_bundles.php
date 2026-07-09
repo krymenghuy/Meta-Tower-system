@@ -234,15 +234,16 @@ return [
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/mhr/DashboardComponent.js',
+                '/js/components/mhr/EmployeeSkillComponent.js',
+                '/js/components/mhr/EmployeeManagementComponent.js',
                 '/js/components/mhr/TenantProfileComponent.js',
-                '/js/components/mhr/TeamComponent.js',
                 '/js/components/mhr/ContractsComponent.js',
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
-                '/js/components/mhr/AnnouncementComponent.js',
-                '/js/components/mhr/ReservationComponent.js',
-                '/js/components/mhr/ServicesComponent.js',
+                '/js/components/mhr/LeaveComponent.js',
+                '/js/components/mhr/PayrollComponent.js',
+                '/js/components/mhr/PayrollListComponent.js',
 
 
 

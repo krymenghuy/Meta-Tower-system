@@ -554,11 +554,11 @@ var DashboardComponent = new (function () {
         .md-announcement-alert {
             position: relative;
             height: 100%;
-            background: rgba(255, 255, 255, 0.92) !important;
-            border: 1px solid var(--md-border) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055) !important;
-            overflow: hidden;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--md-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
+               overflow: hidden;
             transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
 
@@ -772,6 +772,87 @@ var DashboardComponent = new (function () {
             .ann-alert-right-col {
                 margin-top: 36px;
             }
+        }
+
+        .md-announcement-carousel {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .carousel-inner {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-item {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            position: relative;
+        }
+
+        .carousel-item.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .carousel-item .md-announcement-alert {
+            margin-bottom: 0 !important;
+        }
+
+        .carousel-dots-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .carousel-arrow {
+            cursor: pointer;
+            color: var(--alert-color, #ef4444);
+            font-size: 11px;
+            user-select: none;
+            transition: transform 0.2s, opacity 0.2s;
+            opacity: 0.75;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .carousel-arrow:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(15, 23, 42, 0.15);
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .carousel-dot.active {
+            background-color: var(--alert-color, #ef4444);
+            transform: scale(1.2);
+        }
+
+        .carousel-footer {
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
+            margin: 16px -24px -24px -24px;
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .carousel-footer .more-count {
+            color: #475569;
         }
     `;
 
@@ -1127,11 +1208,11 @@ var DashboardComponent = new (function () {
         const card = el.closest(".md-announcement-alert");
         const id = card ? card.dataset.announcementId : null;
         if (!id) return;
-        
+
         const hasExpiry = card.dataset.hasExpiry === "true";
         if (hasExpiry) {
             const today = new Date();
-            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
             const dismissedDaily = JSON.parse(
                 localStorage.getItem("dismissed_announcements_daily") || "{}",
             );
@@ -1150,7 +1231,87 @@ var DashboardComponent = new (function () {
                 JSON.stringify(dismissed),
             );
         }
-        card.remove();
+
+        const slideItem = card.closest(".carousel-item");
+        const carousel = el.closest(".md-announcement-carousel");
+        if (carousel && slideItem) {
+            const activeIndex = Number(slideItem.dataset.index);
+
+            slideItem.remove();
+
+            const remainingItems = Array.from(
+                carousel.querySelectorAll(".carousel-item"),
+            );
+            if (remainingItems.length === 0) {
+                carousel.closest(".md-announcement-carousel-wrapper").remove();
+            } else {
+                // Re-index remaining slides and regenerate dots
+                remainingItems.forEach((item, idx) => {
+                    item.dataset.index = idx;
+
+                    const dotsContainer = item.querySelector(
+                        ".carousel-dots-container",
+                    );
+                    if (dotsContainer) {
+                        if (remainingItems.length <= 1) {
+                            dotsContainer.style.setProperty(
+                                "display",
+                                "none",
+                                "important",
+                            );
+                        } else {
+                            dotsContainer.style.setProperty("display", "", "");
+                            const newDotsHtml = remainingItems
+                                .map((_, dotIdx) => {
+                                    const activeClass =
+                                        dotIdx === idx ? "active" : "";
+                                    return `<span class="carousel-dot ${activeClass}" data-slide="${dotIdx}" style="--alert-color: #ef4444;"></span>`;
+                                })
+                                .join("");
+                            dotsContainer.innerHTML = `
+                                <span class="carousel-arrow prev-arrow">◀</span>
+                                ${newDotsHtml}
+                                <span class="carousel-arrow next-arrow">▶</span>
+                            `;
+                        }
+                    }
+
+                    const moreCountText = item.querySelector(".more-count");
+                    const otherCount = remainingItems.length - 1;
+                    if (moreCountText) {
+                        moreCountText.innerText =
+                            otherCount > 0
+                                ? `+ ${otherCount} More Announcement${otherCount > 1 ? "s" : ""}`
+                                : "";
+                    }
+
+                    const footerContainer =
+                        item.querySelector(".carousel-footer");
+                    if (footerContainer) {
+                        if (remainingItems.length <= 1) {
+                            footerContainer.style.setProperty(
+                                "display",
+                                "none",
+                                "important",
+                            );
+                        } else {
+                            footerContainer.style.setProperty(
+                                "display",
+                                "",
+                                "",
+                            );
+                        }
+                    }
+                });
+
+                const nextIndex = activeIndex % remainingItems.length;
+                if (remainingItems[nextIndex]) {
+                    remainingItems[nextIndex].classList.add("active");
+                }
+            }
+        } else {
+            card.remove();
+        }
     };
 
     mThis.renderCriticalAnnouncementAlert = function (announcements) {
@@ -1161,111 +1322,218 @@ var DashboardComponent = new (function () {
             localStorage.getItem("dismissed_announcements_daily") || "{}",
         );
         const today = new Date();
-        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-        const activeAlerts = (announcements || []).filter(
-            (x) => {
-                if (x.priority !== "Critical" && x.priority !== "High") {
-                    return false;
-                }
-                if (dismissedIds.includes(x.id)) {
-                    return false;
-                }
-                if (dismissedDaily[x.id] === todayStr) {
-                    return false;
-                }
-                return true;
+        const activeAlerts = (announcements || []).filter((x) => {
+            if (x.priority !== "Critical" && x.priority !== "High") {
+                return false;
             }
-        );
+            if (dismissedIds.includes(x.id)) {
+                return false;
+            }
+            if (dismissedDaily[x.id] === todayStr) {
+                return false;
+            }
+            return true;
+        });
 
         if (!activeAlerts.length) return "";
 
         const h = mThis.escapeHtml;
 
-        return activeAlerts.map((a) => {
-            const title = h(a.title);
-            // Stripping HTML tags from description
-            const rawDesc = mThis.cleanHtmlText(a.description);
-            const description = h(rawDesc);
-            const priority = h(a.priority);
-            const publishRelative = a.publish_date
-                ? mThis.formatRelativeTime(a.publish_date)
-                : "Not set";
-            const hasExpiry =
-                a.expiry_date &&
-                a.expiry_date !== "null" &&
-                !a.expiry_date.startsWith("0000-00-00");
-            const expiryDateFormatted = hasExpiry
-                ? mThis.formatDateOnly(a.expiry_date)
-                : "";
-            const time = mThis.formatAlertTimeRange(a.publish_date, a.expiry_date);
-            const building = h(a.building_name || "All Buildings");
+        const slidesHtml = activeAlerts
+            .map((a, index) => {
+                const title = h(a.title);
+                const rawDesc = mThis.cleanHtmlText(a.description);
+                const description = h(rawDesc);
+                const priority = h(a.priority);
+                const publishRelative = a.publish_date
+                    ? mThis.formatRelativeTime(a.publish_date)
+                    : "Not set";
+                const hasExpiry =
+                    a.expiry_date &&
+                    a.expiry_date !== "null" &&
+                    !a.expiry_date.startsWith("0000-00-00");
+                const expiryDateFormatted = hasExpiry
+                    ? mThis.formatDateOnly(a.expiry_date)
+                    : "";
 
-            let alertColor = "#ef4444";
-            let alertSoft = "rgba(239, 68, 68, 0.12)";
-            let badgeStyle =
-                "background-color: #fca5a5; color: #b91c1c; border: 1px solid #f87171";
+                let alertColor = "#ef4444";
+                let alertSoft = "rgba(239, 68, 68, 0.12)";
+                let badgeStyle =
+                    "background-color: #fca5a5; color: #b91c1c; border: 1px solid #f87171";
 
-            if (a.priority === "High") {
-                alertColor = "#f59e0b";
-                alertSoft = "rgba(245, 158, 11, 0.14)";
-                badgeStyle =
-                    "background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5";
-            }
+                if (a.priority === "High") {
+                    badgeStyle =
+                        "background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5";
+                }
 
-            return `
-                <div class="col-12 md-announcement-alert mb-4 p-4 position-relative" data-announcement-id="${a.id}" data-has-expiry="${hasExpiry}" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
-                    <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
-                    <button type="button" class="md-alert-close-btn position-absolute" onclick="DashboardComponent.dismissAnnouncement(this)">
-                        <span class="md-close-text">Don't show again</span>
-                        <span class="md-close-x">&times;</span>
-                    </button>
-                    
-                    <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4">
-                        <div class="d-flex align-items-start gap-3 flex-grow-1 pt-3 pb-lg-0">
-                            <div class="md-alert-icon-container flex-shrink-0">
-                                <i class="fa-solid fa-bullhorn md-alert-pulse" ></i>
-                            </div>
-                            <div>
-                                <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                                    <h5 class="fw-bold mb-0 md-alert-title">${title}</h5>
-                                    <span class="badge font-size-10 px-2 py-0.5 rounded-pill" style="${badgeStyle}">${priority}</span>
+                const activeClass = index === 0 ? "active" : "";
+
+                // Render specific slide dots: only the one at this slide's index is active!
+                const slideDotsHtml = activeAlerts
+                    .map((_, dotIdx) => {
+                        const activeClass = dotIdx === index ? "active" : "";
+                        return `<span class="carousel-dot ${activeClass}" data-slide="${dotIdx}" style="--alert-color: #ef4444;"></span>`;
+                    })
+                    .join("");
+
+                const showDotsContainer =
+                    activeAlerts.length > 1 ? "" : "display: none !important;";
+                const showFooter =
+                    activeAlerts.length > 1 ? "" : "display: none !important;";
+                const otherCount = activeAlerts.length - 1;
+                const moreCountText =
+                    activeAlerts.length > 1
+                        ? `+ ${otherCount} More Announcement${otherCount > 1 ? "s" : ""}`
+                        : "";
+
+                return `
+                <div class="carousel-item ${activeClass}" data-index="${index}">
+                    <div class="col-12 md-announcement-alert mb-0 p-4 position-relative" data-announcement-id="${a.id}" data-has-expiry="${hasExpiry}" style="--alert-color: ${alertColor}; --alert-soft: ${alertSoft};">
+                        <span class="badge md-badge-new text-uppercase text-white">New Announcement</span>
+                        <button type="button" class="md-alert-close-btn position-absolute" onclick="DashboardComponent.dismissAnnouncement(this)">
+                            <span class="md-close-text">Don't show again</span>
+                            <span class="md-close-x">&times;</span>
+                        </button>
+                        
+                        <div class="d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-4">
+                            <div class="d-flex align-items-start gap-3 flex-grow-1 pt-3 pb-lg-0">
+                                <div class="md-alert-icon-container flex-shrink-0">
+                                    <i class="fa-solid fa-bullhorn md-alert-pulse"></i> 
+                                </div>  
+                                <div>
+                                    <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <h5 class="fw-bold mb-0 md-alert-title">${title}</h5>
+                                        <span class="badge font-size-10 px-2 py-0.5 rounded-pill" style="${badgeStyle}">${priority}</span>
+                                    </div>
+                                    <p class="mb-0 md-alert-description">${description}</p>
                                 </div>
-                                <p class="mb-0 md-alert-description">${description}</p>
+                            </div>
+                            <div class="d-flex flex-column align-items-start align-items-lg-end">
+                                <div class="pt-5 d-flex flex-wrap align-items-center gap-3 justify-content-start justify-content-lg-end">
+                                    <div class="md-meta-card">
+                                        <div class="md-meta-card-icon" style="background-color: #fef2f2; color: #3b82f6;">
+                                            <i class="fa-solid fa-calendar"></i>
+                                        </div>
+                                        <div>
+                                            <div class="md-meta-card-label">Published</div>
+                                            <div class="md-meta-card-value">${publishRelative}</div>
+                                        </div>
+                                    </div>
+                                    ${
+                                        hasExpiry
+                                            ? `
+                                    <div class="md-meta-card">
+                                        <div class="md-meta-card-icon" style="background-color: #eff6ff; color: #ef4444;">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                        </div>
+                                        <div>
+                                            <div class="md-meta-card-label">Expires</div>
+                                            <div class="md-meta-card-value">${expiryDateFormatted}</div>
+                                        </div>
+                                    </div>
+                                    `
+                                            : ""
+                                    }
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex flex-column align-items-start align-items-lg-end">
-                            <div class="pt-5 d-flex flex-wrap align-items-center gap-3 justify-content-start justify-content-lg-end">
-                                <div class="md-meta-card">
-                                    <div class="md-meta-card-icon" style="background-color: #fef2f2; color: #ef4444;">
-                                        <i class="fa-solid fa-calendar-days"></i>
-                                    </div>
-                                    <div>
-                                        <div class="md-meta-card-label">Published</div>
-                                        <div class="md-meta-card-value">${publishRelative}</div>
-                                    </div>
-                                </div>
-                                ${
-                                    hasExpiry
-                                        ? `
-                                <div class="md-meta-card">
-                                    <div class="md-meta-card-icon" style="background-color: #eff6ff; color: #3b82f6;">
-                                        <i class="fa-solid fa-calendar"></i>
-                                    </div>
-                                    <div>
-                                        <div class="md-meta-card-label">Expires</div>
-                                        <div class="md-meta-card-value">${expiryDateFormatted}</div>
-                                    </div>
-                                </div>
-                                `
-                                        : ""
-                                }
-                            </div>
+                        <div class="carousel-dots-container" style="${showDotsContainer}">
+                            <span class="carousel-arrow prev-arrow">◀</span>
+                            ${slideDotsHtml}
+                            <span class="carousel-arrow next-arrow">▶</span>
+                        </div>
+                        <div class="carousel-footer" style="${showFooter}">
+                            <span class="more-count font-size-12" style="font-weight: 700; color: #475569;">${moreCountText}</span>
                         </div>
                     </div>
                 </div>
             `;
-        }).join("");
+            })
+            .join("");
+
+        return `
+            <div class="col-12 md-announcement-carousel-wrapper mb-4">
+                <div class="md-announcement-carousel">
+                    <div class="carousel-inner">
+                        ${slidesHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    mThis.initCarousel = () => {
+        const carousel = mThis.self.querySelector(".md-announcement-carousel");
+        if (!carousel) return;
+
+        const slides = Array.from(carousel.querySelectorAll(".carousel-item"));
+        if (slides.length <= 1) return;
+
+        const showSlide = (index) => {
+            const currentSlides = Array.from(
+                carousel.querySelectorAll(".carousel-item"),
+            );
+            if (currentSlides.length === 0) return;
+
+            const activeIdx = currentSlides.findIndex((item) =>
+                item.classList.contains("active"),
+            );
+
+            if (activeIdx !== -1 && currentSlides[activeIdx]) {
+                currentSlides[activeIdx].classList.remove("active");
+            }
+
+            const targetIdx = index % currentSlides.length;
+            if (currentSlides[targetIdx]) {
+                currentSlides[targetIdx].classList.add("active");
+            }
+        };
+
+        carousel.addEventListener("click", (e) => {
+            const dot = e.target.closest(".carousel-dot");
+            if (dot) {
+                e.stopPropagation();
+                const idx = Number(dot.dataset.slide);
+                showSlide(idx);
+                return;
+            }
+
+            const prevArrow = e.target.closest(".prev-arrow");
+            if (prevArrow) {
+                e.stopPropagation();
+                const currentSlides = Array.from(
+                    carousel.querySelectorAll(".carousel-item"),
+                );
+                const activeIdx = currentSlides.findIndex((item) =>
+                    item.classList.contains("active"),
+                );
+                if (currentSlides.length > 0) {
+                    let prev =
+                        (activeIdx - 1 + currentSlides.length) %
+                        currentSlides.length;
+                    showSlide(prev);
+                }
+                return;
+            }
+
+            const nextArrow = e.target.closest(".next-arrow");
+            if (nextArrow) {
+                e.stopPropagation();
+                const currentSlides = Array.from(
+                    carousel.querySelectorAll(".carousel-item"),
+                );
+                const activeIdx = currentSlides.findIndex((item) =>
+                    item.classList.contains("active"),
+                );
+                if (currentSlides.length > 0) {
+                    let next = (activeIdx + 1) % currentSlides.length;
+                    showSlide(next);
+                }
+                return;
+            }
+        });
     };
 
     mThis.renderDashboard = function (data) {
@@ -1292,19 +1560,19 @@ var DashboardComponent = new (function () {
                             items: (data.announcements || []).map((a) => {
                                 let level = "info";
                                 let badgeStyle =
-                                    "background-color: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important;";
+                                    "background-color: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe;";
                                 if (a.priority === "Critical") {
                                     level = "danger";
                                     badgeStyle =
-                                        "background-color: #fca5a5 !important; color: #b91c1c !important; border: 1px solid #f87171 !important;";
+                                        "background-color: #fca5a5; color: #b91c1c; border: 1px solid #f87171;";
                                 } else if (a.priority === "High") {
                                     level = "warning";
                                     badgeStyle =
-                                        "background-color: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fca5a5 !important;";
+                                        "background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;";
                                 } else if (a.priority === "Medium") {
                                     level = "success";
                                     badgeStyle =
-                                        "background-color: #fef3c7 !important; color: #d97706 !important; border: 1px solid #fde68a !important;";
+                                        "background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a;";
                                 }
 
                                 const building =
@@ -1331,6 +1599,7 @@ var DashboardComponent = new (function () {
         LocaleManager.translateZone(div);
         mThis.state.rendered = true;
         mThis.updateHeight();
+        mThis.initCarousel();
     };
 
     mThis.renderCardTop = function (data) {
@@ -1422,7 +1691,7 @@ var DashboardComponent = new (function () {
         const items = configSafe.items || [];
 
         return `
-        <section class="md-card md-section-card" style="border-radius: 16px !important;">
+        <section class="md-card md-section-card" style="border-radius: 16px">
             <div class="md-section-header d-flex align-items-center justify-content-between">
                 <div>
                     <h3 class="md-section-title">
@@ -1434,7 +1703,7 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
 
-                <a href="javascript:void(0)" onclick="AnnouncementComponent.show()" class="btn btn-sm btn-light rounded-pill px-3 font-size-12" style="background-color: #eff6ff !important; color: #3b82f6 !important; font-weight: 600; border: 1px solid #dbeafe !important; transition: all 0.2s; border-radius: 999px !important;" onmouseover="this.style.backgroundColor='#dbeafe'; this.style.color='#1d4ed8'" onmouseout="this.style.backgroundColor='#eff6ff'; this.style.color='#3b82f6'">View All</a>
+                <a href="javascript:void(0)" onclick="AnnouncementComponent.show()" class="btn btn-sm btn-light rounded-pill px-3 font-size-12" style="background-color: #eff6ff; color: #3b82f6; font-weight: 600; border: 1px solid #dbeafe; transition: all 0.2s; border-radius: 999px;" onmouseover="this.style.backgroundColor='#dbeafe'; this.style.color='#1d4ed8'" onmouseout="this.style.backgroundColor='#eff6ff'; this.style.color='#3b82f6'">View All</a>
             </div>
 
             <div class="md-list d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
@@ -1447,7 +1716,7 @@ var DashboardComponent = new (function () {
                                   );
 
                                   return `
-                                <div class="md-insight-item d-flex align-items-center justify-content-between p-2.5 rounded-3 position-relative cursor-pointer" onclick="AnnouncementComponent.show()" style="transition: background-color 0.2s; border-bottom: 1px solid #f1f5f9; border-radius: 8px !important;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+                                <div class="md-insight-item d-flex align-items-center justify-content-between p-2.5 rounded-3 position-relative cursor-pointer" onclick="AnnouncementComponent.show()" style="transition: background-color 0.2s; border-bottom: 1px solid #f1f5f9; border-radius: 8px;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                                     <div class="d-flex align-items-center gap-3">
                                         <span
                                             class="md-dot flex-shrink-0"

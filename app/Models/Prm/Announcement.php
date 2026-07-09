@@ -137,17 +137,17 @@ class Announcement
             $query->where('a.status', 'Active');
             $query->where(function ($q) use ($nowStr) {
                 $q->whereNull('a.publish_date')
-                  ->orWhere('a.publish_date', '')
-                  ->orWhere('a.publish_date', 'null')
-                  ->orWhere('a.publish_date', 'like', '0000%')
-                  ->orWhere('a.publish_date', '<=', $nowStr);
+                    ->orWhere('a.publish_date', '')
+                    ->orWhere('a.publish_date', 'null')
+                    ->orWhere('a.publish_date', 'like', '0000%')
+                    ->orWhere('a.publish_date', '<=', $nowStr);
             });
             $query->where(function ($q) use ($nowStr) {
                 $q->whereNull('a.expiry_date')
-                  ->orWhere('a.expiry_date', '')
-                  ->orWhere('a.expiry_date', 'null')
-                  ->orWhere('a.expiry_date', 'like', '0000%')
-                  ->orWhereRaw("DATE(a.expiry_date) >= ?", [date('Y-m-d')]);
+                    ->orWhere('a.expiry_date', '')
+                    ->orWhere('a.expiry_date', 'null')
+                    ->orWhere('a.expiry_date', 'like', '0000%')
+                    ->orWhereRaw("DATE(a.expiry_date) >= ?", [date('Y-m-d')]);
             });
         } else {
             if ($status) {

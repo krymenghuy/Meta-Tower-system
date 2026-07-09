@@ -73,7 +73,7 @@ var ServiceRequestComponent = (function () {
                 const formattedPrice = price > 0 ? VSMoney.formatAmount(price, data.currency_code ?? 'USD') : "-";
                 const label = unit === "-" ? formattedPrice : `${formattedPrice}/${unit}`;
 
-                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
+                return `<span class="badge text-success bg-success-subtle border border-success text-nowrap" style="min-width:90px;">${label}</span>`;
             }
         },
         {
@@ -85,15 +85,21 @@ var ServiceRequestComponent = (function () {
                 const cls_color = data.total_price > 0 ? 'text-prm-custom' : 'text-danger';
                 const unitType = String(data.unit_type ?? '').toLowerCase();
                 const isHourly = unitType === '2' || unitType === 'hour' || unitType === 'hourly';
+                const isOneTime = unitType === '1' || unitType === 'one time' || unitType === 'one_time' || unitType === 'once';
+                const isUnit = unitType === '3' || unitType === 'unit' || unitType === 'per_unit';
                 const hours = parseFloat(data.duration_hours);
-                const durationText = isHourly && !isNaN(hours)
-                    ? `<small class="d-block text-primary mt-1">${hours % 1 === 0 ? hours.toFixed(0) : hours}H</small>`
-                    : '';
+                let subText = '';
+
+                if (isHourly && data.duration_hours != null && data.duration_hours !== '' && !isNaN(hours)) {
+                    subText = `<small class="d-block text-primary mt-1">${hours % 1 === 0 ? hours.toFixed(0) : hours}H</small>`;
+                } else if (isOneTime || isUnit) {
+                    subText = `<small class="d-block text-primary mt-1">One Time</small>`;
+                }
 
                 return `
                     <div class="d-inline-flex flex-column align-items-center">
                         <span class="d-block fw-semibold ${cls_color}">${text}</span>
-                        ${durationText}
+                        ${subText}
                     </div>
                 `;
 
