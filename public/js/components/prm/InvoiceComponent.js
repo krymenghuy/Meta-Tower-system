@@ -571,85 +571,6 @@ var InvoiceComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
 
-    //     mThis.initDropdownMenus = (container) => {
-    //     const menuOptions = {
-    //         containerElement: container,
-    //         actionButtonClass: "btn_leave_action",
-    //         cssClass: "bg-white shadow",
-    //         menus: [
-    //             {
-    //                 html: '<span class="ps-2 text-start" vslang="titles.Receive Payment"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-hand-holding-dollar text-success fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "receive_invoice"
-    //             },
-    //             {
-    //                 html: '<span class="ps-2 text-start" vslang="titles.Modify Invoice"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-edit text-primary fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "modify_invoice"
-    //             },
-    //             {
-    //                 html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-receipt text-primary fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "print_invoice"
-    //             },
-    //             {
-    //                 html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-trash-can text-danger fs-5"></i>`, // Swapped to fa-solid for consistency
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "delete_invoice"
-    //             },
-    //             {
-    //                 html: '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2 ",
-    //                 name: "invoice_setting"
-    //             },
-    //             {
-    //                 html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
-    //                 icon: `<i class="fa-solid fa-fw fa-trash-can-arrow-up fs-5 text-danger"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "reset_invoice_setting"
-    //             }
-    //         ],
-    //         onShow: (me, menuContainer) => {
-    //             const menu = me.getActiveMenus(menuContainer);
-    //             const statusId = Number(menuContainer.dataset.statusid);
-
-    //             // Set visibility based on status states cleanly
-    //             if (menu.receive_invoice) {
-    //                 menu.receive_invoice.style.display =
-    //                     (statusId === 2 || statusId === 3 || statusId === 4) ? "block" : "none";
-    //             }
-    //             if (menu.delete_invoice) {
-    //                 menu.delete_invoice.style.display = (statusId === 2) ? "block" : "none";
-    //             }
-    //             if (menu.modify_invoice) {
-    //                 menu.modify_invoice.style.display = (statusId === 2) ? "block" : "none";
-    //             }
-    //         },
-    //         onClick: (menulink, id, name) => {
-    //             if (name === "delete_invoice") {
-    //                 mThis.deleteInvoice(id);
-    //             } else if (name === "print_invoice") {
-    //                 mThis.printInvoice(id);
-    //             } else if (name === "receive_invoice") {
-    //                 mThis.receiveInvoice(id);
-    //             } else if (name === "modify_invoice") {
-    //                 mThis.editInvoice(id, menulink);
-    //             } else if (name === "invoice_setting") {
-    //                 mThis.btnInvoiceSetting(id, menulink);
-    //             } else if (name === "reset_invoice_setting") {
-    //                 mThis.btnResetInvoiceSetting(id, menulink);
-    //             }
-    //         }
-    //     };
-
-    //     new VSDropdownMenu(menuOptions);
-    // };
-
     mThis.deleteInvoice = (id, menuLink) => {
         if (!AuthManager.allowed(237)) return;
         cv_interact.confirm(
@@ -748,86 +669,6 @@ var InvoiceComponent = (() => {
         });
     };
 
-    // mThis.printInvoice = (id, menulink) => {
-    //     let invoice = null;
-    //     let globalSetting = null;
-    //     let localSetting = null;
-    //     let companyProfile = null;
-    //     if(!AuthManager.allowed(238,false)) return;
-    //     // vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
-    //     //     if (res.status_code === 200) {
-    //     //         companyProfile = res.data;
-    //     //     } else {
-    //     //         cv_interact.error(res.message);
-    //     //     }
-    //     // });
-    //     // vsapi
-    //     //     .call(`${main_view.base_url}/prm/invoice_setting/get`)
-    //     //     .then((res) => {
-    //     //         if (res.status_code === 200) {
-    //     //             globalSetting = res.data;
-    //     //         } else {
-    //     //             cv_interact.error(res.message);
-    //     //         }
-    //     //     });
-
-    //     vsapi
-    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
-    //         .then((res) => {
-    //             if (res.status_code === 200) {
-    //                 // localSetting = res.data.settings;
-
-    //                 // invoice = res.data;
-    //                 let invoiceDetails = res.data?.invoice_details;
-    //                 let invoiceSetting = res.data?.invoice_setting;
-    //                 let companyProfile = res.data?.company_info;
-
-    //                 const invType = invoiceDetails?.invoice_type;
-    //                 const params = {
-    //                     invoice_id: id,
-    //                     btn: menulink,
-    //                     invoice: invoiceDetails,
-    //                     global: mThis.globalSetting,
-    //                 };
-
-    //                 const settings = invoiceSetting || {};
-    //                 const global = globalSetting || {};
-    //                 const company = companyProfile || {};
-
-    //                 console.log(34, global);
-
-    //                 if (settings.show_balance !== null) {
-
-    //                     // settings.build_representative = global.build_representative;
-    //                     // settings.representative_phone = global.representative_phone;
-    //                     // settings.representative_address = global.representative_address;
-    //                     settings.QR_file = global.QR_file;
-    //                     settings.qr_file_name = global.qr_file_name;
-    //                     params.setting = settings;
-    //                     // params.company = company;
-    //                     // params.representative = representative;
-    //                 } else {
-    //                     params.setting = global;
-    //                     settings.QR_file = global.QR_file;
-    //                     settings.qr_file_name = global.qr_file_name;
-    //                 }
-
-    //                 if (invType === 1) {
-    //                     params.company = company;
-    //                     InvoiceTaxDialog.show(params);
-    //                 } else if (invType === 2) {
-    //                      params.company = company;
-    //                     InvoiceNoTaxDialog.show(params);
-    //                 } else if (invType === 3) {
-    //                      params.company = company;
-    //                     InvoiceCommercialDialog.show(params);
-    //                 }
-    //             } else {
-    //                 cv_interact.error("Could not determine invoice type.");
-    //             }
-    //         });
-    // };
-
     mThis.printInvoice = (id, menulink) => {
         if (!AuthManager.allowed(238, false)) return;
 
@@ -840,10 +681,6 @@ var InvoiceComponent = (() => {
                     const companyProfile = res.data?.company_info || {};
                     const invoiceSetting = invoiceDetails.settings;
 
-                    // console.log("invoiceDetails: ", invoiceDetails);
-                    // console.log("companyProfile: ", companyProfile);
-                    // console.log("globalSetting: ", globalSetting);
-                    // console.log("invoiceSetting: ", invoiceSetting);
 
                     const invType = invoiceDetails?.invoice_type;
 
@@ -2455,7 +2292,7 @@ const InvoiceDialog = (() => {
                     }
 
                     const requests = me._requestedServices || [];
-                    // console.log("All Requests", requests);
+                    console.log("All Requests", requests);
 
                     const filteredRequests = requests.filter(
                         r => String(r.space_id) === String(selectedSpaceId)
@@ -2913,14 +2750,13 @@ const InvoiceDialog = (() => {
                     // },
                     tableClass: "table",
                     ensureEmptyRow: true,
-                    showAddLineButton: false,
-                    showAddLineButton: false,
+                    showAddLineButton: true,
 
-                    validateColumns: {
-                        item_id: "positive",
-                        qty: "positive",
-                        price: "positive"
-                    },
+                    // validateColumns: {
+                    //     item_id: "positive",
+                    //     qty: "positive",
+                    //     price: "positive"
+                    // },
 
                     itemRendered(item, ctx) {
                         const tr = ctx.tr;
@@ -3069,33 +2905,21 @@ const InvoiceDialog = (() => {
                     showColumnHeader: true,
                     placeholder: "Search Tenant",
                     onSelect: tenant => {
-                        vsapi
-                            .post(
+                        vsapi.post(
                                 `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
-                                { tenant_id: tenant.id },
-                                {}
-                            )
+                                { tenant_id: tenant.id },{})
                             .then(res => {
                                 const d = res.data || {};
-                                me.controls.phone_number.value =
-                                    d.tenant?.phone_number || "";
+                                me.controls.phone_number.value =d.tenant?.phone_number || "";
                                 me.controls.email.value = d.tenant?.email || "";
                                 me._selectedTenantId = tenant.id;
                                 me._tenantData = d;
                                 me._tenantSpaces = d.spaces || [];
                                 me._tenantMonths = d.months || [];
-                                me._requestedServices =
-                                    d.service_requests || [];
+                                me._requestedServices =d.service_requests || [];
 
-                                VSUtil.setComboItems(
-                                    me.controls.space,
-                                    d.spaces || [],
-                                    "space_id",
-                                    "space_code",
-                                    "",
-                                    "Select Space",
-                                    ""
-                                );
+                                VSUtil.setComboItems(me.controls.space,d.spaces || [],"space_id","space_code",
+                                    "","Select Space","");
                             });
                     }
                     //     api: {
