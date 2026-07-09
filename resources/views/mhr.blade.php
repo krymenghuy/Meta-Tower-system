@@ -324,6 +324,7 @@
                             @include('layouts.mhr.leaveComponent')
                             @include('layouts.mhr.payrollComponent')
                             @include('layouts.mhr.payrollListComponent')
+                            @include('layouts.mhr.movementComponent')
 
 
 
