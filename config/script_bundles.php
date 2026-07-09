@@ -234,6 +234,7 @@ return [
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/mhr/DashboardComponent.js',
+                '/js/components/mhr/EmployeeSkillComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/ContractsComponent.js',
