@@ -3,6 +3,7 @@
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
 
+use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
@@ -13,6 +14,7 @@ use  App\Http\Controllers\Mhr\LeaveController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
+use  App\Http\Controllers\Mhr\BenefitController;
 
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
@@ -97,4 +99,26 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
     Route::post('/list', [PayrollController::class, 'getStaffList']);
     Route::post('/add-deduction', [PayrollListController::class, 'addDeduction']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-benefit')->group(function () {
+    Route::post('/import-emp-benefits', [EmployeeBenefitController::class, 'import']);
+    Route::post('/save', [EmployeeBenefitController::class, 'saveBenefit']);
+    Route::post('/bonus-list', [EmployeeBenefitController::class, 'getBonusList']);
+    Route::post('/seniority-list', [EmployeeBenefitController::class, 'getSeniorityList']);
+    Route::post('/life_insurance-list', [EmployeeBenefitController::class, 'getLifeInsurancesList']);
+    Route::post('/details', [EmployeeBenefitController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeBenefitController::class, 'deleteBenefit']);
+    Route::post('/form-options', [EmployeeBenefitController::class, 'getFormOptions']);
+    Route::post('/all-list', [EmployeeBenefitController::class, 'getAllBenefitList']);
+    Route::post('/import', [EmployeeBenefitController::class, 'importBenefit']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
+
+    Route::post('/save', [BenefitController::class, 'saveBenefit']);
+    Route::post('/list-paginate', [BenefitController::class, 'getBenefitPaginate']);
+    Route::post('/details', [BenefitController::class, 'getDetails']);
+    Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
+    Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
+
 });

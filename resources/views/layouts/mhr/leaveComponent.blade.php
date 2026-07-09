@@ -1,4 +1,4 @@
-<div id="_main_emp_leave_component" class="p-3 mobile-padding" style="display:none;">
+<div id="_main_emp_leave_component" class="px-3 mobile-padding" style="display:none;">
     <div id="_divFilter_emp_leave" class="bg-white rounded-2 shadow p-3">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
