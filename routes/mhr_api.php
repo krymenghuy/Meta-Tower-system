@@ -7,12 +7,17 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\EmployeeController;
+use App\Http\Controllers\Mhr\MovementController;
 use  App\Http\Controllers\Mhr\LeaveController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
+use  App\Http\Controllers\Mhr\DashboardController;
 
 
-
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
+    Route::post('/data', [DashboardController::class, 'getDashboardData']);
+    Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
+});
 
 
 
@@ -32,6 +37,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
 
 
 });
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->group(function () {
+    Route::post('/save', [MovementController::class, 'saveEmployeeMovement']);
+    Route::post('/list-paginate', [MovementController::class, 'getEmployeeMovementListPaginate']);
+    Route::post('/details', [MovementController::class, 'getDetails']);
+    Route::post('/delete', [MovementController::class, 'deleteEmployeeMovement']);
+    Route::post('/form-options', [MovementController::class, 'getFormOptions']);
+});
+
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
     Route::post('/save', [LeaveController::class, 'saveLeave']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);

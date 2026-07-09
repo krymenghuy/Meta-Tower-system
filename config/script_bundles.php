@@ -235,7 +235,7 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/mhr/DashboardComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
-                '/js/components/mhr/TenantProfileComponent.js',
+                '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/ContractsComponent.js',
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
