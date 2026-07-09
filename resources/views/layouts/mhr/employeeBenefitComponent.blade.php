@@ -2,7 +2,7 @@
     <div class="bg-white p-3 rounded-2 shadow" id="_divFilter_employee_benefit">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_bonus" placeholder="Search here....">
+                <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_bonus" placeholder="Search by name">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_benefit" class="filter-field data-input" data-field="benefit_id"></select>
@@ -12,7 +12,7 @@
             </div>
             <div class="ms-md-auto col-12 col-md-6 col-lg-5">
                 <div class="justify-content-end row g-2">
-                    <div class="col-12 col-md-auto">
+                    <div class="col-12 col-md-auto d-none">
                         <button type="button" class="w-100 btnAddNewPrm" id="_btn_import_benefit">
                             <i class="fa-solid fa-download"></i>
                             <span class="text-white" vslang="buttons.Import Benefit"></span>

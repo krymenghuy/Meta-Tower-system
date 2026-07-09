@@ -266,9 +266,8 @@ var EmployeeBenefitComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-
-                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", true, "All Benefits", null);
-                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", true, "All Tax Option", null);
+                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "", "All Benefits", "");
+                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "", "All Tax Option", "");
 
             });
     };
