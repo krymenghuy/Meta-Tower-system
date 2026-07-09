@@ -24,6 +24,8 @@ class Dashboard extends VSModel
         ];
     }
 
+
+
     public static function getDataDashboard($arr, $ss = null)
     {
         $f = self::parseFilter($arr);
@@ -63,6 +65,13 @@ class Dashboard extends VSModel
             });
         }
 
+        $queryTenantTeam = DB::table('tenant_team as tt')
+                // ->leftJoin('team_member as tm', 'tm.team_id', '=', 'tt.id')
+                ->selectRaw('tt.team_name as team_name, tt.member_count as member_count')
+                ->where('tt.tenant_id', $tenantId)
+                ->get();
+        
+
         $announcements = $annQuery
             ->orderByDesc('a.id')
             ->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, b.name as building_name")
@@ -74,6 +83,7 @@ class Dashboard extends VSModel
             'cards'         => self::summarizeDashboardCards($f, $ss),
             'activities'    => self::getActivities($f, $ss),
             'announcements' => $announcements,
+            'tenant_team'   => $queryTenantTeam,
         ];
     }
 
