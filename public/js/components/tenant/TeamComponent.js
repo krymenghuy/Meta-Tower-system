@@ -400,16 +400,16 @@ var TeamComponent = new (function() {
                             </div>
 
                             <div style="display: flex; gap: 8px; padding: 10px 16px; background-color: #ffffff; border-top: 1px solid #e2e5f5; justify-content: flex-end; align-items: center;">
-                                <button class="create-staff-btn" data-id="${team.id}"
+                                <button class="create-member-btn" data-id="${team.id}"
                                         style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a; transition: all 0.2s;"
-                                        title="Create staff">
+                                        title="Create member">
                                     <i class="fa-solid fa-user-plus"></i>
                                 </button>
                                 
-                                <button class="edit-team-btn" data-id="${team.id}"
+                                <button class="edit-team-btn " data-id="${team.id}"
                                         style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb; transition: all 0.2s;"
                                         title="Edit">
-                                    <i class="fa-solid fa-pen"></i>
+                                    <i class="fa-solid fa-pen p-0"></i>
                                 </button>
                                 
                                 <button class="delete-team-btn" data-id="${team.id}"
@@ -432,7 +432,7 @@ var TeamComponent = new (function() {
 
     mThis.attachTeamCardEvents = container => {
         // Create Staff Button
-        container.querySelectorAll(".create-staff-btn").forEach(btn => {
+        container.querySelectorAll(".create-member-btn").forEach(btn => {
             btn.addEventListener("click", e => {
                 e.stopPropagation();
                 const teamId = e.currentTarget.dataset.id;
@@ -584,7 +584,7 @@ var TeamComponent = new (function() {
                 const data = res.data || {};
                 if (mThis.renderProfile) mThis.renderProfile(data);
 
-                // Filter staff list to this team
+                // Filter member list to this team
                 if (mThis.staffListView) {
                     mThis.staffListView.fetchApi = `${main_view.base_url}/tenant/team/member-list`;
                     mThis.staffListView.showPage({
@@ -653,7 +653,7 @@ var TeamComponent = new (function() {
             const headerActionsHtml = `
                 <div class="d-flex gap-2 vs-profile-header-actions">
                     <button type="button" class="btn btn-light btn-sm text-primary fw-semibold" id="_btn_edit_profile_card">
-                        <i class="fa-solid fa-pen me-1"></i>
+                        <i class="fa-solid fa-pen me-1 p-0"></i>
                     </button>
                 </div>
             `;

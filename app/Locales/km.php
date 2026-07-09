@@ -279,6 +279,8 @@ return [
         'Modify Vendor' => 'កែប្រែអ្នកផ្គត់ផ្គង់',
         'Phone Number' => 'លេខទូរស័ព្ទ',
 
+
+
         'Payments' => 'ការទូទាត់',
         'Request Num' => 'លេខសំណើ',
         'Room Code' => 'លេខកូដបន្ទប់',
@@ -573,6 +575,8 @@ return [
 
         'Prepare Print Contract' => 'ត្រៀមបោះពុម្ពកិច្ចសន្យា',
         'Print Contract' => 'បោះពុម្ពកិច្ចសន្យា',
+        'Position' => 'តួនាទី',
+        
 
 
 
@@ -710,6 +714,15 @@ return [
         'System Managements' => 'ការគ្រប់គ្រងប្រព័ន្ធ',
         'Branch Management' => 'ការគ្រប់គ្រងសាខា',
         'Roles and Users' => 'តួនាទី​ និង អ្នកប្រើប្រាស់',
+
+        'Overview'  => 'ទិដ្ឋភាពទូទៅ',
+        'Book Amenity' => 'កក់បរិក្ខារសេវាកម្ម',
+        'My Invoices' => 'វិក្កយបត្រ',
+        'Request Service' => 'ស្នើសុំសេវាកម្ម',
+        'Announcements' =>'សេចក្ដីជូនដំណឹង',
+        'Team' =>'ក្រុមការងារ',
+        'My Profile' =>'ព័ត៌មានផ្ទាល់ខ្លួន',
+        'Contract' =>'កិច្ចសន្យារ',
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -1076,6 +1089,10 @@ return [
         'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Sub Total' => 'សរុបរង',
         'Total Net' => 'ទឹកប្រាក់សរុប',
+        
+
+
+
 
 
 

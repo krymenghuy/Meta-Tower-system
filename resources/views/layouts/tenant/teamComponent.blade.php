@@ -9,7 +9,7 @@
                 <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
                     <h6 class="mb-0 text-muted">Teams</h6>
                     <button type="button" class="btn btn-primary btn-sm vs-icon-btn" id="_btnAddTeam" aria-label="Create Team">
-                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                        <i class="fa fa-user-plus p-0" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div class="card-body p-3" style="height: calc(100vh - 240px); overflow-y: auto;">
