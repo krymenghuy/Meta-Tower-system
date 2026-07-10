@@ -15,11 +15,11 @@ var LeaveComponent = (function () {
 
     mThis.cols = [
         {
-            title: "",
+            transTitle: "",
             className: 'align-middle',
         },
         {
-            title: "Employee ID",
+            transTitle: "titles.Employee ID",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<span>${data.emp_code ?? '-'}</span>`;
@@ -27,7 +27,7 @@ var LeaveComponent = (function () {
         },
 
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index) => {
                 return `
@@ -39,7 +39,7 @@ var LeaveComponent = (function () {
         },
 
         {
-            title: "Leave Type",
+            transTitle: "titles.Leave Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
@@ -70,7 +70,7 @@ var LeaveComponent = (function () {
             },
         },
         {
-            title: "Leave Duration",
+            transTitle: "titles.Leave Duration",
             className: "align-middle text-center text-nowrap",
             data: (data) => {
                 const days = Number(data.leave_days ?? 0);
@@ -145,10 +145,10 @@ var LeaveComponent = (function () {
             className: 'col_action align-middle',
             data: function (data, row, display) {
                 return `
-                   <div class="d-flex justify-content-center align-items-center">
+                    <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
                                 <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                 <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
                     </div>

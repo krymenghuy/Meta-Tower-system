@@ -1549,11 +1549,11 @@ var DashboardComponent = new (function () {
             `<div class="row g-3">
                     ${mThis.renderKpis(data.cards.kpis)}
                 </div>`,
-            `<div class="row g-3 mt-1 pb-3">
-                    <div class="col-12 col-xl-6">
+                `<div class="row g-3 mt-1 pb-3">
+                    <div class="col-12 col-md-4 ">
                         ${mThis.renderTimeline(data.activities.activities)}
                     </div>
-                    <div class="col-12 col-xl-6">
+                    <div class="col-12 col-md-4 ">
                         ${mThis.renderAnnouncementList({
                             title: "Announcements",
                             subtitle: "Latest notices and updates for tenants",
@@ -1575,8 +1575,7 @@ var DashboardComponent = new (function () {
                                         "background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a;";
                                 }
 
-                                const building =
-                                    a.building_name || "All Buildings";
+                                const building = a.building_name || "All Buildings";
                                 const dateStr = a.publish_date
                                     ? mThis.formatDateOnly(a.publish_date)
                                     : "Not set";
@@ -1591,7 +1590,9 @@ var DashboardComponent = new (function () {
                             }),
                         })}
                     </div>
-                  
+                    <div class="col-12 col-md-4 ">
+                        ${mThis.renderTeamMember(data.tenant_team)}
+                    </div>
                 </div>`,
             `</div>`,
         ].join("");
@@ -1814,11 +1815,95 @@ var DashboardComponent = new (function () {
     `;
     };
 
+    mThis.renderTeammember = function (team) {
+        const div = mThis.self;
+        if (!div) {
+            console.error("Dashboard root element was not found.");
+            return;
+        }
+    }
+
+    mThis.renderTeamMember = function (tenantMembers) {
+        const h = mThis.escapeHtml;
+        tenantMembers = tenantMembers || [];
+
+        const teamColors = [
+            { color: "#2563eb", soft: "#dbeafe" },
+            { color: "#9333ea", soft: "#f3e8ff" },
+            { color: "#16a34a", soft: "#dcfce7" },
+            { color: "#ea580c", soft: "#ffedd5" },
+            { color: "#d97706", soft: "#fef3c7" },
+        ];
+
+        return `
+        <section class="md-card md-section-card" style="border-radius: 16px">
+            <div class="md-section-header d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="md-section-title">
+                        Team
+                    </h3>
+                    <div class="md-section-subtitle">
+                        Teams associated with your tenancy
+                    </div>
+                </div>
+            </div>
+
+            <div class="md-list d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
+                ${
+                    tenantMembers.length
+                        ? tenantMembers
+                            .map((team, idx) => {
+                                const c = teamColors[idx % teamColors.length];
+
+                                return `
+                                <div class="md-insight-item d-flex align-items-center justify-content-between p-2.5 rounded-3 position-relative" style="transition: background-color 0.2s; border-bottom: 1px solid #f1f5f9; border-radius: 8px;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span
+                                            class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="
+                                                width: 36px; height: 36px; border-radius: 50%;
+                                                background-color: ${c.soft}; color: ${c.color};
+                                            "
+                                        >
+                                            <i class="fa-solid fa-users" style="font-size: 15px;"></i>
+                                        </span>
+
+                                        <div>
+                                            <div class="md-list-title fw-semibold font-size-13" style="color: #1e293b !important; line-height: 1.4;">
+                                                ${h(team.team_name)}
+                                            </div>
+                                            <div class="md-list-note text-muted font-size-11">
+                                                ${team.member_count} member${team.member_count === 1 ? "" : "s"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <span class="badge font-size-10 px-2 py-1 rounded-pill" style="background-color: ${c.soft}; color: ${c.color}; border: 1px solid ${c.color}33;">
+                                        ${team.member_count}
+                                    </span>
+                                </div>
+                            `;
+                            })
+                            .join("")
+                        : `
+                            <div class="md-empty py-4 text-center text-muted font-size-13">
+                                No teams available
+                            </div>
+                        `
+                }
+            </div>
+        </section>
+        `;
+    };
+
     mThis.loadDashBoardData = (filter, onFinish) => {
         vsapi
             .call(`${main_view.base_url}/tenant/dashboard/data`, filter)
             .then((res) => {
                 const data = res.status_code === 200 ? res.data : {};
+
+                console.log(data);
+                
                 if (typeof onFinish === "function") onFinish(data);
             });
     };

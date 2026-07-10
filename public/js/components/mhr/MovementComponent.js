@@ -13,13 +13,13 @@ var MovementComponent = (()=> {
     mThis.cols = [
 
         {
-            title: "",
+            transTitle: "",
             className: 'align-middle',
             // data: (data, index, i) => { return (index + 1) },
 
         },
         {
-            title: "Employee",
+            transTitle: "titles.Employee",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
@@ -38,14 +38,14 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "Event",
+            transTitle: "titles.Event",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.event ?? ''}</p>`;
             }
         },
         {
-            title: "Date",
+            transTitle: "titles.Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.event_date ?? ""}</p>`;
@@ -53,7 +53,7 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "last Updated",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data) => `
             <div style="display: block; align-items: center;">
@@ -63,7 +63,7 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "Impact",
+            transTitle: "titles.Impact",
             className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
@@ -254,8 +254,8 @@ var MovementComponent = (()=> {
 
         vsapi.call(`${main_view.base_url}/mhr/emp-event/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elEvent,d.events,'id','name',true,'All Movements',null);
-            VSUtil.setComboItems(mThis.elEmployee,d.employees,'id','name',true,'All Employee',null);
+            VSUtil.setComboItems(mThis.elEvent,d.events,'id','name','',LocaleManager.trans("All Movements", "titles"),'');
+            VSUtil.setComboItems(mThis.elEmployee,d.employees,'id','name','',LocaleManager.trans("All Employee", "titles"),'');
 
         })
     }
