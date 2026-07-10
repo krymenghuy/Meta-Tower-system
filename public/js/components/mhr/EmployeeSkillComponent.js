@@ -18,11 +18,15 @@ var EmployeeSkillComponent = (function () {
     mThis._progressBar = (rate) => {
         const num = Math.max(0, Math.min(100, Number(rate) || 0));
         const display = num.toFixed(2);
+        const level =
+            num >= 75 ? "high" : num >= 40 ? "mid" : "low";
         return `
             <div class="emp-skill-col-rate">
-                <div class="emp-skill-rate">${display} %</div>
-                <div class="emp-skill-progress-track">
-                    <div class="emp-skill-progress-fill" style="width:${display}%;"></div>
+                <div class="emp-skill-rate-row">
+                    <div class="emp-skill-progress-track">
+                        <div class="emp-skill-progress-fill emp-skill-progress-fill--${level}" style="width:${display}%;"></div>
+                    </div>
+                    <span class="emp-skill-rate-badge">${display}%</span>
                 </div>
             </div>`;
     };
@@ -111,48 +115,54 @@ var EmployeeSkillComponent = (function () {
             ? skillList
                   .map(
                       (s) => `
-                <div class="emp-skill-row d-flex align-items-center justify-content-between gap-2" data-skill-id="${s.id}">
-                    <div class="emp-skill-col-name d-flex align-items-center gap-2 min-w-0">
+                <div class="emp-skill-row" data-skill-id="${s.id}">
+                    <div class="emp-skill-col-name">
                         <div class="emp-skill-icon">
                             <img src="${iconUrl}" alt="">
                         </div>
                         <span class="emp-skill-name">${mThis._escapeHtml(s.skill_name || s.skill || "_")}</span>
                     </div>
                     ${mThis._progressBar(s.rate)}
-                    <div class="emp-skill-col-action d-flex align-items-center gap-1">
-                        <button type="button" class="emp-skill-action-btn emp-skill-action-btn-edit d-inline-flex align-items-center justify-content-center" data-skill-id="${s.id}" title="Edit">
+                    <div class="emp-skill-col-action">
+                        <button type="button" class="emp-skill-action-btn emp-skill-action-btn-edit" data-skill-id="${s.id}" title="Edit" aria-label="Edit">
                             <i class="fa-regular fa-pen-to-square"></i>
                         </button>
-                        <button type="button" class="emp-skill-action-btn emp-skill-action-btn-delete d-inline-flex align-items-center justify-content-center" data-skill-id="${s.id}" title="Delete">
-                            <i class="fa-solid fa-xmark"></i>
+                        <button type="button" class="emp-skill-action-btn emp-skill-action-btn-delete" data-skill-id="${s.id}" title="Delete" aria-label="Delete">
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>`,
                   )
                   .join("")
-            : `<div class="text-center py-3">
-                    <span class="emp-skill-empty-pill">${LocaleManager.trans("No data available.", "titles")}</span>
+            : `<div class="emp-skill-empty">
+                    <i class="fa-solid fa-graduation-cap emp-skill-empty-icon"></i>
+                    <span class="emp-skill-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
                </div>`;
 
         container.innerHTML = `
-            <div class="col-12 col-lg-4">
                 <div class="emp-skill-card h-100">
-                    <div class="emp-skill-header d-flex align-items-center justify-content-between">
-                        <span class="fw-semibold" vslang="titles.Skill">Skill</span>
-                        <button type="button" class="emp-skill-add-btn d-inline-flex align-items-center justify-content-center" id="_emp_skill_btn_add" title="Add">
+                    <div class="emp-skill-header">
+                        <div class="emp-skill-header-title">
+                            <span class="emp-skill-header-icon">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </span>
+                            <span class="emp-skill-header-label" vslang="titles.Skill">Skill</span>
+                        </div>
+                        <button type="button" class="emp-skill-add-btn" id="_emp_skill_btn_add" title="Add" aria-label="Add skill">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
                     <div class="emp-skill-body">
-                        <div class="emp-skill-cols d-flex justify-content-between align-items-center">
+                        <div class="emp-skill-cols">
                             <span vslang="titles.Skill">Skill</span>
                             <span vslang="labels.Rate">Rate</span>
                             <span vslang="titles.Action">Action</span>
                         </div>
-                        ${rowsHtml}
+                        <div class="emp-skill-list">
+                            ${rowsHtml}
+                        </div>
                     </div>
-                </div>
-            </div>`;
+                </div>`;
 
         LocaleManager.translateZone(container);
         mThis._bindActions(container, empId, skillList, onRefresh);

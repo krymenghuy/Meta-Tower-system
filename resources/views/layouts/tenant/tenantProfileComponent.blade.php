@@ -185,9 +185,7 @@
         linear-gradient(180deg, #FAFBFF 0%, var(--tp-bg) 100%);
 }.tp-profile * {
     box-sizing: border-box;
-}
-
-.tp-hero {
+}.tp-hero {
     position: relative;
     overflow: hidden;
     border-radius: 28px;
