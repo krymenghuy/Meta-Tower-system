@@ -170,7 +170,7 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
-                    <a href="EmployeeManagementComponent" modid="307" class=" menu-item kt-menu__link">
+                    <a href="EmployeeManagementComponent" modid="307" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/group.svg') }}" />
                         </span>
@@ -184,6 +184,15 @@ function v_display($mod_id, $module_ids = null)
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Leave">Leave</span>
+                    </a>
+                </li>
+
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(308); ?>>
+                    <a href="StaffAttendanceComponent" modid="308" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Staff Attendance">Staff Attendance</span>
                     </a>
                 </li>
 
