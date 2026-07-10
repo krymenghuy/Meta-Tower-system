@@ -15,6 +15,7 @@ use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
 use  App\Http\Controllers\Mhr\BenefitController;
+use  App\Http\Controllers\Mhr\AccountController;
 
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
@@ -120,5 +121,26 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->gr
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
+
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
+
+    Route::post('/save', [AccountController::class, 'saveAccount']);
+    Route::post('/bulk-create', [AccountController::class, 'bulkCreateAccounts']);
+    //Route::post('/save-missing-account-wallet', [AccountController::class, 'saveMissingAccountWallet']);
+    Route::post('/payroll-account/list', [AccountController::class, 'getPayrollAccountList']);
+    Route::post('/wallet-account/list', [AccountController::class, 'getWalletAccountList']);
+    Route::post('/details', [AccountController::class, 'getDetails']);
+    Route::post('/delete', [AccountController::class, 'deleteAccount']);
+    Route::post('/form-options', [AccountController::class, 'getFormOptions']);
+    Route::post('/deposit', [AccountController::class, 'deposit']);
+    Route::post('/with-draw', [AccountController::class, 'withdraw']);
+    Route::post('/transfer', [AccountController::class, 'transfer']);
+    Route::post('/transferTo', [AccountController::class, 'transferTo']);
+    Route::post('/get-info', [AccountController::class, 'getAccountInfo']);
+    Route::post('/get-confirm', [AccountController::class, 'getConfirmTransfer']);
+    Route::post('/print-transaction', [AccountController::class, 'printTransaction']);
+    Route::post('/transaction/create', [AccountController::class, 'createTransactions']);
+    Route::post('/deposit/form-options', [AccountController::class, 'getFormOptions_deposit']);
 
 });

@@ -24,8 +24,8 @@ class Benefit extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string',
-            'type_id' => '1|choice|1,2|default=1',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'type_id' => '1|choice|1,2|text=select_type',
         ];
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, null);
         if ($res->error) {

@@ -20,7 +20,7 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle",
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index) => {
                 return `
@@ -31,14 +31,14 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Benefit",
+            transTitle: "titles.Benefit",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<span>${data.benefit_name ?? '-'}</span>`;
              }
         },
         {
-            title: "Date",
+            transTitle: "titles.Issue Date",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary p-0 m-0">${
@@ -47,7 +47,7 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Amount",
+            transTitle: "titles.Amount",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
@@ -57,7 +57,7 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Balance",
+            transTitle: "titles.Balance",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
@@ -68,7 +68,7 @@ var EmployeeBenefitComponent = new (function () {
         },
 
         {
-            title: "Tax Option",
+            transTitle: "titles.Tax Option",
             className: "align-middle",
             data: (data) => {
                 return `
@@ -80,7 +80,7 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Flat Tax Rate",
+            transTitle: "titles.Flat Tax Rate",
             className: "align-middle",
             data: (data, index, tr) => {
                 return data.tax_option_id == "3"
@@ -89,16 +89,16 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Action",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn_edit_emp_benefit" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_emp_benefit" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn_delete_benefit" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
@@ -222,11 +222,11 @@ var EmployeeBenefitComponent = new (function () {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(275)) return;
+        // if (!AuthManager.allowed(275)) return;
         cv_interact.confirm(
-            "Delete this benefit?",
+            "confirm_delete",
             {
-                title: "Delete Benefit",
+                title: "Delete Employee Benefit",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -242,7 +242,7 @@ var EmployeeBenefitComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_employee_benefit");
                                 mThis.EmployeeBenefitListView.showPage(
                                     mThis.getFilterData()
                                 );
@@ -266,8 +266,8 @@ var EmployeeBenefitComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "", "All Benefits", "");
-                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "", "All Tax Option", "");
+                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "",LocaleManager.trans("All Benefits", "titles"), "");
+                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "",LocaleManager.trans("All Tax Options", "titles"), "");
 
             });
     };
@@ -299,45 +299,50 @@ const EmployeeBenefitDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row">`,
-                    `    <div class="form-group col-md-12">
-                            <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                            <select name="employee" class="data-input" data-field="emp_id"></select>
-                        </div>`,
-                    `    <div class="form-group col-md-4">
-                            <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
-                            <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
-                        </div>`,
-                    `<div class="form-group col-4">
-                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                            <select name="currency_code" class="data-input" data-field="currency_code" disabled></select>
-                        </div>`,
-                    `    <div class="form-group col-md-4">
-                            <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
-                            <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" disabled></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans('Tax Options', 'labels')}">
                                 <option value="">(Select Tax Option)</option>
                                 <option value="1">Tax</option>
                                 <option value="2">Non</option>
                                 <option value="3">Flat Rate</option>
                             </select>
-                        </div>`,
-                    `    <div class="form-group col-md-6">
-                            <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                            <input type="number" name="amount" class="form-control data-input" data-field="amount" />
-                        </div>`,
-                    `<div class="form-group col-md-6 effective_date d-none">
-                            <label for="effective_date" class="form-label" vslang="titles.Effective Date">Effective Date</label>
-                            <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
-                        </div>`,
-                    `    <div class="form-group col-md-6 flat_tax_rate d-none">
-                            <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
-                            <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" />
-                        </div>`,
-                    `    <div class="form-group col-md-12">
-                            <label for="remarks" class="form-label" vslang="titles.Remark"></label>
-                            <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                        </div>`,
-                    `</div>`,
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" name="amount" class="form-control data-input" data-field="amount" placeholder=" " />
+                                <label vslang="titles.Amount"></label>
+
+                            </div>
+                        </div>
+                        <div class="col-6 effective_date d-none">
+                            <div class="vs-material-field">
+                                <input name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" "></input>
+                                <label vslang="titles.Effective Date"></label>
+                            </div>
+                        </div>
+                        <div class="col-6 flat_tax_rate d-none">
+                            <div class="vs-material-field">
+                                <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
+                                <label vslang="titles.Flat Tax"></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                <label vslang="titles.Remark"></label>
+                            </div>
+                        </div>
+                    </div>`,
                 ].join("");
             },
             contentCreated: (me) => {
@@ -354,8 +359,8 @@ const EmployeeBenefitDialog = (() => {
             },
 
             prepareFormOptions: {
-                createTitle: "Add Benefit",
-                modifyTitle: "Edit Benefit",
+                createTitle: "vslang:titles.Create Employee Benefit",
+                modifyTitle: "vslang:titles.Edit Employee Benefit",
                 targetProp: "emp_benefits",
                 api: {
                     endpoint: `${main_view.base_url}/mhr/emp-benefit/form-options`,
@@ -420,12 +425,14 @@ const EmployeeBenefitDialog = (() => {
             ],
             buttons: [
                 {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => me.hide(false),
+                    label: '<span  vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false)
+                    }
                 },
                 {
-                    label: "<span>Save</span>",
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
@@ -441,19 +448,12 @@ const EmployeeBenefitDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Updated employee benefit successfully"
-                                        );
+                                        cv_interact.success("update_success_employee_benefit");
                                     } else {
-                                        cv_interact.success(
-                                            "Added employee benefit successfully"
-                                        );
+                                        cv_interact.success("create_success_employee_benefit");
                                     }
                                 } else {
-                                    cv_interact.error(
-                                        res.error_message ||
-                                            "An error occurred."
-                                    );
+                                    cv_interact.error(res.error_message);
                                 }
                             });
                     },
