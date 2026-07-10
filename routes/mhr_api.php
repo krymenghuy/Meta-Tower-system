@@ -10,6 +10,9 @@ use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
 use App\Http\Controllers\Mhr\EmployeeSkillController;
+use App\Http\Controllers\Mhr\EmployeeEducationController;
+use App\Http\Controllers\Mhr\EmployeeExperienceController;
+use App\Http\Controllers\Mhr\EmployeeDocumentController;
 use  App\Http\Controllers\Mhr\LeaveController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
@@ -39,12 +42,29 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
+    // skills
     Route::post('/skills/list', [EmployeeSkillController::class, 'getList']);
     Route::post('/skills/save', [EmployeeSkillController::class, 'save']);
     Route::post('/skills/delete', [EmployeeSkillController::class, 'delete']);
     Route::post('/skills/details', [EmployeeSkillController::class, 'getDetails']);
-
-
+    // educations
+    Route::post('/educations/list', [EmployeeEducationController::class, 'getList']);
+    Route::post('/educations/save', [EmployeeEducationController::class, 'save']);
+    Route::post('/educations/delete', [EmployeeEducationController::class, 'delete']);
+    Route::post('/educations/details', [EmployeeEducationController::class, 'getDetails']);
+    // experiences
+    Route::post('/experiences/list', [EmployeeExperienceController::class, 'getList']);
+    Route::post('/experiences/save', [EmployeeExperienceController::class, 'save']);
+    Route::post('/experiences/delete', [EmployeeExperienceController::class, 'delete']);
+    Route::post('/experiences/details', [EmployeeExperienceController::class, 'getDetails']);
+    Route::post('/experiences/form-options', [EmployeeExperienceController::class, 'getFormOptions']);
+    // document
+    Route::post('/documents/list', [EmployeeDocumentController::class, 'getList']);
+    Route::post('/documents/save', [EmployeeDocumentController::class, 'save']);
+    Route::post('/documents/delete', [EmployeeDocumentController::class, 'delete']);
+    Route::post('/documents/details', [EmployeeDocumentController::class, 'getDetails']);
+    Route::post('/documents/form-options', [EmployeeDocumentController::class, 'getFormOptions']);
+    Route::post('/documents/download', [EmployeeDocumentController::class, 'download']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->group(function () {

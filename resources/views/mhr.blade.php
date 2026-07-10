@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('mhr-components', 1, 276);
+    ScriptManager::render('mhr-components', 1, 278);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

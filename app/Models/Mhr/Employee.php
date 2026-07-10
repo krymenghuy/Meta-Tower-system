@@ -92,7 +92,7 @@ class Employee extends VSModel
         if (!$nid) return 'National ID cannot be empty';
         if ($id > 0) $str_id = "emp.id <> $id";
         $x = DB::table('employees as emp')->where('emp.nid', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'National ID ?? has been used by another employee::'. $nid;
+        if ($x) return 'National ID "' . $nid . '" has already been used by another employee.';
         return null;
     }
     static function isOnLeave($id){
@@ -396,6 +396,9 @@ class Employee extends VSModel
             $row->nationality = Country::nationality($row->nationality_id, null);
             $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
             $row->skills = EmployeeSkill::getListByEmployee($id, $ss);
+            $row->educations = EmployeeEducation::getListByEmployee($id, $ss);
+            $row->experiences = EmployeeExperience::getListByEmployee($id, $ss);
+            $row->documents = EmployeeDocument::getListByEmployee($id, $ss);
         } else {
             $row = null;
         }
