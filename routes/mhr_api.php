@@ -16,6 +16,7 @@ use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
 use  App\Http\Controllers\Mhr\BenefitController;
 use  App\Http\Controllers\Mhr\AccountController;
+use  App\Http\Controllers\Mhr\StaffAttendanceController;
 
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
@@ -143,4 +144,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/transaction/create', [AccountController::class, 'createTransactions']);
     Route::post('/deposit/form-options', [AccountController::class, 'getFormOptions_deposit']);
 
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')->group(function () {
+
+    Route::post('/save', [StaffAttendanceController::class, 'saveAttendance']);
+    Route::post('/list', [StaffAttendanceController::class, 'attendanceList']);
+    Route::post('/details', [StaffAttendanceController::class, 'getDetails']);
+    Route::post('/delete', [StaffAttendanceController::class, 'deleteAttendance']);
+    Route::post('/form-options', [StaffAttendanceController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [StaffAttendanceController::class, 'getStaffAttendanceListPaginate']);
 });

@@ -1,50 +1,21 @@
 <div id="_main_staffAttendanceComponent" style="display:none;padding:20px 0 0">
-        <div class="shadow rounded-3 p-3">
-            <div id="container_scan_filter" class="row px-3">
-                <div class="col-sm-12 col-md-6 col-lg-3">
-                    <div class="form-group">
-                        <label for="branch_id" class="form-label" style="color: #cab567;" vslang="titles.LC Branch"></label>
-                        <div class="width-select-dialog">
-                            <select class="filter-field data-input" data-field="branch_id"></select>
-                        </div>
-                    </div>
+        <div id="_divFilter_staff_attendance" class="bg-white shadow p-3 rounded-2">
+            <div class="align-items-center row g-3">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <input type="text" class="filter-field rounded-2 input-search" id="_attendance_search"
+                        placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-3">
-                    <div class="form-group">
-                        <label for="emp_type_id" class="form-label " style="color: #cab567;" vslang="titles.All Employee"></label>
-                        <div class="width-select-dialog">
-                            <select class="filter-field data-input" data-field="emp_type_id"></select>
-                        </div>
-                    </div>
+                {{-- <div class="col-12 col-md-6 col-lg-2">
+                    <select type="id" id="sa_status" class="filter-field data-input" data-field="status_id"></select>
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-3">
-                    <div class="form-group">
-                        <label for="department_id" class="form-label " style="color: #cab567;" vslang="titles.Department"></label>
-                        <div class="width-select-dialog">
-                            <select class="filter-field data-input" data-field="department_id"></select>
-                        </div>
-                    </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <select type="id" id="sa_leave_type" class="filter-field data-input" data-field="leave_type_id"></select>
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-3">
-                    <div class="form-group">
-                        <label for="work_shift_id" class="form-label " style="color: #cab567;" vslang="titles.WorkShift"></label>
-                        <div class="width-select-dialog">
-                            <select class="filter-field data-input" data-field="work_shift_id"></select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex w-100 px-4 py-3 justify-content-between">
-                <div class="d-flex align-items-center w-25">
-                    <div class="position-relative w-100">
-                        <input type="text" class="form-control filter-field btn_search ps-5" id="_staff_attendance_search" placeholder="Search...">
-                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
-                    </div>
-                </div>
-                <div class="d-flex w-50 justify-content-end">
-                    <button type="button" class="btn_add" id="_btnAddStaffAttendance">
-                        <i class="fa-solid px-1 fa-clipboard-user"></i>
-                        <span>Create Attendance</span>
+                 --}}
+                <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                    <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddStaffAttendance">
+                        <i class="fa-right-from-bracket fa-solid" style="color: rgb(249, 251, 255);"></i>
+                        <span vslang="buttons.Set Attendance"></span>
                     </button>
                 </div>
             </div>
