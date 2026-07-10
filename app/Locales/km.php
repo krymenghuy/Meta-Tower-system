@@ -608,7 +608,13 @@ return [
         'Employee ID' => 'លេខសម្គាល់បុគ្គលិក',
         'Leave Type' => 'ប្រភេទការឈប់សម្រាក',
         'Leave Duration' => 'រយៈពេលឈប់សម្រាក',
-
+        'Currency' => 'លេខកូដរូបិយប័ណ្ណ',
+        'Account Type' => 'ប្រភេទគណនី',
+        'Account Number' => 'លេខគណនី',
+        'Last Balance Date' => 'កាលបរិច្ឆេទសមតុល្យចុងក្រោយ',
+        'Account' => 'គណនីបើកប្រាក់បៀវត្ស',
+        'No' => 'លេខរៀង',
+        'Create Account' => 'បង្កើតគណនីប្រាក់បៀវត្ស',
 
 
     ],
@@ -747,6 +753,8 @@ return [
         'Employee Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
         'Leave' => 'ការឈប់សម្រាក',
         'Leaves' => 'ការឈប់សម្រាក',
+        'Payroll Account' => 'គណនីបើកប្រាក់បៀវត្ស',
+
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -855,8 +863,9 @@ return [
         'Create Employee Benefit' => 'បង្កើតអត្ថប្រយោជន៍បុគ្គលិក',
         'Set Leave' => 'កំណត់ការឈប់សម្រាក',
 
-
-
+        'Create Account' => 'បង្កើតគណនី',
+        'Bulk Create' => 'បង្កើតទាំងអស់',
+        
 
 
 
@@ -1123,6 +1132,7 @@ return [
         'Flat Tax Amount' => 'ចំនួនពន្ធថេរ',
         'Flat Rate' => 'អត្រាថេរ',
         'Flat Tax' => 'ពន្ធថេរ',
+        'Account Type' => 'ប្រភេទគណនី',
 
 
 

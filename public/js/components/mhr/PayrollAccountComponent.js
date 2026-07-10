@@ -2,17 +2,13 @@ var PayrollAccountComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_accountComponent");
-    mThis.title_prop = "Account ";
+    mThis.title_prop = "Account";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
-    mThis.btnAddAccountMissing = mThis.self.querySelector(
-        "#_btnAddAccountMissing"
-    );
+    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
-    mThis.elSortByDepartment = mThis.self.querySelector(
-        "#el_sort_by_department"
-    );
-    mThis.elSortByAccount = mThis.self.querySelector("#el_sort_by_account");
+    mThis.elDepartment = mThis.self.querySelector("#el_department");
+    mThis.elAccount = mThis.self.querySelector("#el_account");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
@@ -20,24 +16,17 @@ var PayrollAccountComponent = (function () {
 
     mThis.cols = [
         {
-            title: "No",
+            transTitle: "titles.No",
             className: "align-middle",
             data: (data, index, i) => {
                 return index + 1;
             },
         },
         {
-            title: "Employee",
+            transTitle: "titles.Employee",
             className: "align-middle text-capitalize text-nowrap w-15",
             data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${
-                                data.image_url ||
-                                main_view.asset_url +
-                                    "/images/default/default-staff.png"
-                            }" alt=""
-                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
+                return `
                                 <span style="font-size: 14px; font-weight: bold;">${
                                     data.emp_name ?? ""
                                 }</span>
@@ -50,7 +39,7 @@ var PayrollAccountComponent = (function () {
             },
         },
         {
-            title: "Account Type",
+            transTitle: "titles.Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-1 m-0 text-center rounded-5 m-0 border text-white w-50 bg-success">${
@@ -59,14 +48,14 @@ var PayrollAccountComponent = (function () {
             },
         },
         {
-            title: "Account Number",
+            transTitle: "titles.Account Number",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
             },
         },
         {
-            title: "Balance",
+            transTitle: "titles.Balance",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
@@ -74,14 +63,14 @@ var PayrollAccountComponent = (function () {
         },
 
         {
-            title: "Last Balance Date",
+            transTitle: "titles.Last Balance Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
             },
         },
         {
-            title: "Currency",
+            transTitle: "titles.Currency",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
@@ -115,7 +104,7 @@ var PayrollAccountComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white overflow-hidden  header-uppercase",
+            tableClass: "table table--white rounded-2 overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
 
@@ -628,12 +617,20 @@ var PayrollAccountComponent = (function () {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
-                    mThis.elSortByDepartment,
+                    mThis.elDepartment,
                     d.departments,
                     "id",
                     "name",
                     '',
-                    '(All Departments)'
+                    'All Departments'
+                );
+                VSUtil.setComboItems(
+                    mThis.elAccount,
+                    d.account,
+                    "id",
+                    "name",
+                    '',
+                    'All Accounts'
                 );
                 onFinish();
             });
@@ -660,54 +657,50 @@ const AccountDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row">
-                        <div class="form-group col-12">
-                            <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                            <select name="employee" class=" data-input"  data-field="emp_id"></select>
+                        `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="employee" class="data-input form-control"  data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
                         </div>
-                        <div class="form-group  col-12 d.none">
-                            <div id="info"></div>
-                        </div>`,
-                        `<div class="form-group col-6">
-                            <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                            <select class="modal-select data-input" name="account_type" data-field="account_type" disabled>
+                        <div class="col-6">
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
                                 <option value="Payroll">Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
-                        </div>`,
-                        //  `<div class="form-group col-6">
-                        //     <label for="account_name" class="form-label" vslang="titles.Account Name"></label>
-                        //     <input name="account_name" class="form-control data-input" data-field="account_name" placeholder="" placeholder="AUTO"/>
-                        // </div>`,
-                        `<div class="form-group col-6">
-                            <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                            <input name="account_number" class="form-control data-input" data-field="account_number" placeholder="AUTO" />
-                        </div>`,
-                        `<div class="form-group col-6">
-                            <label for="balance" class="form-label" vslang="titles.Balance"></label>
-                            <input name="balance" type="number" class="form-control data-input" data-field="balance"  />
-                        </div>`,
-                        `<div class="form-group col-6">
-                                <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                                <select name="currency_code" class="data-input" data-field="currency_code"></select>
-                        </div>`,
-                    `</div>`,
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " />
+                                <label vslang="titles.Account Number"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="balance" class="form-control data-input" data-field="balance" placeholder=" " />
+                                <label vslang="titles.Balance"></label>
+                            </div>
+                        </div>
+                           <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder=" " />
+                                <label vslang="titles.Currency"></label>
+                            </div>
+                        </div>
+                    </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
+                    
                     if (currency_codeField && !currency_codeField.value) {
                         currency_codeField.value = VSMoney.getCurrency().code;
+
                     }
-                    const accountField = me.controls.account_type;
-                    if (accountField && !accountField.value) {
-                        accountField.value = "Payroll";
-                    }
+                  
                 },
                 configSelect: [
                     {
@@ -727,15 +720,15 @@ const AccountDialog = (() => {
                 ],
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             //Close with Cancel button
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: '<span vslang="buttons.Save">Save</span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -770,8 +763,8 @@ const AccountDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Account",
-                    modifyTitle: "Account Details",
+                    createTitle: "vslang:titles.Create Account",
+                    modifyTitle: "vslang:titles.Detail Account",
                     targetProp: "accounts",
                     api: {
                         endpoint: [
@@ -786,7 +779,7 @@ const AccountDialog = (() => {
 
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
+                    me.setReadOnly(true,['account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly,['balance','employee'],isReadOnly? null : {"balance":"0.00"});
                     // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';

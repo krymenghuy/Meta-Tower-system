@@ -1,37 +1,44 @@
 <div id="_main_accountComponent" class="mobile-padding px-3" style="display:none;">
-    <div id="sub_content_account" class="p-0">
-        <div class="d-flex p-3 justify-content-between rounded-2 shadow" id="_divFilter">
-                <div class="d-flex align-items-center w-25 gap-2 pl-3">
-                    <div class="position-relative w-100">
-                        <input type="text" class="form-control filter-field btn_search ps-5" id="_sdl_search_account" placeholder="Search...">
-                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+    <div id="sub_content_account">
+        <div class="bg-white rounded-2 shadow p-3" id="_divFilter">
+                <div class="align-items-center row g-3">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_account" 
+                        placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <select id="el_department" class="data-input filter-field form-control" data-field="department_id">
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <select id="el_account" class="data-input filter-field form-control" data-field="is_master_account">
+                            <!-- <option value="1">Master Account</option>
+                            <option value="0" selected>Staff Account</option> -->
+                        </select>
+                    </div>
+                    <div class="ms-md-auto col-12 col-md-6 col-lg-5">
+                        <div class="justify-content-end row g-2">
+                            <div class="col-12 col-md-auto">
+                                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddAccount">
+                                    <i class="fas fa-user"></i>
+                                    <span class="text-nowrap" vslang="buttons.Create Account"></span>
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-auto">
+                                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddAccountMissing">
+                                    <i class="fas fa-user"></i>
+                                    <span vslang="buttons.Bulk Create"></span>
+                                </button>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2 w-25">
-                    <select id="el_sort_by_department" class="data-input filter-field"
-                        data-field="department_id"></select>
-                </div>
-                <div class="d-flex align-items-center gap-2 w-30">
-                    <select id="el_sort_by_account" class="modal-select2 data-input filter-field" data-field="is_master_account">
-                        <option value="1">Master Account</option>
-                        <option value="0" selected>Staff Account</option>
-                    </select>
-                </div>
-                <div class="d-flex align-items-center gap-2 w-30">
-                    <button type="button" class="btn btn-primary btn_add" id="_btnAddAccount">
-                        <i class="fas fa-user"></i>
-                        <span class="text-nowrap" vslang="titles.Create Account"></span>
-                    </button>
-                </div>
-                <div class="d-flex align-items-center  gap-2 w-30">
-                    <button type="button" class="btn btn-primary btn_add" id="_btnAddAccountMissing">
-                        <i class="fas fa-user"></i>
-                        <span vslang="titles.Bulk Create"></span>
-                    </button>
-                </div>
+             
         </div>
 
-        <div id="_account_list" class=" mt-4 px-4"></div>
+        <div id="_account_list" class=" mt-3"></div>
     </div>
 
     <div class="d-none" id="view_transaction">
