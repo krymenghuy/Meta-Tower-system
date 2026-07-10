@@ -6,8 +6,8 @@ var StaffAttendanceComponent = (function () {
     
     mThis.title_prop = "Staff Attendances";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
-    mThis.elSearch = mThis.self.querySelector("#_staff_attendance_search");
-    mThis.containerFilter = mThis.self.querySelector('#container_scan_filter');
+    mThis.elSearch = mThis.self.querySelector("#_attendance_search");
+    mThis.containerFilter = mThis.self.querySelector('#_divFilter_staff_attendance');
     mThis.divListView = mThis.self.querySelector('#_staff_attendance_list');
 
     mThis.cols = [
