@@ -2,7 +2,8 @@
     <div class="bg-white p-3 rounded-2 shadow" id="_divFilter_employee_benefit">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_bonus" placeholder="Search by name">
+                <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_bonus" 
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_benefit" class="filter-field data-input" data-field="benefit_id"></select>
@@ -22,7 +23,7 @@
                     <div class="col-12 col-md-auto">
                         <button type="button" class="w-100 btnAddNewPrm" id="_btn_add_benefit">
                             <i class="fa-solid fa-layer-group"></i>
-                            <span vslang="buttons.Add Benefit"></span>
+                            <span vslang="buttons.Create Employee Benefit"></span>
                         </button>
                     </div>
                 </div>

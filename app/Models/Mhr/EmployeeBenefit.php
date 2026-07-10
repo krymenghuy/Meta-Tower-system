@@ -248,23 +248,36 @@ class EmployeeBenefit extends VSModel
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
+        
+        $search_value = $d->search_value ?? null;
+        $benefit_id = $d->benefit_id ?? null;
+        $tax_option_id = $d->tax_option_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
-
-        $search_value = $d->search_value ?? null;
-        $search_benefit_id = $d->benefit_id ?? null;
-        $search_tax_option = $d->tax_option_id ?? null;
-        $str_srch = '1=1';
+        if(!is_numeric($current_page)){
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = "1=1";
+        $str_moreWhere = '2=2';
         if ($search_value) {
             $skip_rows = 0;
-            $str_srch = "(emp.name LIKE '%" . $search_value . "%'  OR eb.amount LIKE '%" . $search_value . "%')";
+            $search_value = escape_like_str($search_value);
+            $str_search = "(emp.name LIKE '%" . $search_value . "%')";
         }
-        $date = DBX::formatDate('effective_date', 'effective_date');
+         if ($benefit_id) {
+            $str_moreWhere .= ' AND eb.benefit_id = ' . $benefit_id;
+        }
+        if ($tax_option_id) {
+            $str_moreWhere .= ' AND eb.tax_option_id = ' . $tax_option_id;
+        }
         $query = DB::table('emp_benefits as eb')
             ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
             ->join('benefits as b', 'b.id', '=', 'eb.benefit_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw('
                 eb.id,
                 emp.id as emp_id,
@@ -273,7 +286,7 @@ class EmployeeBenefit extends VSModel
                 b.name as benefit_name,
                 b.type_id as benefit_type_id,
                 eb.benefit_id,
-                ' . $date . ',
+                eb.effective_date,
                 eb.tax_option_id,
                 eb.flat_tax_rate,
                 eb.balance,
@@ -282,31 +295,18 @@ class EmployeeBenefit extends VSModel
                 eb.remarks,
                 emp.photo_file_name as emp_photo
             ')
-            ->orderBy('id', 'DESC')
-            ->where('eb.branch_id', $branch_id)
-            ->whereRaw($str_srch);
-
-        if ($search_benefit_id) {
-            $query->where('eb.benefit_id', $search_benefit_id);
-        }
-        if ($search_tax_option) {
-            $query->where('eb.tax_option_id', $search_tax_option);
-        }
-        $clone_query = clone $query;
-
-        $count = $clone_query->count('eb.id');
-
-        $rows = $query->skip($skip_rows)
-            ->take($per_page)
-            ->get();
-
-        foreach ($rows as $row) {
-            $row->image_url = '';
-            if (isset($row->emp_id) && $row->emp_photo) {
-                $row->image_url = Employee::profilePicture($row->emp_id);
+            ->orderBy('id', 'DESC');
+            $clone_query = clone $query;
+            $count = $clone_query->count('eb.id');
+            $rows = $query->skip($skip_rows)->take($per_page)->get();
+            foreach ($rows as $row) {
+                $row->image_url = '';
+                $row = setOfficialDates($row,['effective_date'],[''],['']);
+                if (isset($row->emp_id) && $row->emp_photo) {
+                    $row->image_url = Employee::profilePicture($row->emp_id);
+                }
+                unset($row->emp_photo);
             }
-            unset($row->emp_photo);
-        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -314,8 +314,7 @@ class EmployeeBenefit extends VSModel
 
     static function getDetails($id, $ss)
     {
-        $branch_id = $ss->branch_id;
-        $query = DB::table('emp_benefits as eb')
+        $row = DB::table('emp_benefits as eb')
             ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
             ->join('benefits as b', 'b.id', '=', 'eb.benefit_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
@@ -336,8 +335,9 @@ class EmployeeBenefit extends VSModel
             eb.currency_code,
             emp.photo_file_name as emp_photo
         ')
-            ->where('eb.branch_id', $branch_id)->where('eb.id', $id)->take(1)->first();
-        return $query;
+        ->where('eb.id', $id)->first();
+        if(!$row) return null;
+        return $row;
     }
 
 

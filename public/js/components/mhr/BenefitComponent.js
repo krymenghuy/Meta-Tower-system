@@ -16,7 +16,7 @@ var BenefitComponent =  (function () {
             className: "align-middle text-nowrap ",
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `
@@ -27,7 +27,7 @@ var BenefitComponent =  (function () {
              }
         },
         {
-            title: "Type",
+            transTitle: "titles.Type",
             className: 'type text-nowrap',
             data: function (data, index, tr) {
                 let cls_class = "text-info";
@@ -148,9 +148,9 @@ var BenefitComponent =  (function () {
                 mThis.BenefitListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(272)) return;
+        // if (!AuthManager.allowed(272)) return;
         cv_interact.confirm(
-            "Delete this Benefit ?",
+            "confirm_delete",
             {
                 title: "Delete Benefit",
                 context: "delete",
@@ -162,7 +162,7 @@ var BenefitComponent =  (function () {
                         .call( `${main_view.base_url}/mhr/benefit/delete`, op, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_benefit");
                                 mThis.BenefitListView.showPage();
                             }
                             else {
@@ -193,7 +193,7 @@ var BenefitComponent =  (function () {
             .call(`${main_view.base_url}/mhr/benefit/form-options`,null,null,null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name","",LocaleManager.trans("All Statuses", "titles"),"");
+                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name","",LocaleManager.trans("All Types", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -241,7 +241,7 @@ const BenefitDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             //Close with Cancel button
@@ -249,7 +249,7 @@ const BenefitDialog = (() => {
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -283,7 +283,7 @@ const BenefitDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Benefit",
-                    modifyTitle: "vslang:titles.Modify Benefit",
+                    modifyTitle: "vslang:titles.Edit Benefit",
                     targetProp: "benefits",
                     api: {
                         endpoint: [

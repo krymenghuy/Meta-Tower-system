@@ -304,6 +304,8 @@ return [
         'Unit' => 'បន្ទប់',
         'Type' => 'ប្រភេទ',
         'All Types' => 'ប្រភេទទាំងអស់',
+        'All Tax Options' => 'ជម្រើសពន្ធទាំងអស់',
+        'All Benefits' => 'អត្ថប្រយោជន៍ទាំងអស់',
         'Search by unit' => 'ស្វែងរកតាមបន្ទប់',
         'Search by tenant, amenity or phone' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខទូរស័ព្ទ',
         'Search by tenant or invoice no' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខវិក្កយបត្រ',
@@ -578,16 +580,34 @@ return [
         'Position' => 'តួនាទី',
         
 
+        'Benefit' => 'អត្ថប្រយោជន៍',
+        'Benefits' => 'អត្ថប្រយោជន៍',
+        'Create Benefit' => 'បង្កើតអត្ថប្រយោជន៍',
+        'Edit Benefit' => 'កែប្រែអត្ថប្រយោជន៍',
+        'Delete Benefit' => 'លុបអត្ថប្រយោជន៍',
+        'Benefit Type' => 'ប្រភេទអត្ថប្រយោជន៍',
+        'Benefit List' => 'បញ្ជីអត្ថប្រយោជន៍',
+        'Employee Benefits' => 'អត្ថប្រយោជន៍បុគ្គលិក',
 
 
-
-
-
-
-
-
-
-
+        'Create Employee Benefit' => 'បង្កើតអត្ថប្រយោជន៍បុគ្គលិក',
+        'Edit Employee Benefit' => 'កែប្រែអត្ថប្រយោជន៍បុគ្គលិក',
+        'Tax Option' => 'ជម្រើសការបង់ពន្ធ',
+        'Flat Tax Rate' => 'អត្រាពន្ធថេរ (%)',
+        'Flat Tax' => 'អត្រាពន្ធថេរ',
+        'Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
+        'All Movements' => 'ការផ្លាស់ប្តូរទាំងអស់',
+        'Employee Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
+        'All Employee' => 'បុគ្គលិកទាំងអស់',
+        'Employee' => 'បុគ្គលិក',
+        'Event' => 'ព្រឹត្តិការណ៍',
+        'Impact' => 'ផលប៉ះពាល់',
+        'Date' => 'កាលបរិច្ឆេទ',
+        'Leave' => 'ការឈប់សម្រាក',
+        'Leaves' => 'ការឈប់សម្រាករបស់បុគ្គលិក',
+        'Employee ID' => 'លេខសម្គាល់បុគ្គលិក',
+        'Leave Type' => 'ប្រភេទការឈប់សម្រាក',
+        'Leave Duration' => 'រយៈពេលឈប់សម្រាក',
 
 
 
@@ -686,7 +706,7 @@ return [
         'Shift List' => 'វេនធ្វើការ',
         'Attendance Tracking' => 'ម៉ោងស្កេន',
         'Employee Movement' => 'ចលនាបុគ្គលិក',
-        'Employee Benefits' => 'ការគ្រប់គ្រងអត្ថប្រយោជន៍បុគ្គលិក',
+        'Employee Benefits' => 'អត្ថប្រយោជន៍បុគ្គលិក',
         'Benefit List' => 'បញ្ជីអត្ថប្រយោជន៍',
         'Staff Benefits' => 'បញ្ជីអត្ថប្រយោជន៍បុគ្គលិក',
         'Special Disburse Plan' => 'ផែនការចំំំណាយពិសេស',
@@ -723,6 +743,10 @@ return [
         'Team' =>'ក្រុមការងារ',
         'My Profile' =>'ព័ត៌មានផ្ទាល់ខ្លួន',
         'Contract' =>'កិច្ចសន្យារ',
+        'Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
+        'Employee Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
+        'Leave' => 'ការឈប់សម្រាក',
+        'Leaves' => 'ការឈប់សម្រាក',
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -827,8 +851,9 @@ return [
         'Yes, Cancel it!' => 'យល់ព្រម, បោះបង់!',
 
 
-
-
+        'Create Benefit' => 'បង្កើតអត្ថប្រយោជន៍',
+        'Create Employee Benefit' => 'បង្កើតអត្ថប្រយោជន៍បុគ្គលិក',
+        'Set Leave' => 'កំណត់ការឈប់សម្រាក',
 
 
 
@@ -928,7 +953,7 @@ return [
         'Monthly' => 'តម្លៃជួលសម្រាប់ខែ',
         'Deposit' => 'ប្រាក់កក់',
 
-        'Type' => 'ប្រភេទឯកសារ',
+        'Type' => 'ប្រភេទ',
         'File Name' => 'ឈ្មោះឯកសារ',
         'File Type' => 'ទម្រង់ឯកសារ',
         'Remarks' => 'កំណត់សម្គាល់',
@@ -1090,9 +1115,14 @@ return [
         'Sub Total' => 'សរុបរង',
         'Total Net' => 'ទឹកប្រាក់សរុប',
         
-
-
-
+        'Employee' =>  'បុគ្គលិក',
+        'Benefit' => 'អត្ថប្រយោជន៍',
+        'Tax Options' => 'ជម្រើសពន្ធ',
+        'Currency Code' => 'លេខកូដរូបិយប័ណ្ណ',
+        'Flat Tax Rate' => 'អត្រាពន្ធថេរ',
+        'Flat Tax Amount' => 'ចំនួនពន្ធថេរ',
+        'Flat Rate' => 'អត្រាថេរ',
+        'Flat Tax' => 'ពន្ធថេរ',
 
 
 
@@ -1271,6 +1301,18 @@ return [
         'reason_for_cancellation' => 'សូមបញ្ចូលមូលហេតុនៃការបោះបង់។',
         'reason_required' => 'សូមបញ្ជាក់ពីមូលហេតុ!',
 
+        'create_success_benefit' => 'អត្ថប្រយោជន៍ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_benefit' => 'អត្ថប្រយោជន៍ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_benefit' => 'អត្ថប្រយោជន៍ត្រូវបានលុបដោយជោគជ័យ។',
+
+        'benefit_not_found' => 'រកមិនឃើញអត្ថប្រយោជន៍។',
+        'benefit_already_exists' => 'អត្ថប្រយោជន៍នេះមានរួចហើយ។',
+        'cannot_delete_benefit' => 'មិនអាចលុបអត្ថប្រយោជន៍នេះបានទេ។',
+
+
+        'create_success_employee_benefit' => 'អត្ថប្រយោជន៍បុគ្គលិកត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_employee_benefit' => 'អត្ថប្រយោជន៍បុគ្គលិកត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_employee_benefit' => 'អត្ថប្រយោជន៍បុគ្គលិកត្រូវបានលុបដោយជោគជ័យ។',
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",

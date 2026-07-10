@@ -24,8 +24,8 @@ class Benefit extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string',
-            'type_id' => '1|choice|1,2|default=1',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'type_id' => '1|choice|1,2|text=select_type',
         ];
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, null);
         if ($res->error) {
@@ -41,7 +41,7 @@ class Benefit extends VSModel
             ->exists();
 
         if ($exists) {
-            return DV::error('Benefit name already exists for the selected benefit type.');
+            return DV::error('Benefit name already exists.');
         }
         $id = DBX::saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {

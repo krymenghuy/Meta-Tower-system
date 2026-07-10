@@ -239,7 +239,7 @@ return [
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/BenefitComponent.js',
                 '/js/components/mhr/EmployeeBenefitComponent.js',
-                '/js/components/mhr/TransactionComponent.js',
+                '/js/components/mhr/PayrollAccountComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/PayrollComponent.js',
