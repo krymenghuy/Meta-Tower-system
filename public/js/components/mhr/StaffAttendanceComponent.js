@@ -192,17 +192,17 @@ const StaffAttendanceDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row">
-                            <div class="form-group col-12">
+                        `<div class="row g-3">
+                            <div class="col-6">
                                 <label for="employee" class="form-label" vslang="titles.Name"></label>
                                 <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-6">
                                 <label class="form-label" vslang="titles.Attendance Date">Attendance Date</label>
                                 <div><input type="vsdate" name="attendance_date" class="form-control data-input" data-field="attendance_date" placeholder="Select Attendance Date" ></input></div>
                             </div>
