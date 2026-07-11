@@ -21,6 +21,10 @@ use  App\Http\Controllers\Mhr\BenefitController;
 use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
 
+use  App\Http\Controllers\Mhr\BenefitController;
+use  App\Http\Controllers\Mhr\AccountController;
+use  App\Http\Controllers\Mhr\StaffAttendanceController;
+use App\Http\Controllers\Mhr\EmployeeBenefitController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -174,5 +178,4 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/delete', [StaffAttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [StaffAttendanceController::class, 'getFormOptions']);
     Route::post('/list-paginate', [StaffAttendanceController::class, 'getStaffAttendanceListPaginate']);
-    Route::post('/list-paginate2', [StaffAttendanceController::class, 'getStaffAttendanceListPaginate']);
 });
