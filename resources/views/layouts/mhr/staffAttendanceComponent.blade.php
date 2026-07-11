@@ -1,4 +1,4 @@
-<div id="_main_staffAttendanceComponent" style="display:none;padding:20px 0 0">
+<div id="_main_staffAttendanceComponent" style="display:none;">
         <div id="_divFilter_staff_attendance" class="bg-white shadow p-3 rounded-2">
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
