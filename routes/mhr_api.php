@@ -3,7 +3,6 @@
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
 
-use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
@@ -17,6 +16,7 @@ use  App\Http\Controllers\Mhr\LeaveController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
+use  App\Http\Controllers\Mhr\EmployeeBenefitController;
 use  App\Http\Controllers\Mhr\BenefitController;
 use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
