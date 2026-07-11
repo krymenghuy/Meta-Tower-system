@@ -5,7 +5,7 @@
                 <button class="btn btn-warning d-none" id = "_btn_issues" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" vslang="buttons.Issues">
                 </button>
-                 <div class="col-12 col-md-6 col-lg-1">
+                 <div class="col-12 col-md-6 col-lg-2">
                     <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnBackToPayroll">
                         <i class="fa-solid fa-angles-left "></i>
                         <span vslang="buttons.Back"></span>
@@ -22,7 +22,7 @@
                     <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
                 </div>
                
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12 col-md-6 col-lg-3">
                     <div class="d-flex flex-wrap justify-content-lg-end gap-3"> 
                         <button class="d-flex justify-content-center align-items-center border-0 rounded-circle"
                             style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnImport">

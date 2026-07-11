@@ -329,6 +329,8 @@
                             @include('layouts.mhr.benefitComponent')
                             @include('layouts.mhr.employeeBenefitComponent')
                             @include('layouts.mhr.staffAttendanceComponent')
+                            @include('layouts.mhr.walletAccountComponent')
+                            @include('layouts.mhr.workShiftListComponent')
 
 
 

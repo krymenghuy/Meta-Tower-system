@@ -21,6 +21,7 @@ use  App\Http\Controllers\Mhr\BenefitController;
 use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
 use App\Http\Controllers\Mhr\EmployeeBenefitController;
+use App\Http\Controllers\Mhr\WorkShiftController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -174,4 +175,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/delete', [StaffAttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [StaffAttendanceController::class, 'getFormOptions']);
     Route::post('/list-paginate', [StaffAttendanceController::class, 'getStaffAttendanceListPaginate']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')->group(function () {
+
+    Route::post('/save', [WorkShiftController::class, 'saveWorkShift']);
+    Route::post('/list-paginate', [WorkShiftController::class, 'getWorkShiftListPaginate']);
+    Route::post('/details', [WorkShiftController::class, 'getDetails']);
+    Route::post('/delete', [WorkShiftController::class, 'deleteWorkShift']);
+    Route::post('/form-options', [WorkShiftController::class, 'getFormOptions']);
 });
