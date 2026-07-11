@@ -277,6 +277,10 @@ class Account extends VSModel
             'departments' => GeneralSettings::options_department($ss),
             'currency_codes' => VSMoney::options_currency($ss),
             'employees' => GeneralSettings::options_employee([10, 20], $ss),
+            'account' => [
+                ['id' => '0', 'name' => 'Master Account'],
+                ['id' => '1', 'name' => 'Staff Account'],
+            ],
             'accounts' => $account,
         ];
     }

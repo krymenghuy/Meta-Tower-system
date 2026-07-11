@@ -142,24 +142,6 @@ class Leave extends VSModel
             $str_status = 'l.status_id = \'' . $status_id . '\'';
         }
 
-        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
-        $today = date('Y-m-d');
-        if ($start_date && $end_date) {
-            $end_date = convertDate($end_date);
-            $start_date = convertDate($start_date);
-            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
-                // Check if there is any overlap between the leave period and the given date range
-                $str_dates = "(
-                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
-                )";
-            }
-        } else {
-            // Default to today's date if no start_date and end_date are provided
-            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
-        }
-
         $skip_rows = ($current_page - 1) * $per_page;
         $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
 
