@@ -53,15 +53,14 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_list_card.css') }}?v=4">
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_dialog.css') }}?v=1">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_list_card.css') }}?v=1">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_skill.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_education.css') }}?v=2">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_experience.css') }}?v=3">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_document.css') }}?v=2">
 
 <style>
-    /* Legacy tenant list card classes (kept for compatibility) */
+    /* List cards (same pattern as tenant) */
     .card {
         border-radius: 5px;
         box-shadow: 0px 0px 3px 0px grey;
