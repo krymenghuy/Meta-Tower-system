@@ -42,9 +42,11 @@ var PayrollAccountComponent = (function () {
             transTitle: "titles.Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-1 m-0 text-center rounded-5 m-0 border text-white w-50 bg-success">${
-                    data.account_type ?? ""
-                }</p>`;
+                 return `<div class="text-primary-custom" style="width:80px;">
+                            <span class="badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis text-capitalize d-inline-block text-center" style="min-width:70px">
+                                ${data.account_type ?? ""}
+                            </span>
+                        </div>`;
             },
         },
         {
