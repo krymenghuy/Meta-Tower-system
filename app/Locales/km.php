@@ -616,7 +616,7 @@ return [
         'No' => 'លេខរៀង',
         'Create Account' => 'បង្កើតគណនី',
         'Wallet Accounts' => 'គណនីឌីជីថល',
-
+        'Shift List' => 'បញ្ជីវេនការងារ',
 
     ],
     'menus' => [
@@ -756,7 +756,7 @@ return [
         'Leaves' => 'ការឈប់សម្រាក',
         'Payroll Account' => 'គណនីបើកប្រាក់បៀវត្ស',
         'Wallet Account' => 'គណនីឌីជីថល',
-
+        'Work Shifts' => 'វេនការងារ',
 
     ],
     'buttons' => [
