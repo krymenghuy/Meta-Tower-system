@@ -1,256 +1,189 @@
-/* Employee list card — clean wood + gold premium */
+/* Employee list card — profile card style */
 .emp-list-card {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-width: 320px;
-    margin: 0 auto;
+    border: 1px solid #3a4254;
     border-radius: 16px;
     overflow: hidden;
-    background: #f3f0eb;
-    box-shadow: 0 14px 36px rgba(34, 22, 12, 0.22);
-    border: 1px solid rgba(180, 140, 60, 0.25);
+    background: #fff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .emp-list-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 44px rgba(34, 22, 12, 0.28);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
 }
 
-/* ── Header ── */
 .emp-list-card-header {
     position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-}
-
-/* CSS wood grain — no composite image */
-.emp-list-card-wood {
-    background-color: #3d2817;
-    background-image:
-        repeating-linear-gradient(
-            93deg,
-            transparent 0,
-            transparent 6px,
-            rgba(0, 0, 0, 0.07) 6px,
-            rgba(0, 0, 0, 0.07) 7px
-        ),
-        repeating-linear-gradient(
-            87deg,
-            transparent 0,
-            transparent 14px,
-            rgba(255, 255, 255, 0.025) 14px,
-            rgba(255, 255, 255, 0.025) 15px
-        ),
-        linear-gradient(
-            180deg,
-            #5a3d2b 0%,
-            #3d2817 38%,
-            #2a1c12 72%,
-            #4a3220 100%
-        );
-}
-
-.emp-list-card-wood--top {
-    height: 48px;
-    border-bottom: 2px solid #d4af37;
-    box-shadow: inset 0 -8px 16px rgba(0, 0, 0, 0.12);
-}
-
-.emp-list-card-center {
-    height: 76px;
-    background: linear-gradient(180deg, #faf9f7 0%, #eeede8 100%);
-    border-bottom: 2px solid #d4af37;
-}
-
-.emp-list-card-wood--bottom {
-    height: 52px;
-    position: relative;
-    box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.1);
+    height: 132px;
+    background: url("../../images/default/bg_card8.jpg") center / cover no-repeat;
 }
 
 .emp-list-card-avatar-wrap {
     position: absolute;
-    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 104px;
-    height: 104px;
-    border-radius: 50%;
-    padding: 5px;
-    background: linear-gradient(
-        160deg,
-        #f5e6a8 0%,
-        #e8c547 30%,
-        #c9a227 55%,
-        #b8860b 80%,
-        #f0d878 100%
-    );
-    box-shadow:
-        0 0 0 1px rgba(72, 48, 16, 0.4),
-        0 10px 26px rgba(34, 22, 12, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.5),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 3;
+    bottom: 0;
+    transform: translate(-50%, 52%);
+    z-index: 2;
 }
 
 .emp-list-card-avatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(145deg, #f6d673 0%, #b8892a 42%, #8b6914 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.35),
+        0 8px 22px rgba(26, 48, 88, 0.28);
+}
+
+.emp-list-card-avatar img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    background: #e4e0da;
-    border: 2px solid rgba(255, 255, 255, 0.92);
     display: block;
+    background: #e8edf4;
 }
 
-.emp-list-card-nameplate {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 4;
-    max-width: calc(100% - 54px);
-    padding: 6px 18px 7px;
-    border-radius: 999px;
-    border: 1px solid rgba(60, 38, 18, 0.5);
-    background: linear-gradient(
-        180deg,
-        #e8c99a 0%,
-        #c49a6c 28%,
-        #a67c52 52%,
-        #c49a6c 78%,
-        #ddb882 100%
-    );
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.45),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.2),
-        0 3px 8px rgba(34, 22, 12, 0.35);
+.emp-list-card-nameband {
+    position: relative;
+    z-index: 1;
+    padding: 64px 16px 14px;
+    text-align: center;
+    background: linear-gradient(180deg, #1a3058 0%, #152a4a 100%);
 }
 
 .emp-list-card-name {
-    display: block;
-    color: #faf3e8;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 0.86rem;
+    display: inline-block;
+    max-width: 100%;
+    padding: 7px 22px;
+    border: 2px solid #c9a227;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.12);
+    color: #f2cb5c;
+    font-size: 0.94rem;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
     text-transform: capitalize;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-shadow: 0 1px 2px rgba(34, 22, 12, 0.45);
 }
 
-.emp-list-card-leaf-icon {
+.emp-list-card-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 18px 22px 20px;
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        url("../../images/bhr/backposition.png") center / cover no-repeat;
+    background-size: 12px 12px, 12px 12px, cover;
+    background-color: #f5f6f8;
+}
+
+.emp-list-card-body::after {
+    content: "\2726";
     position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%) rotate(18deg);
-    z-index: 2;
-    font-size: 1.5rem;
-    color: rgba(170, 185, 155, 0.5);
+    right: 14px;
+    bottom: 10px;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.75);
     pointer-events: none;
 }
 
-/* ── Details body ── */
-.emp-list-card-body {
-    flex: 1 1 auto;
-    padding: 14px 18px 12px;
-    background: linear-gradient(180deg, #f8f6f3 0%, #f3f0eb 100%);
-    border-bottom: 2px solid #d4af37;
-}
-
-.emp-list-card-meta {
+.emp-list-card-details {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 11px;
+    gap: 10px;
 }
 
-.emp-list-card-meta li {
+.emp-list-card-detail {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 0.84rem;
-    font-weight: 500;
-    color: #2c2418;
+    margin: 0;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #1a3058;
     line-height: 1.35;
     min-width: 0;
 }
 
-.emp-list-card-meta li i {
-    width: 16px;
+.emp-list-card-detail-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
     flex-shrink: 0;
-    text-align: center;
     color: #c9a227;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
-.emp-list-card-meta li span {
+.emp-list-card-detail-text {
     min-width: 0;
     word-break: break-word;
 }
 
-/* ── Footer ── */
 .emp-list-card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 11px 16px;
-    background: linear-gradient(180deg, #3a2e24 0%, #1e1610 100%);
+    padding: 11px 14px;
+    background: #4a5568;
+    border-top: 2px solid #c9a227;
 }
 
-.emp-list-card-updated {
-    font-size: 0.72rem;
-    color: #c4a574;
+.emp-list-card-footer-meta {
+    font-size: 0.78rem;
+    color: #94a3b8;
     line-height: 1.3;
-    min-width: 0;
 }
 
-.emp-list-card-link {
-    flex-shrink: 0;
-    font-size: 0.8rem;
+.emp-list-card-footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: #f6d673;
+    color: #f2cb5c;
     text-decoration: none;
     white-space: nowrap;
+    transition: color 0.15s ease, opacity 0.15s ease;
 }
 
-.emp-list-card-link:hover {
-    color: #ffe9a8;
-}
-
-.emp-list-card-link i {
-    font-size: 0.72rem;
+.emp-list-card-footer-link:hover {
+    color: #ffe08a;
 }
 
 .emp-list-empty {
     width: 100%;
     border-radius: 14px;
-    background: #fff;
-    box-shadow: 0 4px 16px rgba(15, 35, 80, 0.08);
-    padding: 2rem 1rem;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    padding: 28px 16px;
     text-align: center;
-    color: #dc3545;
+    color: #64748b;
     font-weight: 600;
 }
 
 @media (max-width: 575.98px) {
-    .emp-list-card {
-        max-width: 100%;
+    .emp-list-card-avatar {
+        width: 96px;
+        height: 96px;
     }
 
-    .emp-list-card-avatar-wrap {
-        width: 94px;
-        height: 94px;
-    }
-
-    .emp-list-card-center {
-        height: 70px;
+    .emp-list-card-nameband {
+        padding-top: 56px;
     }
 }

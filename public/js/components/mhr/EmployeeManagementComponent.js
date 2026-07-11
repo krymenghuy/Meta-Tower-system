@@ -232,90 +232,58 @@ var EmployeeManagementComponent = (function () {
         return mThis._profileLine(label, expiryDate);
     };
 
-    mThis._defaultStaffImg = () =>
-        `${main_view.base_url}/assets/images/default/default-staff.png`;
-
-    mThis._staffImg = (imageUrl) => {
-        const url = (imageUrl || "").trim();
-        return url || mThis._defaultStaffImg();
-    };
-
-    mThis._employeeListCard = (d) => {
-        const fallbackImg = mThis._defaultStaffImg();
-        const imgUrl = mThis._staffImg(d.image_url);
-        const name = mThis._escapeHtml(d.name ?? "-");
-        const code = mThis._pillText(d.code);
-        const dob = mThis._pillText(d.date_of_birth);
-        const phone = mThis._pillText(d.phone_number);
-        const email = mThis._pillText(d.email);
-        const updatedBy = mThis._escapeHtml(d.update_user || "System");
-
-        return `
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <article class="emp-list-card h-100">
-                    <div class="emp-list-card-header">
-                        <div class="emp-list-card-wood emp-list-card-wood--top"></div>
-                        <div class="emp-list-card-center"></div>
-                        <div class="emp-list-card-wood emp-list-card-wood--bottom">
-                            <div class="emp-list-card-nameplate">
-                                <span class="emp-list-card-name" title="${name}">${name}</span>
-                            </div>
-                            <i class="fa-solid fa-leaf emp-list-card-leaf-icon" aria-hidden="true"></i>
-                        </div>
-                        <div class="emp-list-card-avatar-wrap">
-                            <img
-                                src="${imgUrl}"
-                                alt=""
-                                class="emp-list-card-avatar"
-                                loading="lazy"
-                                onerror="this.onerror=null;this.src='${fallbackImg}'"
-                            />
-                        </div>
-                    </div>
-                    <div class="emp-list-card-body">
-                        <ul class="emp-list-card-meta">
-                            <li>
-                                <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
-                                <span>${code}</span>
-                            </li>
-                            <li>
-                                <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                                <span>${dob}</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-phone" aria-hidden="true"></i>
-                                <span>${phone}</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-at" aria-hidden="true"></i>
-                                <span>${email}</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <footer class="emp-list-card-footer">
-                        <span class="emp-list-card-updated">
-                            <span vslang="titles.Last Updated">Last Updated</span>: ${updatedBy}
-                        </span>
-                        <a
-                            href="javascript:void(0)"
-                            class="emp-list-card-link see-employee-detail"
-                            data-id="${d.id}"
-                        >
-                            <span vslang="titles.View Details">View Details</span>
-                            <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
-                        </a>
-                    </footer>
-                </article>
-            </div>`;
-    };
+    mThis._employeeCardDetail = (iconClass, value) => `
+        <li class="emp-list-card-detail">
+            <span class="emp-list-card-detail-icon" aria-hidden="true">
+                <i class="${iconClass}"></i>
+            </span>
+            <span class="emp-list-card-detail-text">${mThis._pillText(value)}</span>
+        </li>`;
 
     mThis.renderEmployee = (container, data) => {
         let html = `<div class="row g-3">`;
         let cmt = 0;
+        const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
 
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
-                html += mThis._employeeListCard(d);
+                const photo = d.image_url || defaultPhoto;
+                const updatedBy = d.update_user || "System";
+
+                html += `
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <article class="emp-list-card">
+                            <div class="emp-list-card-header">
+                                <div class="emp-list-card-avatar-wrap">
+                                    <div class="emp-list-card-avatar">
+                                        <img src="${photo}" alt="${mThis._escapeHtml(d.name || "Employee")}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="emp-list-card-nameband">
+                                <span class="emp-list-card-name">${mThis._escapeHtml(d.name || "_")}</span>
+                            </div>
+                            <div class="emp-list-card-body">
+                                <ul class="emp-list-card-details">
+                                    ${mThis._employeeCardDetail("fa-solid fa-hashtag", d.code)}
+                                    ${mThis._employeeCardDetail("fa-regular fa-calendar", d.date_of_birth)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-phone", d.phone_number)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-at", d.email)}
+                                </ul>
+                            </div>
+                            <footer class="emp-list-card-footer">
+                                <span class="emp-list-card-footer-meta">
+                                    <span vslang="titles.Last Updated">Last Updated</span>:
+                                    ${mThis._escapeHtml(updatedBy)}
+                                </span>
+                                <a href="javascript:void(0)" class="emp-list-card-footer-link see-employee-detail" data-id="${d.id}">
+                                    <span vslang="titles.View Details">View Details</span>
+                                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </footer>
+                        </article>
+                    </div>`;
+
                 cmt++;
             });
         }
@@ -363,8 +331,10 @@ var EmployeeManagementComponent = (function () {
     mThis.renderProfile = (data) => {
         if (!mThis.profileInfoEmployee || !data) return;
 
-        const defaultPhoto = mThis._defaultStaffImg();
-        const imageUrl = mThis._staffImg(data.image_url);
+        const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
+        const hasPhoto = !!data.image_url;
+        const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
+        const photoWrapClass = hasPhoto ? "" : " is-empty";
 
         const addressText = data.address || "";
         const addressTitle = addressText
@@ -376,9 +346,9 @@ var EmployeeManagementComponent = (function () {
                 <section class="emp-hero">
                     <div class="emp-hero-top">
                         <div class="emp-hero-identity">
-                            <div class="emp-avatar-wrap">
+                            <div class="emp-avatar-wrap${photoWrapClass}">
                                 <img src="${imageUrl}" class="emp-avatar" alt="${mThis._escapeHtml(data.name)}"
-                                    onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${defaultPhoto}';}else{this.style.display='none';this.parentElement.classList.add('is-empty');}">
+                                    onerror="this.style.display='none';this.parentElement.classList.add('is-empty');">
                                 <span class="emp-avatar-placeholder"><i class="fa-solid fa-user"></i></span>
                             </div>
                             <div class="emp-hero-info">
