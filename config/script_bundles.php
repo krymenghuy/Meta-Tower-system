@@ -247,6 +247,11 @@ return [
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/PayrollComponent.js',
                 '/js/components/mhr/PayrollListComponent.js',
+                '/js/components/mhr/BenefitComponent.js',
+                '/js/components/mhr/EmployeeBenefitComponent.js',
+                '/js/components/mhr/PayrollAccountComponent.js',
+                '/js/components/mhr/StaffAttendanceComponent.js',
+
 
 
 
