@@ -240,7 +240,7 @@ return [
                 '/js/components/mhr/EmployeeDocumentComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
                 '/js/components/mhr/MovementComponent.js',
-                '/js/components/mhr/ContractsComponent.js',
+                '/js/components/mhr/WorkShiftListComponent.js',
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
@@ -250,6 +250,7 @@ return [
                 '/js/components/mhr/BenefitComponent.js',
                 '/js/components/mhr/EmployeeBenefitComponent.js',
                 '/js/components/mhr/PayrollAccountComponent.js',
+                '/js/components/mhr/walletAccountComponent.js',
                 '/js/components/mhr/StaffAttendanceComponent.js',
 
 

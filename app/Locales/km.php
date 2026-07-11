@@ -614,7 +614,8 @@ return [
         'Last Balance Date' => 'កាលបរិច្ឆេទសមតុល្យចុងក្រោយ',
         'Account' => 'គណនីបើកប្រាក់បៀវត្ស',
         'No' => 'លេខរៀង',
-        'Create Account' => 'បង្កើតគណនីប្រាក់បៀវត្ស',
+        'Create Account' => 'បង្កើតគណនី',
+        'Wallet Accounts' => 'គណនីឌីជីថល',
 
 
     ],
@@ -754,6 +755,8 @@ return [
         'Leave' => 'ការឈប់សម្រាក',
         'Leaves' => 'ការឈប់សម្រាក',
         'Payroll Account' => 'គណនីបើកប្រាក់បៀវត្ស',
+        'Wallet Account' => 'គណនីឌីជីថល',
+
 
     ],
     'buttons' => [
@@ -865,7 +868,7 @@ return [
 
         'Create Account' => 'បង្កើតគណនី',
         'Bulk Create' => 'បង្កើតទាំងអស់',
-        
+        'Create Wallet' => 'បង្កើតគណនីឌីជីថល',
 
 
 
