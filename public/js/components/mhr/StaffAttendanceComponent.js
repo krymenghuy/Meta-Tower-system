@@ -390,6 +390,7 @@ const StaffAttendanceDialog = (() => {
                     },
                 });
                 DateTimePicker.init(me.controls.attendance_date);
+                
 
                 me.saveStaffAttendance = (p) => {
                     alert("Data saved.");
