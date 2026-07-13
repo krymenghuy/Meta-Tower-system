@@ -369,6 +369,16 @@ return [
         'reason_for_cancellation' => 'Reason for cancellation (required)...',
         'reason_required' => 'You must provide a reason!',
 
+        'create_success_benefit' => 'Benefit has been created successfully.',
+        'update_success_benefit' => 'Benefit has been updated successfully.',
+        'delete_success_benefit' => 'Benefit has been deleted successfully.',
+
+        'benefit_not_found' => 'Benefit not found.',
+        'benefit_already_exists' => 'Benefit already exists.',
+        'cannot_delete_benefit' => 'Cannot delete this benefit.',
+        'create_success_employee_benefit' => 'Employee benefit has been created successfully.',
+        'update_success_employee_benefit' => 'Employee benefit has been updated successfully.',
+        'delete_success_employee_benefit' => 'Employee benefit has been deleted successfully.',
         '' => '',
         '' => '',
         '' => '',

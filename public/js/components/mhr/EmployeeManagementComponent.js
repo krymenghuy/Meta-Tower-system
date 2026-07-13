@@ -22,7 +22,7 @@ var EmployeeManagementComponent = (function () {
     mThis.btnPrintCv = mThis.divProfileView.querySelector("#_btn_print_employee_cv");
     mThis.btnEditProfile = mThis.divProfileView.querySelector("#_btn_edit_employee_profile");
     mThis.profileInfoEmployee = mThis.divProfileView.querySelector("#profile_info_employee");
-    mThis.profileSkillsEmployee = mThis.divProfileView.querySelector("#profile_skills_employee");
+    mThis.profileCardsEmployee = mThis.divProfileView.querySelector("#profile_cards_employee");
     mThis.pages = {
         employee_list: mThis.divListContainer,
         profile_view: mThis.divProfileView,
@@ -101,6 +101,23 @@ var EmployeeManagementComponent = (function () {
     mThis.getPageContainer =(pageName)=>{
         return mThis.pages[pageName];
     };
+
+    mThis.initProfileScroll = () => {
+        const scrollEl = mThis.divProfileView;
+        if (!scrollEl) return;
+
+        const setHeight = () => {
+            scrollEl.style.maxHeight = window.innerHeight - 20 + "px";
+        };
+
+        setHeight();
+        scrollEl.classList.add("overflow-y-auto", "overflow-x-hidden");
+
+        if (!mThis._profileScrollResizeBound) {
+            window.addEventListener("resize", setHeight);
+            mThis._profileScrollResizeBound = true;
+        }
+    };
     mThis.renderEmployeeList = (container, data) => {
         data = data ?? [];
         AuthManager.init().then(() => {
@@ -141,6 +158,26 @@ var EmployeeManagementComponent = (function () {
         return LocaleManager.trans("Non Tax", "titles");
     };
 
+    mThis._statusBadgeClass = (status) => {
+        const s = String(status || "").toLowerCase();
+        if (s.includes("active")) return "is-active";
+        if (s.includes("pending") || s.includes("leave")) return "is-pending";
+        if (s.includes("inactive") || s.includes("resign")) return "is-inactive";
+        return "is-active";
+    };
+
+    mThis._pillText = (value) => {
+        if (value == null || value === "") return "_";
+        return mThis._escapeHtml(String(value));
+    };
+
+    mThis._shortText = (value, max = 48) => {
+        if (value == null || value === "") return "_";
+        const text = String(value);
+        if (text.length <= max) return mThis._escapeHtml(text);
+        return mThis._escapeHtml(text.slice(0, max).trim() + "...");
+    };
+
     mThis._formatSalary = (salary, currency) => {
         if (salary == null || salary === "") return "_";
         if (typeof VSMoney !== "undefined" && VSMoney.formatAmount) {
@@ -150,7 +187,7 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis._profileLine = (label, rawValue, { gold = false, muted = false, capitalize = false } = {}) => {
-        let valueClass = "emp-profile-line-value";
+        let valueClass = "emp-profile-field-value";
         let display = "";
 
         if (muted) {
@@ -174,9 +211,8 @@ var EmployeeManagementComponent = (function () {
         }
 
         return `
-            <div class="emp-profile-line">
-                <span class="emp-profile-line-label">${label}</span>
-                <span class="emp-profile-line-sep">:</span>
+            <div class="emp-profile-field">
+                <span class="emp-profile-field-label">${label}</span>
                 <span class="${valueClass}">${display}</span>
             </div>`;
     };
@@ -196,98 +232,68 @@ var EmployeeManagementComponent = (function () {
         return mThis._profileLine(label, expiryDate);
     };
 
+    mThis._employeeCardDetail = (iconClass, value) => `
+        <li class="emp-list-card-detail">
+            <span class="emp-list-card-detail-icon" aria-hidden="true">
+                <i class="${iconClass}"></i>
+            </span>
+            <span class="emp-list-card-detail-text">${mThis._pillText(value)}</span>
+        </li>`;
+
     mThis.renderEmployee = (container, data) => {
         let html = `<div class="row g-3">`;
         let cmt = 0;
+        const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
 
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
- html += `
+                const photo = d.image_url || defaultPhoto;
+                const updatedBy = d.update_user || "System";
+
+                html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                        <div class="card h-100 shadow-sm border-0 rounded-2">
-                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-start mt-3">
-                                    <div class="d-flex gap-3 align-items-start">
-                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                            style="width:100px;height:100px;">
-                                            <img src="${d.image_url || main_view.base_url + "/assets/images/default/default-staff.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
-                                        </div>
-                                        <!-- <div class="flex items-start justify-between mb-6">
-                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name ?? '-'}</span>
-                                            <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="text-muted small" style="min-width:70px; text-transform: capitalize;">${d.position ?? '-'}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
-                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                            </a>
-                                        </div> -->
+                        <article class="emp-list-card">
+                            <div class="emp-list-card-header">
+                                <div class="emp-list-card-avatar-wrap">
+                                    <div class="emp-list-card-avatar">
+                                        <img src="${photo}" alt="${mThis._escapeHtml(d.name || "Employee")}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
-                                <div class="row g-3 border-bottom border-gray">
-                                    <div class="col-6 mt-3">
-                                        <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fs-6 py-1 text-gold-custom">${d.name}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-1"></div>
-                                    <div class="col-6">
-
-
-                                    </div>
-                                </div>
-                                <div class="card_container" style="max-width: 250px;">
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span>${d.code ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
-                                        <span>${d.date_of_birth ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        ${d.phone_number || ""}
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "_"}
-                                    </p>
-
-
-                                </div>
+                            <div class="emp-list-card-nameband">
+                                <span class="emp-list-card-name">${mThis._escapeHtml(d.name || "_")}</span>
                             </div>
-                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
-                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
-                                    <span style="color: #64748b; font-size: 0.85rem;">
-                                        <span class="small" vslang="titles.Last Updated">Last Updated</span>:
-                                        ${d.update_user || "System"}
-                                    </span>
-                                    <a href="javascript:void(0)" class="text-primary-custom see-employee-detail text-decoration-none" style="font-size: 0.85rem;" data-id="${d.id}">
-                                        <span vslang="titles.View Details">View Details</span> <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
-                                    </a>
-                                </div>
-
-                        </div>
-                    </div>
-                    `;
+                            <div class="emp-list-card-body">
+                                <ul class="emp-list-card-details">
+                                    ${mThis._employeeCardDetail("fa-solid fa-hashtag", d.code)}
+                                    ${mThis._employeeCardDetail("fa-regular fa-calendar", d.date_of_birth)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-phone", d.phone_number)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-at", d.email)}
+                                </ul>
+                            </div>
+                            <footer class="emp-list-card-footer">
+                                <span class="emp-list-card-footer-meta">
+                                    <span vslang="titles.Last Updated">Last Updated</span>:
+                                    ${mThis._escapeHtml(updatedBy)}
+                                </span>
+                                <a href="javascript:void(0)" class="emp-list-card-footer-link see-employee-detail" data-id="${d.id}">
+                                    <span vslang="titles.View Details">View Details</span>
+                                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </footer>
+                        </article>
+                    </div>`;
 
                 cmt++;
             });
         }
 
         if (cmt === 0) {
-            html = [
-                `<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">`,
-                `<div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>`,
-                `</div>`,
-            ].join("");
+            html = `<div class="emp-list-empty">${LocaleManager.trans("Employee not found!", "titles")}</div>`;
+        } else {
+            html += `</div>`;
         }
 
-        html += `</div>`;
         container.innerHTML = html;
         LocaleManager.translateZone(container);
 
@@ -300,6 +306,28 @@ var EmployeeManagementComponent = (function () {
         });
     };
 
+    mThis.renderProfilePlaceholderCard = (container) => {
+        if (!container) return;
+        container.innerHTML = `
+            <div class="emp-skill-card h-100">
+                <div class="emp-skill-header">
+                    <div class="emp-skill-header-title">
+                        <span class="emp-skill-header-icon">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </span>
+                        <span class="emp-skill-header-label" vslang="titles.Experience">Experience</span>
+                    </div>
+                </div>
+                <div class="emp-skill-body">
+                    <div class="emp-skill-empty">
+                        <i class="fa-solid fa-briefcase emp-skill-empty-icon"></i>
+                        <span class="emp-skill-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
+                    </div>
+                </div>
+            </div>`;
+        LocaleManager.translateZone(container);
+    };
+
     mThis.renderProfile = (data) => {
         if (!mThis.profileInfoEmployee || !data) return;
 
@@ -308,97 +336,181 @@ var EmployeeManagementComponent = (function () {
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
         const photoWrapClass = hasPhoto ? "" : " is-empty";
 
+        const addressText = data.address || "";
+        const addressTitle = addressText
+            ? ` title="${mThis._escapeHtml(addressText)}"`
+            : "";
+
         const html = `
-            <div class="emp-profile-card">
-                <div class="d-flex flex-column flex-lg-row align-items-stretch p-4">
-                    <div class="emp-profile-side d-flex flex-column align-items-center text-center">
-                        <div class="emp-profile-photo-wrap mx-auto mb-3${photoWrapClass}">
-                            <img src="${imageUrl}" alt="${mThis._escapeHtml(data.name)}"
-                                onerror="this.style.display='none';this.parentElement.classList.add('is-empty');">
-                            <span class="emp-profile-photo-placeholder align-items-center justify-content-center"><i class="fa-solid fa-user"></i></span>
-                            <span class="emp-profile-status-dot"></span>
+            <div class="emp-profile-wrap">
+                <section class="emp-hero">
+                    <div class="emp-hero-top">
+                        <div class="emp-hero-identity">
+                            <div class="emp-avatar-wrap${photoWrapClass}">
+                                <img src="${imageUrl}" class="emp-avatar" alt="${mThis._escapeHtml(data.name)}"
+                                    onerror="this.style.display='none';this.parentElement.classList.add('is-empty');">
+                                <span class="emp-avatar-placeholder"><i class="fa-solid fa-user"></i></span>
+                            </div>
+                            <div class="emp-hero-info">
+                                <div class="emp-hero-name-block">
+                                    <div class="emp-hero-name-row">
+                                        <h2 class="emp-hero-name text-capitalize">${mThis._escapeHtml(data.name ?? "_")}</h2>
+                                        <span class="emp-status-badge ${mThis._statusBadgeClass(data.status)}">${mThis._escapeHtml(data.status ?? "Active")}</span>
+                                    </div>
+                                    <div class="emp-hero-social">
+                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--facebook" title="Facebook" aria-label="Facebook">
+                                            <i class="fa-brands fa-facebook-f"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--linkedin" title="LinkedIn" aria-label="LinkedIn">
+                                            <i class="fa-brands fa-linkedin-in"></i>
+                                        </a>
+                                        <a href="${
+                                            data.phone_number
+                                                ? `https://t.me/${mThis._escapeHtml(String(data.phone_number).replace(/[^0-9+]/g, ""))}`
+                                                : "javascript:void(0)"
+                                        }" class="emp-social-btn emp-social-btn--telegram" title="Telegram" aria-label="Telegram"${data.phone_number ? ' target="_blank" rel="noopener noreferrer"' : ""}>
+                                            <i class="fa-brands fa-telegram-plane"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="emp-profile-code mb-2"># : ${mThis._escapeHtml(data.code ?? "_")}</div>
-                        <div class="emp-profile-name text-capitalize mb-2">${mThis._escapeHtml(data.name ?? "_")}</div>
-                        <div class="emp-profile-position mb-4">${mThis._escapeHtml(data.position ?? "_")}</div>
-                        <div class="d-flex justify-content-center align-items-center gap-2 pt-2">
-                            <a href="javascript:void(0)" class="emp-profile-social-btn emp-profile-social-facebook d-inline-flex align-items-center justify-content-center text-decoration-none flex-shrink-0" title="Facebook" aria-label="Facebook">
-                                <i class="fa-brands fa-facebook-f"></i>
-                            </a>
-                            <a href="javascript:void(0)" class="emp-profile-social-btn emp-profile-social-linkedin d-inline-flex align-items-center justify-content-center text-decoration-none flex-shrink-0" title="LinkedIn" aria-label="LinkedIn">
-                                <i class="fa-brands fa-linkedin-in"></i>
-                            </a>
-                            <a href="javascript:void(0)" class="emp-profile-social-btn emp-profile-social-telegram d-inline-flex align-items-center justify-content-center text-decoration-none flex-shrink-0" title="Telegram" aria-label="Telegram">
-                                <i class="fa-brands fa-telegram"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="emp-profile-details flex-grow-1 min-w-0 pt-1">
-                        <div class="emp-profile-info-col min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Name", "labels"), data.name)}
-                            ${mThis._profileLine(LocaleManager.trans("Name KH", "labels"), data.name_kh)}
-                            ${mThis._profileLine(LocaleManager.trans("Sex", "labels"), mThis._sexLabel(data.sex))}
-                            ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
-                            ${mThis._profileLine(LocaleManager.trans("Marital Status", "labels"), mThis._maritalLabel(data.marital_status))}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
-                            ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
-                            ${mThis._profileLine("Husband/Wife Name", data.spouse_name)}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Identity Card", "labels"), data.nid)}
-                            ${mThis._profileLinePassport(LocaleManager.trans("Passport ID", "labels"), data.passport_number)}
-                            ${mThis._profileLineExpiry(LocaleManager.trans("Passport Expiry", "labels"), data.passport_expiry_date)}
-                            ${mThis._profileLine(LocaleManager.trans("NSSF", "labels"), data.nssf_id)}
-                            ${mThis._profileLine(LocaleManager.trans("Spouse Occupation", "labels"), data.spouse_occ_code)}
-                        </div>
-
-                        <div class="emp-profile-band-divider"></div>
-
-                        <div class="emp-profile-info-col min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
-                            ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Work Shift", "labels"), data.work_shift)}
-                            ${mThis._profileLine(LocaleManager.trans("Payroll Tax", "labels"), mThis._payrollTaxLabel(data.apply_payroll_tax), { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address, { gold: true, capitalize: true })}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided d-flex align-items-center justify-content-center align-self-center min-w-0">
-                            <div class="d-flex align-items-center justify-content-center gap-2 flex-shrink-0">
-                                <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit">
-                                    <i class="fa-regular fa-pen-to-square"></i>
-                                </button>
-                                <button type="button" class="emp-profile-action-btn emp-profile-action-btn-remove d-inline-flex align-items-center justify-content-center" title="Remove">
-                                    <i class="fa-solid fa-user-minus"></i>
-                                </button>
-                                <button type="button" class="emp-profile-action-btn emp-profile-action-btn-alert d-inline-flex align-items-center justify-content-center" title="Alert">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
-                                </button>
-                                <button type="button" class="emp-profile-action-btn emp-profile-action-btn-message d-inline-flex align-items-center justify-content-center" title="Message">
-                                    <i class="fa-regular fa-comment"></i>
-                                </button>
+                        <div class="emp-hero-stats">
+                            <div class="emp-stat-card">
+                                <span class="emp-stat-icon"><i class="fa fa-id-card"></i></span>
+                                <div class="emp-stat-label">${LocaleManager.trans("Employee ID", "labels")}</div>
+                                <div class="emp-stat-value">${mThis._escapeHtml(data.code ?? "_")}</div>
+                            </div>
+                            <div class="emp-stat-card">
+                                <span class="emp-stat-icon"><i class="fa fa-briefcase"></i></span>
+                                <div class="emp-stat-label">${LocaleManager.trans("Position", "labels")}</div>
+                                <div class="emp-stat-value text-capitalize">${mThis._escapeHtml(data.position ?? "_")}</div>
+                            </div>
+                            <div class="emp-stat-card">
+                                <span class="emp-stat-icon"><i class="fa fa-user-tag"></i></span>
+                                <div class="emp-stat-label">${LocaleManager.trans("Staff Type", "labels")}</div>
+                                <div class="emp-stat-value text-capitalize">${mThis._escapeHtml(data.type ?? "_")}</div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="emp-hero-contact row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="emp-contact-item h-100">
+                                <span class="emp-contact-icon"><i class="fa fa-phone"></i></span>
+                                <div class="emp-contact-body">
+                                    <span class="emp-contact-label">${LocaleManager.trans("Phone Number", "labels")}</span>
+                                    <span class="emp-contact-value">${mThis._pillText(data.phone_number)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="emp-contact-item h-100">
+                                <span class="emp-contact-icon"><i class="fa fa-envelope"></i></span>
+                                <div class="emp-contact-body">
+                                    <span class="emp-contact-label">${LocaleManager.trans("Email", "labels")}</span>
+                                    <span class="emp-contact-value">${mThis._pillText(data.email)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="emp-contact-item h-100"${addressTitle}>
+                                <span class="emp-contact-icon"><i class="fa fa-location-dot"></i></span>
+                                <div class="emp-contact-body">
+                                    <span class="emp-contact-label">${LocaleManager.trans("Address", "labels")}</span>
+                                    <span class="emp-contact-value text-capitalize">${mThis._pillText(addressText)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="emp-personal">
+                    <div class="emp-personal-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h5 class="emp-personal-title">
+                                <span class="emp-personal-title-icon"><i class="fa fa-user"></i></span>
+                                <span>${LocaleManager.trans("Personal Information", "titles")}</span>
+                            </h5>
+                            <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
+                        </div>
+                        <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                    </div>
+
+                    <div class="emp-profile-groups">
+                        <div class="emp-profile-group">
+                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Personal", "titles")}</h6>
+                            <div class="emp-profile-field-grid">
+                                ${mThis._profileLine(LocaleManager.trans("Name", "labels"), data.name)}
+                                ${mThis._profileLine(LocaleManager.trans("Sex", "labels"), mThis._sexLabel(data.sex))}
+                                ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
+                                ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
+                                ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
+                                ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
+                            </div>
+                        </div>
+                        <div class="emp-profile-group">
+                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Work", "titles")}</h6>
+                            <div class="emp-profile-field-grid">
+                                ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
+                                ${mThis._profileLine(LocaleManager.trans("Identity Card", "labels"), data.nid)}
+                                ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address, { gold: true, capitalize: true })}
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         `;
 
         mThis.profileInfoEmployee.innerHTML = html;
         LocaleManager.translateZone(mThis.profileInfoEmployee);
         mThis.setProfileActions(data);
-        EmployeeSkillComponent.render(
-            mThis.profileSkillsEmployee,
-            data.skills || [],
-            data.id,
-            (empId) => mThis.showPage("profile_view", { id: empId }),
-        );
+        if (mThis.profileCardsEmployee) {
+            const cardColClass = "col-12 col-lg-4";
+            mThis.profileCardsEmployee.innerHTML = "";
+            const skillCol = document.createElement("div");
+            skillCol.className = cardColClass;
+            const eduCol = document.createElement("div");
+            eduCol.className = cardColClass;
+            const thirdCol = document.createElement("div");
+            thirdCol.className = cardColClass;
+            const docCol = document.createElement("div");
+            docCol.className = cardColClass;
+            mThis.profileCardsEmployee.appendChild(skillCol);
+            mThis.profileCardsEmployee.appendChild(eduCol);
+            mThis.profileCardsEmployee.appendChild(thirdCol);
+            mThis.profileCardsEmployee.appendChild(docCol);
+            const refreshProfile = (empId) =>
+                mThis.showPage("profile_view", { id: empId });
+            EmployeeSkillComponent.render(
+                skillCol,
+                data.skills || [],
+                data.id,
+                refreshProfile,
+            );
+            EmployeeEducationComponent.render(
+                eduCol,
+                data.educations || [],
+                data.id,
+                refreshProfile,
+            );
+            EmployeeExperienceComponent.render(
+                thirdCol,
+                data.experiences || [],
+                data.id,
+                refreshProfile,
+            );
+            EmployeeDocumentComponent.render(
+                docCol,
+                data.documents || [],
+                data.id,
+                refreshProfile,
+            );
+        }
     };
 
     mThis.setProfileActions = (data) => {
@@ -494,6 +606,10 @@ var EmployeeManagementComponent = (function () {
             }
         });
         targetPage.style.display = "block";
+
+        if (pageName === "profile_view") {
+            mThis.initProfileScroll();
+        }
     };
 
     mThis.show = (options) => {
@@ -511,13 +627,12 @@ const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const lbl = (text, required = false) => {
+    const ph = (text, required = false) => {
         const t = LocaleManager.trans(text, "labels");
-        return `<label class="form-label fw-semibold mb-1">${t}${required ? ' <span class="text-danger">*</span>' : ""}</label>`;
+        return required ? `${t} *` : t;
     };
 
-    const wrapField = (labelHtml, controlHtml) =>
-        `<div class="mb-0">${labelHtml}${controlHtml}</div>`;
+    const wrapField = (controlHtml) => `<div class="mb-0">${controlHtml}</div>`;
 
     self.show = (op) => {
         dialog =
@@ -541,20 +656,17 @@ const EmployeeDialog = (() => {
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         ${wrapField(
-                                            lbl("Name", true),
-                                            '<input type="text" name="name" class="form-control data-input" data-field="name" />',
+                                            `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder="${ph("Name", true)}" />`,
                                         )}
                                     </div>
                                     <div class="col-md-6">
                                         ${wrapField(
-                                            lbl("Khmer Name", true),
-                                            '<input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" />',
+                                            `<input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder="${ph("Khmer Name", true)}" />`,
                                         )}
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Sex"),
-                                            `<select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${LocaleManager.trans("Sex", "labels")}">
+                                            `<select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${ph("Sex")}">
                                                 <option value="">${LocaleManager.trans("Select", "labels")}</option>
                                                 <option value="M">${LocaleManager.trans("Male", "titles")}</option>
                                                 <option value="F">${LocaleManager.trans("Female", "titles")}</option>
@@ -563,8 +675,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Marital Status", true),
-                                            `<select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${LocaleManager.trans("Marital Status", "labels")}">
+                                            `<select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${ph("Marital Status", true)}">
                                                 <option value="single">${LocaleManager.trans("Single", "titles")}</option>
                                                 <option value="married">${LocaleManager.trans("Married", "titles")}</option>
                                                 <option value="divorced">${LocaleManager.trans("Divorced", "titles")}</option>
@@ -574,8 +685,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Date Of Birth", true),
-                                            '<input type="text" data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" placeholder="dd-MM-yyyy" />',
+                                            `<input type="text" data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" placeholder="${ph("Date Of Birth", true)}" />`,
                                         )}
                                     </div>
                                 </div>
@@ -587,116 +697,98 @@ const EmployeeDialog = (() => {
                         <div class="row g-3">
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Nationality", true),
-                                    `<select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>`,
+                                    `<select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="${ph("Nationality", true)}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Identity Card", true),
-                                    '<input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />',
+                                    `<input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder="${ph("Identity Card", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Identity Card Expiry", true),
-                                    '<input type="text" data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder="${ph("Identity Card Expiry", true)}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("NSSF ID"),
-                                    '<input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />',
+                                    `<input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="${ph("NSSF ID")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Passport Number"),
-                                    '<input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" />',
+                                    `<input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder="${ph("Passport Number")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Passport Expiry", true),
-                                    '<input type="text" data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" placeholder="${ph("Passport Expiry", true)}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Place of Birth"),
-                                    `<select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="${LocaleManager.trans("Place of Birth", "labels")}"></select>`,
+                                    `<select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="${ph("Place of Birth")}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Employee Type", true),
-                                    `<select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="${LocaleManager.trans("Employee Type", "labels")}"></select>`,
+                                    `<select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="${ph("Employee Type", true)}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Position", true),
-                                    `<select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="${LocaleManager.trans("Position", "labels")}"></select>`,
+                                    `<select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="${ph("Position", true)}"></select>`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Phone", true),
-                                    '<input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" />',
+                                    `<input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder="${ph("Phone", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Email", true),
-                                    '<input type="email" name="email" class="form-control data-input" data-field="email" placeholder="example@gmail.com" />',
+                                    `<input type="email" name="email" class="form-control data-input" data-field="email" placeholder="${ph("Email", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Salary"),
-                                    '<input type="number" name="salary" class="form-control data-input" data-field="salary" />',
+                                    `<input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder="${ph("Salary")}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Joining Date", true),
-                                    '<input type="text" data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" placeholder="${ph("Joining Date", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Apply Payroll Tax", true),
-                                    `<select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="${LocaleManager.trans("Apply Payroll Tax", "labels")}"></select>`,
+                                    `<select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="${ph("Apply Payroll Tax", true)}"></select>`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Name"),
-                                    '<input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" />',
+                                    `<input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder="${ph("Spouse Name")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Employee"),
-                                    `<select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="${LocaleManager.trans("None", "labels")}"></select>`,
+                                    `<select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="${ph("Spouse Employee")}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Occupation"),
-                                    '<input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />',
+                                    `<input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder="${ph("Spouse Occupation")}" />`,
                                 )}
                             </div>
 
                             <div class="col-12">
                                 ${wrapField(
-                                    lbl("Address", true),
-                                    '<textarea name="address" rows="3" class="form-control data-input" data-field="address"></textarea>',
+                                    `<textarea name="address" rows="3" class="form-control data-input" data-field="address" placeholder="${ph("Address", true)}"></textarea>`,
                                 )}
                             </div>
                         </div>
@@ -720,7 +812,7 @@ const EmployeeDialog = (() => {
                     {
                         name: "nationality_id",
                         data: "nationalities",
-                        textField: "name",
+                        textField: "nationality",
                         valueField: "id",
                     },
                     {
@@ -738,7 +830,7 @@ const EmployeeDialog = (() => {
                     {
                         name: "position_id",
                         data: "positions",
-                        textField: "name",
+                        textField: "position_name",
                         valueField: "id",
                     },
                     {

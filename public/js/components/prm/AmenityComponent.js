@@ -414,13 +414,9 @@ var AmenityComponent = (() => {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("delete_success_amenity");
-                                mThis.AmenityListView.showPage(
-                                    mThis.getFilterData(),
-                                );
+                                mThis.AmenityListView.showPage(mThis.getFilterData());
                             } else {
-                                cv_interact.error(
-                                    res.error_message || "delete_failed",
-                                );
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

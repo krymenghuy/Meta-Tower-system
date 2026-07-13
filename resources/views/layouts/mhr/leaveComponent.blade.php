@@ -1,8 +1,9 @@
-<div id="_main_emp_leave_component" class="p-3 mobile-padding" style="display:none;">
+<div id="_main_emp_leave_component" class="px-3 mobile-padding" style="display:none;">
     <div id="_divFilter_emp_leave" class="bg-white rounded-2 shadow p-3">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_leave" placeholder="Search here....">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_leave"
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_status" class="filter-field data-input" data-field="status_id"></select>

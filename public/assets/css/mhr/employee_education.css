@@ -1,0 +1,300 @@
+/* Education card — simple stacked list */
+.emp-edu-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e8edf4;
+    box-shadow: 0 4px 18px rgba(15, 35, 80, 0.08);
+    display: flex;
+    flex-direction: column;
+    min-height: 360px;
+}
+
+.emp-edu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(165deg, #254278 0%, #1f386b 42%, #1a3058 100%);
+    color: #fff;
+}
+
+.emp-edu-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.emp-edu-header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.emp-edu-header-label {
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.emp-edu-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 0.8rem;
+    line-height: 1;
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.emp-edu-add-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.emp-edu-body {
+    padding: 16px 12px 18px;
+    background: #f8fafc;
+    flex: 1 1 auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.emp-edu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-height: 220px;
+    overflow-y: auto;
+    padding: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(37, 66, 120, 0.2) transparent;
+}
+
+.emp-edu-item {
+    width: 100%;
+}
+
+.emp-edu-item-card {
+    background: #fff;
+    border: 1px solid #e8edf4;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(15, 35, 80, 0.05);
+    padding: 14px 14px 0;
+}
+
+.emp-edu-item-card--muted {
+    border-color: #eef2f7;
+    box-shadow: none;
+}
+
+.emp-edu-item-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+}
+
+.emp-edu-school-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(165deg, #2b4a82 0%, #1a3058 100%);
+    color: #fff;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(26, 48, 88, 0.24);
+}
+
+.emp-edu-item-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.emp-edu-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.emp-edu-item-left {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.emp-edu-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.emp-edu-school {
+    margin: 0 0 4px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a3058;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.emp-edu-item-card--muted .emp-edu-school {
+    color: #475569;
+}
+
+.emp-edu-years {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: 3px 9px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.emp-edu-degree {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #64748b;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.emp-edu-location {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: #94a3b8;
+    line-height: 1.35;
+}
+
+.emp-edu-location i {
+    font-size: 0.68rem;
+    color: #a8bdd9;
+}
+
+.emp-edu-item-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 8px 2px 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.emp-edu-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(37, 66, 120, 0.1);
+    background: #f8fafd;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.emp-edu-action-btn:hover {
+    transform: translateY(-1px);
+}
+
+.emp-edu-action-btn--edit {
+    color: #3b6fd4;
+}
+
+.emp-edu-action-btn--edit:hover {
+    background: #eef4ff;
+    border-color: rgba(59, 111, 212, 0.25);
+    color: #2d5fc4;
+}
+
+.emp-edu-action-btn--delete {
+    color: #dc6b5c;
+}
+
+.emp-edu-action-btn--delete:hover {
+    background: #fff1ef;
+    border-color: rgba(232, 93, 76, 0.25);
+    color: #c94f42;
+}
+
+.emp-edu-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1 1 auto;
+    min-height: 220px;
+    padding: 24px 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(37, 66, 120, 0.14);
+    background: #fff;
+    text-align: center;
+}
+
+.emp-edu-empty-icon {
+    font-size: 1.6rem;
+    color: #a8bdd9;
+}
+
+.emp-edu-empty-text {
+    color: #7a90b0;
+    font-size: 0.84rem;
+    font-style: italic;
+}
+
+@media (max-width: 575.98px) {
+    .emp-edu-item-card {
+        padding: 12px 12px 0;
+    }
+
+    .emp-edu-title-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .emp-edu-item-right {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .emp-edu-item-foot {
+        gap: 12px;
+    }
+}

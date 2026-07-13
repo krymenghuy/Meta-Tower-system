@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('mhr-components', 1, 276);
+    ScriptManager::render('mhr-components', 1, 278);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -209,7 +209,7 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="fa-solid fa-indent fs-4 ms-2" style="color:#6b6f82;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-solid fa-indent fs-4" style="color:#6b6f82;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -322,8 +322,15 @@
                             @include('layouts.mhr.dashboardComponent')
                             @include('layouts.mhr.employeeManagementComponent')
                             @include('layouts.mhr.leaveComponent')
+                            @include('layouts.mhr.payrollAccountComponent')
                             @include('layouts.mhr.payrollComponent')
                             @include('layouts.mhr.payrollListComponent')
+                            @include('layouts.mhr.movementComponent')
+                            @include('layouts.mhr.benefitComponent')
+                            @include('layouts.mhr.employeeBenefitComponent')
+                            @include('layouts.mhr.staffAttendanceComponent')
+                            @include('layouts.mhr.walletAccountComponent')
+                            @include('layouts.mhr.workShiftListComponent')
 
 
 

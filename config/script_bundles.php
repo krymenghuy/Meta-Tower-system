@@ -235,15 +235,24 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/mhr/DashboardComponent.js',
                 '/js/components/mhr/EmployeeSkillComponent.js',
+                '/js/components/mhr/EmployeeEducationComponent.js',
+                '/js/components/mhr/EmployeeExperienceComponent.js',
+                '/js/components/mhr/EmployeeDocumentComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
-                '/js/components/mhr/TenantProfileComponent.js',
-                '/js/components/mhr/ContractsComponent.js',
+                '/js/components/mhr/MovementComponent.js',
+                '/js/components/mhr/WorkShiftListComponent.js',
                 '/js/components/mhr/InvoicesComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/PayrollComponent.js',
                 '/js/components/mhr/PayrollListComponent.js',
+                '/js/components/mhr/BenefitComponent.js',
+                '/js/components/mhr/EmployeeBenefitComponent.js',
+                '/js/components/mhr/PayrollAccountComponent.js',
+                '/js/components/mhr/walletAccountComponent.js',
+                '/js/components/mhr/StaffAttendanceComponent.js',
+
 
 
 

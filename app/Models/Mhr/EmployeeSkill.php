@@ -9,7 +9,7 @@ use Vsd\Vsloquent\VSModel;
 
 class EmployeeSkill extends VSModel
 {
-    protected $table = 'employee_skills';
+    protected $table = 'emp_skills';
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -18,16 +18,22 @@ class EmployeeSkill extends VSModel
         $this->userInfo = $userInfo;
     }
 
+    protected static function baseQuery()
+    {
+        return DB::table('emp_skills as es')
+            ->join('skills as s', 's.id', '=', 'es.skill_id');
+    }
+
     public static function getListByEmployee($emp_id, $ss)
     {
         if (!$emp_id || !is_numeric($emp_id)) {
             return [];
         }
 
-        return DB::table('employee_skills as es')
+        return self::baseQuery()
             ->where('es.emp_id', (int) $emp_id)
             ->orderBy('es.id')
-            ->selectRaw('es.id, es.emp_id, es.skill_name, es.rate, es.description')
+            ->selectRaw('es.id, es.emp_id, es.skill_id, es.rate, s.title AS skill_name, s.description')
             ->get()
             ->map(function ($row) {
                 $row->rate = round((float) $row->rate, 2);
@@ -45,9 +51,8 @@ class EmployeeSkill extends VSModel
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id',
-            'skill_name' => '1|string|1-150|text=skill_name_required',
+            'skill_id' => '1|number|exists=skills.id|text=skill_name_required',
             'rate' => '1|number|text=rate_required',
-            'description' => '0|string|0-250',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
@@ -60,7 +65,16 @@ class EmployeeSkill extends VSModel
         if ($rate < 0 || $rate > 100) {
             return DV::error('Rate must be between 0 and 100');
         }
-        $inputs['rate'] = $rate;
+
+        $duplicateQuery = DB::table('emp_skills')
+            ->where('emp_id', (int) $inputs['emp_id'])
+            ->where('skill_id', (int) $inputs['skill_id']);
+        if ($id) {
+            $duplicateQuery->where('id', '!=', (int) $id);
+        }
+        if ($duplicateQuery->exists()) {
+            return DV::error('This skill is already assigned to the employee');
+        }
 
         $employee = DB::table('employees')
             ->where('id', $inputs['emp_id'])
@@ -70,15 +84,21 @@ class EmployeeSkill extends VSModel
             return DV::error('Employee not found');
         }
 
-        $inputs['branch_id'] = $employee->branch_id ?? ($ss->branch_id ?? null);
+        $saveInputs = [
+            'emp_id' => (int) $inputs['emp_id'],
+            'skill_id' => (int) $inputs['skill_id'],
+            'rate' => $rate,
+            'branch_id' => $employee->branch_id ?? ($ss->branch_id ?? null),
+        ];
+
         $now = getNowTime();
         if (!$id) {
-            $inputs['created_at'] = $now;
+            $saveInputs['created_at'] = $now;
         }
-        $inputs['updated_at'] = $now;
+        $saveInputs['updated_at'] = $now;
 
-        $id = DBX::saveData($ss, 'employee_skills', ['id' => $id], $inputs, [], 1, false);
-        return DV::depends($id, ['employee_skills' => $inputs, 'id' => $id], 'Failed to save skill');
+        $id = DBX::saveData($ss, 'emp_skills', ['id' => $id], $saveInputs, [], 1, false);
+        return DV::depends($id, ['emp_skills' => $saveInputs, 'id' => $id], 'Failed to save skill');
     }
 
     public function delete($id = null, $ss = null)
@@ -90,7 +110,7 @@ class EmployeeSkill extends VSModel
             return DV::error('Invalid ID');
         }
 
-        $deleted = DB::table('employee_skills')->where('id', $id)->delete();
+        $deleted = DB::table('emp_skills')->where('id', $id)->delete();
         return DV::depends($deleted, null, 'Error deleting skill');
     }
 
@@ -100,9 +120,35 @@ class EmployeeSkill extends VSModel
             return null;
         }
 
-        return DB::table('employee_skills as es')
+        $row = self::baseQuery()
             ->where('es.id', $id)
-            ->selectRaw('es.id, es.emp_id, es.skill_name, es.rate, es.description')
+            ->selectRaw('es.id, es.emp_id, es.skill_id, es.rate, s.title AS skill_name, s.description')
             ->first();
+
+        if ($row) {
+            $row->rate = round((float) $row->rate, 2);
+        }
+
+        return $row;
+    }
+
+    public static function getFormOptions($id, $emp_id, $ss)
+    {
+        $skill = null;
+        $currentSkillId = null;
+
+        if ($id) {
+            $skill = self::getDetails($id, $ss);
+            $currentSkillId = $skill->skill_id ?? null;
+        }
+
+        $skills = ($emp_id && is_numeric($emp_id))
+            ? Skill::getAvailableForEmployee($emp_id, $ss, $currentSkillId)
+            : Skill::getOptions($ss);
+
+        return (object) [
+            'skills' => $skills,
+            'skill' => $skill,
+        ];
     }
 }
