@@ -48,6 +48,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/skills/save', [EmployeeSkillController::class, 'save']);
     Route::post('/skills/delete', [EmployeeSkillController::class, 'delete']);
     Route::post('/skills/details', [EmployeeSkillController::class, 'getDetails']);
+    Route::post('/skills/form-options', [EmployeeSkillController::class, 'getFormOptions']);
     // educations
     Route::post('/educations/list', [EmployeeEducationController::class, 'getList']);
     Route::post('/educations/save', [EmployeeEducationController::class, 'save']);
@@ -176,6 +177,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/form-options', [StaffAttendanceController::class, 'getFormOptions']);
     Route::post('/list-paginate', [StaffAttendanceController::class, 'getStaffAttendanceListPaginate']);
 });
+
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')->group(function () {
 
