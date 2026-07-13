@@ -3,7 +3,7 @@ var WorkShiftListComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftListComponent");
-    
+
     mThis.title_prop = "Shift List";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -37,19 +37,20 @@ var WorkShiftListComponent = (function () {
             },
         },
         {
-            title: "Action",
-            className: "col_action align-items-end",
-            data: function (data, row, display) {
+            title: "",
+            className: "col_action align-middle",
+            data: (data) => {
                 return `
-                    <div class="d-flex align-items-center gap-3">
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-work-shift-modify">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-6"></i>
-                        </a>
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-work-shift-delete">
-                            <i class="fa-regular fa-trash-can text-danger fs-6"></i>
-                        </a>
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_work_shift" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_work_shift" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
                     </div>
-                `;
+                </div>`;
             },
         },
     ];
@@ -60,7 +61,7 @@ var WorkShiftListComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
+            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -118,11 +119,11 @@ var WorkShiftListComponent = (function () {
     };
     mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-work-shift-modify");
+            let btn = VSUtil.closestLimited(e.target, ".btn_edit_work_shift");
             if (btn) {
                 mThis.editWorkShift(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-work-shift-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn_delete_work_shift");
             if (btn) {
                 mThis.deleteWorkShift(btn.dataset.id, btn);
             }
@@ -180,19 +181,17 @@ var WorkShiftListComponent = (function () {
                             );
                         })
                         .finally(() => {
-                            // Re-enable the button after completion
-                            menuLink.disabled = false;
+                            menulink.disabled = false;
                         });
                 } else {
-                    // Re-enable the button if the user cancels the confirmation
-                    menuLink.disabled = false;
+                    menulink.disabled = false;
                 }
             }
         );
     };
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.WorkShiftListsView.showPage(
             mThis.getFilterData(),
             null,
@@ -207,81 +206,83 @@ const WorkShiftListDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog = new GeneralDialog({
-            cssClass: "modal-md",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row">
-                        <div class="form-group col-md-12">
-                            <label for="name" class="form-label" vslang="titles.Name"></label>
-                            <span class="text-danger"*</span>
-                            <input type="text" class="form-control data-input" name="shifts" data-field="name">
-                        </div>
-                    </div>`,
-                ].join("");
-            },
-            configSelect: [
-                {
-                    name: "shifts",
-                    data: "shifts",
-                    textField: "name",
-                    valueField: "id",
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
                 },
-            ],
-            buttons: [
-                {
-                    label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
-                    cssClass: "btn btn-sm-outline rounded-3",
-                    click: (me, btn) => {
-                        me.hide(false);
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/work-shifts/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_work_shift");
+                                        } else {
+                                            cv_interact.success("create_success_work_shift");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Shift",
+                    modifyTitle: "vslang:titles.Edit Shift",
+                    targetProp: "work_shifts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/work-shifts/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
-                {
-                    label: '<span><i class="fa-solid text-success fa-check"></i></span>',
-                    cssClass: "btn btn-sm-outline rounded-3",
-                    click: (me, btn) => {
-                        const p = me.getData();
 
-                        p.id = me.dataOptions.id;
-
-                        vsapi
-                            .call(
-                                [main_view.base_url, "/mhr/work-shifts/save"].join(
-                                    ""
-                                ),
-                                p,
-                                btn,
-                                null
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.hide(true, p);
-                                } else cv_interact.error(res.error_message);
-                            });
-                    },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
-            ],
-            prepareFormOptions: {
-                createTitle: "Create Schedule",
-                modifyTitle: "Edit Schedule",
-                targetProp: "work_shifts",
-                api: {
-                    endpoint: [
-                        main_view.base_url,
-                        "/mhr/work-shifts/form-options",
-                    ].join(""),
-                    params: (op) => {
-                        return { id: op.id };
-                    },
-                },
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            },
-        });
+            });
 
         dialog.show(op);
     };

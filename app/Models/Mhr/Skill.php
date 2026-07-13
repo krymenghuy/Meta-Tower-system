@@ -7,37 +7,24 @@ use Vsd\Vsloquent\VSModel;
 
 class Skill extends VSModel
 {
-    protected $table = 'skills';
+    protected $userInfo = null;
 
-    protected static function applySubsScope($query, $ss, $alias = 's')
+    public function __construct($id = null, $userInfo = null)
     {
-        if (!empty($ss->subs_id)) {
-            $binSubsId = hex2bin($ss->subs_id);
-            $query->where(function ($q) use ($binSubsId, $alias) {
-                $q->where("{$alias}.subs_id", $binSubsId)
-                    ->orWhereNull("{$alias}.subs_id");
-            });
-        }
-
-        return $query;
+        $this->id = $id;
+        $this->userInfo = $userInfo;
     }
 
-    public static function getOptions($ss)
+    static function getOptions($ss)
     {
         $query = DB::table('skills as s')
             ->selectRaw('s.id, s.title, s.title AS skill_name, s.description')
             ->orderBy('s.title');
 
-        self::applySubsScope($query, $ss);
-
         return $query->get()->values()->all();
     }
 
-    /**
-     * Skills available for an employee (join skills + emp_skills).
-     * Excludes skills already assigned, except the current one when editing.
-     */
-    public static function getAvailableForEmployee($emp_id, $ss, $currentSkillId = null)
+    static function getAvailableForEmployee($emp_id, $ss, $currentSkillId = null)
     {
         $query = DB::table('skills as s')
             ->leftJoin('emp_skills as es', function ($join) use ($emp_id) {
@@ -46,8 +33,6 @@ class Skill extends VSModel
             })
             ->selectRaw('s.id, s.title, s.title AS skill_name, s.description')
             ->orderBy('s.title');
-
-        self::applySubsScope($query, $ss);
 
         if ($emp_id && is_numeric($emp_id)) {
             $query->where(function ($q) use ($currentSkillId) {
