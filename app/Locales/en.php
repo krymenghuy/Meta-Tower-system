@@ -388,10 +388,14 @@ return [
         'create_success_employee_benefit' => 'Employee benefit has been created successfully.',
         'update_success_employee_benefit' => 'Employee benefit has been updated successfully.',
         'delete_success_employee_benefit' => 'Employee benefit has been deleted successfully.',
+        'create_success_work_shift' => 'Work shift has been created successfully.',
+        'update_success_work_shift' => 'Work shift has been updated successfully.',
+        'delete_success_work_shift' => 'Work shift has been deleted successfully.',
         '' => '',
-        '' => '',
-        '' => '',
-        '' => '',
+
+        'create_success_payroll' => 'Payroll has been created successfully.',
+        'update_success_payroll' => 'Payroll has been updated successfully.',
+        'delete_success_payroll' => 'Payroll has been deleted successfully.',
         '' => '',
         '' => '',
 
