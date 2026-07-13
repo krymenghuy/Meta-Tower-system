@@ -16,7 +16,6 @@ use  App\Http\Controllers\Mhr\LeaveController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
-
 use  App\Http\Controllers\Mhr\BenefitController;
 use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
