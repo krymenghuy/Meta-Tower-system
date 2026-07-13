@@ -576,6 +576,9 @@ return [
         'Prepare Print Contract' => 'ត្រៀមបោះពុម្ពកិច្ចសន្យា',
         'Print Contract' => 'បោះពុម្ពកិច្ចសន្យា',
         'Position' => 'តួនាទី',
+
+
+        'Announcements' => 'សេចក្តីជូនដំណឹង',
         
 
 
