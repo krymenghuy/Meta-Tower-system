@@ -13,7 +13,7 @@ var WorkShiftListComponent = (function () {
             title: "NO",
             className: "align-middle",
             data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>
             `,
