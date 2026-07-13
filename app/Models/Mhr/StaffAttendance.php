@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models\Uhr;
+namespace App\Models\Mhr;
 
 use DV;
-use App\Models\Uhr\ShiftDetails;
+use App\Models\Prm\GeneralSettings;
 use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -13,8 +13,9 @@ use DateTime;
 
 class StaffAttendance extends VSModel
 {
-  
+
     protected $userInfo = null;
+    protected $table = 'emp_attendances';
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -22,7 +23,7 @@ class StaffAttendance extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $id = null, $ss = null)
+    public function upsert($arr = [], $id = null, $ss = null)
     {
 
         $id = $id ?? $this->id;
@@ -31,11 +32,12 @@ class StaffAttendance extends VSModel
         $mins = $this->mins;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id',
-            'attendance_date' => '0|date',
-            'scan_time' => '0|string',
-            'scan_action' => '0|string',
-            'action_type' => '0|string',
+            'emp_id' => '1|number|exists=employees.id|text=required_select_employee',
+            'attendance_date' => '1|date|text=required_date',
+            'scan_action' => '1|string|text=required_action',
+            'scan_time' => '1|string|text=required_time',
+            'work_shift_id' => '1|number|exists=work_shifts.id|text=required_select_work_shift',
+            'attendance_status' => '0|string',
             'remarks' => '0|string',
         ];
 
@@ -56,10 +58,10 @@ class StaffAttendance extends VSModel
         $d = (object) $arr;
         $remarks = $d->remarks;
         $scan_time = $d->scan_time ? date('H:i:s', strtotime($d->scan_time)) : '00:00:00';
-        $scan_action = $d->scan_action;
-        $action_type = $d->action_type;
+        $scan_action = $inputs['scan_action'];
 
-        if ($emp_id) {
+        $work_shift_id = $inputs['work_shift_id'] ?? null;
+        if (!$work_shift_id && $emp_id) {
             $work_shift_id = DB::table('employees')->where('id', $emp_id)->value('work_shift_id');
         }
 
@@ -67,7 +69,7 @@ class StaffAttendance extends VSModel
             'emp_id' => $emp_id,
             'scan_time' => $scan_time,
             'scan_action' => $scan_action,
-            'action_type' => $action_type,
+            'attendance_status' => $inputs['attendance_status'] ?? $arr['attendance_status'] ?? 'Present',
             'attendance_date' => $attendance_date ?? '',
             'work_shift_id' => $work_shift_id ?? null,
             'remarks' => $remarks,
@@ -83,7 +85,7 @@ class StaffAttendance extends VSModel
     {
         $filter = (object) $filter;
         $branch_id = $filter->branch_id ?? null;
-        $department_id = $filter->department_id ?? null;
+        $position_id = $filter->position_id ?? null;
         $emp_type_id = $filter->emp_type_id ?? null;
         $work_shift_id = $filter->work_shift_id ?? null;
         $search_value = escape_like_str($filter->search_value ?? null);
@@ -93,26 +95,25 @@ class StaffAttendance extends VSModel
         $scan_date = DBX::formatDate('a.attendance_date', 'attendance_date');
         $dob = DBX::formatDate('emp.date_of_birth', 'dob');
         $query = DB::table('employees as emp')
-        ->join('positions as p', 'emp.position_id', '=', 'p.id')
-            ->join('departments as d', 'p.department_id', '=', 'd.id')
+            ->join('positions as p', 'emp.position_id', '=', 'p.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
             ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code,'
-            . $dob . ', ws.name as work_shift,'
-            . $scan_date . ', a.scan_time, a.scan_action, a.action_type, p.title as position')
+                . $dob . ', ws.name as work_shift,'
+                . $scan_date . ', a.scan_time, a.scan_action, a.attendance_status, p.name as position')
             ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
         if ($search_value) {
             $query->where(function ($subQuery) use ($search_value) {
                 $subQuery->where('emp.code', 'LIKE', "%{$search_value}%")
-                ->orWhere('emp.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('emp.phone_number', 'LIKE', "%{$search_value}%");
+                    ->orWhere('emp.name', 'LIKE', "%{$search_value}%")
+                    ->orWhere('emp.phone_number', 'LIKE', "%{$search_value}%");
             });
         }
         if ($branch_id) {
             $query->where('emp.branch_id', $branch_id);
         }
-        if ($department_id) {
-            $query->where('d.id', $department_id);
+        if ($position_id) {
+            $query->where('p.id', $position_id);
         }
         if ($emp_type_id) {
             $query->where('emp.emp_type_id', $emp_type_id);
@@ -132,10 +133,10 @@ class StaffAttendance extends VSModel
                     'position' => $first->position,
                     'attendance_date' => $first->attendance_date,
                     'work_shift' => $first->work_shift,
+                    'attendance_status' => $first->attendance_status,
                     'scan_info' => $group->map(fn($item) => [
                         'time' => $item->scan_time,
-                        'action' => $item->scan_action,
-                        'action_type' => $item->action_type,
+                        'scan_action' => $item->scan_action,
                     ])->values(),
                 ];
             })->values();
@@ -165,7 +166,11 @@ class StaffAttendance extends VSModel
                 'status' => 400
             ], 400);
         }
-        $row = DB::table('attendances as a')->selectRaw('a.id,a.emp_id,a.attendance_date,a.check_in_time,a.check_out_time,a.remark')->where('a.id', $id)->first();
+        $row = DB::table('emp_attendances as a')
+            ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
+            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, a.attendance_date, a.scan_time, a.scan_action, a.attendance_status, a.work_shift_id, a.remarks')
+            ->where('a.id', $id)
+            ->first();
         if (!$row) {
             return response()->json([
                 'message' => 'Attendance ID not found.',
@@ -200,10 +205,19 @@ class StaffAttendance extends VSModel
         return (object) [
 
             'employees' => GeneralSettings::options_employee(10, $ss),
-            'branches' => GeneralSettings::options_branch($ss),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'positions' => DB::table('positions')->selectRaw('id, name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-
+            'work_shifts' => DB::table('work_shifts')->selectRaw('id, name')->get(),
+            'attendance_statuses' => [
+                (object) ['id' => 'Present', 'name' => 'Present'],
+                (object) ['id' => 'Late', 'name' => 'Late'],
+                (object) ['id' => 'Absent', 'name' => 'Absent'],
+                (object) ['id' => 'Leave', 'name' => 'Leave'],
+                (object) ['id' => 'Half Day', 'name' => 'Half Day'],
+                (object) ['id' => 'Holiday', 'name' => 'Holiday'],
+                (object) ['id' => 'Weekend', 'name' => 'Weekend'],
+                (object) ['id' => 'Permission', 'name' => 'Permission'],
+            ],
 
 
             'attendance' => $attendance,
@@ -379,7 +393,6 @@ class StaffAttendance extends VSModel
             "attendance_date" => $current_date,
             "emp_id" => $employee_id,
             "scan_action" => $work_shift_detail->action,
-            "action_type" => $work_shift_detail->action,
             "created_at" => $nowTime,
             "scan_time" => $present_time,
             "remarks" => $remarks,
@@ -458,26 +471,26 @@ class StaffAttendance extends VSModel
         return DV::depends(1, $rows);
     }
 
-    static function getWorkShift($scan_date)
-    {
-        $scan_date = convertDate($scan_date);
-        $str_dates =  "'$scan_date' " . ' BETWEEN ' . DBX::convertToDate('t.start_date') . ' AND ' . DBX::convertToDate('t.end_date');
-        $col_start_date = DBX::formatDate('t.start_date', 'start_date');
-        $col_end_date = DBX::formatDate('t.end_date', 'end_date');
-        return DB::table('terms as t')->whereRaw($str_dates)->selectRaw("t.id,t.name,$col_start_date,$col_end_date, t.status_id")->first();
-    }
+    // static function getWorkShift($scan_date)
+    // {
+    //     $scan_date = convertDate($scan_date);
+    //     $str_dates =  "'$scan_date' " . ' BETWEEN ' . DBX::convertToDate('t.start_date') . ' AND ' . DBX::convertToDate('t.end_date');
+    //     $col_start_date = DBX::formatDate('t.start_date', 'start_date');
+    //     $col_end_date = DBX::formatDate('t.end_date', 'end_date');
+    //     return DB::table('terms as t')->whereRaw($str_dates)->selectRaw("t.id,t.name,$col_start_date,$col_end_date, t.status_id")->first();
+    // }
 
-    static function getTranslateSession($key_session)
-    {
-        if (!$key_session) return null;
-        $arr_session = [
-            'm' => 'Morning',
-            'a' => 'Afternoon',
-            'e' => 'Evening',
-            'n' => 'Night'
-        ];
-        return $arr_session[$key_session];
-    }
+    // static function getTranslateSession($key_session)
+    // {
+    //     if (!$key_session) return null;
+    //     $arr_session = [
+    //         'm' => 'Morning',
+    //         'a' => 'Afternoon',
+    //         'e' => 'Evening',
+    //         'n' => 'Night'
+    //     ];
+    //     return $arr_session[$key_session];
+    // }
 
     static function getActionBySession($session, $action, $str_where, $strsearch_date)
     {
@@ -514,6 +527,6 @@ class StaffAttendance extends VSModel
         //         return $result;
         //         break;
         // }
-        return DB::table('emp_attendances')->where('session', $session)->whereRaw($str_where)->where('action_type', $action)->whereRaw($strsearch_date)->value('id');
+        return DB::table('emp_attendances')->where('session', $session)->whereRaw($str_where)->where('scan_action', $action)->whereRaw($strsearch_date)->value('id');
     }
 }
