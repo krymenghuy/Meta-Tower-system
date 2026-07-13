@@ -9,6 +9,7 @@ var StaffAttendanceComponent = (function () {
     mThis.title_prop = "Staff Attendances";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_attendance_search");
+    mThis.elWorkShift = mThis.self.querySelector("#work_shift");
     mThis.containerFilter = mThis.self.querySelector(
         "#_divFilter_staff_attendance",
     );
@@ -64,10 +65,11 @@ var StaffAttendanceComponent = (function () {
         },
         {
             title: "Scan Info",
-            className: "text-capitalize align-middle",
+            className: "align-middle",
             data: (data) => {
+                if (!Array.isArray(data.scan_info)) return "";
                 return data.scan_info
-                    .map((info, index) => {
+                    .map((info) => {
                         const timeParts = info.time.split(":");
                         let hours = parseInt(timeParts[0]);
                         const minutes = timeParts[1];
@@ -75,19 +77,54 @@ var StaffAttendanceComponent = (function () {
                         hours = hours % 12 || 12;
                         const formattedTime = `${hours}:${minutes} ${ampm}`;
 
+                        const isCheckIn = (info.scan_action || "").toLowerCase().includes("in");
+                        const badgeClass = isCheckIn 
+                            ? "border-success text-success" 
+                            : "border-warning text-warning";
+
+                        const shortAction = isCheckIn ? "IN" : "OUT";
+
                         return `
-                            <div class="d-flex flex-column mb-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-primary-custom fw-bold" style="font-size: 80%;">${info.action_type}</small>
-                                    <small class="text-info px-2" style="font-size: 80%;">→</small>
-                                    <small class="text-success  fw-bold" style="font-size: 80%;">${formattedTime}</small>
-                                </div>
-                                ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ""}
-                            </div>
+                            <span class="badge bg-transparent border ${badgeClass} px-2 py-1 me-1 mb-1 d-inline-flex align-items-center" style="font-size: 78%; font-weight: 500; text-transform: uppercase;">
+                                ${shortAction}: ${formattedTime}
+                            </span>
                         `;
                     })
                     .join("");
             },
+        },
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data) => {
+                const status = data.attendance_status ?? "Present";
+                let badgeClass = "bg-success text-white";
+                if (status === "Late") {
+                    badgeClass = "bg-warning text-dark";
+                } else if (status === "Absent") {
+                    badgeClass = "bg-danger text-white";
+                } else if (status === "Leave" || status === "Permission" || status === "Half Day") {
+                    badgeClass = "bg-info text-white";
+                } else if (status === "Holiday" || status === "Weekend") {
+                    badgeClass = "bg-secondary text-white";
+                }
+                return `<span class="badge ${badgeClass} rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center" style="font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
+            }
+        },
+
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_scan_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
         },
     ];
 
@@ -95,7 +132,7 @@ var StaffAttendanceComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.StaffAttendanceListView = new ListView(mThis.divListView, {
-            fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
+            fetchApi: `${mThis.base_url}/mhr/attendances/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -152,69 +189,22 @@ var StaffAttendanceComponent = (function () {
     mThis.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/hr/employee/form-options`,
+                `${main_view.base_url}/mhr/attendances/form-options`,
                 null,
                 null,
                 null,
             )
             .then((res) => {
-                let d = res.status_code === 200 ? res.data : {};
-
-                if (d) {
-                    mThis.containerFilter
-                        .querySelectorAll(".filter-field")
-                        .forEach((el) => {
-                            const f = el.dataset.field;
-                            switch (f) {
-                                case "branch_id":
-                                    VSUtil.setComboItems(
-                                        el,
-                                        d.branches,
-                                        "id",
-                                        "branch_name",
-                                        null,
-                                        null,
-                                        1,
-                                    );
-                                    break;
-                                case "emp_type_id":
-                                    VSUtil.setComboItems(
-                                        el,
-                                        d.types || [],
-                                        "id",
-                                        "name",
-                                        true,
-                                        "All Type",
-                                        null,
-                                    );
-                                    break;
-                                case "department_id":
-                                    VSUtil.setComboItems(
-                                        el,
-                                        d.departments,
-                                        "id",
-                                        "name",
-                                        true,
-                                        "All Department",
-                                        null,
-                                    );
-                                    break;
-                                case "work_shift_id":
-                                    VSUtil.setComboItems(
-                                        el,
-                                        d.work_shifts,
-                                        "id",
-                                        "name",
-                                        true,
-                                        "All Shift",
-                                        null,
-                                    );
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
-                }
+                const d = res.status_code === 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elWorkShift,
+                    d.work_shifts || [],
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Shifts", "titles"),
+                    "",
+                );
             });
     };
 
@@ -251,30 +241,31 @@ const StaffAttendanceDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3">
-                            <div class="col-6">
-                                <div class="vs-material-field">
-                                    <input name="employee" class="data-input form-control" data-field="employee_name"  placeholder="Employee" />
-                                    <label vslang="labels.Employee"></label>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="vs-material-field">
-                                    <input type="text" class="data-input form-control" data-field="employee_code" placeholder=" " disabled />
-                                    <label vslang="labels.Employee Code">Employee Code</label>
-                                </div>
-                            </div>
+                             <div class="col-6">
+                                 <div class="vs-material-field">
+                                     <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+                                     <input name="employee" class="data-input form-control" data-field="employee_name" placeholder=" " autocomplete="off" />
+                                     <label vslang="labels.Employee"></label>
+                                 </div>
+                             </div>
+                             <div class="col-6">
+                                 <div class="vs-material-field">
+                                     <input type="text" name="employee_code" class="data-input form-control" data-field="employee_code" placeholder=" " disabled />
+                                     <label vslang="labels.Employee Code">Employee Code</label>
+                                 </div>
+                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="attendance_date" class="data-input form-control form_input" data-field="attendance_date" placeholder=" " />
                                     <label vslang="labels.Attendance Date">Attendance Date</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <select data-style="material" data-field="action_type" name="attendance_type" class="data-input form-control" placeholder="Attendance Type">
-                                    <option value="Check In">Check In</option>
-                                    <option value="Check Out">Check Out</option>
-                                </select>
-                            </div>
+                             <div class="col-6">
+                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="Attendance Type">
+                                     <option value="Check In">Check In</option>
+                                     <option value="Check Out">Check Out</option>
+                                 </select>
+                             </div>
 
                             <div class="col-6">
                                 <div class="vs-material-field">
@@ -287,14 +278,14 @@ const StaffAttendanceDialog = (() => {
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="department_id" name="department_id" class="data-input form-control" placeholder="Department"></select>
+                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="Position"></select>
                             </div>
-                            <div class="col-6">
-                                <select data-style="material" data-field="status" name="status" class="data-input form-control" placeholder="Status"></select>
-                            </div>
+                             <div class="col-6">
+                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="Status"></select>
+                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea  type="text" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                    <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
                                     <label for="remark" vslang="titles.Remark"></label>
                                 </div>
                             </div>
@@ -305,12 +296,21 @@ const StaffAttendanceDialog = (() => {
 
             configSelect: [
                 {
-                    name: "employee",
-                    data: "employees",
-                    textField: (me, d) => {
-                        return `<div class="d-flex gap-2 py-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span><span> ${d.position} </span> </div></div>`;
-                    },
-                    // textField:"name",
+                    name: "work_shift_id",
+                    data: "work_shifts",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "position_id",
+                    data: "positions",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "attendance_status",
+                    data: "attendance_statuses",
+                    textField: "name",
                     valueField: "id",
                 },
             ],
@@ -335,7 +335,7 @@ const StaffAttendanceDialog = (() => {
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/hr/attendances/save",
+                                    "/mhr/attendances/save",
                                 ].join(""),
                                 p,
                                 btn,
@@ -353,21 +353,21 @@ const StaffAttendanceDialog = (() => {
                 },
             ],
             contentCreated: (me, divModal) => {
+                DateTimePicker.init(me.controls.attendance_date);
+
                 me.searchEmployee = VSSearchInput.init(me.controls.employee, {
                     type: "select",
                     prefetch: true,
-                    maxDropdownHeight: "380px",
-                    
                     api: {
-                        endpoint: `${main_view.base_url}/mhr/attendance/form-options`,
+                        endpoint: `${main_view.base_url}/mhr/attendances/form-options`,
                     },
                     processResponse: (res) => {
                         const employees = res?.data?.employees || [];
                         return (Array.isArray(employees) ? employees : []).map(
                             (i) => ({
                                 ...i,
-                                code: i.emp_code || "",
-                                name: i.emp_name || "",
+                                code: i.code || "",
+                                name: i.name || "",
                             }),
                         );
                     },
@@ -375,22 +375,24 @@ const StaffAttendanceDialog = (() => {
                     columns: {
                         code: "Code",
                         name: "Name",
-                        // legal_name: "Legal Name"
                     },
-                    onSelect: (item) => {
-                        const tenantId = item?.id || "";
-                        const tenantName = item?.tenant || "";
-                        const tenantCode = item?.code || "";
-                        me.controls.tenant.value = tenantCode
-                            ? `${tenantName} (${tenantCode})`
-                            : tenantName;
-                        me.controls.tenant.dataset.tenantId = tenantId;
-                        me.tenant_id = tenantId;
-                        me.controls.legal_name.value = item?.legal_name || "";
+                    onSelect: (employee) => {
+                        if (me.controls.employee_code) {
+                            me.controls.employee_code.value = employee.code || "";
+                        }
+                        if (me.controls.emp_id) {
+                            me.controls.emp_id.value = employee.id || "";
+                        }
+                        if (employee.position_id && me.controls.position_id) {
+                            me.controls.position_id.value = employee.position_id;
+                            me.controls.position_id.dispatchEvent(new Event("change"));
+                            if (window.jQuery) {
+                                jQuery(me.controls.position_id).change();
+                            }
+                        }
                     },
                 });
-                DateTimePicker.init(me.controls.attendance_date);
-                
+                me.searchEmployee.reset("");
 
                 me.saveStaffAttendance = (p) => {
                     alert("Data saved.");
@@ -398,12 +400,12 @@ const StaffAttendanceDialog = (() => {
             },
             prepareFormOptions: {
                 createTitle: "Create Attendance",
-                modifyTitle: "Edit Attendance",
+                modifyTitle: "Modify Attendance",
                 targetProp: "attendance",
                 api: {
                     endpoint: [
                         main_view.base_url,
-                        "/hr/attendances/form-options",
+                        "/mhr/attendances/form-options",
                     ].join(""),
                     params: (op) => {
                         return { id: op.id };

@@ -9,7 +9,7 @@ use Vsd\Vsloquent\VSModel;
 
 class EmployeeEducation extends VSModel
 {
-    protected $table = 'employee_educations';
+    protected $table = 'emp_educations';
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -18,26 +18,32 @@ class EmployeeEducation extends VSModel
         $this->userInfo = $userInfo;
     }
 
+    protected static function baseQuery()
+    {
+        return DB::table('emp_educations as ee')
+            ->join('schools as sc', 'sc.id', '=', 'ee.school_id')
+            ->leftJoin('edu_levels as el', 'el.id', '=', 'ee.edu_level_id');
+    }
+
     public static function getListByEmployee($emp_id, $ss)
     {
         if (!$emp_id || !is_numeric($emp_id)) {
             return [];
         }
 
-        return DB::table('employee_educations as ee')
+        return self::baseQuery()
             ->where('ee.emp_id', (int) $emp_id)
             ->orderByDesc('ee.finish_year')
             ->orderByDesc('ee.start_year')
             ->orderBy('ee.id')
             ->selectRaw(
-                'ee.id, ee.emp_id, ee.school_name, ee.location, ee.start_year,
-                ee.finish_year as end_year, ee.edu_level as degree, ee.major',
+                'ee.id, ee.emp_id, ee.school_id, ee.edu_level_id, ee.period,
+                ee.start_year, ee.finish_year, ee.finish_year as end_year,
+                ee.major, ee.diploma,
+                sc.name as school, sc.name as school_name,
+                el.name as edu_level, el.name as degree',
             )
             ->get()
-            ->map(function ($row) {
-                $row->school = $row->school_name;
-                return $row;
-            })
             ->values()
             ->all();
     }
@@ -47,14 +53,19 @@ class EmployeeEducation extends VSModel
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
 
+        if (!isset($arr['finish_year']) && isset($arr['end_year'])) {
+            $arr['finish_year'] = $arr['end_year'];
+        }
+
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id',
-            'school_name' => '1|string|1-200|text=school_name_required',
-            'location' => '0|string|0-200',
+            'school_id' => '1|number|exists=schools.id|text=school_name_required',
+            'edu_level_id' => '0|number|exists=edu_levels.id',
+            'period' => '0|string|0-50',
             'start_year' => '0|number',
-            'end_year' => '0|number',
-            'degree' => '0|string|0-150',
+            'finish_year' => '0|number',
             'major' => '0|string|0-150',
+            'diploma' => '0|string|0-150',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
@@ -66,8 +77,8 @@ class EmployeeEducation extends VSModel
         $startYear = isset($inputs['start_year']) && $inputs['start_year'] !== ''
             ? (int) $inputs['start_year']
             : null;
-        $finishYear = isset($inputs['end_year']) && $inputs['end_year'] !== ''
-            ? (int) $inputs['end_year']
+        $finishYear = isset($inputs['finish_year']) && $inputs['finish_year'] !== ''
+            ? (int) $inputs['finish_year']
             : null;
 
         if ($startYear && ($startYear < 1950 || $startYear > 2100)) {
@@ -80,11 +91,6 @@ class EmployeeEducation extends VSModel
             return DV::error('End year cannot be before start year');
         }
 
-        $inputs['start_year'] = $startYear;
-        $inputs['finish_year'] = $finishYear;
-        $inputs['edu_level'] = $inputs['degree'] ?? null;
-        unset($inputs['end_year'], $inputs['degree']);
-
         $employee = DB::table('employees')
             ->where('id', $inputs['emp_id'])
             ->selectRaw('id, branch_id')
@@ -93,15 +99,28 @@ class EmployeeEducation extends VSModel
             return DV::error('Employee not found');
         }
 
-        $inputs['branch_id'] = $employee->branch_id ?? ($ss->branch_id ?? null);
+        $saveInputs = [
+            'emp_id' => $inputs['emp_id'],
+            'school_id' => $inputs['school_id'],
+            'edu_level_id' => isset($inputs['edu_level_id']) && $inputs['edu_level_id'] !== ''
+                ? $inputs['edu_level_id']
+                : null,
+            'period' => $inputs['period'] ?? null,
+            'start_year' => $startYear,
+            'finish_year' => $finishYear,
+            'major' => $inputs['major'] ?? null,
+            'diploma' => $inputs['diploma'] ?? null,
+            'branch_id' => $employee->branch_id ?? ($ss->branch_id ?? null),
+        ];
+
         $now = getNowTime();
         if (!$id) {
-            $inputs['created_at'] = $now;
+            $saveInputs['created_at'] = $now;
         }
-        $inputs['updated_at'] = $now;
+        $saveInputs['updated_at'] = $now;
 
-        $id = DBX::saveData($ss, 'employee_educations', ['id' => $id], $inputs, [], 1, false);
-        return DV::depends($id, ['employee_educations' => $inputs, 'id' => $id], 'Failed to save education');
+        $id = DBX::saveData($ss, 'emp_educations', ['id' => $id], $saveInputs, [], 1, false);
+        return DV::depends($id, ['emp_educations' => $saveInputs, 'id' => $id], 'Failed to save education');
     }
 
     public function delete($id = null, $ss = null)
@@ -113,22 +132,34 @@ class EmployeeEducation extends VSModel
             return DV::error('Invalid ID');
         }
 
-        $deleted = DB::table('employee_educations')->where('id', $id)->delete();
+        $deleted = DB::table('emp_educations')->where('id', $id)->delete();
         return DV::depends($deleted, null, 'Error deleting education');
     }
 
-    public static function getDetails($id, $ss)
+    function getDetails($id, $ss)
     {
-        if (!$id || !is_numeric($id)) {
-            return null;
-        }
-
-        return DB::table('employee_educations as ee')
+        $row = self::baseQuery()
             ->where('ee.id', $id)
             ->selectRaw(
-                'ee.id, ee.emp_id, ee.school_name, ee.location, ee.start_year,
-                ee.finish_year as end_year, ee.edu_level as degree, ee.major',
+                'ee.id, ee.emp_id, ee.school_id, ee.edu_level_id, ee.period,
+                ee.start_year, ee.finish_year, ee.finish_year as end_year,
+                ee.major, ee.diploma,
+                sc.name as school, sc.name as school_name,
+                el.name as edu_level, el.name as degree',
             )
             ->first();
+        return $row;
+    }
+
+    function getFormOptions($id, $ss)
+    {
+        $education = null;
+        if ($id) $education = self::getDetails($id, $ss);
+        return (object) [
+            'schools' => DB::table('schools')->selectRaw('id,name AS school')->orderBy('name', 'ASC')->get(),
+            'edu_levels' => DB::table('edu_levels')->selectRaw('id,name AS edu_level')->orderBy('id', 'ASC')->get(),
+            'education_request' => $education,
+        ];
+
     }
 }
