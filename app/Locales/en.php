@@ -158,6 +158,15 @@ return [
         'schedule_cannot_past' => 'Schedule cannot be in the past.',
 
 
+        // 'select_tenant'            => 'Please select a tenant.',
+        'select_unit'              => 'Please select a unit.',
+        'select_category'          => 'Please select a category.',
+        'select_service'           => 'Please select a service.',
+        'duration_hours_required'  => 'Duration hours is required when unit type is Hour.',
+        'scheduled_date_required'  => 'Scheduled date is required.',
+        'start_time_required'      => 'Start time is required.',
+       
+
 
 
 
