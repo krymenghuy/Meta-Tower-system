@@ -202,6 +202,14 @@ return [
         "tenant_does_not_exist" => "លេខសម្គាល់អ្នកជួល ?? មិនមានទេ។",
 
 
+        'select_unit'              => 'សូមជ្រើសរើសបន្ទប់។',
+        'select_category'          => 'សូមជ្រើសរើសប្រភេទសេវាកម្ម។',
+        'select_service'           => 'សូមជ្រើសរើសសេវាកម្ម។',
+        'duration_hours_required'  => 'រយៈពេលម៉ោងត្រូវតែបំពេញ នៅពេលប្រភេទបន្ទប់ជាម៉ោង។',
+        'scheduled_date_required'  => 'កាលបរិច្ឆេទកំណត់ពេលត្រូវតែបំពេញ។',
+        'start_time_required'      => 'ម៉ោងចាប់ផ្តើមត្រូវតែបំពេញ។',
+
+
 
 
 
@@ -274,6 +282,7 @@ return [
         'Receive Purchase Order' => 'ទទួលទំនិញ',
         'Reservation' => 'ការកក់',
         'Service Request' => 'សំណើសេវាកម្ម',
+         'Request Service' => 'សំណើសេវាកម្ម',
         'Vendors' => 'អ្នកផ្គត់ផ្គង់',
         'Create Vendor' => 'បង្កើតអ្នកផ្គត់ផ្គង់',
         'Modify Vendor' => 'កែប្រែអ្នកផ្គត់ផ្គង់',
@@ -625,6 +634,9 @@ return [
         'Edit Shift' => 'កែប្រែវេនការងារ',
         'Delete Shift' => 'លុបវេនការងារ',
         'Create Shift' => 'បង្កើតវេនការងារ',
+        'Total Fee' => 'តម្លៃសរុប',
+
+    
 
     ],
     'menus' => [
@@ -1361,6 +1373,8 @@ return [
 
         'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
         'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
+
+
 
 
     ],
