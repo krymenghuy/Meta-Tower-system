@@ -39,7 +39,7 @@ class EmployeeSkillController extends Controller
             return JDV::raw($ss);
         }
 
-        $id = $req->id ?? $req->skill_id ?? null;
+        $id = $req->id ?? null;
         $skill = new EmployeeSkill($id, $ss);
         $res = $skill->upsert($req->all(), $id, $ss);
 
@@ -75,5 +75,18 @@ class EmployeeSkillController extends Controller
         }
 
         return JDV::result(EmployeeSkill::getDetails($req->id, $ss));
+    }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->id ?? null;
+        $emp_id = $req->emp_id ?? $req->employee_id ?? null;
+
+        return JDV::result(EmployeeSkill::getFormOptions($id, $emp_id, $ss));
     }
 }
