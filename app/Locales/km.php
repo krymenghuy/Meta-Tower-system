@@ -617,6 +617,11 @@ return [
         'Create Account' => 'បង្កើតគណនី',
         'Wallet Accounts' => 'គណនីឌីជីថល',
         'Shift List' => 'បញ្ជីវេនការងារ',
+        'Shift' => 'វេនការងារ',
+        'Work Shift' => 'វេនការងារ',
+        'Edit Shift' => 'កែប្រែវេនការងារ',
+        'Delete Shift' => 'លុបវេនការងារ',
+        'Create Shift' => 'បង្កើតវេនការងារ',
 
     ],
     'menus' => [
@@ -790,8 +795,8 @@ return [
         'Print' => 'បោះពុម្ព',
         'PDF' => 'ទាញយក',
         'Close' => 'បិទ',
-        'Continue' => 'បន្តរ',
-        'Continue Now' => 'បន្តរ',
+        'Continue' => 'បន្ត',
+        'Continue Now' => 'បន្ត',
         'Choose File' => 'ជ្រើសរើសឯកសារ',
         'View' => 'មើលរូបភាព',
         'Upload' => 'បញ្ជូល',
@@ -869,7 +874,7 @@ return [
         'Create Account' => 'បង្កើតគណនី',
         'Bulk Create' => 'បង្កើតទាំងអស់',
         'Create Wallet' => 'បង្កើតគណនីឌីជីថល',
-
+        'Create Shift' => 'បង្កើតវេនការងារ',
 
 
 
@@ -1327,6 +1332,11 @@ return [
         'update_success_employee_benefit' => 'អត្ថប្រយោជន៍បុគ្គលិកត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_employee_benefit' => 'អត្ថប្រយោជន៍បុគ្គលិកត្រូវបានលុបដោយជោគជ័យ។',
 
+
+        'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
+        
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
