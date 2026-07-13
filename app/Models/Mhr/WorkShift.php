@@ -81,19 +81,34 @@ class WorkShift extends VSModel
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    function delete($id=null, $ss=null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-        $workShiftExist = DB::table('work_shifts')->where('id', $id)->exists();
-        if (!$workShiftExist) {
-            return DV::error('Work Shift not found');
-        }
-        $deleted = DB::table('work_shifts')->where('id', $id)->delete();
+public function delete($id = null, $ss = null)
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
 
-        return DV::depends($deleted, null, 'Error deleting work shift');
+    $workShiftExist = DB::table('work_shifts')
+        ->where('id', $id)
+        ->exists();
+
+    if (!$workShiftExist) {
+        return DV::error('Work Shift not found');
     }
+
+    // Check if any employee is using this work shift
+    $employeeExist = DB::table('employees')
+        ->where('work_shift_id', $id)
+        ->exists();
+
+    if ($employeeExist) {
+        return DV::error('Cannot delete this work shift because it is assigned to one or more employees.');
+    }
+
+    $deleted = DB::table('work_shifts')
+        ->where('id', $id)
+        ->delete();
+
+    return DV::depends($deleted, null, 'Error deleting work shift');
+}
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;

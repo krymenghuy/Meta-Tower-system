@@ -33,13 +33,13 @@ var PayrollComponent = new (function () {
             data: "",
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => `<div class="d-block">
-                            <p class="p-0 m-0" style="color:#2b3991;">${
+                            <p class="p-0 m-0">${
                                 data.name
                             }</p>
-                            <small class="text-success">${
+                            <span class="text-danger-emphasis">${
                                 data.p_number
                                     ? data.p_number == 1
                                         ? "(First)"
@@ -47,29 +47,25 @@ var PayrollComponent = new (function () {
                                         ? "(Second)"
                                         : "Other"
                                     : ""
-                            }</small>
+                            }</span>
 
                         </div>`,
         },
         {
-            title: "Duration",
+            transTitle: "titles.Duration",
             className: "align-middle w-15",
             data: (data) =>
-                `<span class="text-dark">(<small class="text-dark">${
-                    data.start_date ?? ""
-                }​ <small class="text-warning">~</small> ${
-                    data.end_date ?? ""
-                }</small>)</span>`,
+                `<span class="text-dark">(${data.start_date ?? ""}​ ~ ${data.end_date ?? ""}</small>)</span>`,
         },
         {
-            title: "Staff Count",
+            transTitle: "titles.Staff Count",
             className: "align-middle",
             data: (data) =>
                 `<a href="javascript:void(0);" class="text-success show_payroll_list" data-id="${data.id}">${data.head_count}</a>`,
         },
 
         {
-            title: "Total",
+            transTitle: "titles.Total",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
@@ -79,7 +75,7 @@ var PayrollComponent = new (function () {
             },
         },
         {
-            title: "Exchange Rate",
+            transTitle: "titles.Exchange Rate",
             className: "align-middle w-12",
             data: (data) => {
                 let x_rate = data.exchange_rate;
@@ -94,7 +90,7 @@ var PayrollComponent = new (function () {
             },
         },
         {
-            title: "Last Updated",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
@@ -107,7 +103,7 @@ var PayrollComponent = new (function () {
             },
         },
         {
-            title: "Authorize",
+            transTitle: "titles.Authorize",
             className: "authorized text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-2";
@@ -115,30 +111,25 @@ var PayrollComponent = new (function () {
                 let cls_icon = "";
 
                 if (data.authorized === 1) {
-                    cls_class =
-                        "text-white text-center border border-success rounded-2 p-1";
-                    bg_color = "#28a745";
+                    cls_class = "bg-success-subtle text-success border border-success";
                     cls_icon = "fa fa-check text-center align-center justify-content-center";
                 } else if (data.authorized === 0) {
-                    cls_class =
-                        "text-white text-center align-center border border-warning rounded-2 p-1";
-                    bg_color = "#ffc107";
+                    cls_class = "bg-warning-subtle text-warning border border-warning";
                     cls_icon = "fa fa-times text-center align-center justify-content-center";
-
                 }
 
                 return `<div><a class="d-block" data-authorized="${
                     data.authorized
                 }" data-id="${data.id}" href="javascript:void(0)">
-                            <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <span class="badge ${cls_class}" style="min-width: 100px;">
                             <i class="${cls_icon}" style="font-size: 10px;"></i>
                                 ${data.authorized == 0 ? "Pending" : "Approved"}
-                            </small>
+                            </span>
                         </a></div>`;
             },
         },
         {
-            title: "Disbursed",
+            transTitle: "titles.Disbursed",
             className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-2";
@@ -147,28 +138,26 @@ var PayrollComponent = new (function () {
 
                 if (data.disbursed === 1) {
                     cls_class =
-                        "text-white text-center border border-success rounded-2 p-1";
-                    bg_color = "#28a745";
+                        "bg-success-subtle text-success border border-success";
                     cls_icon = "fa fa-check text-center align-center justify-content-center";
                 } else if (data.disbursed === 0) {
                     cls_class =
-                        "text-white text-center border border-warning rounded-2 p-1";
-                    bg_color = "#ffc107";
+                        "bg-warning-subtle text-warning border border-warning";
                     cls_icon = "fa fa-times text-center align-center justify-content-center";
                 }
 
                 return `<div><a class="d-block" data-status="${
                     data.disbursed
                 }" data-id="${data.id}" href="javascript:void(0)">
-                            <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <span  class="badge ${cls_class}" style="min-width: 100px;">
                             <i class="${cls_icon}" style="font-size: 10px;"></i>
                                 ${data.disbursed == 0 ? "Pending" : "Disbursed"}
-                            </small>
+                            </span>
                         </a></div>`;
             },
         },
         {
-            title: "Actions",
+            transTitle: "titles.Actions",
             className: "align-middle",
             data: (data) =>
                 `<div class="d-flex align-items-center gap-1">
@@ -230,7 +219,7 @@ var PayrollComponent = new (function () {
                 },
             };
             // content.parentElement.classList.add('d-none');
-            if (!AuthManager.allowed(473)) return;
+            // if (!AuthManager.allowed(473)) return;
             AddPayRollListDialog.show(op);
         };
 
@@ -386,7 +375,7 @@ var PayrollComponent = new (function () {
             },
         };
 
-        if (!AuthManager.allowed(474)) return;
+        // if (!AuthManager.allowed(474)) return;
         cv_interact.confirm(
             "Authorize this payroll?",
             {
@@ -492,11 +481,11 @@ var PayrollComponent = new (function () {
             id: id,
             btn: menuLink
         };
-        if (!AuthManager.allowed(478)) return;
+        // if (!AuthManager.allowed(478)) return;
         cv_interact.confirm(
-            "Delete this payroll?",
+            "confirm_delete",
             {
-                title: "Delete Payroll",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -512,7 +501,7 @@ var PayrollComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Payroll has been deleted!");
+                                cv_interact.success("delete_success_payroll");
                                 mThis.PayrollListView.showPage(mThis.getFilterData());
                             } else cv_interact.error(res.error_message);
                         });
@@ -574,7 +563,7 @@ var PayrollComponent = new (function () {
 
 const AddPayRollListDialog = (() => {
     const self = {};
-    let dialogAdd = null;
+    let dialog = null;
     self.show = (op) => {
         const months = [
             { value: 0, name: "select month" },
@@ -592,8 +581,8 @@ const AddPayRollListDialog = (() => {
             { value: 12, name: "Dec" },
         ];
 
-        dialogAdd =
-            dialogAdd ||
+        dialog =
+            dialog||
             new GeneralDialog({
                 cssClass: "modal-lg vs-modal",
                 backdrop: "static",
@@ -606,10 +595,9 @@ const AddPayRollListDialog = (() => {
                     );
 
                     return [
-                        `<div class="row">
-                        <div class="form-group col-4">
-                            <label for="month" class="form-label" vslang="titles.Month"></label>
-                            <select name="month" class="data-input" data-field="month">
+                        `<div class="row g-3">
+                        <div class="col-md-3">
+                            <select data-style="material" name="month" class="data-input" data-field="month" placeholder="${LocaleManager.trans('Month', 'labels')}">
                                 ${months
                                     .map(
                                         (month) =>
@@ -618,9 +606,8 @@ const AddPayRollListDialog = (() => {
                                     .join("")}
                             </select>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="year" class="form-label" vslang="titles.Year"></label>
-                            <select name="year" class="data-input" data-field="year">
+                        <div class="col-md-3">
+                            <select data-style="material" name="year" class="data-input" data-field="year" placeholder="${LocaleManager.trans('Year', 'labels')}">
                                 <option value="0">select year</option>
                                 ${years
                                     .map(
@@ -630,45 +617,46 @@ const AddPayRollListDialog = (() => {
                                     .join("")}
                             </select>
                         </div>
-
-                        <div class="form-group col-4">
-                            <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
-                            <select name="p_number" class="data-input form_input" data-field="p_number">
+                        <div class="col-6">
+                            <select data-style="material" name="p_number" class="data-input form-control" data-field="p_number" id="p_number" placeholder="${LocaleManager.trans('Payroll Number', 'labels')}">
                                 <option value="0">select number</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                             </select>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="name" class="form-label" vslang="titles.Name"></label>
-                            <input name="name" class="form-control data-input form_input" data-field="name" placeholder="auto" />
+                        <div class="col-md-12">
+                            <div class="vs-material-field">
+                                <input name="name" class="form-control data-input form_input" data-field="name" placeholder=" " />
+                                <label vslang="titles.Name"></label>
+                            </div>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                            <input name="start_date" class="form-control data-input form_input" data-field="start_date" />
+                        <div class="col-md-3">
+                            <div class="vs-material-field">
+                                <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
+                                <label vslang="labels.Start Date"></label>
+                            </div>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                            <input name="end_date" class="form-control data-input form_input" data-field="end_date" />
+                        <div class="col-md-3">
+                            <div class="vs-material-field">
+                                <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
+                                <label vslang="labels.End Date"></label>
+                            </div>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                            <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
-                            </select>
+                        <div class="col-6">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" disabled></select>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
-                            <input name="exchange_rate" type="number" class="form-control data-input" data-field="exchange_rate" />
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" name="exchange_rate" class="form-control data-input" data-field="exchange_rate" placeholder=" " />
+                                <label vslang="titles.Exchange Rate"></label>
+                            </div>
                         </div>
-
 
                     </div>`,
                     ].join("");
                 },
 
                 contentCreated: (me) => {
-                    DateTimePicker.init(me.controls.start_date);
-                    DateTimePicker.init(me.controls.end_date);
                 },
 
                 configSelect: [
@@ -682,14 +670,14 @@ const AddPayRollListDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-warning" vslang="titles.Cancel"></span>',
+                        label: '<span vslang="titles.Cancel"></span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span vslang='titles.save'></span>",
+                        label: '<span vslang="titles.save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -708,13 +696,9 @@ const AddPayRollListDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Payroll is updated successfully"
-                                            );
+                                            cv_interact.success("update_success_payroll");
                                         } else {
-                                            cv_interact.success(
-                                                "New payroll is created successfully"
-                                            );
+                                            cv_interact.success("update_success_payroll");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -733,71 +717,65 @@ const AddPayRollListDialog = (() => {
                             main_view.base_url,
                             "/mhr/payroll/form-options",
                         ].join(""),
-                        params: (op) => {
+                        params: (me,op) => {
                             return { id: op.id };
                         },
                     },
 
                 },
 
-                onPrepareForm: (me, data) => {
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
-                    const { payrolls } = data;
-                    if (payrolls) {
-                        me.controls.name.value = payrolls.name;
-                        me.controls.month.value = payrolls.month;
-                        me.controls.year.value = payrolls.year;
-                        me.controls.start_date.value = payrolls.start_date;
-                        me.controls.end_date.value = payrolls.end_date;
-                        me.controls.exchange_rate.value = payrolls.exchange_rate;
-                        me.controls.p_number.value = payrolls.p_number;
-                        // me.controls.total.value = payrolls.total;
-                    } else {
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/mhr/payroll/get-end-date",
-                                ].join(""),
-                                null,
-                                null,
-                                null
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.controls.start_date.value =
-                                        res.data.end_date;
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    }
-                    me.payroll_name = "";
-                    me.month = payrolls ? months[payrolls.month].name : "";
-                    me.year = payrolls ? "-" + payrolls.year : "-";
-                    me.p_number = payrolls ? "-" + payrolls.p_number : "-";
-                    me.controls.month.onchange = (e) => {
-                        me.month = e.target.textContent;
-                        me.payroll_name = me.month + me.year + me.p_number;
-                        me.controls.name.value = me.payroll_name;
-                    };
-                    me.controls.year.onchange = (e) => {
-                        me.year = "-" + e.target.textContent;
-                        me.payroll_name = me.month + me.year + me.p_number;
-                        me.controls.name.value = me.payroll_name;
-                    };
-                    me.controls.p_number.onchange = (e) => {
-                        me.p_number = "-" + e.target.value;
-                        me.payroll_name = me.month + me.year + me.p_number;
-                        me.controls.name.value = me.payroll_name;
-                    };
+              onPrepareForm: (me, data) => {
+                me.controls.currency_code.value = VSMoney.getCurrency().code;
 
-                    LocaleManager.translateZone(me.divModal);
-                },
+                const { payrolls } = data;
+
+                if (payrolls) {
+                    me.controls.name.value = payrolls.name;
+                    me.controls.month.value = payrolls.month;
+                    me.controls.year.value = payrolls.year;
+                    me.controls.start_date.value = payrolls.start_date;
+                    me.controls.end_date.value = payrolls.end_date;
+                    me.controls.exchange_rate.value = payrolls.exchange_rate;
+                    me.controls.p_number.value = payrolls.p_number;
+                } else {
+                    vsapi.call(
+                        `${main_view.base_url}/mhr/payroll/get-end-date`
+                    ).then((res) => {
+                        if (res.status_code === 200) {
+                            me.controls.start_date.value = res.data.end_date;
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+
+                const updatePayrollName = () => {
+                    const month =
+                        months[parseInt(me.controls.month.value)]?.name || "";
+
+                    const year = me.controls.year.value
+                        ? `-${me.controls.year.value}`
+                        : "";
+
+                    const number = me.controls.p_number.value
+                        ? `-${me.controls.p_number.value}`
+                        : "";
+
+                    me.controls.name.value = `${month}${year}${number}`;
+                };
+
+                updatePayrollName();
+
+                me.controls.month.onchange = updatePayrollName;
+                me.controls.year.onchange = updatePayrollName;
+                me.controls.p_number.oninput = updatePayrollName;
+
+                LocaleManager.translateZone(me.divModal);
+            },
 
             });
 
-        dialogAdd.show(op);
+        dialog.show(op);
     };
     return self;
 })();
