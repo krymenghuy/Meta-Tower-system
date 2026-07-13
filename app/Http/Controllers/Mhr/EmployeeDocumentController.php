@@ -74,7 +74,7 @@ class EmployeeDocumentController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        return JDV::result(EmployeeDocument::getDetails($req->id, $ss));
+        return JDV::result($this->documents->getDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -86,7 +86,7 @@ class EmployeeDocumentController extends Controller
 
         $id = $req->id ?? null;
 
-        return JDV::result(EmployeeDocument::getFormOptions($id, $ss));
+        return JDV::result($this->documents->getFormOptions($id, $ss));
     }
 
     public function download(Request $req)

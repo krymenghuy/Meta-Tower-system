@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 var main_view = (()=>{
     const mThis = {};
     mThis.apiCluster = 'menus';
@@ -101,11 +101,11 @@ mThis.init_vsapi = async () => {
     //cacheTTL: 3000,
 
     // online: () => {
-    //   console.log('ðŸŸ¢ Back online');
+    //   console.log('🟢 Back online');
     // },
 
     // offline: () => {
-    //   console.warn('ðŸ”´ Connection lost');
+    //   console.warn('🔴 Connection lost');
     // }
     // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
   });
@@ -1445,7 +1445,7 @@ var DashboardComponent =  (function () {
                             label: function (tooltipItem) {
                                 const label = tooltipItem.label || "";
                                 const value = tooltipItem.raw;
-                                return `${label} : ${value} áž“áž¶áž€áŸ‹`;
+                                return `${label} : ${value} នាក់`;
                             },
                         },
                     },
@@ -1458,7 +1458,7 @@ var DashboardComponent =  (function () {
                         formatter: function (value, context) {
                             return `${
                                 context.chart.data.labels[context.dataIndex]
-                            }\n${value} áž“áž¶áž€áŸ‹`;
+                            }\n${value} នាក់`;
                         },
                     },
                 },
@@ -1499,7 +1499,7 @@ var DashboardComponent =  (function () {
                     yAxisID: "y",
                 },
                 {
-                    label: "Total Salary Paid (ážšáŸ€áž›)",
+                    label: "Total Salary Paid (រៀល)",
                     data: data.total_salaries,
                     backgroundColor: "#cab54a",
                     borderColor: "#fff",
@@ -1537,7 +1537,7 @@ var DashboardComponent =  (function () {
                         position: "right",
                         title: {
                             display: true,
-                            text: "Salary in KHR (ážšáŸ€áž›)",
+                            text: "Salary in KHR (រៀល)",
                             color: "#cab54a",
                         },
                         ticks: {
@@ -2218,6 +2218,7 @@ const SkillDialog = (() => {
 
     return self;
 })();
+
 "use strict";
 
 var EmployeeEducationComponent = (function () {
@@ -2235,72 +2236,23 @@ var EmployeeEducationComponent = (function () {
     mThis._yearRange = (start, end) => {
         const s = start != null && start !== "" ? String(start) : "";
         const e = end != null && end !== "" ? String(end) : "";
-        if (s && e) return `${s} - ${e}`;
+        if (s && e) return `${s} – ${e}`;
         if (s) return s;
         if (e) return e;
-        return "_";
+        return "";
     };
 
     mThis._degreeLine = (edu) => {
-        const degree = edu.degree || edu.edu_level || "";
-        const major = edu.major || "";
-        if (degree && major) {
-            return `${degree} in ${major}`;
-        }
-        return degree || major || "";
+        const level = (edu.edu_level || edu.degree || "").trim();
+        const major = (edu.major || "").trim();
+        const diploma = (edu.diploma || "").trim();
+        const parts = [level, major, diploma].filter(Boolean);
+        return parts.join(" · ");
     };
 
-    mThis._metaLines = (edu) => {
-        const lines = [];
-        const degree = edu.degree || edu.edu_level || "";
-        const major = edu.major || "";
-
-        if (degree) {
-            lines.push(`
-                <div class="emp-edu-meta-line">
-                    <span class="emp-edu-meta-icon emp-edu-meta-icon--degree">
-                        <i class="fa-solid fa-school"></i>
-                    </span>
-                    <span>${mThis._escapeHtml(degree)}</span>
-                </div>`);
-        }
-
-        if (major) {
-            lines.push(`
-                <div class="emp-edu-meta-line">
-                    <span class="emp-edu-meta-icon emp-edu-meta-icon--major">
-                        <i class="fa-solid fa-briefcase"></i>
-                    </span>
-                    <span>${mThis._escapeHtml(major)}</span>
-                </div>`);
-        }
-
-        if (!lines.length) {
-            const fallback = mThis._degreeLine(edu);
-            if (fallback) {
-                lines.push(`
-                <div class="emp-edu-meta-line">
-                    <span class="emp-edu-meta-icon emp-edu-meta-icon--degree">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </span>
-                    <span>${mThis._escapeHtml(fallback)}</span>
-                </div>`);
-            }
-        }
-
-        return lines.join("");
-    };
-
-    mThis._footerMeta = (edu) => {
-        if (!edu.location) return "";
-        return `<div class="emp-edu-foot">
-            <span class="emp-edu-foot-item">
-                <span class="emp-edu-meta-icon emp-edu-meta-icon--location">
-                    <i class="fa-solid fa-location-dot"></i>
-                </span>
-                <span class="text-capitalize">${mThis._escapeHtml(edu.location)}</span>
-            </span>
-        </div>`;
+    mThis._schoolLabel = (edu) => {
+        const name = (edu.school_name || edu.school || "").trim();
+        return name !== "" ? name : "_";
     };
 
     mThis._bindActions = (container, empId, educationList, onRefresh) => {
@@ -2318,23 +2270,18 @@ var EmployeeEducationComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-edu-action-btn-edit").forEach((btn) => {
+        container.querySelectorAll(".emp-edu-action-btn--edit").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
-                const eduId = btn.dataset.eduId;
-                const education = educationList.find(
-                    (item) => String(item.id) === String(eduId),
-                );
                 EducationDialog.show({
-                    id: eduId,
+                    id: btn.dataset.eduId,
                     emp_id: empId,
-                    education,
                     onClose: refresh,
                 });
             };
         });
 
-        container.querySelectorAll(".emp-edu-action-btn-delete").forEach((btn) => {
+        container.querySelectorAll(".emp-edu-action-btn--delete").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
                 const eduId = btn.dataset.eduId;
@@ -2384,32 +2331,57 @@ var EmployeeEducationComponent = (function () {
 
         const rowsHtml = educationList.length
             ? educationList
-                  .map(
-                      (edu, index) => `
-                <div class="emp-edu-row${index === 0 ? " emp-edu-row--active" : ""}" data-edu-id="${edu.id}">
-                    <div class="emp-edu-timeline" aria-hidden="true">
-                        <span class="emp-edu-timeline-dot"></span>
-                    </div>
-                    <div class="emp-edu-content">
-                        <div class="emp-edu-years">${mThis._escapeHtml(mThis._yearRange(edu.start_year, edu.end_year))}</div>
-                        <div class="emp-edu-body-row">
-                            <div class="emp-edu-info">
-                                <h4 class="emp-edu-school">${mThis._escapeHtml(edu.school_name || edu.school || "_")}</h4>
-                                <div class="emp-edu-meta">${mThis._metaLines(edu)}</div>
-                                ${mThis._footerMeta(edu)}
-                            </div>
-                            <div class="emp-edu-col-action">
-                                <button type="button" class="emp-edu-action-btn emp-edu-action-btn-edit" data-edu-id="${edu.id}" title="Edit" aria-label="Edit">
-                                    <i class="fa-regular fa-pen-to-square"></i>
-                                </button>
-                                <button type="button" class="emp-edu-action-btn emp-edu-action-btn-delete" data-edu-id="${edu.id}" title="Delete" aria-label="Delete">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
+                  .map((edu, index) => {
+                      const years = mThis._yearRange(
+                          edu.start_year,
+                          edu.finish_year ?? edu.end_year,
+                      );
+                      const degreeLine = mThis._degreeLine(edu);
+                      const period = (edu.period || "").trim();
+
+                      return `
+                <div class="emp-edu-item" data-edu-id="${edu.id}">
+                    <div class="emp-edu-item-card${index === 0 ? "" : " emp-edu-item-card--muted"}">
+                        <div class="emp-edu-item-head">
+                            <span class="emp-edu-school-icon" aria-hidden="true">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </span>
+                            <div class="emp-edu-item-main">
+                                <div class="emp-edu-title-row">
+                                    <div class="emp-edu-item-left">
+                                        <h4 class="emp-edu-school">${mThis._escapeHtml(mThis._schoolLabel(edu))}</h4>
+                                        ${
+                                            period
+                                                ? `<p class="emp-edu-location"><i class="fa-solid fa-clock" aria-hidden="true"></i><span>${mThis._escapeHtml(period)}</span></p>`
+                                                : ""
+                                        }
+                                    </div>
+                                    <div class="emp-edu-item-right">
+                                        ${
+                                            years
+                                                ? `<span class="emp-edu-years">${mThis._escapeHtml(years)}</span>`
+                                                : ""
+                                        }
+                                        ${
+                                            degreeLine
+                                                ? `<p class="emp-edu-degree">${mThis._escapeHtml(degreeLine)}</p>`
+                                                : ""
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div class="emp-edu-item-foot">
+                            <button type="button" class="emp-edu-action-btn emp-edu-action-btn--edit" data-edu-id="${edu.id}" title="Edit" aria-label="Edit">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button type="button" class="emp-edu-action-btn emp-edu-action-btn--delete" data-edu-id="${edu.id}" title="Delete" aria-label="Delete">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>`,
-                  )
+                </div>`;
+                  })
                   .join("")
             : `<div class="emp-edu-empty">
                     <i class="fa-solid fa-building-columns emp-edu-empty-icon"></i>
@@ -2451,107 +2423,127 @@ const EducationDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal emp-edu-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                title: (me) =>
-                    LocaleManager.trans(
-                        me.dataOptions.id ? "Modify School" : "New School",
-                        "titles",
-                    ),
-                createContent: () => `
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("School Name", "labels")} <span class="text-danger">*</span></label>
-                            <input type="text" name="school_name" class="form-control data-input" data-field="school_name" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Location", "labels")}</label>
-                            <input type="text" name="location" class="form-control data-input" data-field="location" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Start Year", "labels")}</label>
-                            <input type="number" name="start_year" class="form-control data-input" data-field="start_year" min="1950" max="2100" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("End Year", "labels")}</label>
-                            <input type="number" name="end_year" class="form-control data-input" data-field="end_year" min="1950" max="2100" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Degree", "labels")}</label>
-                            <input type="text" name="degree" class="form-control data-input" data-field="degree" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Major", "labels")}</label>
-                            <input type="text" name="major" class="form-control data-input" data-field="major" />
-                        </div>
-                    </div>`,
-                onPrepareForm: (me) => {
-                    const education = me.dataOptions.education;
-                    if (!education) return;
-                    const fields = [
-                        "school_name",
-                        "location",
-                        "start_year",
-                        "end_year",
-                        "degree",
-                        "major",
-                    ];
-                    fields.forEach((field) => {
-                        if (!me.controls[field]) return;
-                        const val = education[field];
-                        me.controls[field].value =
-                            val !== undefined && val !== null ? val : "";
-                    });
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <select data-style="material" name="school" class="form-control data-input" placeholder="School" data-field="school_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="edu_level" class="form-control data-input" placeholder="Education Level" data-field="edu_level_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
+                                    <label vslang="labels.Period (if no dates)"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="start_year" class="data-input form-control" data-field="start_year" min="1950" max="2100" placeholder=" " />
+                                    <label vslang="labels.Start Year"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="finish_year" class="data-input form-control" data-field="finish_year" min="1950" max="2100" placeholder=" " />
+                                    <label vslang="labels.End Year"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="major" class="data-input form-control" data-field="major" placeholder=" " />
+                                    <label vslang="labels.Major"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="diploma" class="data-input form-control" data-field="diploma" placeholder=" " />
+                                    <label vslang="labels.Degree"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
                 },
-                buttons: [
+                configSelect: [
                     {
-                        label: LocaleManager.trans("Cancel", "buttons"),
-                        cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
+                        name: "school",
+                        data: "schools",
+                        textField: "school",
+                        valueField: "id",
                     },
                     {
-                        label: LocaleManager.trans("Save", "buttons"),
+                        name: "edu_level",
+                        data: "edu_levels",
+                        textField: "edu_level",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+
                             p.id = me.dataOptions.id;
                             p.emp_id = me.dataOptions.emp_id;
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/educations/save`,
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/educations/save",
+                                    ].join(""),
                                     p,
                                     btn,
+                                    null
                                 )
                                 .then((res) => {
-                                    if (res.status_code === 200) {
+                                    if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
+                                        if (typeof me.dataOptions.onClose === "function") {
                                             me.dataOptions.onClose();
                                         }
-                                        cv_interact.success(
-                                            me.dataOptions.id
-                                                ? LocaleManager.trans(
-                                                      "update_success",
-                                                      "message_box_default",
-                                                  )
-                                                : LocaleManager.trans(
-                                                      "create_success",
-                                                      "message_box_default",
-                                                  ),
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success");
+                                        } else {
+                                            cv_interact.success("create_success");
+                                        }
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
+                prepareFormOptions: {
+                    createTitle: "New School",
+                    modifyTitle: "Modify School",
+                    targetProp: "education_request",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/educations/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                },
             });
+
         dialog.show(op);
     };
 
@@ -2572,18 +2564,40 @@ var EmployeeExperienceComponent = (function () {
             .replace(/"/g, "&quot;");
     };
 
-    mThis._cleanText = (val) => {
-        if (val == null) return "";
-        const text = String(val).trim();
-        if (!text || text.toLowerCase() === "null") return "";
-        return text;
+    mThis._periodLabel = (exp) => {
+        const period =
+            exp.period_display ||
+            exp.period ||
+            "";
+        return period !== "" ? period : "";
     };
 
-    mThis._periodLabel = (exp) => {
-        const period = mThis._cleanText(
-            exp.period_display || exp.period || "",
-        );
-        return period;
+    mThis._positionLabel = (exp) => {
+        const position = (exp.position || exp.position_name || "").trim();
+        return position !== "" ? position : "";
+    };
+
+    mThis._descriptionBullets = (exp) => {
+        const desc = (exp.description || "").trim();
+        if (!desc) return "";
+
+        const lines = desc
+            .split(/\r?\n/)
+            .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+            .filter(Boolean);
+
+        if (!lines.length) return "";
+
+        const items = lines
+            .map((line) => `<li>${mThis._escapeHtml(line)}</li>`)
+            .join("");
+
+        return `<ul class="emp-exp-bullets">${items}</ul>`;
+    };
+
+    mThis._organizationLabel = (exp) => {
+        const org = (exp.organization || "").trim();
+        return org !== "" ? org : "_";
     };
 
     mThis._bindActions = (container, empId, experienceList, onRefresh) => {
@@ -2601,23 +2615,18 @@ var EmployeeExperienceComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-exp-action-btn-edit").forEach((btn) => {
+        container.querySelectorAll(".emp-exp-action-btn--edit").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
-                const expId = btn.dataset.expId;
-                const experience = experienceList.find(
-                    (item) => String(item.id) === String(expId),
-                );
                 ExperienceDialog.show({
-                    id: expId,
+                    id: btn.dataset.expId,
                     emp_id: empId,
-                    experience,
                     onClose: refresh,
                 });
             };
         });
 
-        container.querySelectorAll(".emp-exp-action-btn-delete").forEach((btn) => {
+        container.querySelectorAll(".emp-exp-action-btn--delete").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
                 const expId = btn.dataset.expId;
@@ -2667,39 +2676,45 @@ var EmployeeExperienceComponent = (function () {
 
         const rowsHtml = experienceList.length
             ? experienceList
-                  .map((exp) => {
-                      const organization = mThis._cleanText(exp.organization);
-                      const position = mThis._cleanText(exp.position);
-                      const description = mThis._cleanText(exp.description);
+                  .map((exp, index) => {
                       const period = mThis._periodLabel(exp);
-
-                      const positionHtml = position
-                          ? `<div class="emp-exp-position">${mThis._escapeHtml(position)}</div>`
-                          : "";
-                      const descriptionHtml = description
-                          ? `<div class="emp-exp-desc">${mThis._escapeHtml(description)}</div>`
-                          : "";
-                      const periodHtml = period
-                          ? `<div class="emp-exp-dates">${mThis._escapeHtml(period)}</div>`
-                          : "";
+                      const position = mThis._positionLabel(exp);
+                      const bullets = mThis._descriptionBullets(exp);
 
                       return `
                 <div class="emp-exp-item" data-exp-id="${exp.id}">
-                    <div class="emp-exp-item-main">
-                        <div class="emp-exp-item-left">
-                            <div class="emp-exp-org">${mThis._escapeHtml(organization || "_")}</div>
-                            ${positionHtml}
-                            ${descriptionHtml}
-                        </div>
-                        <div class="emp-exp-item-right">
-                            ${periodHtml}
-                            <div class="emp-exp-item-actions">
-                                <button type="button" class="emp-exp-action-btn emp-exp-action-btn-edit" data-exp-id="${exp.id}" title="Edit" aria-label="Edit">
-                                    <i class="fa-regular fa-pen-to-square"></i>
-                                </button>
-                                <button type="button" class="emp-exp-action-btn emp-exp-action-btn-delete" data-exp-id="${exp.id}" title="Delete" aria-label="Delete">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
+                    <div class="emp-exp-item-card${index === 0 ? "" : " emp-exp-item-card--muted"}">
+                        <div class="emp-exp-item-head">
+                            <span class="emp-exp-org-icon" aria-hidden="true">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </span>
+                            <div class="emp-exp-item-main">
+                                <div class="emp-exp-title-row">
+                                    <div class="emp-exp-item-left">
+                                        <h4 class="emp-exp-org-name">${mThis._escapeHtml(mThis._organizationLabel(exp))}</h4>
+                                        ${
+                                            position
+                                                ? `<p class="emp-exp-position">${mThis._escapeHtml(position)}</p>`
+                                                : ""
+                                        }
+                                        ${bullets}
+                                    </div>
+                                    <div class="emp-exp-item-right">
+                                        ${
+                                            period
+                                                ? `<span class="emp-exp-period">${mThis._escapeHtml(period)}</span>`
+                                                : ""
+                                        }
+                                        <div class="emp-exp-actions">
+                                            <button type="button" class="emp-exp-action-btn emp-exp-action-btn--edit" data-exp-id="${exp.id}" title="Edit" aria-label="Edit">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </button>
+                                            <button type="button" class="emp-exp-action-btn emp-exp-action-btn--delete" data-exp-id="${exp.id}" title="Delete" aria-label="Delete">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2707,24 +2722,25 @@ var EmployeeExperienceComponent = (function () {
                   })
                   .join("")
             : `<div class="emp-exp-empty">
+                    <i class="fa-solid fa-briefcase emp-exp-empty-icon"></i>
                     <span class="emp-exp-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
                </div>`;
 
         container.innerHTML = `
                 <div class="emp-exp-card h-100">
                     <div class="emp-exp-header">
-                        <div class="emp-exp-header-title-wrap">
+                        <div class="emp-exp-header-title">
+                            <span class="emp-exp-header-icon">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </span>
                             <span class="emp-exp-header-label" vslang="titles.Experience">Experience</span>
-                            <button type="button" class="emp-exp-add-btn" id="_emp_exp_btn_add" title="Add" aria-label="Add experience">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
                         </div>
-                        <span class="emp-exp-header-side-icon" aria-hidden="true">
-                            <i class="fa-solid fa-chart-column"></i>
-                        </span>
+                        <button type="button" class="emp-exp-add-btn" id="_emp_exp_btn_add" title="Add" aria-label="Add experience">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                     </div>
                     <div class="emp-exp-body">
-                        <div class="emp-exp-list">
+                        <div class="emp-exp-list${experienceList.length ? " emp-exp-list--has-rows" : ""}">
                             ${rowsHtml}
                         </div>
                     </div>
@@ -2745,43 +2761,44 @@ const ExperienceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal emp-exp-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                createContent: () => `
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Start Date", "labels")}</label>
-                            <input data-type="date" type="text" name="start_date" class="form-control data-input" data-field="start_date" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("End Date", "labels")}</label>
-                            <input data-type="date" type="text" name="end_date" class="form-control data-input" data-field="end_date" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Period (if no dates)", "labels")}</label>
-                            <input type="text" name="period" class="form-control data-input" data-field="period" placeholder="e.g. Summer 2022, 1 year" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Position", "labels")} <span class="text-danger">*</span></label>
-                            <input type="text" name="position" class="form-control data-input" data-field="position" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Organization", "labels")}</label>
-                            <select name="organization_id" class="form-control data-input" data-field="organization_id" data-style="material"></select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Description", "labels")}</label>
-                            <textarea name="description" class="form-control data-input" data-field="description" rows="3"></textarea>
-                        </div>
-                    </div>`,
-                contentCreated: (me) => {
-                    if (me.controls.start_date) {
-                        DateTimePicker.init(me.controls.start_date);
-                    }
-                    if (me.controls.end_date) {
-                        DateTimePicker.init(me.controls.end_date);
-                    }
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" type="text" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " />
+                                    <label vslang="labels.Start Date"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" type="text" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
+                                    <label vslang="labels.End Date"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
+                                    <label vslang="labels.Period (if no dates)"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="organization" class="form-control data-input" placeholder="Organization" data-field="organization_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="data-input form-control" data-field="description" rows="3" placeholder=" "></textarea>
+                                    <label vslang="labels.Description"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
                 },
                 configSelect: [
                     {
@@ -2790,89 +2807,428 @@ const ExperienceDialog = (() => {
                         textField: "organization",
                         valueField: "id",
                     },
-                ],
-                prepareFormOptions: {
-                    createTitle: "New Experience",
-                    modifyTitle: "Modify Experience",
-                    targetProp: "experience",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/mhr/employee/experiences/form-options",
-                        ].join(""),
-                        params: (options) => ({ id: options.id }),
+                    {
+                        name: "position",
+                        data: "positions",
+                        textField: "position_name",
+                        valueField: "id",
                     },
-                },
-                onPrepareForm: (me, data) => {
-                    const experience =
-                        me.dataOptions.experience ||
-                        (data && data.experience) ||
-                        null;
-                    if (!experience) return;
-
-                    const fields = [
-                        "start_date",
-                        "end_date",
-                        "period",
-                        "position",
-                        "organization_id",
-                        "description",
-                    ];
-                    fields.forEach((field) => {
-                        if (!me.controls[field]) return;
-                        const val = experience[field];
-                        me.controls[field].value =
-                            val !== undefined && val !== null ? val : "";
-                    });
+                ],
+                contentCreated: (me) => {
+                    if (me.controls.start_date) {
+                        DateTimePicker.init(me.controls.start_date);
+                    }
+                    if (me.controls.end_date) {
+                        DateTimePicker.init(me.controls.end_date);
+                    }
                 },
                 buttons: [
                     {
-                        label: LocaleManager.trans("Cancel", "buttons"),
-                        cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
                     },
                     {
-                        label: LocaleManager.trans("Save", "buttons"),
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+
                             p.id = me.dataOptions.id;
                             p.emp_id = me.dataOptions.emp_id;
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/experiences/save`,
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/experiences/save",
+                                    ].join(""),
                                     p,
                                     btn,
+                                    null
                                 )
                                 .then((res) => {
-                                    if (res.status_code === 200) {
+                                    if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
+                                        if (typeof me.dataOptions.onClose === "function") {
                                             me.dataOptions.onClose();
                                         }
-                                        cv_interact.success(
-                                            me.dataOptions.id
-                                                ? LocaleManager.trans(
-                                                      "update_success",
-                                                      "message_box_default",
-                                                  )
-                                                : LocaleManager.trans(
-                                                      "create_success",
-                                                      "message_box_default",
-                                                  ),
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success");
+                                        } else {
+                                            cv_interact.success("create_success");
+                                        }
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Experience",
+                    modifyTitle: "vslang:titles.Edit Experience",
+                    targetProp: "employee_experiences",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/experiences/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                },
             });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var EmployeeDocumentComponent = (function () {
+    const mThis = {};
+
+    mThis._escapeHtml = (s) => {
+        if (s == null) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+
+    mThis._displayFileName = (doc) => {
+        return (doc.file_name || "").trim() || "_";
+    };
+
+    mThis._typeLabel = (doc) => {
+        const name = (doc.document_type || "").trim();
+        return name !== "" ? name : "_";
+    };
+
+    mThis._fileExt = (doc) => {
+        const name = mThis._displayFileName(doc);
+        const parts = name.split(".");
+        return parts.length > 1 ? parts.pop().toLowerCase() : "";
+    };
+
+    mThis._fileIconClass = (ext) => {
+        if (ext === "pdf") return "fa-solid fa-file-pdf";
+        if (["png", "jpg", "jpeg", "gif", "webp"].indexOf(ext) !== -1) {
+            return "fa-solid fa-file-image";
+        }
+        return "fa-solid fa-file";
+    };
+
+    mThis._download = (docId) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/employee/documents/download`,
+                { id: docId },
+            )
+            .then((res) => {
+                if (res.status_code !== 200) {
+                    cv_interact.error(
+                        res.error_message || "Failed to download document.",
+                    );
+                    return;
+                }
+                const { data_url, file_name } = res.data || {};
+                if (!data_url) {
+                    cv_interact.error("Document URL is missing.");
+                    return;
+                }
+                const a = document.createElement("a");
+                a.href = data_url;
+                a.download = file_name || "document";
+                a.target = "_blank";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+    };
+
+    mThis._bindActions = (container, empId, documentList, onRefresh) => {
+        const refresh = () => {
+            if (typeof onRefresh === "function") {
+                onRefresh(empId);
+            }
+        };
+
+        const addBtn = container.querySelector("#_emp_doc_btn_add");
+        if (addBtn) {
+            addBtn.onclick = (e) => {
+                e.preventDefault();
+                DocumentDialog.show({ emp_id: empId, onClose: refresh });
+            };
+        }
+
+        container.querySelectorAll(".emp-doc-action-btn--download").forEach((btn) => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                mThis._download(btn.dataset.docId);
+            };
+        });
+
+        container.querySelectorAll(".emp-doc-action-btn--delete").forEach((btn) => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const docId = btn.dataset.docId;
+                cv_interact.confirm(
+                    LocaleManager.trans(
+                        "Delete this document?",
+                        "message_box_default",
+                    ),
+                    {
+                        title: LocaleManager.trans("Delete Document", "titles"),
+                        context: "delete",
+                        confirmButtonText: LocaleManager.trans(
+                            "Delete",
+                            "buttons",
+                        ),
+                    },
+                    (confirmed) => {
+                        if (!confirmed) return;
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/mhr/employee/documents/delete`,
+                                { id: docId },
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(
+                                        LocaleManager.trans(
+                                            "Deleted successfully",
+                                            "message_box_default",
+                                        ),
+                                    );
+                                    refresh();
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                );
+            };
+        });
+    };
+
+    mThis.render = (container, documents, empId, onRefresh) => {
+        if (!container) return;
+
+        const documentList = Array.isArray(documents) ? documents : [];
+
+        const rowsHtml = documentList.length
+            ? documentList
+                  .map((doc, index) => {
+                      const ext = mThis._fileExt(doc);
+                      const description = (doc.description || doc.remarks || "").trim();
+                      return `
+                <div class="emp-doc-item" data-doc-id="${doc.id}">
+                    <div class="emp-doc-item-card${index === 0 ? "" : " emp-doc-item-card--muted"}">
+                        <div class="emp-doc-item-head">
+                            <span class="emp-doc-file-badge emp-doc-file-badge--${ext || "file"}" aria-hidden="true">
+                                <i class="${mThis._fileIconClass(ext)}"></i>
+                            </span>
+                            <div class="emp-doc-item-main">
+                                <div class="emp-doc-title-row">
+                                    <h4 class="emp-doc-type">${mThis._escapeHtml(mThis._typeLabel(doc))}</h4>
+                                    ${
+                                        ext
+                                            ? `<span class="emp-doc-ext">${mThis._escapeHtml(ext.toUpperCase())}</span>`
+                                            : ""
+                                    }
+                                </div>
+                                <p class="emp-doc-file-name">${mThis._escapeHtml(mThis._displayFileName(doc))}</p>
+                                ${
+                                    description
+                                        ? `<p class="emp-doc-remarks">${mThis._escapeHtml(description)}</p>`
+                                        : ""
+                                }
+                            </div>
+                            <div class="emp-doc-actions">
+                                <button type="button" class="emp-doc-action-btn emp-doc-action-btn--download" data-doc-id="${doc.id}" title="Download" aria-label="Download">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                                <button type="button" class="emp-doc-action-btn emp-doc-action-btn--delete" data-doc-id="${doc.id}" title="Delete" aria-label="Delete">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                  })
+                  .join("")
+            : `<div class="emp-doc-empty">
+                    <i class="fa-solid fa-folder-open emp-doc-empty-icon"></i>
+                    <span class="emp-doc-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
+               </div>`;
+
+        container.innerHTML = `
+                <div class="emp-doc-card h-100">
+                    <div class="emp-doc-header">
+                        <div class="emp-doc-header-title">
+                            <span class="emp-doc-header-icon">
+                                <i class="fa-solid fa-folder"></i>
+                            </span>
+                            <span class="emp-doc-header-label" vslang="titles.Documents">Documents</span>
+                        </div>
+                        <button type="button" class="emp-doc-add-btn" id="_emp_doc_btn_add" title="Add" aria-label="Add document">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="emp-doc-body">
+                        <div class="emp-doc-list${documentList.length ? " emp-doc-list--has-rows" : ""}">
+                            ${rowsHtml}
+                        </div>
+                    </div>
+                </div>`;
+
+        LocaleManager.translateZone(container);
+        mThis._bindActions(container, empId, documentList, onRefresh);
+    };
+
+    return mThis;
+})();
+
+const DocumentDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    const bindFileChooser = (me) => {
+        me.fileData = null;
+        if (me.controls.btn_chooseFile) {
+            me.controls.btn_chooseFile.onclick = () => {
+                FileChooser.chooseFile(
+                    { accept: ".pdf,.png,.jpg,.jpeg,.gif,.webp" },
+                    (d) => {
+                        me.fileData = d;
+                        if (me.controls.documents) {
+                            me.controls.documents.value = d.fileName || "";
+                        }
+                        if (me.controls.file_ext) {
+                            me.controls.file_ext.value = d.ext || "";
+                        }
+                    },
+                );
+            };
+        }
+    };
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <select data-style="material" name="document_type" class="form-control data-input" placeholder="Document Type" data-field="document_type_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">${LocaleManager.trans("File", "labels")} <span class="text-danger">*</span></label>
+                                <div class="emp-doc-file-picker d-flex gap-2 align-items-center">
+                                    <button type="button" name="btn_chooseFile" class="btn btn-secondary">${LocaleManager.trans("Choose File", "buttons")}</button>
+                                    <input type="text" name="documents" class="form-control" disabled placeholder="No file chosen" />
+                                    <input type="hidden" name="file_ext" class="data-input" data-field="ext" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label>Remarks</label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    bindFileChooser(me);
+                },
+                configSelect: [
+                    {
+                        name: "document_type",
+                        data: "document_types",
+                        textField: "document_type",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+                            p.emp_id = me.dataOptions.emp_id;
+
+                            if (me.fileData) {
+                                p.data = me.fileData.dataUrl;
+                                p.ext = me.fileData.ext;
+                            }
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/documents/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (typeof me.dataOptions.onClose === "function") {
+                                            me.dataOptions.onClose();
+                                        }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("Updated document successfully");
+                                        } else {
+                                            cv_interact.success("Set document successfully");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Set Document",
+                    modifyTitle: "Edit Document",
+                    targetProp: "document_request",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/documents/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+
+                },
+
+                onPrepareForm: (me, data) => {
+                },
+            });
+
         dialog.show(op);
     };
 
@@ -2988,7 +3344,7 @@ var EmployeeManagementComponent = (function () {
         if (!scrollEl) return;
 
         const setHeight = () => {
-            scrollEl.style.maxHeight = window.innerHeight - 120 + "px";
+            scrollEl.style.maxHeight = window.innerHeight - 20 + "px";
         };
 
         setHeight();
@@ -3068,7 +3424,7 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis._profileLine = (label, rawValue, { gold = false, muted = false, capitalize = false } = {}) => {
-        let valueClass = "emp-profile-line-value";
+        let valueClass = "emp-profile-field-value";
         let display = "";
 
         if (muted) {
@@ -3092,9 +3448,8 @@ var EmployeeManagementComponent = (function () {
         }
 
         return `
-            <div class="emp-profile-line">
-                <span class="emp-profile-line-label">${label}</span>
-                <span class="emp-profile-line-sep">:</span>
+            <div class="emp-profile-field">
+                <span class="emp-profile-field-label">${label}</span>
                 <span class="${valueClass}">${display}</span>
             </div>`;
     };
@@ -3114,98 +3469,68 @@ var EmployeeManagementComponent = (function () {
         return mThis._profileLine(label, expiryDate);
     };
 
+    mThis._employeeCardDetail = (iconClass, value) => `
+        <li class="emp-list-card-detail">
+            <span class="emp-list-card-detail-icon" aria-hidden="true">
+                <i class="${iconClass}"></i>
+            </span>
+            <span class="emp-list-card-detail-text">${mThis._pillText(value)}</span>
+        </li>`;
+
     mThis.renderEmployee = (container, data) => {
         let html = `<div class="row g-3">`;
         let cmt = 0;
+        const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
 
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
- html += `
+                const photo = d.image_url || defaultPhoto;
+                const updatedBy = d.update_user || "System";
+
+                html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                        <div class="card h-100 shadow-sm border-0 rounded-2">
-                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-start mt-3">
-                                    <div class="d-flex gap-3 align-items-start">
-                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                            style="width:100px;height:100px;">
-                                            <img src="${d.image_url || main_view.base_url + "/assets/images/default/default-staff.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
-                                        </div>
-                                        <!-- <div class="flex items-start justify-between mb-6">
-                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name ?? '-'}</span>
-                                            <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="text-muted small" style="min-width:70px; text-transform: capitalize;">${d.position ?? '-'}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
-                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                            </a>
-                                        </div> -->
+                        <article class="emp-list-card">
+                            <div class="emp-list-card-header">
+                                <div class="emp-list-card-avatar-wrap">
+                                    <div class="emp-list-card-avatar">
+                                        <img src="${photo}" alt="${mThis._escapeHtml(d.name || "Employee")}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
-                                <div class="row g-3 border-bottom border-gray">
-                                    <div class="col-6 mt-3">
-                                        <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fs-6 py-1 text-gold-custom">${d.name}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-1"></div>
-                                    <div class="col-6">
-
-
-                                    </div>
-                                </div>
-                                <div class="card_container" style="max-width: 250px;">
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span>${d.code ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
-                                        <span>${d.date_of_birth ?? "_"}</span>
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        ${d.phone_number || ""}
-                                    </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "_"}
-                                    </p>
-
-
-                                </div>
+                            <div class="emp-list-card-nameband">
+                                <span class="emp-list-card-name">${mThis._escapeHtml(d.name || "_")}</span>
                             </div>
-                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
-                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
-                                    <span style="color: #64748b; font-size: 0.85rem;">
-                                        <span class="small" vslang="titles.Last Updated">Last Updated</span>:
-                                        ${d.update_user || "System"}
-                                    </span>
-                                    <a href="javascript:void(0)" class="text-primary-custom see-employee-detail text-decoration-none" style="font-size: 0.85rem;" data-id="${d.id}">
-                                        <span vslang="titles.View Details">View Details</span> <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
-                                    </a>
-                                </div>
-
-                        </div>
-                    </div>
-                    `;
+                            <div class="emp-list-card-body">
+                                <ul class="emp-list-card-details">
+                                    ${mThis._employeeCardDetail("fa-solid fa-hashtag", d.code)}
+                                    ${mThis._employeeCardDetail("fa-regular fa-calendar", d.date_of_birth)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-phone", d.phone_number)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-at", d.email)}
+                                </ul>
+                            </div>
+                            <footer class="emp-list-card-footer">
+                                <span class="emp-list-card-footer-meta">
+                                    <span vslang="titles.Last Updated">Last Updated</span>:
+                                    ${mThis._escapeHtml(updatedBy)}
+                                </span>
+                                <a href="javascript:void(0)" class="emp-list-card-footer-link see-employee-detail" data-id="${d.id}">
+                                    <span vslang="titles.View Details">View Details</span>
+                                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </footer>
+                        </article>
+                    </div>`;
 
                 cmt++;
             });
         }
 
         if (cmt === 0) {
-            html = [
-                `<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">`,
-                `<div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>`,
-                `</div>`,
-            ].join("");
+            html = `<div class="emp-list-empty">${LocaleManager.trans("Employee not found!", "titles")}</div>`;
+        } else {
+            html += `</div>`;
         }
 
-        html += `</div>`;
         container.innerHTML = html;
         LocaleManager.translateZone(container);
 
@@ -3264,9 +3589,26 @@ var EmployeeManagementComponent = (function () {
                                 <span class="emp-avatar-placeholder"><i class="fa-solid fa-user"></i></span>
                             </div>
                             <div class="emp-hero-info">
-                                <div class="emp-hero-name-row">
-                                    <h2 class="emp-hero-name text-capitalize">${mThis._escapeHtml(data.name ?? "_")}</h2>
-                                    <span class="emp-status-badge ${mThis._statusBadgeClass(data.status)}">${mThis._escapeHtml(data.status ?? "Active")}</span>
+                                <div class="emp-hero-name-block">
+                                    <div class="emp-hero-name-row">
+                                        <h2 class="emp-hero-name text-capitalize">${mThis._escapeHtml(data.name ?? "_")}</h2>
+                                        <span class="emp-status-badge ${mThis._statusBadgeClass(data.status)}">${mThis._escapeHtml(data.status ?? "Active")}</span>
+                                    </div>
+                                    <div class="emp-hero-social">
+                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--facebook" title="Facebook" aria-label="Facebook">
+                                            <i class="fa-brands fa-facebook-f"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--linkedin" title="LinkedIn" aria-label="LinkedIn">
+                                            <i class="fa-brands fa-linkedin-in"></i>
+                                        </a>
+                                        <a href="${
+                                            data.phone_number
+                                                ? `https://t.me/${mThis._escapeHtml(String(data.phone_number).replace(/[^0-9+]/g, ""))}`
+                                                : "javascript:void(0)"
+                                        }" class="emp-social-btn emp-social-btn--telegram" title="Telegram" aria-label="Telegram"${data.phone_number ? ' target="_blank" rel="noopener noreferrer"' : ""}>
+                                            <i class="fa-brands fa-telegram-plane"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3323,61 +3665,38 @@ var EmployeeManagementComponent = (function () {
                     <div class="emp-personal-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                         <div>
                             <h5 class="emp-personal-title">
-                                <i class="fa fa-user"></i>
+                                <span class="emp-personal-title-icon"><i class="fa fa-user"></i></span>
                                 <span>${LocaleManager.trans("Personal Information", "titles")}</span>
                             </h5>
                             <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-remove d-inline-flex align-items-center justify-content-center" title="Remove">
-                                <i class="fa-solid fa-user-minus"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-alert d-inline-flex align-items-center justify-content-center" title="Alert">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-message d-inline-flex align-items-center justify-content-center" title="Message">
-                                <i class="fa-regular fa-comment"></i>
-                            </button>
-                        </div>
+                        <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
                     </div>
 
-                    <div class="emp-profile-details">
-                        <div class="emp-profile-info-col min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Name", "labels"), data.name)}
-                            ${mThis._profileLine(LocaleManager.trans("Name KH", "labels"), data.name_kh)}
-                            ${mThis._profileLine(LocaleManager.trans("Sex", "labels"), mThis._sexLabel(data.sex))}
-                            ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
-                            ${mThis._profileLine(LocaleManager.trans("Marital Status", "labels"), mThis._maritalLabel(data.marital_status))}
+                    <div class="emp-profile-groups">
+                        <div class="emp-profile-group">
+                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Personal", "titles")}</h6>
+                            <div class="emp-profile-field-grid">
+                                ${mThis._profileLine(LocaleManager.trans("Name", "labels"), data.name)}
+                                ${mThis._profileLine(LocaleManager.trans("Sex", "labels"), mThis._sexLabel(data.sex))}
+                                ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
+                                ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
+                                ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
+                                ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
+                            </div>
                         </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
-                            ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
-                            ${mThis._profileLine("Husband/Wife Name", data.spouse_name)}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Identity Card", "labels"), data.nid)}
-                            ${mThis._profileLinePassport(LocaleManager.trans("Passport ID", "labels"), data.passport_number)}
-                            ${mThis._profileLineExpiry(LocaleManager.trans("Passport Expiry", "labels"), data.passport_expiry_date)}
-                            ${mThis._profileLine(LocaleManager.trans("NSSF", "labels"), data.nssf_id)}
-                            ${mThis._profileLine(LocaleManager.trans("Spouse Occupation", "labels"), data.spouse_occ_code)}
-                        </div>
-
-                        <div class="emp-profile-band-divider"></div>
-
-                        <div class="emp-profile-info-col min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
-                            ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date, { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
-                        </div>
-                        <div class="emp-profile-info-col emp-profile-info-col--divided min-w-0">
-                            ${mThis._profileLine(LocaleManager.trans("Work Shift", "labels"), data.work_shift)}
-                            ${mThis._profileLine(LocaleManager.trans("Payroll Tax", "labels"), mThis._payrollTaxLabel(data.apply_payroll_tax), { gold: true })}
-                            ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address, { gold: true, capitalize: true })}
+                        <div class="emp-profile-group">
+                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Work", "titles")}</h6>
+                            <div class="emp-profile-field-grid">
+                                ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
+                                ${mThis._profileLine(LocaleManager.trans("Identity Card", "labels"), data.nid)}
+                                ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address, { gold: true, capitalize: true })}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -3396,9 +3715,12 @@ var EmployeeManagementComponent = (function () {
             eduCol.className = cardColClass;
             const thirdCol = document.createElement("div");
             thirdCol.className = cardColClass;
+            const docCol = document.createElement("div");
+            docCol.className = cardColClass;
             mThis.profileCardsEmployee.appendChild(skillCol);
             mThis.profileCardsEmployee.appendChild(eduCol);
             mThis.profileCardsEmployee.appendChild(thirdCol);
+            mThis.profileCardsEmployee.appendChild(docCol);
             const refreshProfile = (empId) =>
                 mThis.showPage("profile_view", { id: empId });
             EmployeeSkillComponent.render(
@@ -3416,6 +3738,12 @@ var EmployeeManagementComponent = (function () {
             EmployeeExperienceComponent.render(
                 thirdCol,
                 data.experiences || [],
+                data.id,
+                refreshProfile,
+            );
+            EmployeeDocumentComponent.render(
+                docCol,
+                data.documents || [],
                 data.id,
                 refreshProfile,
             );
@@ -3536,13 +3864,12 @@ const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const lbl = (text, required = false) => {
+    const ph = (text, required = false) => {
         const t = LocaleManager.trans(text, "labels");
-        return `<label class="form-label fw-semibold mb-1">${t}${required ? ' <span class="text-danger">*</span>' : ""}</label>`;
+        return required ? `${t} *` : t;
     };
 
-    const wrapField = (labelHtml, controlHtml) =>
-        `<div class="mb-0">${labelHtml}${controlHtml}</div>`;
+    const wrapField = (controlHtml) => `<div class="mb-0">${controlHtml}</div>`;
 
     self.show = (op) => {
         dialog =
@@ -3566,20 +3893,17 @@ const EmployeeDialog = (() => {
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         ${wrapField(
-                                            lbl("Name", true),
-                                            '<input type="text" name="name" class="form-control data-input" data-field="name" />',
+                                            `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder="${ph("Name", true)}" />`,
                                         )}
                                     </div>
                                     <div class="col-md-6">
                                         ${wrapField(
-                                            lbl("Khmer Name", true),
-                                            '<input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" />',
+                                            `<input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder="${ph("Khmer Name", true)}" />`,
                                         )}
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Sex"),
-                                            `<select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${LocaleManager.trans("Sex", "labels")}">
+                                            `<select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${ph("Sex")}">
                                                 <option value="">${LocaleManager.trans("Select", "labels")}</option>
                                                 <option value="M">${LocaleManager.trans("Male", "titles")}</option>
                                                 <option value="F">${LocaleManager.trans("Female", "titles")}</option>
@@ -3588,8 +3912,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Marital Status", true),
-                                            `<select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${LocaleManager.trans("Marital Status", "labels")}">
+                                            `<select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${ph("Marital Status", true)}">
                                                 <option value="single">${LocaleManager.trans("Single", "titles")}</option>
                                                 <option value="married">${LocaleManager.trans("Married", "titles")}</option>
                                                 <option value="divorced">${LocaleManager.trans("Divorced", "titles")}</option>
@@ -3599,8 +3922,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="col-md-4">
                                         ${wrapField(
-                                            lbl("Date Of Birth", true),
-                                            '<input type="text" data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" placeholder="dd-MM-yyyy" />',
+                                            `<input type="text" data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" placeholder="${ph("Date Of Birth", true)}" />`,
                                         )}
                                     </div>
                                 </div>
@@ -3612,116 +3934,98 @@ const EmployeeDialog = (() => {
                         <div class="row g-3">
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Nationality", true),
-                                    `<select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>`,
+                                    `<select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="${ph("Nationality", true)}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Identity Card", true),
-                                    '<input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />',
+                                    `<input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder="${ph("Identity Card", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Identity Card Expiry", true),
-                                    '<input type="text" data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder="${ph("Identity Card Expiry", true)}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("NSSF ID"),
-                                    '<input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />',
+                                    `<input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="${ph("NSSF ID")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Passport Number"),
-                                    '<input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" />',
+                                    `<input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder="${ph("Passport Number")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Passport Expiry", true),
-                                    '<input type="text" data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" placeholder="${ph("Passport Expiry", true)}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Place of Birth"),
-                                    `<select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="${LocaleManager.trans("Place of Birth", "labels")}"></select>`,
+                                    `<select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="${ph("Place of Birth")}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Employee Type", true),
-                                    `<select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="${LocaleManager.trans("Employee Type", "labels")}"></select>`,
+                                    `<select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="${ph("Employee Type", true)}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Position", true),
-                                    `<select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="${LocaleManager.trans("Position", "labels")}"></select>`,
+                                    `<select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="${ph("Position", true)}"></select>`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Phone", true),
-                                    '<input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" />',
+                                    `<input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder="${ph("Phone", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Email", true),
-                                    '<input type="email" name="email" class="form-control data-input" data-field="email" placeholder="example@gmail.com" />',
+                                    `<input type="email" name="email" class="form-control data-input" data-field="email" placeholder="${ph("Email", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Salary"),
-                                    '<input type="number" name="salary" class="form-control data-input" data-field="salary" />',
+                                    `<input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder="${ph("Salary")}" />`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Joining Date", true),
-                                    '<input type="text" data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" placeholder="dd-MM-yyyy" />',
+                                    `<input type="text" data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" placeholder="${ph("Joining Date", true)}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Apply Payroll Tax", true),
-                                    `<select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="${LocaleManager.trans("Apply Payroll Tax", "labels")}"></select>`,
+                                    `<select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="${ph("Apply Payroll Tax", true)}"></select>`,
                                 )}
                             </div>
 
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Name"),
-                                    '<input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" />',
+                                    `<input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder="${ph("Spouse Name")}" />`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Employee"),
-                                    `<select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="${LocaleManager.trans("None", "labels")}"></select>`,
+                                    `<select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="${ph("Spouse Employee")}"></select>`,
                                 )}
                             </div>
                             <div class="col-md-4">
                                 ${wrapField(
-                                    lbl("Spouse Occupation"),
-                                    '<input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />',
+                                    `<input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder="${ph("Spouse Occupation")}" />`,
                                 )}
                             </div>
 
                             <div class="col-12">
                                 ${wrapField(
-                                    lbl("Address", true),
-                                    '<textarea name="address" rows="3" class="form-control data-input" data-field="address"></textarea>',
+                                    `<textarea name="address" rows="3" class="form-control data-input" data-field="address" placeholder="${ph("Address", true)}"></textarea>`,
                                 )}
                             </div>
                         </div>
@@ -3745,7 +4049,7 @@ const EmployeeDialog = (() => {
                     {
                         name: "nationality_id",
                         data: "nationalities",
-                        textField: "name",
+                        textField: "nationality",
                         valueField: "id",
                     },
                     {
@@ -3763,7 +4067,7 @@ const EmployeeDialog = (() => {
                     {
                         name: "position_id",
                         data: "positions",
-                        textField: "name",
+                        textField: "position_name",
                         valueField: "id",
                     },
                     {
@@ -3892,13 +4196,13 @@ var MovementComponent = (()=> {
     mThis.cols = [
 
         {
-            title: "",
+            transTitle: "",
             className: 'align-middle',
             // data: (data, index, i) => { return (index + 1) },
 
         },
         {
-            title: "Employee",
+            transTitle: "titles.Employee",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
@@ -3917,14 +4221,14 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "Event",
+            transTitle: "titles.Event",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.event ?? ''}</p>`;
             }
         },
         {
-            title: "Date",
+            transTitle: "titles.Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.event_date ?? ""}</p>`;
@@ -3932,7 +4236,7 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "last Updated",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data) => `
             <div style="display: block; align-items: center;">
@@ -3942,7 +4246,7 @@ var MovementComponent = (()=> {
         },
 
         {
-            title: "Impact",
+            transTitle: "titles.Impact",
             className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
@@ -4133,8 +4437,8 @@ var MovementComponent = (()=> {
 
         vsapi.call(`${main_view.base_url}/mhr/emp-event/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elEvent,d.events,'id','name',true,'All Movements',null);
-            VSUtil.setComboItems(mThis.elEmployee,d.employees,'id','name',true,'All Employee',null);
+            VSUtil.setComboItems(mThis.elEvent,d.events,'id','name','',LocaleManager.trans("All Movements", "titles"),'');
+            VSUtil.setComboItems(mThis.elEmployee,d.employees,'id','name','',LocaleManager.trans("All Employee", "titles"),'');
 
         })
     }
@@ -4277,11 +4581,11 @@ var LeaveComponent = (function () {
 
     mThis.cols = [
         {
-            title: "",
+            transTitle: "",
             className: 'align-middle',
         },
         {
-            title: "Employee ID",
+            transTitle: "titles.Employee ID",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<span>${data.emp_code ?? '-'}</span>`;
@@ -4289,7 +4593,7 @@ var LeaveComponent = (function () {
         },
 
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index) => {
                 return `
@@ -4301,7 +4605,7 @@ var LeaveComponent = (function () {
         },
 
         {
-            title: "Leave Type",
+            transTitle: "titles.Leave Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
@@ -4332,7 +4636,7 @@ var LeaveComponent = (function () {
             },
         },
         {
-            title: "Leave Duration",
+            transTitle: "titles.Leave Duration",
             className: "align-middle text-center text-nowrap",
             data: (data) => {
                 const days = Number(data.leave_days ?? 0);
@@ -4387,7 +4691,7 @@ var LeaveComponent = (function () {
                     m?.text ||
                     (statusKey === "terminated"
                         ? "Terminated"
-                        : (data.status ?? "â€”"));
+                        : (data.status ?? "—"));
                 const cls =
                     m?.cls || byName[statusKey] || "bg-light text-muted";
                 return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
@@ -4407,10 +4711,10 @@ var LeaveComponent = (function () {
             className: 'col_action align-middle',
             data: function (data, row, display) {
                 return `
-                   <div class="d-flex justify-content-center align-items-center">
+                    <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
                                 <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                 <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
                     </div>
@@ -4789,7 +5093,7 @@ var PayrollComponent = new (function () {
             data: (data) =>
                 `<span class="text-dark">(<small class="text-dark">${
                     data.start_date ?? ""
-                }â€‹ <small class="text-warning">~</small> ${
+                }​ <small class="text-warning">~</small> ${
                     data.end_date ?? ""
                 }</small>)</span>`,
         },
@@ -6607,4 +6911,2467 @@ function windowPrintPayrollList(html=null)
         cv_interact.warning('Select run report before print!');
 }
 
+"use strict";
+
+var BenefitComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_benefit_component");
+ 
+    mThis.title_prop = "Benefit List";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_benefit_search");
+    mThis.elBenefitType = mThis.self.querySelector("#el_benefit_type");
+
+    mThis.cols = [
+        {
+            className: "align-middle text-nowrap ",
+        },
+        {
+            transTitle: "titles.Name",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
+                    </div>
+                `;
+             }
+        },
+        {
+            transTitle: "titles.Type",
+            className: 'type text-nowrap',
+            data: function (data, index, tr) {
+                let cls_class = "text-info";
+                if (data.type_id == 1) {
+                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
+                } else if (data.type_id == 2) {
+                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
+                }
+
+                return `<div class="text-primary-custom" style="width:80px;">
+                            <span class="${cls_class} text-capitalize d-inline-block text-center" style="min-width:70px">
+                                ${data.type_id == 1 ? 'Remuneration' : 'Fringe Benefit'}
+                            </span>
+                        </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column" style="width:180px;">
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? "-"}</span>
+                    <small class="text-muted">${data.updated_at ?? "-"}</small>
+                </div>`;
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.BenefitListView = new ListView("_benefit_list", {
+            fetchApi: `${main_view.base_url}/mhr/benefit/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.BenefitListView.showPage(mThis.getFilterData());
+                },
+            };
+            if (!AuthManager.allowed(270)) return;
+            BenefitDialog.show(op);
+        };
+        mThis.pr_tbl = mThis.BenefitListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.BenefitListView.showPage(mThis.getFilterData());
+        });
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.BenefitListView.showPage(mThis.getFilterData());
+            }, 200);
+        });
+        mThis.setActionListeners();
+
+        mThis.initAlready = true;
+    };
+ 
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
+            if (btn) {
+                mThis.deleteBenefit(btn.dataset.id, btn);
+            }
+
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_benefit");
+            if (btn) {
+                mThis.editBenefit(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.editBenefit = (id, btn) => {
+        if (!AuthManager.allowed(271)) return;
+        BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getFilterData()),});
+    };
+
+    mThis.deleteBenefit = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.BenefitListView.showPage(mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(272)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete Benefit",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call( `${main_view.base_url}/mhr/benefit/delete`, op, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_success_benefit");
+                                mThis.BenefitListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+            type_id: mThis.elBenefitType.value,
+
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+
+        });
+        
+        return p;
+    };
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(`${main_view.base_url}/mhr/benefit/form-options`,null,null,null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name","",LocaleManager.trans("All Types", "titles"),"");
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+    mThis.show =  (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(()=>{
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.BenefitListView.showPage(mThis.getFilterData());
+
+        });
+       
+    };
+    return mThis;
+})();
+
+const BenefitDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" name="type_id" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
+                                    <option value="1" >Remuneration</option>
+                                    <option value="2">Fringe Benefit</option>
+                                </select>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id; //get "id" from op
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/benefit/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("update_success_benefit");
+                                        }
+                                        else{
+                                        cv_interact.success("create_success_benefit");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Benefit",
+                    modifyTitle: "vslang:titles.Edit Benefit",
+                    targetProp: "benefits",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/benefit/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var EmployeeBenefitComponent = new (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_employee_benefit_component");
+ 
+    mThis.title_prop = "Employee Benefits";
+
+    mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
+    mThis.btnImport = mThis.self.querySelector("#_btn_import_benefit");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_bonus");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+    mThis.elTaxOption = mThis.self.querySelector("#el_tax_option");
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+        },
+        {
+            transTitle: "titles.Name",
+            className: "align-middle text-nowrap",
+            data: (data, index) => {
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.emp_name ?? "-"}
+                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
+                        </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Benefit",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `<span>${data.benefit_name ?? '-'}</span>`;
+             }
+        },
+        {
+            transTitle: "titles.Issue Date",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary p-0 m-0">${
+                    data.effective_date ?? "N/A"
+                }</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Amount",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.amount,
+                    data.currency_code
+                )}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Balance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.balance,
+                    data.currency_code
+                )}</p>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Tax Option",
+            className: "align-middle",
+            data: (data) => {
+                return `
+                <p class="p-0 text-primary-custom m-0">${
+                    data.tax_option_id == "1" ? "Taxable" : ""
+                }${data.tax_option_id == "2" ? "Non Taxable" : ""}${
+                    data.tax_option_id == "3" ? "Flat Rate" : ""
+                }`;
+            },
+        },
+        {
+            transTitle: "titles.Flat Tax Rate",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return data.tax_option_id == "3"
+                    ? `<p class="p-0 m-0">${data.flat_tax_rate ?? "0"} %</p>`
+                    : `<p class="p-0 m-0">N/A</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Action",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="text-center align-center gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_emp_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
+            fetchApi: `${main_view.base_url}/mhr/emp-benefit/all-list`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white overflow-hidden rounded-3 header-uppercase",
+        });
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        });
+        mThis.btnAdd.onclick = (e) => {
+            e.preventDefault();
+            if (!AuthManager.allowed(273)) return;
+            EmployeeBenefitDialog.show({
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+                },
+            });
+        };
+        mThis.btnImport.onclick = (e) => {
+            e.preventDefault();
+            if (!AuthManager.allowed(325)) return;
+            FileChooser.chooseFile({
+                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            },(d) => {
+                if(d){
+                    vsapi.call(`${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,{
+                        file: d.dataUrl
+                    },false).then(res => {
+
+                        if(res.status_code === 200){
+                            mThis.EmployeeBenefitListView.showPage(null);
+                            cv_interact.success('Employees Benefit Were Import Successfully!');
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+
+        };
+
+        const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
+        }
+        mThis.elSearch.addEventListener(
+            "keyup",
+            mThis.debounce(() => {
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+            }, 300)
+        );
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        });
+        mThis.setActionListeners();
+        mThis.initAlready = true;
+    };
+
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
+            if (btn) {
+                mThis.deleteBenefit(btn.dataset.id, btn);
+            }
+
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_emp_benefit");
+            if (btn) {
+                mThis.editBenefit(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.getFilterData = () => {
+        const filters = {
+            benefit_id: mThis.elBenefit.value,
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const field = el.dataset.field;
+            filters[field] = el.value;
+        });
+        return filters;
+    };
+
+    mThis.editBenefit = (id, btn) => {
+        if (!AuthManager.allowed(274)) return;
+        EmployeeBenefitDialog.show({
+            id,
+            btn,
+            onClose: () => mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
+        });
+    };
+
+    mThis.deleteBenefit = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(275)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete Employee Benefit",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/emp-benefit/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_success_employee_benefit");
+                                mThis.EmployeeBenefitListView.showPage(
+                                    mThis.getFilterData()
+                                );
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/emp-benefit/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "",LocaleManager.trans("All Benefits", "titles"), "");
+                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "",LocaleManager.trans("All Tax Options", "titles"), "");
+
+            });
+    };
+
+    mThis.debounce = (func, delay) => {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(mThis, args), delay);
+        };
+    };
+    mThis.show = function () {
+        mThis.init();
+        mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        mThis.prepareFormOptions();
+         main_view.setContentView(mThis.self, mThis.title_prop);
+
+    };
+    return mThis;
+})();
+const EmployeeBenefitDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" disabled></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans('Tax Options', 'labels')}">
+                                <option value="">(Select Tax Option)</option>
+                                <option value="1">Tax</option>
+                                <option value="2">Non</option>
+                                <option value="3">Flat Rate</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" name="amount" class="form-control data-input" data-field="amount" placeholder=" " />
+                                <label vslang="titles.Amount"></label>
+
+                            </div>
+                        </div>
+                        <div class="col-6 effective_date d-none">
+                            <div class="vs-material-field">
+                                <input name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" "></input>
+                                <label vslang="titles.Effective Date"></label>
+                            </div>
+                        </div>
+                        <div class="col-6 flat_tax_rate d-none">
+                            <div class="vs-material-field">
+                                <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
+                                <label vslang="titles.Flat Tax"></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                <label vslang="titles.Remark"></label>
+                            </div>
+                        </div>
+                    </div>`,
+                ].join("");
+            },
+            contentCreated: (me) => {
+                DateTimePicker.init(me.controls.effective_date);
+                const taxOptionField = me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+                taxOptionField.addEventListener("change", () => {
+                    flatTaxRateField.classList.toggle(
+                        "d-none",
+                        taxOptionField.value !== "3"
+                    );
+                });
+
+            },
+
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create Employee Benefit",
+                modifyTitle: "vslang:titles.Edit Employee Benefit",
+                targetProp: "emp_benefits",
+                api: {
+                    endpoint: `${main_view.base_url}/mhr/emp-benefit/form-options`,
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            onPrepareForm: (me, data) => {
+
+                const BenefitField = me.divModal.querySelector("#benefit_id");
+
+                const effective_date = me.divModal.querySelector(".effective_date");
+                BenefitField.addEventListener("change", () => {
+                    const selectedValue = BenefitField.value;
+                    const benefit_disburse_policies =
+                        data.benefit_disburse_policies;
+                    const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
+                    if (exists) {
+                        effective_date.classList.remove("d-none");
+                    } else {
+                        effective_date.classList.add("d-none");
+                    }
+                });
+                BenefitField.dispatchEvent(new Event("change"));
+                LocaleManager.translateZone(me.divModal);
+                me.controls.currency_code.value = VSMoney.getCurrency().code;
+
+                Object.keys(data).forEach((key) => {
+                    const input = me.divModal.querySelector(
+                        `[data-field="${key}"]`
+                    );
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
+            },
+            configSelect: [
+                {
+                    name: "employee",
+                    data: "employees",
+                    textField: (me, d) => `
+                        <div class="d-flex gap-2">
+                            <img class="img_select" src="${d.image_url}" />
+                            <div class="d-flex flex-column">
+                                <span>${d.name}</span>
+                                <span>${d.position}</span>
+                            </div>
+                        </div>`,
+                    valueField: "id",
+                },
+                {
+                    name: "benefits",
+                    data: "benefits",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span  vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false)
+                    }
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.id = me.dataOptions.id;
+
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/mhr/emp-benefit/save`,
+                                p,
+                                btn
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success("update_success_employee_benefit");
+                                    } else {
+                                        cv_interact.success("create_success_employee_benefit");
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                },
+            ],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+
+
+
+var PayrollAccountComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_accountComponent");
+    mThis.title_prop = "Payroll Accounts";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
+    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
+    mThis.elDepartment = mThis.self.querySelector("#el_department");
+    mThis.elAccount = mThis.self.querySelector("#el_account");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
+    mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
+    mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
+    mThis.divListView = mThis.self.querySelector('#_account_list');
+
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle",
+            data: (data, index, i) => {
+                return index + 1;
+            },
+        },
+        {
+            transTitle: "titles.Employee",
+            className: "align-middle text-capitalize text-nowrap w-15",
+            data: (data, index, tr) => {
+                return `
+                                <span style="font-size: 14px; font-weight: bold;">${
+                                    data.emp_name ?? ""
+                                }</span>
+                                <br/>
+                                <span style="font-size: 11px; color: gray;">${
+                                    data.position ?? ""
+                                }</span>
+                            </div>
+                        </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Account Type",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                 return `<div class="text-primary-custom" style="width:80px;">
+                            <span class="badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis text-capitalize d-inline-block text-center" style="min-width:70px">
+                                ${data.account_type ?? ""}
+                            </span>
+                        </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Account Number",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Balance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Last Balance Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Currency",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
+            },
+        },
+        {
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_account_action"
+                    }" data-id="${data.id}" data-emp_id="${
+                data.emp_id
+            }" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+        mThis.AccountListView = new ListView(mThis.divListView, {
+            fetchApi: `${main_view.base_url}/mhr/account/payroll-account/list`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--white rounded-2 overflow-hidden  header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                btn: e.target,
+                onClose: () => {
+                    mThis.AccountListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(315)) return;
+            AccountDialog.show(op);
+        };
+        mThis.btnAddAccountMissing.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                account_type: "Payroll",
+            };
+            if (!AuthManager.allowed(210)) return;
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>',
+                {
+                    title: "Bulk Create Accounts",
+                    context: "update", //NOTE that now "context" can be "delete" for red color, and "update" for Green color
+                    confirmButtonText: "Bulk Create",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/account/bulk-create",
+                                ].join(""),
+                                op,
+                                false,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    const d = res.data;
+                                    if (d.success_count > 0) {
+                                        mThis.AccountListView.showPage(
+                                            mThis.getFilterData()
+                                        );
+                                        cv_interact.success(
+                                            `${d.success_count} accounts have been created!`
+                                        );
+                                    } else
+                                        cv_interact.info(
+                                            "No account were created! Maybe because all staff already have an account!"
+                                        );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
+                }
+            );
+        };
+
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            const sub_content_account = mThis.self.querySelector(
+                "#sub_content_account"
+            );
+            sub_content_account.classList.remove("d-none");
+            const view_transaction =
+                mThis.self.querySelector("#view_transaction");
+            view_transaction.classList.add("d-none");
+        };
+
+        const pr_tbl = mThis.AccountListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 230 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
+
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.AccountListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.renderTransaction = (data) => {
+        if (!data || !data[0] || !data[0].trx) {
+            console.error("Invalid data format");
+            return;
+        }
+
+        const employee = data[0];
+        const transactions = employee.trx;
+
+        let html = `
+            <style>
+                .transaction_card {
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    padding: 10px;
+                    width: 98%;
+                }
+                .transaction_header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    padding: 10px;
+                    padding-bottom: 20px;
+                }
+                .transaction_logo {
+                    position: absolute;
+                    left: 0;
+                }
+                .transaction_title {
+                    text-align: center;
+                    flex-grow: 1;
+                }
+                .transaction_profile {
+                    gap: 10px;
+                    justify-content: center;
+                    border: 1px solid #ccc;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .transaction_image {
+                    display: flex;
+                    justify-content: center;
+                    width: 80px;
+                    height: 80px;
+                    overflow: hidden;
+                    border-radius: 50%;
+                }
+                .transaction_table {
+                    display: flex;
+                    padding: 10px;
+                }
+            </style>
+            <div class="transaction_card overflow-y-auto overflow-x-hidden">
+                <div class="transaction_header">
+                    <div class="transaction_logo">
+                        <img src="${
+                            main_view.base_url
+                        }/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                    </div>
+                    <div class="transaction_title">
+                        <h4>Transaction</h4>
+                    </div>
+                </div>
+                <div class="transaction_profile">
+                    <div class="row cols-2 mb-0">
+                        <div class="col-2">
+                            <div class="transaction_image">
+                                <img src="${
+                                    employee.image_url
+                                }" alt="Profile Image">
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_left">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.emp_name
+                                }</p>
+                            </div>
+
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Number</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap">${
+                                    employee.account_number
+                                }</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Balance</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.balance
+                                }</p>
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_right">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Type</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap">${
+                                    employee.account_type
+                                }</p>
+                            </div>
+                             <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Currency</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.currency_code
+                                }</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Last Balance Date</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.last_balance_date
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="transaction_table row" style="display: flex !important;">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Trx Type</th>
+                                    <th>From Account</th>
+                                    <th>To Account</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${transactions
+                                    .map(
+                                        (trx) => `
+                                    <tr>
+                                        <td>${
+                                            trx.trx_type === 1
+                                                ? "Deposit"
+                                                : trx.trx_type === 2
+                                                ? "Withdrawal"
+                                                : "Transfer"
+                                        }</td>
+                                       <td>${trx.from_account_number ?? 'N/A'}</td>
+                                        <td>${trx.to_account_number ?? 'N/A'}</td>
+                                        <td class="${
+                                            trx.status === "in"
+                                                ? "text-success"
+                                                : "text-danger"
+                                        }">
+                                            ${Number(trx.amount)
+                                                .toLocaleString("en-US")
+                                                .replace(/,/g, " ")}
+                                        </td>
+                                        <td>${trx.created_at}</td>
+                                        <td>
+                                            <span class="${
+                                                trx.status === "in"
+                                                    ? "text-success"
+                                                    : "text-danger"
+                                            }">
+                                                ${trx.status}
+                                            </span>
+                                        </td>
+                                        <td>${trx.remarks ?? 'N/A'}</td>
+                                    </tr>
+                                `
+                                    )
+                                    .join("")}
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        mThis._transaction_info.innerHTML = html;
+    };
+
+    mThis.btnPrintTransaction.addEventListener("click", () => {
+        windowPrintTransaction(mThis._transaction_info.innerHTML);
+        // window.print();
+    });
+
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        e.preventDefault();
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.AccountListView) {
+                mThis.AccountListView.showPage(mThis.getFilterData());
+            } else {
+                console.error("Payroll account is not defined");
+            }
+        }, 200);
+    });
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_account_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Deposit Cash">Deposit Cash</span>',
+                    icon: `<i class="fa fa-calculator"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "deposit_amount",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.View Transactios">View Transaction</span>',
+                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_transaction",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Transfer">Transfer</span>',
+                    icon: `<i class="fa-solid fa-money-bill-transfer"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "transfer",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Account Details"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_account",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_account",
+                },
+            ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+
+                // Ensure 'deposit_amount' is part of the menu and exists before hiding it
+                if (menu.deposit_amount) {
+                    menu.deposit_amount.style.display = "block";
+                }
+            },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "transfer": {
+                        mThis.transfer(id, menuLink);
+                        break;
+                    }
+                    case "deposit_amount": {
+                        mThis.deposit_amount(id, menuLink);
+                        break;
+                    }
+                    case "view_transaction": {
+                        mThis.viewTransaction(id, menuLink);
+                        break;
+                    }
+                    case "edit_account": {
+                        mThis.editAccount(id, menuLink);
+                        break;
+                    }
+                    case "delete_account": {
+                        mThis.deleteAccount(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+    mThis.transfer = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(327)) return;
+        TransferDialog.show(op);
+    };
+    mThis.deposit_amount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(326)) return;
+        DepositDialog.show(op);
+    };
+
+    mThis.viewTransaction = (id, menuLink) => {
+        const sub_content_account = mThis.self.querySelector(
+            "#sub_content_account"
+        );
+        sub_content_account.classList.add("d-none");
+        const view_transaction = mThis.self.querySelector("#view_transaction");
+        view_transaction.classList.remove("d-none");
+
+        let emp_id = menuLink.dataset.emp_id;
+        let op = {
+            emp_id: emp_id,
+            account_id: id,
+        };
+        if (!AuthManager.allowed(328)) return;
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/account/print-transaction`,
+                op,
+                false,
+                false,
+                false
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                    let d = res.data;
+                    mThis.renderTransaction(d);
+                }
+            });
+    };
+    mThis.editAccount = (id, menuLink) => {
+        const op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(211)) return;
+        AccountDialog.show(op);
+    };
+
+    mThis.deleteAccount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                cv_interact.success("Deleted successfully");
+                mThis.AccountListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(212)) return;
+        cv_interact.confirm(
+            "Delete this account?",
+            {
+                title: "Delete Account",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/account/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.AccountListView.showPage();
+                            } else cv_interact.error(res.error_message);
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.setDefaultFilter = ()=>{
+        if(!mThis.rem_filter) return;
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+             const f = el.dataset.field;
+             el.value = mThis.rem_filter[f] ?? '';
+        });
+    };
+
+    mThis.getFilterData = () => {
+        const p = {};
+        p.search_value = mThis.elSearch.value;
+       // p.sort_by_department = mThis.elSortByDepartment.value;
+        // p.sort_by_branch = mThis.elSortByBranch.value;
+        //p.sort_by_account = mThis.elSortByAccount.value;
+        //p.account_id = mThis.divFilter.value;
+
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        mThis.rem_filter = main_filters;
+        return p;
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/account/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elDepartment,
+                    d.departments,
+                    "id",
+                    "name",
+                    '',
+                    'All Departments'
+                );
+                VSUtil.setComboItems(
+                    mThis.elAccount,
+                    d.account,
+                    "id",
+                    "name",
+                    '',
+                    'All Accounts'
+                );
+                onFinish();
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions(()=>{
+            if (mThis.rem_filter){
+                mThis.setDefaultFilter();
+            }
+            mThis.AccountListView.showPage();
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+
+    };
+    return mThis;
+})();
+
+const AccountDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="employee" class="data-input form-control"  data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                                <option value="Payroll">Payroll</option>
+                                <option value="Wallet">Wallet</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " />
+                                <label vslang="titles.Account Number"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="balance" class="form-control data-input" data-field="balance" placeholder=" " />
+                                <label vslang="titles.Balance"></label>
+                            </div>
+                        </div>
+                           <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder=" " />
+                                <label vslang="titles.Currency"></label>
+                            </div>
+                        </div>
+                    </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    const currency_codeField = me.controls.currency_code;
+                    
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = VSMoney.getCurrency().code;
+
+                    }
+                  
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span class="choices__item_text"> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                        },
+                        valueField: "id",
+                    },
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save">Save</span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/account/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        // if (me.dataOptions.id > 0) {
+                                        //     cv_interact.success(
+                                        //         "Updated payroll account successfully"
+                                        //     );
+                                        // } else {
+                                        //     cv_interact.success(
+                                        //         "Added payroll account successfully"
+                                        //     );
+                                        // }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Account",
+                    modifyTitle: "vslang:titles.Detail Account",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/account/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me) => {
+                    LocaleManager.translateZone(me.divModal);
+                    me.setReadOnly(true,['account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly,['balance','employee'],isReadOnly? null : {"balance":"0.00"});
+                    // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';
+                    // me.controls.account_name.setAttribute('readonly',true);
+
+                    const balanceField = me.divModal.querySelector(
+                        '[data-field="balance"]'
+                    );
+                    if (balanceField) {
+                        if (me.dataOptions && me.dataOptions.id) {
+                            balanceField.disabled = true;
+                        } else {
+                            balanceField.disabled = false;
+                        }
+                    }
+                },
+            });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+const DepositDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        '<div class="row">',
+                        '<div class="form-group col-6">',
+                        '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
+                        '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="balance" class="form-label" vslang="titles.Master Balance"></label>',
+                        '<input name="balance" class="data-input form-control" data-field="balance" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-12">',
+                        '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
+                        '<select class="modal-select data-input" name="account_type" data-field="account_type" disabled>',
+                        '<option value="Payroll">Payroll</option>',
+                        '<option value="Wallet">Wallet</option>',
+                        "</select>",
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="amount" class="form-label" vslang="titles.Amount"></label>',
+                        '<input name="amount" class="form-control data-input" data-field="amount" />',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
+                        '<input name="currency_code" class="data-input form-control" data-field="currency_code" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-md-12">',
+                        '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
+                        '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
+                        "</div>",
+                        "</div>",
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    const currency_codeField = me.controls.currency_code;
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = VSMoney.getCurrency().code;
+                    }
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="titles.Submit">Submit</span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            if (!AuthManager.allowed(326)) return;
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/account/deposit",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        cv_interact.success(
+                                            "Updated balance successfully"
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Deposit Cash",
+                    modifyTitle: "Deposit Cash",
+                    targetProp: "account",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/account/deposit/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                       onResponse: (me, res)=>{
+                        //  console.log('result from api "/form-options": ', res);
+                       }
+                },
+
+                onPrepareForm: (me,acc) => {
+                    LocaleManager.translateZone(me.divModal);
+                    // me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
+                    // me.controls.account_number.value = acc.account_number;
+                    // me.controls.currency_code.value = acc.currency_code;
+                    // me.controls.account_name.setAttribute('readonly',true);
+                    // me.controls.account_number.setAttribute('readonly',true);
+                    // me.controls.currency_code.setAttribute('readonly',true);
+                },
+            });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+const TransferDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return `
+                        <div class="row">
+                            <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">From Account</div>
+
+                            <div class="form-group col-6">
+                                <label for="account_number" class="form-label" vslang="titles.Account Number" ></label>
+                                <input name="account_number" class="form-control data-input" data-field="account_number"disabled  />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="balance" class="form-label" vslang="titles.Balance" ></label>
+                                <input name="balance" class="form-control data-input" data-field="balance" disabled/>
+                            </div>
+
+                             <div class="form-group  col-12 ">
+                                <div name="from_account_info" id="info"></div>
+                             </div>
+
+                            <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">To Account</div>
+
+                            <div class="form-group col-6">
+                                <label for="to_account_number" class="form-label" vslang="titles.Account Number"></label>
+                                <input name="to_account_number" class="form-control data-input" data-field="to_account_number" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="amount" class="form-label" vslang="titles.Amount"></label>
+                                <input name="amount" class="form-control data-input" data-field="amount" />
+                            </div>
+
+                            <div class="form-group  col-12 ">
+                                <div id="info" name="to_account_info"></div>
+                             </div>
+                            <div class="form-group exchange_rate col-6">
+                                <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
+                                <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                            </div>
+                        </div>
+                    `;
+                },
+                contentCreated: (me) => {},
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Transfer",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/account/form-options`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    let account = me.controls.account_number;
+                    let to_account = me.controls.to_account_number;
+                    let from_account_info = me.controls.from_account_info;
+                    let to_account_info = me.controls.to_account_info;
+                    const exchange_rate =
+                        me.divModal.querySelector(".exchange_rate");
+                    exchange_rate.classList.add("d-none");
+
+                    // account.onchange = (e) => {
+                    let p = { account_number: account.value };
+                    vsapi
+                        .call(
+                            [main_view.base_url, "/mhr/account/get-info"].join(
+                                ""
+                            ),
+                            p,
+                            null,
+                            null
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                let d = res.data;
+                                me.account_type = d.account_type;
+                                me.currency_code = d.currency_code;
+                                let div = "";
+                                div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
+                                            <div>
+                                                <label for="account_type" class="form-label">Account Type</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.account_type}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Employee</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.emp_name}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Currency</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.currency_code}</span>
+                                            </div>
+
+                                        </div>`;
+                                from_account_info.innerHTML = div;
+                            }
+                        });
+                    // };
+
+                    to_account.onchange = (e) => {
+                        let p = { account_number: to_account.value };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/account/get-info",
+                                ].join(""),
+                                p,
+                                null,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    let d = res.data;
+                                    me.to_account_type = d.account_type;
+                                    me.to_account_currency_code =
+                                        d.currency_code;
+                                    let div = "";
+                                    div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
+                                            <div>
+                                                <label for="account_type" class="form-label">Account Type</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.account_type}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Employee</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.emp_name}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Currency</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.currency_code}</span>
+                                            </div>
+                                        </div>`;
+                                    to_account_info.innerHTML = div;
+                                    if (
+                                        me.to_account_currency_code == me.currency_code
+                                    ) {
+                                        exchange_rate.classList.add("d-none");
+                                    } else {
+                                        exchange_rate.classList.remove("d-none");
+                                    }
+                                }
+                            });
+                    };
+                },
+
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Transfer</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.account_type = me.account_type;
+                            p.currency_code = me.currency_code;
+                            p.to_account_type = me.to_account_type;
+                            p.to_account_currency_code = me.to_account_currency_code;
+                            p.id = me.dataOptions.id;
+                            if (
+                                me.to_account_currency_code != me.currency_code
+                            ) {
+                                if (!me.controls.exchange_rate.value) {
+                                    cv_interact.error(
+                                        "Please enter exchange rate"
+                                    );
+                                    return;
+                                }
+                            }
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/account/get-confirm",
+                                    ].join(""),
+                                    p,
+                                    null,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200 && res.data) {
+                                        const confirmationMessage = `Are you sure to transfer? to [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
+
+                                        cv_interact.confirm(
+                                            confirmationMessage,
+                                            {
+                                                title: "Confirm or Cancel Transfer",
+                                                context: "Cancel",
+                                                confirmButtonText: "Transfer",
+                                            },
+                                            function (confirmation) {
+                                                if (confirmation) {
+                                                    p.from_account = {'account_number':p.account_number}
+                                                    p.to_account = {'account_number':p.to_account_number}
+                                                    vsapi
+                                                        .call(
+                                                            [
+                                                                main_view.base_url,
+                                                                "/hr/account/transfer",
+                                                            ].join(""),
+                                                            p,
+                                                            null,
+                                                            null
+                                                        )
+                                                        .then((res) => {
+                                                            if (
+                                                                res.status_code ===
+                                                                    200 &&
+                                                                res.data
+                                                            ) {
+                                                                let formattedData = `
+                                                        Transfer Successful
+                                                        From: ${res.data.from_account_number}
+                                                        To: ${res.data.to_account_number}
+                                                    `;
+                                                                cv_interact.success(
+                                                                    formattedData
+                                                                );
+                                                                AccountManagementComponent.AccountListView.showPage();
+                                                                me.hide(false);
+                                                            } else {
+                                                                cv_interact.error(
+                                                                    res.error_message ||
+                                                                        "Error in processing transfer"
+                                                                );
+                                                            }
+                                                        })
+                                                        .catch((err) => {
+                                                            cv_interact.error(
+                                                                res.error_message ||
+                                                                    "Error in processing transfer"
+                                                            );
+                                                        });
+                                                }
+                                            }
+                                        );
+                                    } else {
+                                        cv_interact.error(
+                                            res.error_message ||
+                                                "Error fetching confirmation data"
+                                        );
+                                    }
+                                })
+                                .catch((err) => {
+                                    cv_interact.error(
+                                        "Error in processing confirmation"
+                                    );
+                                });
+                        },
+                    },
+                ],
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
+
+function windowPrintTransaction(html = null) {
+    let HtmlString = null;
+    HtmlString = html ? html : HtmlString;
+    if (HtmlString) {
+        let myWindow = window.open("", "PRINT");
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>Pay Slip</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/bhr_style.css"/>
+                <style>
+                     *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:11px;
+                    }
+                    table{
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                </style>
+
+            </head>
+            <body>${HtmlString}</body>
+        </html>`);
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        }, 500);
+    } else cv_interact.warning("Select run report before print!");
+}
+
+"use strict";
+var StaffAttendanceComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_staffAttendanceComponent",
+    );
+
+    mThis.title_prop = "Staff Attendances";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
+    mThis.elSearch = mThis.self.querySelector("#_attendance_search");
+    mThis.containerFilter = mThis.self.querySelector(
+        "#_divFilter_staff_attendance",
+    );
+    mThis.divListView = mThis.self.querySelector("#_staff_attendance_list");
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+            data: "",
+        },
+        {
+            title: "Staff ID",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.code}</span>`;
+            },
+        },
+        {
+            title: "Full Name",
+            className: "name text-capitalize align-middle",
+            data: (data, index, tr) => {
+                const sex =
+                    data.sex === "M"
+                        ? "Male"
+                        : data.sex === "F"
+                          ? "Female"
+                          : "Other";
+                return `<p class="d-flex flex-column">
+                    <span class="text-Capitalize">${data.name}</span>
+                    <small class="text-muted">${sex}</small>
+                </p>`;
+            },
+        },
+        {
+            title: "Position",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.position}</span>`;
+            },
+        },
+        {
+            title: "Date",
+            className: "text-capitalize align-middle",
+            data: (data, index, tr) => {
+                return data.attendance_date ?? "";
+            },
+        },
+        {
+            title: "Work Shift",
+            className: "text-capitalize align-middle",
+            data: "work_shift",
+        },
+        {
+            title: "Scan Info",
+            className: "text-capitalize align-middle",
+            data: (data) => {
+                return data.scan_info
+                    .map((info, index) => {
+                        const timeParts = info.time.split(":");
+                        let hours = parseInt(timeParts[0]);
+                        const minutes = timeParts[1];
+                        const ampm = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedTime = `${hours}:${minutes} ${ampm}`;
+
+                        return `
+                            <div class="d-flex flex-column mb-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-primary-custom fw-bold" style="font-size: 80%;">${info.action_type}</small>
+                                    <small class="text-info px-2" style="font-size: 80%;">→</small>
+                                    <small class="text-success  fw-bold" style="font-size: 80%;">${formattedTime}</small>
+                                </div>
+                                ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ""}
+                            </div>
+                        `;
+                    })
+                    .join("");
+            },
+        },
+    ];
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.StaffAttendanceListView = new ListView(mThis.divListView, {
+            fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table rounded-3 overflow-hidden table--white header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.StaffAttendanceListView.showPage(
+                        mThis.getFilterData(),
+                    );
+                },
+            };
+            // if (!AuthManager.allowed(247)) return;
+            StaffAttendanceDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.StaffAttendanceListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.StaffAttendanceListView.showPage(
+                        mThis.getFilterData(),
+                    );
+                };
+            });
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/employee/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                let d = res.status_code === 200 ? res.data : {};
+
+                if (d) {
+                    mThis.containerFilter
+                        .querySelectorAll(".filter-field")
+                        .forEach((el) => {
+                            const f = el.dataset.field;
+                            switch (f) {
+                                case "branch_id":
+                                    VSUtil.setComboItems(
+                                        el,
+                                        d.branches,
+                                        "id",
+                                        "branch_name",
+                                        null,
+                                        null,
+                                        1,
+                                    );
+                                    break;
+                                case "emp_type_id":
+                                    VSUtil.setComboItems(
+                                        el,
+                                        d.types || [],
+                                        "id",
+                                        "name",
+                                        true,
+                                        "All Type",
+                                        null,
+                                    );
+                                    break;
+                                case "department_id":
+                                    VSUtil.setComboItems(
+                                        el,
+                                        d.departments,
+                                        "id",
+                                        "name",
+                                        true,
+                                        "All Department",
+                                        null,
+                                    );
+                                    break;
+                                case "work_shift_id":
+                                    VSUtil.setComboItems(
+                                        el,
+                                        d.work_shifts,
+                                        "id",
+                                        "name",
+                                        true,
+                                        "All Shift",
+                                        null,
+                                    );
+                                    break;
+                                default:
+                                    break;
+                            }
+                        });
+                }
+            });
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                const f = el.dataset.field;
+                p[f] = el.value;
+            });
+        return p;
+    };
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions();
+        mThis.StaffAttendanceListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+    return mThis;
+})();
+
+const StaffAttendanceDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input name="employee" class="data-input form-control" data-field="employee_name"  placeholder="Employee" />
+                                    <label vslang="labels.Employee"></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" class="data-input form-control" data-field="employee_code" placeholder=" " disabled />
+                                    <label vslang="labels.Employee Code">Employee Code</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" data-type="date" name="attendance_date" class="data-input form-control form_input" data-field="attendance_date" placeholder=" " />
+                                    <label vslang="labels.Attendance Date">Attendance Date</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="action_type" name="attendance_type" class="data-input form-control" placeholder="Attendance Type">
+                                    <option value="Check In">Check In</option>
+                                    <option value="Check Out">Check Out</option>
+                                </select>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="time" name="scan_time" class="data-input form-control form_input" data-field="scan_time" placeholder=" " />
+                                    <label vslang="labels.Time">Time</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="Work Shift">
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="department_id" name="department_id" class="data-input form-control" placeholder="Department"></select>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="status" name="status" class="data-input form-control" placeholder="Status"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea  type="text" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                    <label for="remark" vslang="titles.Remark"></label>
+                                </div>
+                            </div>
+
+                         </div>`,
+                ].join("");
+            },
+
+            configSelect: [
+                {
+                    name: "employee",
+                    data: "employees",
+                    textField: (me, d) => {
+                        return `<div class="d-flex gap-2 py-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span><span> ${d.position} </span> </div></div>`;
+                    },
+                    // textField:"name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/hr/attendances/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    cv_interact.success(
+                                        "Attendance save successfully",
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            contentCreated: (me, divModal) => {
+                me.searchEmployee = VSSearchInput.init(me.controls.employee, {
+                    type: "select",
+                    prefetch: true,
+                    maxDropdownHeight: "380px",
+                    
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/attendance/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const employees = res?.data?.employees || [];
+                        return (Array.isArray(employees) ? employees : []).map(
+                            (i) => ({
+                                ...i,
+                                code: i.emp_code || "",
+                                name: i.emp_name || "",
+                            }),
+                        );
+                    },
+                    showColumnHeader: true,
+                    columns: {
+                        code: "Code",
+                        name: "Name",
+                        // legal_name: "Legal Name"
+                    },
+                    onSelect: (item) => {
+                        const tenantId = item?.id || "";
+                        const tenantName = item?.tenant || "";
+                        const tenantCode = item?.code || "";
+                        me.controls.tenant.value = tenantCode
+                            ? `${tenantName} (${tenantCode})`
+                            : tenantName;
+                        me.controls.tenant.dataset.tenantId = tenantId;
+                        me.tenant_id = tenantId;
+                        me.controls.legal_name.value = item?.legal_name || "";
+                    },
+                });
+                DateTimePicker.init(me.controls.attendance_date);
+                
+
+                me.saveStaffAttendance = (p) => {
+                    alert("Data saved.");
+                };
+            },
+            prepareFormOptions: {
+                createTitle: "Create Attendance",
+                modifyTitle: "Edit Attendance",
+                targetProp: "attendance",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/hr/attendances/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                // onResponse: (me, res) => {
+                //     console.log('result from api "/form-options": ', res);
+                // },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
 

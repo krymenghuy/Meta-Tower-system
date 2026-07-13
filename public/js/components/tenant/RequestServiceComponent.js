@@ -218,8 +218,8 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-clock sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">Duration</span>
-                                    <span class="sr-card__meta-value">${duration}</span>
+                                    <span class="sr-card__meta-label">${LocaleManager.trans('Duration', 'titles')}</span>
+                                    <span class="sr-card__meta-value"> ${duration}</span>
                                 </div>
                             </div>
                             <div class="sr-card__meta-item">
@@ -227,7 +227,7 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-calendar sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">Target Schedule</span>
+                                    <span class="sr-card__meta-label">${LocaleManager.trans('Schedule Date', 'titles')}</span>
                                     <span class="sr-card__meta-value">${schedule}</span>
                                 </div>
                             </div>
@@ -236,7 +236,7 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-comment sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">Remarks</span>
+                                    <span class="sr-card__meta-label">${LocaleManager.trans('Remarks', 'labels')}</span>
                                     <span class="sr-card__meta-value">${remarks}</span>
                                 </div>
                             </div>
@@ -245,7 +245,7 @@ var RequestServiceComponent = (function () {
                     <div class="sr-card__stub">
                         <div class="sr-card__stub-top">
                             <div class="sr-card__fee-wrap">
-                                <span class="sr-card__fee-label">Total Fee</span>
+                                <span class="sr-card__fee-label"> ${LocaleManager.trans('Total Fee', 'titles')}</span>
                                 <span class="sr-card__fee-value">${totalFee}</span>
                             </div>
                             ${mThis.renderServiceRequestAction(data)}
@@ -366,13 +366,13 @@ var RequestServiceComponent = (function () {
                 //     cssClass: "border-bottom pb-2",
                 // },
                 {
-                    html: '<span class="ps-2" vslang="title.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
                     cssClass: "border-bottom pb-2",
                 },
                 {
-                    html: '<span class="ps-2">Cancel</span>',
+                    html: '<span class="ps-2" vslang="titles.Cancel"></span>',
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     name: "cancel_request",
                     cssClass: "border-bottom pb-2",
@@ -603,7 +603,7 @@ var RequestServiceComponent = (function () {
                     "id",
                     "name",
                     "",
-                    "All Statuses",
+                     LocaleManager.trans('All Statuses', 'titles'),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -612,7 +612,7 @@ var RequestServiceComponent = (function () {
                     "id",
                     "service_category",
                     "",
-                    "All Categories",
+                     LocaleManager.trans('All Categories', 'titles'),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();
@@ -780,46 +780,46 @@ const CreateServiceRequestDialog = (() => {
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="Unit"></select>
+                            <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="${LocaleManager.trans('Unit', 'titles')}"></select>
                         </div>
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
+                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="${LocaleManager.trans('Service Category', 'labels')}"></select>
                         </div>
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="Service Name"></select>
+                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="${LocaleManager.trans('Service', 'titles')}"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3 unit-type-wrapper">
-                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="Charge As">
-                                <option value="">Charge As</option>
-                                <option value="1">One Time</option>
-                                <option value="2">Hour</option>
-                                <option value="3">Unit</option>
+                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="${LocaleManager.trans('Charge As', 'titles')}">
+                                <option value="">${LocaleManager.trans('Charge As', 'titles')}</option>
+                                <option value="1">${LocaleManager.trans('One Time', 'labels')}</option>
+                                <option value="2">${LocaleManager.trans('Hour', 'labels')}</option>
+                                <option value="3">${LocaleManager.trans('Unit', 'titles')}</option>
                             </select>
                         </div>
                         <div class="col-md-3 select-type-time" style="display:none;">
                             <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
-                                <option value="">Select Duration</option>
-                                <option value="0.5">30 minutes</option>
-                                <option value="1.0">1 hour</option>
-                                <option value="1.5">1.5 hours</option>
-                                <option value="2.0">2 hours</option>
-                                <option value="2.5">2.5 hours</option>
-                                <option value="3.0">3 hours</option>
-                                <option value="4.0">4 hours</option>
+                                <option value="">${LocaleManager.trans('Select Duration', 'labels')}</option>
+                                    <option value="0.5">${LocaleManager.trans('30 minutes', 'labels')}</option>
+                                    <option value="1.0">${LocaleManager.trans('1 hour', 'labels')}</option>
+                                    <option value="1.5">${LocaleManager.trans('1.5 hours', 'labels')}</option>
+                                    <option value="2.0">${LocaleManager.trans('2 hours', 'labels')}</option>
+                                    <option value="2.5">${LocaleManager.trans('2.5 hours', 'labels')}</option>
+                                    <option value="3.0">${LocaleManager.trans('3 hours', 'labels')}</option>
+                                    <option value="4.0">${LocaleManager.trans('4 hours', 'labels')}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input data-type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" required />
-                                <label>Scheduled Date</label>
+                                <label vslang="labels.Scheduled Date"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input type="time" name="start_time" class="form-control data-input" data-field="start_time" placeholder=" " />
-                                <label>Start Time</label>
+                                <label vslang="labels.Start Time">Start Time</label>
                             </div>
                         </div>
                     </div>
@@ -830,12 +830,12 @@ const CreateServiceRequestDialog = (() => {
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
                                     <div>
-                                        <small class="text-muted d-block mb-1">Amount</small>
+                                        <small class="text-muted d-block mb-1"${LocaleManager.trans('Amount', 'titles')}</small>
                                         <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">Price x Duration</small>
+                                    <small class="text-muted d-block">${LocaleManager.trans('Price x Duration', 'labels')}</small>
                                     <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>
@@ -846,7 +846,7 @@ const CreateServiceRequestDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                <label>Remarks</label>
+                                <label vslang="labels.Remark">Remark</label>
                             </div>
                         </div>
                     </div>
@@ -961,8 +961,8 @@ const CreateServiceRequestDialog = (() => {
             },
 
             prepareFormOptions: {
-                createTitle: "Request Service",
-                modifyTitle: "Modify Request",
+                createTitle: "vslang:titles.Create Service Request",
+                modifyTitle: "vslang:titles.Modify Service Request",
                 targetProp: "request_details",
                 api: {
                     endpoint: `${main_view.base_url}/tenant/request-service/form-options`,
