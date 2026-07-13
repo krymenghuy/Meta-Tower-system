@@ -17,7 +17,7 @@ class WorkShift extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    
+
     function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -100,7 +100,7 @@ class WorkShift extends VSModel
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('work_shifts as ws')->selectRaw('ws.id,ws.name,ws.update_user,ws.update_date')->where('ws.id', $id)->take(1)->first();
+        $row = DB::table('work_shifts as ws')->selectRaw('ws.id,ws.name')->where('ws.id', $id)->first();
         return $row;
     }
     static function getFormOptions($id, $ss)
