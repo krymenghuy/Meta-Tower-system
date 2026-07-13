@@ -22,12 +22,11 @@ var EmployeeEducationComponent = (function () {
     };
 
     mThis._degreeLine = (edu) => {
-        const degree = (edu.degree || edu.edu_level || "").trim();
+        const level = (edu.edu_level || edu.degree || "").trim();
         const major = (edu.major || "").trim();
-        if (degree && major) {
-            return `${degree} · ${major}`;
-        }
-        return degree || major || "";
+        const diploma = (edu.diploma || "").trim();
+        const parts = [level, major, diploma].filter(Boolean);
+        return parts.join(" · ");
     };
 
     mThis._schoolLabel = (edu) => {
@@ -53,14 +52,9 @@ var EmployeeEducationComponent = (function () {
         container.querySelectorAll(".emp-edu-action-btn--edit").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
-                const eduId = btn.dataset.eduId;
-                const education = educationList.find(
-                    (item) => String(item.id) === String(eduId),
-                );
                 EducationDialog.show({
-                    id: eduId,
+                    id: btn.dataset.eduId,
                     emp_id: empId,
-                    education,
                     onClose: refresh,
                 });
             };
@@ -119,10 +113,10 @@ var EmployeeEducationComponent = (function () {
                   .map((edu, index) => {
                       const years = mThis._yearRange(
                           edu.start_year,
-                          edu.end_year,
+                          edu.finish_year ?? edu.end_year,
                       );
                       const degreeLine = mThis._degreeLine(edu);
-                      const location = (edu.location || "").trim();
+                      const period = (edu.period || "").trim();
 
                       return `
                 <div class="emp-edu-item" data-edu-id="${edu.id}">
@@ -136,8 +130,8 @@ var EmployeeEducationComponent = (function () {
                                     <div class="emp-edu-item-left">
                                         <h4 class="emp-edu-school">${mThis._escapeHtml(mThis._schoolLabel(edu))}</h4>
                                         ${
-                                            location
-                                                ? `<p class="emp-edu-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span class="text-capitalize">${mThis._escapeHtml(location)}</span></p>`
+                                            period
+                                                ? `<p class="emp-edu-location"><i class="fa-solid fa-clock" aria-hidden="true"></i><span>${mThis._escapeHtml(period)}</span></p>`
                                                 : ""
                                         }
                                     </div>
@@ -208,107 +202,127 @@ const EducationDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal emp-edu-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                title: (me) =>
-                    LocaleManager.trans(
-                        me.dataOptions.id ? "Modify School" : "New School",
-                        "titles",
-                    ),
-                createContent: () => `
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("School Name", "labels")} <span class="text-danger">*</span></label>
-                            <input type="text" name="school_name" class="form-control data-input" data-field="school_name" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Location", "labels")}</label>
-                            <input type="text" name="location" class="form-control data-input" data-field="location" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Start Year", "labels")}</label>
-                            <input type="number" name="start_year" class="form-control data-input" data-field="start_year" min="1950" max="2100" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("End Year", "labels")}</label>
-                            <input type="number" name="end_year" class="form-control data-input" data-field="end_year" min="1950" max="2100" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Degree", "labels")}</label>
-                            <input type="text" name="degree" class="form-control data-input" data-field="degree" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Major", "labels")}</label>
-                            <input type="text" name="major" class="form-control data-input" data-field="major" />
-                        </div>
-                    </div>`,
-                onPrepareForm: (me) => {
-                    const education = me.dataOptions.education;
-                    if (!education) return;
-                    const fields = [
-                        "school_name",
-                        "location",
-                        "start_year",
-                        "end_year",
-                        "degree",
-                        "major",
-                    ];
-                    fields.forEach((field) => {
-                        if (!me.controls[field]) return;
-                        const val = education[field];
-                        me.controls[field].value =
-                            val !== undefined && val !== null ? val : "";
-                    });
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <select data-style="material" name="school" class="form-control data-input" placeholder="School" data-field="school_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="edu_level" class="form-control data-input" placeholder="Education Level" data-field="edu_level_id"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
+                                    <label vslang="labels.Period (if no dates)"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="start_year" class="data-input form-control" data-field="start_year" min="1950" max="2100" placeholder=" " />
+                                    <label vslang="labels.Start Year"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="finish_year" class="data-input form-control" data-field="finish_year" min="1950" max="2100" placeholder=" " />
+                                    <label vslang="labels.End Year"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="major" class="data-input form-control" data-field="major" placeholder=" " />
+                                    <label vslang="labels.Major"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="diploma" class="data-input form-control" data-field="diploma" placeholder=" " />
+                                    <label vslang="labels.Degree"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
                 },
-                buttons: [
+                configSelect: [
                     {
-                        label: LocaleManager.trans("Cancel", "buttons"),
-                        cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
+                        name: "school",
+                        data: "schools",
+                        textField: "school",
+                        valueField: "id",
                     },
                     {
-                        label: LocaleManager.trans("Save", "buttons"),
+                        name: "edu_level",
+                        data: "edu_levels",
+                        textField: "edu_level",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+
                             p.id = me.dataOptions.id;
                             p.emp_id = me.dataOptions.emp_id;
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/educations/save`,
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/educations/save",
+                                    ].join(""),
                                     p,
                                     btn,
+                                    null
                                 )
                                 .then((res) => {
-                                    if (res.status_code === 200) {
+                                    if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
+                                        if (typeof me.dataOptions.onClose === "function") {
                                             me.dataOptions.onClose();
                                         }
-                                        cv_interact.success(
-                                            me.dataOptions.id
-                                                ? LocaleManager.trans(
-                                                      "update_success",
-                                                      "message_box_default",
-                                                  )
-                                                : LocaleManager.trans(
-                                                      "create_success",
-                                                      "message_box_default",
-                                                  ),
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success");
+                                        } else {
+                                            cv_interact.success("create_success");
+                                        }
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
+                prepareFormOptions: {
+                    createTitle: "New School",
+                    modifyTitle: "Modify School",
+                    targetProp: "education_request",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/educations/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                },
             });
+
         dialog.show(op);
     };
 

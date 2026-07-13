@@ -2,6 +2,7 @@
 
 namespace App\Models\Mhr;
 
+use App\Models\Prm\GeneralSettings;
 use Illuminate\Support\Facades\DB;
 use Vsd\Database\DBX;
 use Vsd\Response\DV;
@@ -9,13 +10,20 @@ use Vsd\Vsloquent\VSModel;
 
 class EmployeeExperience extends VSModel
 {
-    protected $table = 'employee_experiences';
+    protected $table = 'emp_experiences';
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
+    }
+
+    protected static function baseQuery()
+    {
+        return DB::table('emp_experiences as ex')
+            ->join('organizations as o', 'o.id', '=', 'ex.organization_id')
+            ->leftJoin('positions as p', 'p.id', '=', 'ex.position_id');
     }
 
     public static function getListByEmployee($emp_id, $ss)
@@ -27,14 +35,14 @@ class EmployeeExperience extends VSModel
         $colStart = DBX::formatDate('ex.start_date', 'start_date');
         $colEnd = DBX::formatDate('ex.end_date', 'end_date');
 
-        return DB::table('employee_experiences as ex')
-            ->leftJoin('organizations as o', 'o.id', '=', 'ex.organization_id')
+        return self::baseQuery()
             ->where('ex.emp_id', (int) $emp_id)
             ->orderByDesc('ex.start_date')
             ->orderByDesc('ex.id')
             ->selectRaw(
-                "ex.id, ex.emp_id, ex.organization_id, ex.position, ex.period,
-                ex.description, {$colStart}, {$colEnd}, o.name as organization",
+                "ex.id, ex.emp_id, ex.organization_id, ex.position_id, ex.period,
+                ex.description, {$colStart}, {$colEnd},
+                o.name as organization, p.name as position, p.name as position_name",
             )
             ->get()
             ->map(function ($row) {
@@ -70,12 +78,12 @@ class EmployeeExperience extends VSModel
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id',
-            'position' => '1|string|1-200|text=position_required',
-            'organization_id' => '0|number',
+            'organization_id' => '1|number|exists=organizations.id|text=organization_required',
+            'position_id' => '0|number|exists=positions.id',
             'start_date' => '0|date',
             'end_date' => '0|date',
-            'period' => '0|string|0-150',
-            'description' => '0|string|0-500',
+            'period' => '0|string|0-100',
+            'description' => '0|string|0-300',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
@@ -103,20 +111,6 @@ class EmployeeExperience extends VSModel
             return DV::error('End date cannot be before start date');
         }
 
-        $inputs['start_date'] = $hasDates ? $startDate : null;
-        $inputs['end_date'] = $hasDates ? $endDate : null;
-        $inputs['period'] = $hasDates ? null : $period;
-        $inputs['organization_id'] = !empty($inputs['organization_id'])
-            ? $inputs['organization_id']
-            : null;
-
-        if ($inputs['organization_id']) {
-            $orgExists = DB::table('organizations')->where('id', $inputs['organization_id'])->exists();
-            if (!$orgExists) {
-                return DV::error('Organization not found');
-            }
-        }
-
         $employee = DB::table('employees')
             ->where('id', $inputs['emp_id'])
             ->selectRaw('id, branch_id')
@@ -125,15 +119,27 @@ class EmployeeExperience extends VSModel
             return DV::error('Employee not found');
         }
 
-        $inputs['branch_id'] = $employee->branch_id ?? ($ss->branch_id ?? null);
+        $saveInputs = [
+            'emp_id' => (int) $inputs['emp_id'],
+            'organization_id' => (int) $inputs['organization_id'],
+            'position_id' => isset($inputs['position_id']) && $inputs['position_id'] !== ''
+                ? (int) $inputs['position_id']
+                : null,
+            'start_date' => $hasDates ? $startDate : null,
+            'end_date' => $hasDates ? $endDate : null,
+            'period' => $hasDates ? null : $period,
+            'description' => $inputs['description'] ?? null,
+            'branch_id' => $employee->branch_id ?? ($ss->branch_id ?? null),
+        ];
+
         $now = getNowTime();
         if (!$id) {
-            $inputs['created_at'] = $now;
+            $saveInputs['created_at'] = $now;
         }
-        $inputs['updated_at'] = $now;
+        $saveInputs['updated_at'] = $now;
 
-        $id = DBX::saveData($ss, 'employee_experiences', ['id' => $id], $inputs, [], 1, false);
-        return DV::depends($id, ['employee_experiences' => $inputs, 'id' => $id], 'Failed to save experience');
+        $id = DBX::saveData($ss, 'emp_experiences', ['id' => $id], $saveInputs, [], 1, false);
+        return DV::depends($id, ['emp_experiences' => $saveInputs, 'id' => $id], 'Failed to save experience');
     }
 
     public function delete($id = null, $ss = null)
@@ -145,21 +151,20 @@ class EmployeeExperience extends VSModel
             return DV::error('Invalid ID');
         }
 
-        $deleted = DB::table('employee_experiences')->where('id', $id)->delete();
+        $deleted = DB::table('emp_experiences')->where('id', $id)->delete();
         return DV::depends($deleted, null, 'Error deleting experience');
     }
 
     static function getDetails($id, $ss)
     {
-        $branch_id = $ss->branch_id;
         $colStart = DBX::formatDate('ex.start_date', 'start_date');
         $colEnd = DBX::formatDate('ex.end_date', 'end_date');
-        $row = DB::table('employee_experiences as ex')
-            ->leftJoin('organizations as o', 'o.id', '=', 'ex.organization_id')
+        $row = self::baseQuery()
             ->where('ex.id', $id)
             ->selectRaw(
-                "ex.id, ex.emp_id, ex.organization_id, ex.position, ex.period,
-                ex.description, {$colStart}, {$colEnd}, o.name as organization",
+                "ex.id, ex.emp_id, ex.organization_id, ex.position_id, ex.period,
+                ex.description, {$colStart}, {$colEnd},
+                o.name as organization, p.name as position, p.name as position_name",
             )
             ->first();
         if ($row) {
@@ -167,6 +172,7 @@ class EmployeeExperience extends VSModel
         }
         return $row;
     }
+
     static function getFormOptions($id, $ss)
     {
         $employee_experience = null;
@@ -174,8 +180,13 @@ class EmployeeExperience extends VSModel
             $employee_experience = self::getDetails($id, $ss);
         }
         return (object) [
-            'organizations' => DB::table('organizations')->selectRaw('id,name AS organization')->orderBy('id', 'ASC')->get(),
+            'organizations' => DB::table('organizations')
+                ->selectRaw('id,name AS organization')
+                ->orderBy('name', 'ASC')
+                ->get(),
+            'positions' => GeneralSettings::options_position($ss),
             'employee_experiences' => $employee_experience,
         ];
+
     }
 }

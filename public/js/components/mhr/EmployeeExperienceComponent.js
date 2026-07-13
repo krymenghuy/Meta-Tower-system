@@ -21,7 +21,7 @@ var EmployeeExperienceComponent = (function () {
     };
 
     mThis._positionLabel = (exp) => {
-        const position = (exp.position || "").trim();
+        const position = (exp.position || exp.position_name || "").trim();
         return position !== "" ? position : "";
     };
 
@@ -234,13 +234,10 @@ const ExperienceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="vs-material-field">
-                                    <input type="text" name="position" required class="data-input form-control" data-field="position" placeholder=" " />
-                                    <label vslang="labels.Position"></label>
-                                </div>
+                                <select data-style="material" name="organization" class="form-control data-input" placeholder="Organization" data-field="organization_id"></select>
                             </div>
                             <div class="col-12">
-                                <select data-style="material" name="organization_id" class="data-input form-control" data-field="organization_id" placeholder="${LocaleManager.trans('Organization', 'labels')}"></select>
+                                <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id"></select>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
@@ -253,9 +250,15 @@ const ExperienceDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "organization_id",
+                        name: "organization",
                         data: "organizations",
                         textField: "organization",
+                        valueField: "id",
+                    },
+                    {
+                        name: "position",
+                        data: "positions",
+                        textField: "position_name",
                         valueField: "id",
                     },
                 ],
@@ -326,13 +329,6 @@ const ExperienceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    if (me.controls.start_date) {
-                        DateTimePicker.init(me.controls.start_date);
-                    }
-                    if (me.controls.end_date) {
-                        DateTimePicker.init(me.controls.end_date);
-                    }
                 },
             });
 

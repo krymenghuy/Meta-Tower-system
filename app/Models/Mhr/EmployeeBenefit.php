@@ -248,7 +248,7 @@ class EmployeeBenefit extends VSModel
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-        
+
         $search_value = $d->search_value ?? null;
         $benefit_id = $d->benefit_id ?? null;
         $tax_option_id = $d->tax_option_id ?? null;
