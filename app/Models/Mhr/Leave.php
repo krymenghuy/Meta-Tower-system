@@ -365,9 +365,7 @@ class Leave extends VSModel
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
         //->where('l.status_id',2
-
         ->selectRaw('l.id ,l.emp_id,emp.code as emp_code, emp.name as employee, p.name, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
-
         ->first();
         return $leave;
     }

@@ -10,29 +10,29 @@ var WorkShiftListComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_work_shift_list_search");
     mThis.cols = [
         {
-            title: "NO",
+            transTitle: "titles.No",
             className: "align-middle",
             data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>
             `,
         },
         {
-            title: "Name",
-            className: "align-middle fw-bold",
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.name}</span>`;
+                return `<span class="text-pr-custom">${data.name}</span>`;
             },
         },
 
         {
-            title: "last Updated",
-            className: "align-middle fw-bold",
+            transTitle: "titles.Last Updated",
+            className: "align-middle",
             data: (data) => {
                 return [
-                    `<span class="text-Capitalize d-block">${data.update_user}</span>`,
-                    `<span class="text-muted" style="font-size:80%;">${data.updated_at}</span>`,
+                    `<span class="text-Capitalize d-block">${data.update_user ?? '-'}</span>`,
+                    `<span class="text-small">${data.updated_at ?? '-'}</span>`,
                 ].join("");
             },
         },
@@ -80,7 +80,7 @@ var WorkShiftListComponent = (function () {
                     mThis.WorkShiftListsView.showPage();
                 },
             };
-            if (!AuthManager.allowed(267)) return;
+            // if (!AuthManager.allowed(267)) return;
             WorkShiftListDialog.show(op);
         };
         mThis.listContainer = mThis.WorkShiftListsView.getListContainer();
@@ -137,7 +137,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
-        if (!AuthManager.allowed(268)) return;
+        // if (!AuthManager.allowed(268)) return;
         WorkShiftListDialog.show(op);
     };
     mThis.deleteWorkShift = (id, menulink) => {
@@ -148,11 +148,11 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
-        if (!AuthManager.allowed(269)) return;
+        // if (!AuthManager.allowed(269)) return;
         cv_interact.confirm(
-            "Delete this work shift?",
+            "confirm_delete",
             {
-                title: "Delete Shift",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -168,11 +168,10 @@ var WorkShiftListComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_work_shift");
                                 mThis.WorkShiftListsView.showPage();
                             } else {
-                                // Display an error if the deletion fails
-                                cv_interact.error("Delete failed. Try again.");
+                                cv_interact.error(res.error_message);
                             }
                         })
                         .catch(() => {
