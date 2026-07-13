@@ -2,7 +2,6 @@
 
 namespace App\Models\Mhr;
 
-use App\Models\Prm\GeneralSettings;
 use Illuminate\Support\Facades\DB;
 use Vsd\Database\DBX;
 use Vsd\Response\DV;
@@ -108,7 +107,7 @@ class EmployeeExperience extends VSModel
         $inputs['end_date'] = $hasDates ? $endDate : null;
         $inputs['period'] = $hasDates ? null : $period;
         $inputs['organization_id'] = !empty($inputs['organization_id'])
-            ? (int) $inputs['organization_id']
+            ? $inputs['organization_id']
             : null;
 
         if ($inputs['organization_id']) {
@@ -150,15 +149,11 @@ class EmployeeExperience extends VSModel
         return DV::depends($deleted, null, 'Error deleting experience');
     }
 
-    public static function getDetails($id, $ss)
+    static function getDetails($id, $ss)
     {
-        if (!$id || !is_numeric($id)) {
-            return null;
-        }
-
+        $branch_id = $ss->branch_id;
         $colStart = DBX::formatDate('ex.start_date', 'start_date');
         $colEnd = DBX::formatDate('ex.end_date', 'end_date');
-
         $row = DB::table('employee_experiences as ex')
             ->leftJoin('organizations as o', 'o.id', '=', 'ex.organization_id')
             ->where('ex.id', $id)
@@ -167,24 +162,20 @@ class EmployeeExperience extends VSModel
                 ex.description, {$colStart}, {$colEnd}, o.name as organization",
             )
             ->first();
-
         if ($row) {
             $row->period_display = self::formatPeriodDisplay($row);
         }
-
         return $row;
     }
-
-    public static function getFormOptions($id, $ss)
+    static function getFormOptions($id, $ss)
     {
-        $experience = null;
+        $employee_experience = null;
         if ($id) {
-            $experience = self::getDetails($id, $ss);
+            $employee_experience = self::getDetails($id, $ss);
         }
-
         return (object) [
-            'organizations' => GeneralSettings::options_organization($ss),
-            'experience' => $experience,
+            'organizations' => DB::table('organizations')->selectRaw('id,name AS organization')->orderBy('id', 'ASC')->get(),
+            'employee_experiences' => $employee_experience,
         ];
     }
 }

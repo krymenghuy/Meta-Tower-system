@@ -3,11 +3,6 @@
 var EmployeeExperienceComponent = (function () {
     const mThis = {};
 
-    mThis.ORGANIZATIONS = [
-        { id: 1, organization: "Vectorasoft" },
-        { id: 2, organization: "APD BANK" },
-    ];
-
     mThis._escapeHtml = (s) => {
         if (s == null) return "";
         return String(s)
@@ -50,20 +45,7 @@ var EmployeeExperienceComponent = (function () {
 
     mThis._organizationLabel = (exp) => {
         const org = (exp.organization || "").trim();
-        if (org) return org;
-        const found = mThis.ORGANIZATIONS.find(
-            (item) => String(item.id) === String(exp.organization_id),
-        );
-        return found ? found.organization : "_";
-    };
-
-    mThis._organizationOptionsHtml = (selectedId) => {
-        const selected = selectedId != null ? String(selectedId) : "";
-        return mThis.ORGANIZATIONS.map((item) => {
-            const isSelected =
-                selected && selected === String(item.id) ? " selected" : "";
-            return `<option value="${item.id}"${isSelected}>${mThis._escapeHtml(item.organization)}</option>`;
-        }).join("");
+        return org !== "" ? org : "_";
     };
 
     mThis._bindActions = (container, empId, experienceList, onRefresh) => {
@@ -84,14 +66,9 @@ var EmployeeExperienceComponent = (function () {
         container.querySelectorAll(".emp-exp-action-btn--edit").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
-                const expId = btn.dataset.expId;
-                const experience = experienceList.find(
-                    (item) => String(item.id) === String(expId),
-                );
                 ExperienceDialog.show({
-                    id: expId,
+                    id: btn.dataset.expId,
                     emp_id: empId,
-                    experience,
                     onClose: refresh,
                 });
             };
@@ -232,39 +209,56 @@ const ExperienceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal emp-exp-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                createContent: () => `
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Start Date", "labels")}</label>
-                            <input data-type="date" type="text" name="start_date" class="form-control data-input" data-field="start_date" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("End Date", "labels")}</label>
-                            <input data-type="date" type="text" name="end_date" class="form-control data-input" data-field="end_date" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Period (if no dates)", "labels")}</label>
-                            <input type="text" name="period" class="form-control data-input" data-field="period" placeholder="e.g. Summer 2022, 2019-2021" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Position", "labels")} <span class="text-danger">*</span></label>
-                            <input type="text" name="position" class="form-control data-input" data-field="position" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Organization", "labels")}</label>
-                            <select name="organization_id" class="form-control data-input" data-field="organization_id">
-                                <option value="">${LocaleManager.trans("Select", "labels")}</option>
-                                ${EmployeeExperienceComponent._organizationOptionsHtml()}
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">${LocaleManager.trans("Description", "labels")}</label>
-                            <textarea name="description" class="form-control data-input" data-field="description" rows="3"></textarea>
-                        </div>
-                    </div>`,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" type="text" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " />
+                                    <label vslang="labels.Start Date"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" type="text" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
+                                    <label vslang="labels.End Date"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
+                                    <label vslang="labels.Period (if no dates)"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="position" required class="data-input form-control" data-field="position" placeholder=" " />
+                                    <label vslang="labels.Position"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="organization_id" class="data-input form-control" data-field="organization_id" placeholder="${LocaleManager.trans('Organization', 'labels')}"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="data-input form-control" data-field="description" rows="3" placeholder=" "></textarea>
+                                    <label vslang="labels.Description"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "organization_id",
+                        data: "organizations",
+                        textField: "organization",
+                        valueField: "id",
+                    },
+                ],
                 contentCreated: (me) => {
                     if (me.controls.start_date) {
                         DateTimePicker.init(me.controls.start_date);
@@ -273,73 +267,75 @@ const ExperienceDialog = (() => {
                         DateTimePicker.init(me.controls.end_date);
                     }
                 },
-                onPrepareForm: (me) => {
-                    const experience = me.dataOptions.experience || null;
-                    if (!experience) return;
-
-                    const fields = [
-                        "start_date",
-                        "end_date",
-                        "period",
-                        "position",
-                        "organization_id",
-                        "description",
-                    ];
-                    fields.forEach((field) => {
-                        if (!me.controls[field]) return;
-                        const val = experience[field];
-                        me.controls[field].value =
-                            val !== undefined && val !== null ? val : "";
-                    });
-                },
                 buttons: [
                     {
-                        label: LocaleManager.trans("Cancel", "buttons"),
-                        cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
                     },
                     {
-                        label: LocaleManager.trans("Save", "buttons"),
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+
                             p.id = me.dataOptions.id;
                             p.emp_id = me.dataOptions.emp_id;
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/experiences/save`,
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/experiences/save",
+                                    ].join(""),
                                     p,
                                     btn,
+                                    null
                                 )
                                 .then((res) => {
-                                    if (res.status_code === 200) {
+                                    if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
+                                        if (typeof me.dataOptions.onClose === "function") {
                                             me.dataOptions.onClose();
                                         }
-                                        cv_interact.success(
-                                            me.dataOptions.id
-                                                ? LocaleManager.trans(
-                                                      "update_success",
-                                                      "message_box_default",
-                                                  )
-                                                : LocaleManager.trans(
-                                                      "create_success",
-                                                      "message_box_default",
-                                                  ),
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success");
+                                        } else {
+                                            cv_interact.success("create_success");
+                                        }
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Experience",
+                    modifyTitle: "vslang:titles.Edit Experience",
+                    targetProp: "employee_experiences",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/experiences/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    if (me.controls.start_date) {
+                        DateTimePicker.init(me.controls.start_date);
+                    }
+                    if (me.controls.end_date) {
+                        DateTimePicker.init(me.controls.end_date);
+                    }
+                },
             });
+
         dialog.show(op);
     };
 

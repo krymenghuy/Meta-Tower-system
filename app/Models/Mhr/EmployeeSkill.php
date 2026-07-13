@@ -142,9 +142,25 @@ class EmployeeSkill extends VSModel
             $currentSkillId = $skill->skill_id ?? null;
         }
 
-        $skills = ($emp_id && is_numeric($emp_id))
-            ? Skill::getAvailableForEmployee($emp_id, $ss, $currentSkillId)
-            : Skill::getOptions($ss);
+        $branch_id = $ss->branch_id;
+        if ($emp_id && is_numeric($emp_id)) {
+            $query = DB::table('skills as s')
+                ->leftJoin('emp_skills as es', function ($join) use ($emp_id) {
+                    $join->on('es.skill_id', '=', 's.id')
+                        ->where('es.emp_id', '=', (int) $emp_id);
+                })
+                ->selectRaw('s.id,s.title,s.title AS skill_name,s.description')
+                ->orderBy('s.id', 'ASC')
+                ->where(function ($q) use ($currentSkillId) {
+                    $q->whereNull('es.id');
+                    if ($currentSkillId) {
+                        $q->orWhere('s.id', (int) $currentSkillId);
+                    }
+                });
+            $skills = $query->get();
+        } else {
+            $skills = Skill::getFormOptions(null, $ss)->skills;
+        }
 
         return (object) [
             'skills' => $skills,
