@@ -24,12 +24,10 @@ class WorkShift extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100'
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value'
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
-
-        $checkUnque = ["$branch_id|work_shifts|name|id=id|text=Work Shift already exists."];
-        $res = DBX::validateObject($arr, $v_rule, true, ['Title' => $pos_char], $ss->lang, false, $checkUnque);
+        $res = DBX::validateObject($arr, $v_rule, true, ['Title' => $pos_char], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -64,30 +62,29 @@ class WorkShift extends VSModel
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
-        $str_search = '1=1';
-        $updated = DBX::formatTime('ws.updated_at','updated_at');
+        $str_search = "1=1";
+        $str_moreWhere = '2=2';
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(ws.name LIKE '%" . $search_value . "%')";
+        }
         $query = DB::table('work_shifts as ws')
             ->whereRaw($str_search)
-            ->selectRaw('ws.id, ws.name,'.$updated.',ws.update_user')->orderBy('ws.id', 'ASC');
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->where(function ($q) use ($search_value) {
-                $q->where('ws.name', 'LIKE', "%{$search_value}%");
-            });
-        }
+            ->selectRaw('ws.id, ws.name,ws.updated_at,ws.update_user')
+            ->orderBy('ws.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('ws.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        foreach($rows as $row){
+            $row = setOfficialDates($row,[''],['updated_at'],[]);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     function delete($id=null, $ss=null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
         $branch_id = $ss->branch_id;
         $workShiftExist = DB::table('work_shifts')->where('id', $id)->exists();
         if (!$workShiftExist) {
