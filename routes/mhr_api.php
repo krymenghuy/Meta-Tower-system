@@ -53,6 +53,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/educations/save', [EmployeeEducationController::class, 'save']);
     Route::post('/educations/delete', [EmployeeEducationController::class, 'delete']);
     Route::post('/educations/details', [EmployeeEducationController::class, 'getDetails']);
+    Route::post('/educations/form-options', [EmployeeEducationController::class, 'getFormOptions']);
     // experiences
     Route::post('/experiences/list', [EmployeeExperienceController::class, 'getList']);
     Route::post('/experiences/save', [EmployeeExperienceController::class, 'save']);

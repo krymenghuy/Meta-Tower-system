@@ -74,6 +74,18 @@ class EmployeeEducationController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        return JDV::result(EmployeeEducation::getDetails($req->id, $ss));
+        return JDV::result($this->educations->getDetails($req->id, $ss));
+    }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->id ?? null;
+
+        return JDV::result($this->educations->getFormOptions($id, $ss));
     }
 }

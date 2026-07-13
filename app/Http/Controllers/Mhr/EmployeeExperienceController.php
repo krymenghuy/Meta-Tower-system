@@ -74,7 +74,7 @@ class EmployeeExperienceController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        return JDV::result(EmployeeExperience::getDetails($req->id, $ss));
+        return JDV::result($this->experiences->getDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -86,6 +86,6 @@ class EmployeeExperienceController extends Controller
 
         $id = $req->id ?? null;
 
-        return JDV::result(EmployeeExperience::getFormOptions($id, $ss));
+        return JDV::result($this->experiences->getFormOptions($id, $ss));
     }
 }
