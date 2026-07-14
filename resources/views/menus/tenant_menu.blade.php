@@ -252,7 +252,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="icons" src="{{ asset('assets/images/bhr/logout.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text" vslang="menus.logout"></span>
+                        <span class="kt-menu__link-text" vslang="menus.Log Out"></span>
                     </a>
                 </li>
 

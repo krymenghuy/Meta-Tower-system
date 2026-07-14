@@ -230,7 +230,7 @@ var ContractsComponent = new (function () {
                         </div>
                         <div class="contract-card__header-right">
                             <label class="contract-card__toggle" title="Collapse/Expand Details">
-                                <span class="contract-card__toggle-label">Collapse/Expand Details</span>
+                                <span class="contract-card__toggle-label" vslang="labels.Collapse/Expand Details">${LocaleManager.trans('Collapse/Expand Details', 'labels')}</span>
                                 <input type="checkbox" class="contract-card__toggle-input" checked aria-expanded="true">
                                 <span class="contract-card__toggle-track"></span>
                             </label>
@@ -243,18 +243,18 @@ var ContractsComponent = new (function () {
                               <div class="contract-card__address">
                                     <div class="contract-card__address-head">
                                         <i class="fa-solid fa-building"></i>
-                                        <span>Unit Details</span>
+                                        <span vslang="titles.Unit Details">Unit Details</span>
                                     </div>
                                     <div class="contract-card__sqft">
-                                        <span class="contract-card__sqft-label">Square footage</span>
+                                        <span class="contract-card__sqft-label" vslang="titles.Square footage"></span>
                                         <span class="contract-card__sqft-value">${sqmDisplay}</span>
                                     </div>
                                     <div class="contract-card__sqft">
-                                        <span class="contract-card__sqft-label">Building</span>
+                                        <span class="contract-card__sqft-label" vslang="titles.Building"></span>
                                         <span class="contract-card__sqft-value">${data.building_name || "—"} , ${data.floor_name || "—"}</span>
                                     </div>
                                      <div class="contract-card__sqft">
-                                        <span class="contract-card__sqft-label">Address</span>
+                                        <span class="contract-card__sqft-label" vslang="titles.Address"></span>
                                         <span class="contract-card__sqft-value">${data.address || "—"}</span>
                                     </div>
                                 </div>
@@ -263,27 +263,27 @@ var ContractsComponent = new (function () {
                             <div class="col-12 col-md-8 contract-card__col-right">
                                 <div class="contract-card__panel">
                                     <div class="contract-card__panel-head">
-                                        <div class="contract-card__section-title">Contract Status</div>
+                                        <div class="contract-card__section-title" vslang="titles.Contract Status"></div>
                                         <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
                                     </div>
                                     <div class="contract-card__status-block">
                                         <div class="contract-card__duration">
-                                            <span>Duration:</span>
+                                            <span vslang="titles.Duration"></span>
                                             <span>${duration}</span>
                                         </div>
                                         <div class="contract-card__renewal-date">
-                                            Renewed date: <span>${keyRenewalDate}</span>
+                                            <span vslang="titles.Renewal Date"></span> <span>${keyRenewalDate}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="contract-card__panel contract-card__panel--finance">
-                                    <div class="contract-card__section-title">Financial Details</div>
+                                    <div class="contract-card__section-title" vslang="titles.Financial Details"></div>
                                     <div class="contract-card__finance">
                                         <div class="row g-3">
                                             <div class="col-6">
                                                 <div class="contract-card__finance-card">
-                                                    <div class="contract-card__finance-label">
-                                                        Monthly Rent
+                                                    <div class="contract-card__finance-label" vslang="titles.Monthly Rent">
+                                                        
                                                     </div>
                                                     <div class="contract-card__finance-value">
                                                         ${priceLabelPerMonth}
@@ -293,8 +293,8 @@ var ContractsComponent = new (function () {
 
                                             <div class="col-6">
                                                 <div class="contract-card__finance-card">
-                                                    <div class="contract-card__finance-label">
-                                                        Security Deposit
+                                                    <div class="contract-card__finance-label" vslang="titles.Deposit">
+                                                        
                                                     </div>
                                                     <div class="contract-card__finance-value">
                                                         ${deposit}
@@ -355,8 +355,8 @@ var ContractsComponent = new (function () {
                         style="width:44px;height:44px;border:1px solid #e5e7eb;">
                         <i class="fa-regular fa-file-lines"></i>
                     </span>
-                    <p class="mb-1 fw-semibold text-prm-custom">No contracts found</p>
-                    <small class="text-muted">Try adjusting your search or filters.</small>
+                    <p class="mb-1 fw-semibold text-prm-custom" vslang="titles.No contracts found"> </p>
+                    <small class="text-muted" vslang="titles.Try adjusting your search or filters"></small>
                 </div>`;
             return;
         }
@@ -372,6 +372,7 @@ var ContractsComponent = new (function () {
         });
         html += "</div>";
         container.innerHTML = html;
+        LocaleManager.translateZone(container);
         mThis.bindCardEvents(container);
     };
 
@@ -444,7 +445,7 @@ var ContractsComponent = new (function () {
                             <div class="contract2-detail__section-card">
                                 <div class="contract2-detail__section-head">
                                     <span class="contract2-detail__section-icon"><i class="fa-regular fa-file-lines"></i></span>
-                                    <span>Lease information</span>
+                                    <span vslang="titles.Lease information"></span>
                                 </div>
                                 <div class="contract2-detail__info-rows">
                                     <div class="contract2-detail__info-grid">
@@ -462,7 +463,7 @@ var ContractsComponent = new (function () {
                             <div class="contract2-detail__section-card">
                                 <div class="contract2-detail__section-head">
                                     <span class="contract2-detail__section-icon"><i class="fa-regular fa-credit-card"></i></span>
-                                    <span>Payment</span>
+                                    <span vslang="titles.Payment"></span>
                                 </div>
                                 <div class="contract2-detail__info-grid contract2-detail__info-grid--single">
                                     ${mThis.renderDetailField("Last payment", mThis.valueHtml(data.last_renewal_date, "No payment yet"))}
@@ -477,6 +478,7 @@ var ContractsComponent = new (function () {
 
     mThis.bindDetailTabs = (root, onClose) => {
         if (!root) return;
+         LocaleManager.translateZone(root);
 
         const closeBtn = root.querySelector(".contract2-detail__close-btn");
         if (closeBtn && typeof onClose === "function") {
@@ -523,15 +525,15 @@ var ContractsComponent = new (function () {
         const renderItemBox = (renewalDate, startDate, endDate) => `
             <div class="contract2-renewal__item-box">
                 <div class="contract2-renewal__item-field">
-                    <span class="contract2-renewal__field-label">Renewal date</span>
+                    <span class="contract2-renewal__field-label" vslang="titles.Renewal date"></span>
                     <span class="contract2-renewal__field-value">${mThis.escapeHtml(renewalDate)}</span>
                 </div>
                 <div class="contract2-renewal__item-field">
-                    <span class="contract2-renewal__field-label">Start date</span>
+                    <span class="contract2-renewal__field-label" vslang="titles.Start date"></span>
                     <span class="contract2-renewal__field-value">${mThis.escapeHtml(startDate)}</span>
                 </div>
                 <div class="contract2-renewal__item-field">
-                    <span class="contract2-renewal__field-label">End date</span>
+                    <span class="contract2-renewal__field-label" vslang="titles.End date"></span>
                     <span class="contract2-renewal__field-value">${mThis.escapeHtml(endDate)}</span>
                 </div>
             </div>`;
@@ -545,7 +547,7 @@ var ContractsComponent = new (function () {
             <div class="contract2-renewal__item is-current">
                 <span class="contract2-renewal__dot"></span>
                 <div class="contract2-renewal__item-head">
-                    <span class="contract2-renewal__item-label">Current term</span>
+                    <span class="contract2-renewal__item-label" vslang="titles.Current term"></span>
                     <span class="contract2-renewal__item-date">${mThis.escapeHtml(currentDateLabel)}</span>
                 </div>
                 ${renderItemBox(
@@ -572,7 +574,7 @@ var ContractsComponent = new (function () {
             <div class="contract2-renewal__item${isLast ? " is-original" : ""}">
                 <span class="contract2-renewal__dot"></span>
                 <div class="contract2-renewal__item-head">
-                    <span class="contract2-renewal__item-label">${label}</span>
+                    <span class="contract2-renewal__item-label" vslang="titles.Current term"></span>
                     <span class="contract2-renewal__item-date">${mThis.escapeHtml(dateLabel)}</span>
                 </div>
                 ${renderItemBox(
@@ -581,6 +583,7 @@ var ContractsComponent = new (function () {
                     formatDateValue(row.end_date),
                 )}
             </div>`;
+             LocaleManager.translateZone(timelineHtml);
         });
 
         const footHtml = inline
@@ -627,7 +630,8 @@ var ContractsComponent = new (function () {
                     <i class="fa-solid fa-xmark"></i>
                 </button>
                 ${bodyHtml}
-            </div>`;
+                </div>`;
+              
     };
 
     mThis.loadRenewalHistory = (container, id, onClose, options = {}) => {
@@ -653,6 +657,7 @@ var ContractsComponent = new (function () {
                     renewals,
                     options,
                 );
+                LocaleManager.translateZone(container);
                 if (!options.inline) {
                     mThis.bindRenewalDialog(container, onClose);
                 }
@@ -660,6 +665,7 @@ var ContractsComponent = new (function () {
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-0">Failed to load renewal history.</div>`;
             });
+            
     };
 
     mThis.bindRenewalDialog = (container, onClose) => {
