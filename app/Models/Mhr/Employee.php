@@ -348,11 +348,13 @@ class Employee extends VSModel
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
-            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->leftJoin('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->leftJoin('um_branches as b', 'b.id', '=', 'emp.branch_id')
             ->selectRaw('
                 emp.code,
                 emp.id,
                 emp.branch_id,
+                b.name as branch_name,
                 emp.name,
                 emp.name_kh,
                 emp.email,

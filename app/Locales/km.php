@@ -590,7 +590,7 @@ return [
 
 
         'Announcements' => 'សេចក្តីជូនដំណឹង',
-        
+
 
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Benefits' => 'អត្ថប្រយោជន៍',
@@ -682,13 +682,13 @@ return [
         'Transaction'=> 'ប្រតិបត្តិការ',
         'Reservation Now' =>'កក់ឥឡូវ',
 
-        
-        
 
 
 
-        
-        
+
+
+
+
 
 
 
@@ -701,7 +701,7 @@ return [
         'Staff Attendances' => 'វត្តមានបុគ្គលិក',
         'Delete Attendance' => 'លុបវត្តមាន',
 
-    
+
 
     ],
 
@@ -1220,7 +1220,7 @@ return [
         'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Sub Total' => 'សរុបរង',
         'Total Net' => 'ទឹកប្រាក់សរុប',
-        
+
         'Employee' =>  'បុគ្គលិក',
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Tax Options' => 'ជម្រើសពន្ធ',
@@ -1239,7 +1239,7 @@ return [
 
 
 
-        
+
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
@@ -1441,7 +1441,7 @@ return [
         'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
-        
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",

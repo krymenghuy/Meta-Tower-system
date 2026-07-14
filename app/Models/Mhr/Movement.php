@@ -18,7 +18,7 @@ class Movement extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    
+
     public function upsert($arr = [], $id = null,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -44,6 +44,72 @@ class Movement extends VSModel
         }
 
         return DV::error('Error saving data');
+    }
+
+    /** Profile movement: update employee branch / position / salary / work shift */
+    public function applyEmployeeChanges($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $d = (object) $arr;
+
+        if (empty($d->emp_id) || !is_numeric($d->emp_id)) {
+            return DV::error('Employee is required');
+        }
+
+        $emp = DB::table('employees')->where('id', $d->emp_id)->first();
+        if (!$emp) {
+            return DV::error('Employee not found');
+        }
+
+        $change_branch = !empty($d->change_branch);
+        $change_position = !empty($d->change_position);
+        $change_salary = !empty($d->change_salary);
+        $change_work_shift = !empty($d->change_work_shift);
+
+        if (!$change_branch && !$change_position && !$change_salary && !$change_work_shift) {
+            return DV::error('Please select at least one change');
+        }
+
+        $updates = [];
+
+        if ($change_branch) {
+            if (empty($d->to_branch_id) || !is_numeric($d->to_branch_id)) {
+                return DV::error('To Branch is required');
+            }
+            $updates['branch_id'] = (int) $d->to_branch_id;
+        }
+
+        if ($change_position) {
+            if (empty($d->to_position_id) || !is_numeric($d->to_position_id)) {
+                return DV::error('To Position is required');
+            }
+            $updates['position_id'] = (int) $d->to_position_id;
+        }
+
+        if ($change_salary) {
+            if ($d->new_salary === '' || $d->new_salary === null || !is_numeric($d->new_salary)) {
+                return DV::error('New Salary is required');
+            }
+            $updates['salary'] = $d->new_salary;
+        }
+
+        if ($change_work_shift) {
+            if (empty($d->to_work_shift_id) || !is_numeric($d->to_work_shift_id)) {
+                return DV::error('To Work Shift is required');
+            }
+            $updates['work_shift_id'] = (int) $d->to_work_shift_id;
+        }
+
+        if (empty($updates)) {
+            return DV::error('No changes to apply');
+        }
+
+        $id = DBX::saveData($ss, 'employees', ['id' => $d->emp_id], $updates, [], 1, false);
+        if ($id > 0) {
+            return DV::depends(1, ['id' => $id, 'updates' => $updates]);
+        }
+
+        return DV::error('Error saving movement');
     }
 
     public function getEventListPaginate($arr, $ss)
@@ -148,20 +214,54 @@ class Movement extends VSModel
         return DV::depends($query, null, 'Error deleting employee event');
     }
 
-    public function getFormOptions($id, $ss){
+    public function getFormOptions($id, $ss, $emp_id = null){
         $emp_event = null;
         if ($id) {
             $emp_event = self::getDetails($id, $ss);
+            $emp_id = $emp_id ?: ($emp_event->emp_id ?? null);
         }
-        return (object) [
 
+        $employee = null;
+        if ($emp_id) {
+            $employee = Employee::getDetails($emp_id, $ss);
+            if (!$employee) {
+                $employee = DB::table('employees as emp')
+                    ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
+                    ->leftJoin('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+                    ->leftJoin('um_branches as b', 'b.id', '=', 'emp.branch_id')
+                    ->where('emp.id', $emp_id)
+                    ->selectRaw('
+                        emp.id,
+                        emp.branch_id,
+                        b.name as branch_name,
+                        emp.salary,
+                        p.name as position,
+                        p.name as position_title,
+                        ws.name as work_shift
+                    ')
+                    ->first();
+            } elseif (empty($employee->branch_name) && !empty($employee->branch_id)) {
+                $employee->branch_name = DB::table('um_branches')
+                    ->where('id', $employee->branch_id)
+                    ->value('name');
+            }
+        }
+
+        // um_branches.subs_id may not match session hex filter — load all for dropdown
+        $branches = DB::table('um_branches')->selectRaw('id, name AS branch_name, name')->get();
+        if ($branches->isEmpty()) {
+            $branches = GeneralSettings::options_branch($ss);
+        }
+
+        return (object) [
             'employees' => GeneralSettings::options_employee(10,$ss),
             'events' => DB::table('events')->selectRaw('id,name')->get(),
-
-
+            'branches' => $branches,
+            'positions' => GeneralSettings::options_position($ss),
+            'work_shifts' => GeneralSettings::options_work_shift($ss),
             'emp_event' => $emp_event,
+            'employee' => $employee,
         ];
-
     }
 
 }
