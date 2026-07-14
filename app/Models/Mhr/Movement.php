@@ -18,7 +18,7 @@ class Movement extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    
+
     public function upsert($arr = [], $id = null,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
