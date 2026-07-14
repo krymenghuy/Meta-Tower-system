@@ -218,11 +218,6 @@ function v_display($mod_id, $module_ids = null)
                         </ul>
                     </div>
                 </li>
-               
-                <li class="mb-2 kt-menu__section">
-                    <h4 class="kt-menu__section-text" vslang="menus.Attendance"></h4>
-                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(308); ?>>
                     <a href="StaffAttendanceComponent" modid="308" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
@@ -231,6 +226,11 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Attendance">Attendance</span>
                     </a>
                 </li>
+                <li class="mb-2 kt-menu__section">
+                    <h4 class="kt-menu__section-text" vslang="menus.Leave Managements"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+            
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
                     <a href="LeaveComponent" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
@@ -294,7 +294,7 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
                 <li class="mb-2 kt-menu__section">
-                    <h4 class="kt-menu__section-text" vslang="menus.Benefit & Shift List"></h4>
+                    <h4 class="kt-menu__section-text" vslang="menus.System & Settings"></h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(302); ?>>
@@ -313,10 +313,6 @@ function v_display($mod_id, $module_ids = null)
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Work Shifts">Work Shifts</span>
                     </a>
-                </li>
-                <li class="mb-2 kt-menu__section">
-                    <h4 class="kt-menu__section-text" vslang="menus.System & Settings"></h4>
-                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
                 
                 

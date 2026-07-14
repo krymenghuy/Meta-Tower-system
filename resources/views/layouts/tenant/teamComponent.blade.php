@@ -7,7 +7,7 @@
         <div class="col-lg-3">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
-                    <h6 class="mb-0 text-muted">Teams</h6>
+                    <h6 class="mb-0 text-muted" vslang="titles.Teams">Teams</h6>
                     <button type="button" class="btn btn-primary btn-sm vs-icon-btn" id="_btnAddTeam" aria-label="Create Team">
                         <i class="fa fa-user-plus p-0" aria-hidden="true"></i>
                     </button>
@@ -21,11 +21,11 @@
         <div class="col-lg-9">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <h6 class="mb-0 text-muted">Team Members</h6>
+                    <h6 class="mb-0 text-muted" vslang="titles.Team Members">Team Members</h6>
                     <div class="d-flex align-items-center gap-2" style="width: 450px; max-width: 100%;">
                         <div class="position-relative flex-grow-1">
                             <input type="text" class="filter-field form-control rounded-2 ps-5"
-                                   id="_search_member" placeholder="Search by name, code or phone">
+                                   id="_search_member" placeholder="{{ \Vsd\Locales\Localization::trans('Search by request no. or tenant', 'titles') }}">
                             <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                         </div>
                         <select id="_el_member_status" class="filter-field form-select flex-shrink-0"
@@ -47,14 +47,14 @@
 <div id="_team_profile_view" class="px-3" style="display:none; height: calc(100vh - 90px); overflow-y: auto;">
     <div class="vs-profile-topbar mt-2 mb-3">
         <nav class="vs-breadcrumb" aria-label="breadcrumb">
-            <a href="javascript:void(0)" class="vs-breadcrumb-link" id="_btn_back_team_dashboard">Team</a>
+            <a href="javascript:void(0)" class="vs-breadcrumb-link" id="_btn_back_team_dashboard" vslang="titles.Team">Team</a>
             <span class="vs-breadcrumb-sep">/</span>
-            <a href="javascript:void(0)" id="_btn_back_team" class="vs-breadcrumb-link">Staff Directory</a>
+            <a href="javascript:void(0)" id="_btn_back_team" class="vs-breadcrumb-link" vslang="titles.Staff Directory">Staff Directory</a>
             <span class="vs-breadcrumb-sep">/</span>
             <span class="vs-breadcrumb-current" id="_team_profile_breadcrumb_name">&nbsp;</span>
         </nav>
         <div class="mt-1">
-            <h4 class="vs-profile-page-title mb-0">Staff Member Profile</h4>
+            <h4 class="vs-profile-page-title mb-0" vslang="titles.Staff Member Profile">Staff Member Profile</h4>
         </div>
     </div>
     <div id="sub_view_profile">

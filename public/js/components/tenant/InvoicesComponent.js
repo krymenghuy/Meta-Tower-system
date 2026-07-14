@@ -560,7 +560,7 @@ var InvoicesComponent = (() => {
                     "id",
                     "payment_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
 
@@ -576,7 +576,7 @@ var InvoicesComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Types",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
 

@@ -236,7 +236,7 @@ var LeaveComponent = (function () {
     };
 
     mThis.initDropdownMenus = (table)=>{
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
             cssClass:"bg-white shadow",
@@ -277,7 +277,7 @@ var LeaveComponent = (function () {
                 }
             }
         }
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     }
 
    
@@ -314,11 +314,10 @@ var LeaveComponent = (function () {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted successfully');
                         mThis.LeaveRequestListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message || 'An error occurred while deleting');
                     }
                 })
-            }
-            else {
-                cv_interact.error(res.error_message);
             }
         });
     }

@@ -28,8 +28,6 @@ class StaffAttendance extends VSModel
 
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-        $mins = $this->mins;
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id|text=required_select_employee',
@@ -88,6 +86,7 @@ class StaffAttendance extends VSModel
         $position_id = $filter->position_id ?? null;
         $emp_type_id = $filter->emp_type_id ?? null;
         $work_shift_id = $filter->work_shift_id ?? null;
+        $attendance_date = $filter->attendance_date ?? null;
         $search_value = escape_like_str($filter->search_value ?? null);
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
@@ -98,9 +97,9 @@ class StaffAttendance extends VSModel
             ->join('positions as p', 'emp.position_id', '=', 'p.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
-            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code,'
+            ->selectRaw('a.id, a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code as emp_code,'
                 . $dob . ', ws.name as work_shift,'
-                . $scan_date . ', a.scan_time, a.scan_action, a.attendance_status, p.name as position')
+                . $scan_date . ', a.scan_time, a.scan_action, a.attendance_status, a.remarks, p.name as position')
             ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
         if ($search_value) {
             $query->where(function ($subQuery) use ($search_value) {
@@ -121,25 +120,15 @@ class StaffAttendance extends VSModel
         if ($work_shift_id) {
             $query->where('a.work_shift_id', $work_shift_id);
         }
+        if ($attendance_date) {
+            $timestamp = strtotime($attendance_date);
+            if ($timestamp !== false) {
+                $formatted_date = date('Y-m-d', $timestamp);
+                $query->whereDate('a.attendance_date', $formatted_date);
+            }
+        }
         $count = $query->count();
-        $rows = $query->skip($skip_rows)->take($per_page)->get()
-            ->groupBy(fn($item) => $item->emp_id . '_' . $item->attendance_date)
-            ->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'code' => $first->code,
-                    'name' => $first->name,
-                    'sex' => $first->sex,
-                    'position' => $first->position,
-                    'attendance_date' => $first->attendance_date,
-                    'work_shift' => $first->work_shift,
-                    'attendance_status' => $first->attendance_status,
-                    'scan_info' => $group->map(fn($item) => [
-                        'time' => $item->scan_time,
-                        'scan_action' => $item->scan_action,
-                    ])->values(),
-                ];
-            })->values();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     function attendanceList($arr, $ss = null)
@@ -158,7 +147,7 @@ class StaffAttendance extends VSModel
         return $rows;
     }
 
-    function getDetails($id)
+    function getDetails($id, $ss = null)
     {
         if (empty($id)) {
             return response()->json([
@@ -168,7 +157,7 @@ class StaffAttendance extends VSModel
         }
         $row = DB::table('emp_attendances as a')
             ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
-            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, a.attendance_date, a.scan_time, a.scan_action, a.attendance_status, a.work_shift_id, a.remarks')
+            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.attendance_status, a.work_shift_id, a.remarks')
             ->where('a.id', $id)
             ->first();
         if (!$row) {
@@ -180,21 +169,22 @@ class StaffAttendance extends VSModel
         return $row;
     }
 
-    function deleteAttendance($id = null)
+    function deleteAttendance($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        $query = DB::table('attendances')
+        $query = DB::table('emp_attendances')
             ->where('id', $id)
             ->delete();
         if (!$query) {
-            return DV::error('attendances not found');
+            return DV::error('Attendance record not found');
         }
-        return DV::depends($query, null, 'Error deleting attendances');
+        return DV::depends($query, null, 'Error deleting attendance record');
     }
     function getFormOptions($id, $ss)
     {
@@ -247,9 +237,8 @@ class StaffAttendance extends VSModel
         $employee_card_number = $inputs['employee_card_number'] ??  null;
         $current_date = convertDate($arr['attendance_date'] ?? date('Y-m-d'));
         $present_time =  $arr['scan_time'] ??  date('H:i');
-        $success = 0;
 
-        // Check if a record with the specified date exists
+
         $employee = null;
         $col_subs_id = DBX::getHEX('subs_id', 'subs_id');
         if ($employee_code) {
@@ -275,20 +264,15 @@ class StaffAttendance extends VSModel
         $work_shift_id = $employee->work_shift_id;
         $str_work_shift = 'sd.work_shift_id=\'' . $work_shift_id . '\'';
 
-
-
-        /** If has_checked_in then process check_out action */
-
         $work_shifts = null;
         $rows = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
             ->whereRaw($str_work_shift)
             ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
-            // ->where('ws.id', $work_shift_id)
             ->get();
         $date = new DateTime($current_date);
         $day = $date->format('D');
-        $ds = ShiftDetails::getScanTimes($rows, $day);
+        $ds = WorkShift::getScanTimes($rows, $day);
         $work_shifts = $ds;
 
         $present_time = new DateTime($present_time);
@@ -306,7 +290,6 @@ class StaffAttendance extends VSModel
                 break;
             }
         }
-        // return $work_shifts;
 
 
         if (!$work_shift_detail) {
@@ -358,8 +341,7 @@ class StaffAttendance extends VSModel
                 if ($message) return DV::error($message);
             }
         } else
-            return DV::error('action in corect!');
-        //remember employee's name for notification
+            return DV::error('action incorrect!');
         $employee_name = $employee->name;
         $employee_code = $employee->code;
         $file_name = $employee->photo_file_name;
@@ -388,7 +370,7 @@ class StaffAttendance extends VSModel
         $work_shift_id = DB::table('employees')->where('id', $employee_id)->value('work_shift_id');
 
         $nowTime = getNowTime();
-        $arr_attenance = [
+        $arr_attendance = [
             "subs_id" => $bin_subs_id,
             "attendance_date" => $current_date,
             "emp_id" => $employee_id,
@@ -418,7 +400,7 @@ class StaffAttendance extends VSModel
         //     $success +=1;
         //     //$str_msg =$employee_name.' now checked out!';
         // }else{
-        DB::table('emp_attendances')->insert($arr_attenance);
+        DB::table('emp_attendances')->insert($arr_attendance);
 
         //     $success +=1;
         // }
