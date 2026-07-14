@@ -137,6 +137,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-benefit')
     Route::post('/import', [EmployeeBenefitController::class, 'importBenefit']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')->group(function () {
+    Route::post('/save', [WarningController::class, 'saveWarning']);
+    Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
+    Route::post('/details', [WarningController::class, 'getDetails']);
+    Route::post('/delete', [WarningController::class, 'deleteWarning']);
+    Route::post('/form-options', [WarningController::class, 'getFormOptions']);
+    Route::post('/update-status', [WarningController::class, 'updateStatus']);
+    Route::post('/list', [WarningController::class, 'warningList']);
+});
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
 
     Route::post('/save', [BenefitController::class, 'saveBenefit']);
@@ -186,4 +196,64 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')
     Route::post('/details', [WorkShiftController::class, 'getDetails']);
     Route::post('/delete', [WorkShiftController::class, 'deleteWorkShift']);
     Route::post('/form-options', [WorkShiftController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->group(function () {
+    Route::post('/save', [HolidayController::class, 'saveHoliday']);
+    Route::post('/list-paginate', [HolidayController::class, 'getHolidayListPaginate']);
+    Route::post('/details', [HolidayController::class, 'getDetails']);
+    Route::post('/delete', [HolidayController::class, 'deleteHoliday']);
+    Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
+    Route::post('/list', [HolidayController::class, 'getHolidayList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->group(function () {
+    Route::post('/save', [SkillController::class, 'saveSkill']);
+    Route::post('/list', [SkillController::class, 'getSkillList']);
+    Route::post('/list-paginate', [SkillController::class, 'getSkillListPaginate']);
+    Route::post('/details', [SkillController::class, 'getDetails']);
+    Route::post('/delete', [SkillController::class, 'deleteSkill']);
+    Route::post('/form-options', [SkillController::class, 'getFormOptions']);
+    Route::post('/save/skill/photo', [SkillController::class, 'saveSkillPhoto']);
+    Route::post('/skill/photo', [SkillController::class, 'getSkillPhoto']);
+    Route::post('/delete/skill/photo', [SkillController::class, 'deleteSkillPhoto']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->group(function () {
+    Route::post('/save', [JobLevelController::class, 'saveJobLevel']);
+    Route::post('/list', [JobLevelController::class, 'getList']);
+    Route::post('/list-paginate', [JobLevelController::class, 'getList']);
+    Route::post('/detail', [JobLevelController::class, 'getDetails']);
+    Route::post('/form-options', [JobLevelController::class, 'getFormOptions']);
+    Route::post('/delete', [JobLevelController::class, 'deleteJobLevel']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('position')->group(function () {
+    Route::post('/save', [PositionController::class, 'savePosition']);
+    Route::post('/list-paginate', [PositionController::class, 'getList']);
+    Route::post('/details', [PositionController::class, 'getDetails']);
+    Route::post('/delete', [PositionController::class, 'deletePosition']);
+    Route::post('/form-options', [PositionController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getList']);
+    Route::post('/details', [DepartmentController::class, 'getDetails']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
+    Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-bracket')->group(function () {
+
+    Route::post('/save', [TaxBracketController::class, 'saveTaxBracket']);
+    Route::post('/list-paginate', [TaxBracketController::class, 'getTaxBracketListPaginate']);
+    Route::post('/details', [TaxBracketController::class, 'getDetails']);
+    Route::post('/delete', [TaxBracketController::class, 'deleteTaxBracket']);
+    Route::post('/form-options', [TaxBracketController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
+
+    Route::post('/save', [TaxAllowanceController::class, 'saveTaxAllowance']);
+    Route::post('/list-paginate', [TaxAllowanceController::class, 'getList']);
+    Route::post('/list-all', [TaxAllowanceController::class, 'listAll']);
+    Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
+    Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
+    Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
 });
