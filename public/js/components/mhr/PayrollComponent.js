@@ -55,7 +55,7 @@ var PayrollComponent = new (function () {
             transTitle: "titles.Duration",
             className: "align-middle w-15",
             data: (data) =>
-                `<span class="text-dark">(${data.start_date ?? ""}​ ~ ${data.end_date ?? ""}</small>)</span>`,
+                `<span class="text-prm-custom">(${data.start_date ?? ""}​ ~ ${data.end_date ?? ""}</small>)</span>`,
         },
         {
             transTitle: "titles.Staff Count",
@@ -79,28 +79,17 @@ var PayrollComponent = new (function () {
             className: "align-middle w-12",
             data: (data) => {
                 let x_rate = data.exchange_rate;
-                // if (x_rate >= 1) {
-                //     x_rate = VSMoney.formatAmount(x_rate, null, null, {
-                //         minimumFractionDigits: 2,
-                //         maximumFractionDigits: 2,
-                //         useGrouping: true,
-                //     });
-                // }
                 return `<p class="p-0 m-0">${x_rate}</p>`;
             },
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                    <span class="text-warning fw-semibold">${data.update_user}</span>
-                    <span>
-                        <small class="text-nowrap">${data.update_date}</small>
-                    </span>
-                </div>`;
-            },
+            className: "align-middle text-nowrap",
+           data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.update_date ?? ''}</span>
+            </div>`
         },
         {
             transTitle: "titles.Authorize",
@@ -112,17 +101,17 @@ var PayrollComponent = new (function () {
 
                 if (data.authorized === 1) {
                     cls_class = "bg-success-subtle text-success border border-success";
-                    cls_icon = "fa fa-check text-center align-center justify-content-center";
+                    cls_icon = "fa-solid fa-check";
                 } else if (data.authorized === 0) {
                     cls_class = "bg-warning-subtle text-warning border border-warning";
-                    cls_icon = "fa fa-times text-center align-center justify-content-center";
+                    cls_icon = "fa-regular fa-clock";
                 }
 
                 return `<div><a class="d-block" data-authorized="${
                     data.authorized
                 }" data-id="${data.id}" href="javascript:void(0)">
                             <span class="badge ${cls_class}" style="min-width: 100px;">
-                            <i class="${cls_icon}" style="font-size: 10px;"></i>
+                            <i class="${cls_icon}"></i>
                                 ${data.authorized == 0 ? "Pending" : "Approved"}
                             </span>
                         </a></div>`;
@@ -139,11 +128,11 @@ var PayrollComponent = new (function () {
                 if (data.disbursed === 1) {
                     cls_class =
                         "bg-success-subtle text-success border border-success";
-                    cls_icon = "fa fa-check text-center align-center justify-content-center";
+                    cls_icon = "fa fa-check";
                 } else if (data.disbursed === 0) {
                     cls_class =
                         "bg-warning-subtle text-warning border border-warning";
-                    cls_icon = "fa fa-times text-center align-center justify-content-center";
+                    cls_icon = "fa-solid fa-hourglass";
                 }
 
                 return `<div><a class="d-block" data-status="${
@@ -207,10 +196,8 @@ var PayrollComponent = new (function () {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
             let op = {
                 id: null,
-                // id: 1,
                 btn: e.target,
                 onClose: (p) => {
                     if (!p) return;

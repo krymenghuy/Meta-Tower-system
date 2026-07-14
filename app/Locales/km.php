@@ -377,7 +377,7 @@ return [
         'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Modify Maintenance' => 'កែប្រែការថែទាំ',
 
-        'Create Reservation' => 'បង្កើតការកក់',
+        'Create Reservation' => 'Create Reservation',
         'Modify Reservation' => 'កែប្រែការកក់',
 
         'Authorize' => 'អនុម័ត',
@@ -635,6 +635,62 @@ return [
         'Delete Shift' => 'លុបវេនការងារ',
         'Create Shift' => 'បង្កើតវេនការងារ',
         'Total Fee' => 'តម្លៃសរុប',
+        'Unit Details' => 'ព័ត៌មានបន្ទប់',
+        'Team Members' => 'សមាជិកក្រុម',
+        'Teams' => 'ក្រុម',
+        'Team Management' => 'ការគ្រប់គ្រងក្រុម',
+        'Staff Member Profile' => 'ព័ត៌មានសមាជិកបុគ្គលិក',
+        'Staff Directory' => 'បញ្ជីបុគ្គលិក',
+        'Search by name, code or phone' => 'ស្វែងរកតាមឈ្មោះ លេខកូដ ឬទូរស័ព្ទ',
+        'Members' => 'សមាជិក',
+        'Delete Member' => 'លុបសមាជិក',
+        'Edit Member' => 'កែប្រែសមាជិក',
+        'Please click a team card first to see its members.' => 'សូមចុចលើកាតក្រុមមុន ដើម្បីមើលសមាជិកក្រុម។',
+        'Financial Details' => 'ព័ត៌មានហិរញ្ញវត្ថុ',
+        'Monthly Rent' => 'ប្រាក់បង់ប្រចាំខែ',
+        'Square footage' => 'ទំហំផ្ទះ',
+        'Renewal Date' => 'កាលបរិច្ឆេទបន្តកិច្ចសន្យា',
+        'No contracts found' => 'រកមិនឃើញកិច្ចសន្យា',
+        'Try adjusting your search or filters' => 'សូមកែប្រែការស្វែងរក ឬតម្រងរបស់អ្នក។',
+        'Lease information' => 'ព័ត៌មានកិច្ចសន្យា',
+        'Payment' => 'ការទូទាត់',
+        'Last payment' => 'ការទូទាត់ចុងក្រោយ',
+        'No payment yet' => 'មិនទាន់មានការទូទាត់នៅឡើយ',
+        'Currently active' => 'បច្ចុប្បន្នសកម្ម',
+        'Current term' => 'អាណត្តិបច្ចុប្បន្ន',
+        'Start date' => 'កាលបរិច្ឆេទចាប់ផ្តើម',
+        'Renewal date' => 'កាលបរិច្ឆេទបន្តកិច្ចសន្យា',
+        'End date' => 'កាលបរិច្ឆេទបញ្ចប់',
+        'Unit Details' => 'ព័ត៌មានបន្ទប់',
+        'Contract Status' => 'ស្ថានភាពកិច្ចសន្យា',
+        'Schedule Time' => 'ម៉ោងដែលកំណត់',
+        'Search by amenity' => 'ស្វែងរកតាមបរិក្ខារ',
+        'Remarks' =>'កំណត់សម្គាល់',
+        'Modify Team' => 'កែប្រែក្រុម',
+        'Create New Team' => 'បង្កើតក្រុមថ្មី',
+        'Create New Staff' => 'បង្កើតបុគ្គលិកថ្មី',
+        'Edit Staff' => 'កែប្រែបុគ្គលិក',
+        'Profile Overview' => 'ប្រវត្តិរូប',
+        'Search announcement' =>'ស្វែងរកសេចក្តីជូនដំណឹង',
+        'Sort By' =>'តម្រៀបតាម',
+        'Newest' =>'ថ្មីបំផុត',
+        'Oldest' =>'ចាស់បំផុត',
+        'Announcement Details' =>'ព័ត៌មានលម្អិតសេចក្តីជូនដំណឹង',
+        'Published' =>'បានផ្សព្វផ្សាយ',
+        'Priority' =>'កម្រិត',
+        'Expires' =>'កាលបរិច្ឆេទផុតកំណត់',
+        'Transaction'=> 'ប្រតិបត្តិការ',
+        'Reservation Now' =>'កក់ឥឡូវ',
+
+        
+        
+
+
+
+        
+        
+
+
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Scan Info' => 'ព័ត៌មានស្កេន',
@@ -648,6 +704,7 @@ return [
     
 
     ],
+
     'menus' => [
         'Dashboard' => 'ព័ត៌មានសង្ខេប',
         'Tenants' => 'អ្នកជួល',
@@ -787,6 +844,10 @@ return [
         'Wallet Account' => 'គណនីឌីជីថល',
         'Work Shifts' => 'វេនការងារ',
         'Staff Attendances' => 'វត្តមានបុគ្គលិក',
+        'My Team' => 'ក្រុមការងារ',
+        'My Contract' => 'កិច្ចសន្យា',
+
+
 
     ],
     'buttons' => [
@@ -900,6 +961,8 @@ return [
         'Bulk Create' => 'បង្កើតទាំងអស់',
         'Create Wallet' => 'បង្កើតគណនីឌីជីថល',
         'Create Shift' => 'បង្កើតវេនការងារ',
+        'Reservation Now' => 'កក់ឥឡូវ',
+
 
         'Set Attendance' => 'កំណត់វត្តមាន',
 
@@ -1167,6 +1230,16 @@ return [
         'Flat Rate' => 'អត្រាថេរ',
         'Flat Tax' => 'ពន្ធថេរ',
         'Account Type' => 'ប្រភេទគណនី',
+        'Collapse/Expand Details' => 'បិទ/បើកព័ត៌មានលម្អិត',
+         'Square footage' => 'ទំហំផ្ទះ',
+         'Contract Status' => 'ស្ថានភាពកិច្ចសន្យា',
+         'Team Name' => "ឈ្មោះក្រុម",
+         'Select Space' => "សូមជ្រើសរើសបន្ទប់",
+         'Tenant ID' => "លេខសម្គាល់អ្នកជួល",
+
+
+
+        
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',

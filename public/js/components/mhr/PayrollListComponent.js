@@ -197,7 +197,7 @@ var PayrollListComponent = new (function () {
             const op = {
                 payroll_id: mThis.getFilterData().payroll_id
             };
-            if (!AuthManager.allowed(480)) return;
+            // if (!AuthManager.allowed(480)) return;
             cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
                 title: 'Calculate Payroll List',
                 context: 'calculate',
