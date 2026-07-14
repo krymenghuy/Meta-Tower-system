@@ -597,7 +597,7 @@ var PayrollAccountComponent = (function () {
        // p.sort_by_department = mThis.elSortByDepartment.value;
         // p.sort_by_branch = mThis.elSortByBranch.value;
         //p.sort_by_account = mThis.elSortByAccount.value;
-        //p.account_id = mThis.divFilter.value;
+        p.account_type = mThis.elAccount.value;
 
         const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
@@ -605,6 +605,8 @@ var PayrollAccountComponent = (function () {
             p[f] = el.value;
         });
         mThis.rem_filter = main_filters;
+        console.log(22,p);
+        
         return p;
     };
 
@@ -628,7 +630,7 @@ var PayrollAccountComponent = (function () {
                 );
                 VSUtil.setComboItems(
                     mThis.elAccount,
-                    d.account,
+                    d.accounts,
                     "id",
                     "name",
                     '',
