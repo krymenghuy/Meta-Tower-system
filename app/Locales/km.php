@@ -635,6 +635,7 @@ return [
         'Delete Shift' => 'លុបវេនការងារ',
         'Create Shift' => 'បង្កើតវេនការងារ',
         'Total Fee' => 'តម្លៃសរុប',
+        'Unit Details' => 'ព័ត៌មានបន្ទប់',
         'Team Members' => 'សមាជិកក្រុម',
         'Teams' => 'ក្រុម',
         'Team Management' => 'ការគ្រប់គ្រងក្រុម',
