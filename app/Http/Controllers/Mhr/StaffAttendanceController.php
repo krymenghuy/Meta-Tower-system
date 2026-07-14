@@ -20,13 +20,15 @@ class StaffAttendanceController extends Controller
     public function saveAttendance(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, 247);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-        $id = $req->id;
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->attendance_id;
+        $staffAttendance = new StaffAttendance($id, $ss);
 
-        // $id = $req->attendance_id ?? $req->id;
-        $staffAttendance = $this->staffAttendance->upsert($req->all(), $id, $ss);
+        $res = $staffAttendance->upsert($req->all());
 
-        return JDV::raw($staffAttendance);
+        return JDV::raw($res);
     }
 
     public function attendanceList(Request $req)

@@ -115,6 +115,17 @@ public function delete($id = null, $ss = null)
         $row = DB::table('work_shifts as ws')->selectRaw('ws.id,ws.name')->where('ws.id', $id)->first();
         return $row;
     }
+    static function getScanTimes($rows, $day)
+    {
+        $filtered = [];
+        $day = strtolower($day);
+        foreach ($rows as $row) {
+            if (strtolower($row->day ?? '') === $day) {
+                $filtered[] = $row;
+            }
+        }
+        return $filtered;
+    }
     static function getFormOptions($id, $ss)
     {
         $work_shift = null;

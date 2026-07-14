@@ -636,6 +636,15 @@ return [
         'Create Shift' => 'បង្កើតវេនការងារ',
         'Total Fee' => 'តម្លៃសរុប',
 
+        'Employee Code' => 'លេខកូដបុគ្គលិក',
+        'Scan Info' => 'ព័ត៌មានស្កេន',
+        'Full Name' => 'ឈ្មោះបុគ្គលិក',
+
+        'Create Attendance' => 'បន្ថែមវត្តមាន',
+        'Modify Attendance' => 'កែប្រែវត្តមាន',
+        'Staff Attendances' => 'វត្តមានបុគ្គលិក',
+        'Delete Attendance' => 'លុបវត្តមាន',
+
     
 
     ],
@@ -777,6 +786,7 @@ return [
         'Payroll Account' => 'គណនីបើកប្រាក់បៀវត្ស',
         'Wallet Account' => 'គណនីឌីជីថល',
         'Work Shifts' => 'វេនការងារ',
+        'Staff Attendances' => 'វត្តមានបុគ្គលិក',
 
     ],
     'buttons' => [
@@ -891,6 +901,7 @@ return [
         'Create Wallet' => 'បង្កើតគណនីឌីជីថល',
         'Create Shift' => 'បង្កើតវេនការងារ',
 
+        'Set Attendance' => 'កំណត់វត្តមាន',
 
 
 
@@ -1156,6 +1167,12 @@ return [
         'Flat Rate' => 'អត្រាថេរ',
         'Flat Tax' => 'ពន្ធថេរ',
         'Account Type' => 'ប្រភេទគណនី',
+
+        'Employee Code' => 'លេខកូដបុគ្គលិក',
+        'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
+        'Attendance Type' => 'ប្រភេទវត្តមាន',
+        'Time' => 'ម៉ោង',
+        'Work Shift' => 'វេនការងារ'
 
 
 
