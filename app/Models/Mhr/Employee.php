@@ -216,7 +216,7 @@ class Employee extends VSModel
             // if($inputs['branch_id'] > 0){
             //     DB::table('employees')->where('id', $id)->update(['branch_id' => $inputs['branch_id']]);
             // }
-            $prefix = 'LC';
+            $prefix = 'MT';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
 
         }else if($id){
@@ -460,5 +460,130 @@ class Employee extends VSModel
         return $deleted
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
+    }
+
+    static function savePayrollListBenefit($payroll_id, $emp_id ,$ss)
+    {
+
+        $full_amount = 0;
+        $used_amount = 0;
+        $effective_date = null;
+
+        $payroll = DB::table('payrolls as p')
+            ->where('id', $payroll_id)
+            ->selectRaw('p.id,p.month, p.year, p.currency_code, exchange_rate, p.start_date, p.end_date')
+            ->first();
+
+        if (!$payroll){
+            return DV::error('Payroll not found');
+        }
+        $emp_benefits = self::benefitList($emp_id);
+        DB::beginTransaction();
+        foreach($emp_benefits as $benefit){
+            $benefit_id = $benefit->benefit_id;
+            $disburseInfo = self::getBenefitDisburseInfo($emp_id, $benefit_id, $payroll);
+
+            if($disburseInfo->error){
+                continue;
+            }
+            $disburse_all = $disburseInfo->target_month == 0;
+            $can_disburse = true;
+            if($disburse_all){
+                $effective_date = convertDate($benefit->effective_date);
+                $can_disburse = $effective_date >= $payroll->start_date && $effective_date <= $payroll->end_date;
+
+            }
+            if(!$can_disburse){
+                continue;
+            }
+
+            $full_amount = $benefit->balance ?? 0;
+            if($benefit->currency_code != $payroll->currency_code){
+                $full_amount = VSMoney::convert($ss,$full_amount,$benefit->currency_code,$payroll->currency_code,$payroll->exchange_rate);
+            }
+            $used_amount = $full_amount * $disburseInfo->withdraw_rate / 100;
+            $inputs =  [
+                            'emp_id' => $emp_id,
+                            'payroll_id' => $payroll->id,
+                            'withdraw_rate' => $disburseInfo->withdraw_rate,
+                            'benefit_id' => $benefit_id,
+                            'full_amount' => $full_amount,
+                            'tax_option_id' => $benefit->tax_option_id,
+                            'flat_tax_rate' => $benefit->flat_tax_rate ?? 0,
+                            'used_amount' => $used_amount,
+                            'emp_benefit_id' => $benefit->id,
+                            'currency_code' => $payroll->currency_code,
+                            'target_month' => $disburseInfo->target_month,
+
+                        ];
+            $b_id = DB::table('payroll_list_benefits')->where('payroll_id', $payroll->id)->where('emp_id', $emp_id)->where('benefit_id', $benefit_id)->where('emp_benefit_id', $benefit->id)->value('id');
+            $b_id = DBX::saveData($ss, 'payroll_list_benefits', ['id' => $b_id], $inputs, [], 1);
+            if(!$b_id){
+                DB::rollBack();
+                $emp = self::getProps($emp_id, 'code,name');
+                return DV::error("Failed to save benefit for employee {$emp->name} ({$emp->code})");
+            }
+        }
+        DB::commit();
+        return DV::depends(1);
+    }
+        static function benefitList($emp_id){
+        return DB::table('emp_benefits as eb')
+                    ->join('benefits as b', 'eb.benefit_id', '=', 'b.id')
+                    ->where('eb.emp_id', $emp_id)
+                    ->selectRaw('eb.id, eb.amount,eb.balance, eb.tax_option_id,eb.emp_id, eb.flat_tax_rate, eb.benefit_id,eb.currency_code,b.name,eb.effective_date')
+                    ->get();
+    }
+     static function getBenefitDisburseInfo($emp_id,$benefit_id,$payroll)
+    {
+        $str_where = "((target_month =0) OR (target_month = $payroll->month AND target_year = $payroll->year))";
+        $bd = DB::table('benefit_disbursements as bd')
+            ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
+            ->where('bd.emp_id', $emp_id)
+            ->where('bd.benefit_id', $benefit_id)
+            ->whereRaw($str_where)
+            ->selectRaw('bd.benefit_id, bd.withdraw_rate,b.name,bd.target_month')
+            ->first();
+
+        if($bd){
+            return (object)[
+                'benefit_id' => $bd->benefit_id,
+                'withdraw_rate' => $bd->withdraw_rate,
+                'target_month'=>$bd->target_month,
+                'error' => null
+            ];
+        }
+        $bdp = DB::table('benefit_disburse_policies')
+            ->where('benefit_id', $benefit_id)
+            ->whereRaw($str_where)
+            ->selectRaw('benefit_id, withdraw_rate,target_month')
+            ->first();
+        if($bdp){
+            return (object)[
+                'benefit_id' => $bdp->benefit_id,
+                'withdraw_rate' => $bdp->withdraw_rate,
+                'target_month'=>$bdp->target_month,
+                'error' => null
+            ];
+        }
+        $b = DB::table('benefits')->where('id', $benefit_id)->selectRaw('name')->first();
+        return (object)[
+            'error'=>'No disbursement policy found for '.($b?->name ?? 'benefit id '.$benefit_id),
+        ];
+
+    }
+      public static function getPayrollAccount($emp_id)
+    {
+        return DB::table('employees as e')
+            ->join('accounts as a', 'a.emp_id', '=', 'e.id')
+            ->where('e.id', $emp_id)
+            ->where('a.account_type', 'Payroll')
+            ->select([
+                'e.id',
+                'e.name',
+                'a.id as account_id',
+                'a.account_number',
+            ])
+            ->first();
     }
 }

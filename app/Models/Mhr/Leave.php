@@ -236,7 +236,7 @@ class Leave extends VSModel
                 ->get();
             $date = new DateTime($today);
             $day = $date->format('D');
-            $ds = ShiftDetails::getScanTimes($rows, $day);
+            $ds = WorkShift::getScanTimes($rows, $day);
             $work_shifts = $ds;
 
 
@@ -244,7 +244,7 @@ class Leave extends VSModel
             // $arrDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             foreach ($filterDays as $filterDay) {
                 $day = $filterDay['day'];
-                $ds = ShiftDetails::getScanTimes($rows, $day);
+                $ds = WorkShift::getScanTimes($rows, $day);
                 $leav_uninform['day'] = $filterDay['date']. ' ('.$day.')';
 
                 foreach($ds as $scenTime){

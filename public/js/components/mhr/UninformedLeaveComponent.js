@@ -1,10 +1,10 @@
 "use strict";
 
-var LeaveComponent = (function () {
+var UninformedLeaveComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Leave Request";
+    mThis.title_prop = "Uninformed Leave";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_emp_Uninform_leave_component");
     
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
@@ -236,7 +236,7 @@ var LeaveComponent = (function () {
     };
 
     mThis.initDropdownMenus = (table)=>{
-        const menuOptions = {
+        const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
             cssClass:"bg-white shadow",
@@ -277,7 +277,7 @@ var LeaveComponent = (function () {
                 }
             }
         }
-        new VSDropdownMenu(menuOptions);
+        new VSDropdownMenu(menuOptopns);
     }
 
    
@@ -314,10 +314,11 @@ var LeaveComponent = (function () {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted successfully');
                         mThis.LeaveRequestListView.showPage();
-                    } else {
-                        cv_interact.error(res.error_message || 'An error occurred while deleting');
                     }
                 })
+            }
+            else {
+                cv_interact.error(res.error_message);
             }
         });
     }
@@ -342,127 +343,4 @@ var LeaveComponent = (function () {
     return mThis;
 })();
 
-const LeaveRequestDialog = (()=>{
 
-    const self = {};
-    let dialog = null;
-     self.show = (op)=>{
-
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
-                createContent: () => {
-                    return [
-                        `<div class="row g-3">
-                            <div class="col-6">
-                                <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee"  data-field="emp_id"></select>
-                            </div>
-                            <div class="col-6">
-                                <select data-style="material" name="leave_type" class="form-control data-input" placeholder="Leave Type"  data-field="leave_type_id"></select>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="vs-material-field">
-                                    <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
-                                    <label>Start Date</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="vs-material-field">
-                                    <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
-                                    <label>End Date</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="vs-material-field">
-                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remarks</label>
-                                </div>
-                            </div>
-                        </div>`,].join("");
-                },
-                contentCreated: (me) => {
-                },
-                configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
-                        // textField:"name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "leave_type",
-                        data: "leave_types",
-                        textField: "leave_type",
-                        valueField: "id",
-                    },
-                ],
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me, btn) => me.hide(false),
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const p = me.getData();
-
-                            p.id = me.dataOptions.id;
-
-                            vsapi
-                                .call(
-                                    [main_view.base_url, "/mhr/leave/save"].join(
-                                        ""
-                                    ),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("Updated set leave successfully");
-                                        }
-                                        else
-                                        {
-                                            cv_interact.success("Set leave successfully");
-                                        }
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: "Set Leave",
-                    modifyTitle: "Edit Leave",
-                    targetProp: "leave_request",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/mhr/leave/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-
-                },
-
-                onPrepareForm: (me, data) => {
-                },
-            });
-
-        dialog.show(op);
-     }
-
-    return self;
-})();
-//end:: LeaveRequestDialog

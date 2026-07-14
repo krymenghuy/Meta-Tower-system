@@ -322,6 +322,7 @@
                             @include('layouts.mhr.dashboardComponent')
                             @include('layouts.mhr.employeeManagementComponent')
                             @include('layouts.mhr.leaveComponent')
+                            @include('layouts.mhr.uninformedLeaveComponent')
                             @include('layouts.mhr.payrollAccountComponent')
                             @include('layouts.mhr.payrollComponent')
                             @include('layouts.mhr.payrollListComponent')

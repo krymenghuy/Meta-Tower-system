@@ -1,7 +1,7 @@
 "use strict";
 var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Reservations";
+    mThis.title_prop = "Reservation";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_book_amenity_component",
@@ -160,27 +160,27 @@ var ReservationComponent = (() => {
             <div class="row align-items-center">
 
                 <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Amenity</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Amenity">Amenity</h6>
                 </div>
 
                 <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Reservation Date</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Reservation Date">Reservation Date</h6>
                 </div>
 
                 <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Schedule Time</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Schedule Time">Schedule Time</h6>
                 </div>
 
                 <div class="col-3">
-                    <h6 class="mb-0 text-uppercase">Remark</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Remark">Remark</h6>
                 </div>
 
                 <div class="col-2">
-                    <h6 class="mb-0 text-uppercase">Status</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Status">Status</h6>
                 </div>
 
                 <div class="col-1 text-end">
-                    <h6 class="mb-0 text-uppercase">Action</h6>
+                    <h6 class="mb-0 text-uppercase" vslang="titles.Action">Action</h6>
                 </div>
 
             </div>
@@ -245,6 +245,7 @@ var ReservationComponent = (() => {
             </div>`;
         });
         div.innerHTML = html;
+        LocaleManager.translateZone(div);
         const parent = div.parentElement;
         const resize = () => {
             parent.style.height = (window.innerHeight - 200) + "px";
@@ -451,7 +452,7 @@ var ReservationComponent = (() => {
                     "id",
                     "reservation_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();
@@ -488,49 +489,52 @@ const CreateReservationDialog = (() => {
                             <!-- <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" autocomplete="off">
-                                    <label>Tenant</label>
+                                     <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
-                                    <label>Phone Number</label>
+                                    <label vslang="labels.Phone Number">Phone Number</label>
                                 </div>
                             </div> -->
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans(
+                                    "Amenity",
+                                    "titles"
+                                )}">
                                 </select>
                             </div>
 
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
-                                    <label>Amenity Code</label>
+                                    <label vslang="labels.Amenity Code">Amenity Code</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
-                                    <label>Reservation Date</label>
+                                    <label vslang="titles.Reservation Date">Reservation Date</label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="time" name="start_time" class="data-input form-control form_input" data-field="start_time" placeholder=" " />
-                                    <label>Check-in Time</label>
+                                    <label vslang="labels.Check-in Time">Check-in Time</label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" placeholder=" " />
-                                    <label>Check-out Time</label>
+                                    <label vslang="labels.Check-out Time">Check-out Time</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <label vslang="labels.Remark">Remark</label>
                                 </div>
                             </div>
                         </div>`,
@@ -587,8 +591,8 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Reservation Now",
-                    modifyTitle: "Modify Reservation",
+                    createTitle: "vslang:titles.Reservation Now",
+                    modifyTitle: "vslang:titles.Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
                         endpoint: [

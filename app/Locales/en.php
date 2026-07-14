@@ -158,6 +158,15 @@ return [
         'schedule_cannot_past' => 'Schedule cannot be in the past.',
 
 
+        // 'select_tenant'            => 'Please select a tenant.',
+        'select_unit'              => 'Please select a unit.',
+        'select_category'          => 'Please select a category.',
+        'select_service'           => 'Please select a service.',
+        'duration_hours_required'  => 'Duration hours is required when unit type is Hour.',
+        'scheduled_date_required'  => 'Scheduled date is required.',
+        'start_time_required'      => 'Start time is required.',
+       
+
 
 
 
@@ -180,6 +189,8 @@ return [
         'No_renewal_history' => 'No renewal history for this contract.',
         'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
+        'Category' => 'Category',
+        'Published' => 'Published',
     ],
     'labels' => [
         'Name' => 'Name',
@@ -379,10 +390,14 @@ return [
         'create_success_employee_benefit' => 'Employee benefit has been created successfully.',
         'update_success_employee_benefit' => 'Employee benefit has been updated successfully.',
         'delete_success_employee_benefit' => 'Employee benefit has been deleted successfully.',
+        'create_success_work_shift' => 'Work shift has been created successfully.',
+        'update_success_work_shift' => 'Work shift has been updated successfully.',
+        'delete_success_work_shift' => 'Work shift has been deleted successfully.',
         '' => '',
-        '' => '',
-        '' => '',
-        '' => '',
+
+        'create_success_payroll' => 'Payroll has been created successfully.',
+        'update_success_payroll' => 'Payroll has been updated successfully.',
+        'delete_success_payroll' => 'Payroll has been deleted successfully.',
         '' => '',
         '' => '',
 

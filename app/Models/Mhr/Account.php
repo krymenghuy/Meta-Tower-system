@@ -186,18 +186,18 @@ class Account extends VSModel
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as $row) {
-            if ($is_master_account == 1) {
-                //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
-                $c_id = getCurrentSubs(true)->subscriber_id;
-                $subs_id = $ss->subs_id;
-                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
-                unset($row->emp_photo);
-            } else {
-                $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-                unset($row->emp_photo);
-            }
-        }
+        // foreach ($rows as $row) {
+        //     if ($is_master_account == 1) {
+        //         //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
+        //         $c_id = getCurrentSubs(true)->subscriber_id;
+        //         $subs_id = $ss->subs_id;
+        //         $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
+        //         unset($row->emp_photo);
+        //     } else {
+        //         $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+        //         unset($row->emp_photo);
+        //     }
+        // }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -277,11 +277,11 @@ class Account extends VSModel
             'departments' => GeneralSettings::options_department($ss),
             'currency_codes' => VSMoney::options_currency($ss),
             'employees' => GeneralSettings::options_employee([10, 20], $ss),
-            'account' => [
-                ['id' => '0', 'name' => 'Master Account'],
-                ['id' => '1', 'name' => 'Staff Account'],
+            'accounts' => [
+                ['id' => '1', 'name' => 'Master Account'],
+                ['id' => '2', 'name' => 'Staff Account'],
             ],
-            'accounts' => $account,
+            // 'accounts' => $account,
         ];
     }
 
