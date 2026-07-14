@@ -245,6 +245,7 @@ return [
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
+                '/js/components/mhr/UninformedLeaveComponent.js',
                 '/js/components/mhr/PayrollComponent.js',
                 '/js/components/mhr/PayrollListComponent.js',
                 '/js/components/mhr/BenefitComponent.js',
