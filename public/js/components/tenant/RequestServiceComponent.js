@@ -1,27 +1,27 @@
 "use strict";
 
-var RequestServiceComponent = (function () {
+var RequestServiceComponent = (function() {
     const mThis = {};
     mThis.title_prop = "Request Service";
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_service_request_component",
+        "#_main_service_request_component"
     );
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
     mThis.elService_category = mThis.self.querySelector(
-        "#_service_request_category_id",
+        "#_service_request_category_id"
     );
     mThis.elStatus = mThis.self.querySelector("#_service_request_status");
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
     mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
 
-    mThis.escapeHtml = (str) => {
+    mThis.escapeHtml = str => {
         if (str == null || str === "") return "";
         const div = document.createElement("div");
         div.textContent = String(str);
         return div.innerHTML;
     };
 
-    mThis.to12h = (time) => {
+    mThis.to12h = time => {
         if (!time) return "";
         const parts = String(time).split(":");
         const hour = parseInt(parts[0], 10);
@@ -32,7 +32,7 @@ var RequestServiceComponent = (function () {
         return `${h12}:${minute} ${ampm}`;
     };
 
-    mThis.formatDurationDisplay = (data) => {
+    mThis.formatDurationDisplay = data => {
         const unitType = String(data?.unit_type ?? "").toLowerCase();
         const isHourly =
             unitType === "2" || unitType === "hour" || unitType === "hourly";
@@ -57,13 +57,13 @@ var RequestServiceComponent = (function () {
             hour: "Hour",
             hourly: "Hour",
             unit: "One Time",
-            per_unit: "One Time",
+            per_unit: "One Time"
         };
 
         return unitMap[unitType] || data?.unit_type || "—";
     };
 
-    mThis.formatChargeAsDisplay = (data) => {
+    mThis.formatChargeAsDisplay = data => {
         const unitMap = {
             1: "once",
             2: "hour",
@@ -76,7 +76,7 @@ var RequestServiceComponent = (function () {
             unit: "unit",
             per_unit: "unit",
             month: "month",
-            monthly: "month",
+            monthly: "month"
         };
 
         const unitType = String(data?.unit_type ?? "").toLowerCase();
@@ -92,7 +92,7 @@ var RequestServiceComponent = (function () {
         return `<span class="sr-card__fee-amount">${formattedPrice}</span><span class="sr-card__fee-unit">/${unit}</span>`;
     };
 
-    mThis.formatSchedule = (data) => {
+    mThis.formatSchedule = data => {
         const date = (data.scheduled_date ?? "").trim();
         const time = mThis.to12h(data.start_time);
         if (!date && !time) return "—";
@@ -100,59 +100,60 @@ var RequestServiceComponent = (function () {
         return date || time;
     };
 
-    mThis.getStatusMeta = (data) => {
+    mThis.getStatusMeta = data => {
         const status = (data.status_name ?? "").toLowerCase();
         const map = {
             pending: {
                 label: "Pending",
                 cardCls: "sr-card--pending",
-                badgeCls:
-                    "sr-card__status-badge sr-card__status-badge--pending",
+                badgeCls: "sr-card__status-badge sr-card__status-badge--pending"
             },
             accepted: {
                 label: "Accepted",
                 cardCls: "sr-card--accepted",
                 badgeCls:
-                    "sr-card__status-badge sr-card__status-badge--accepted",
+                    "sr-card__status-badge sr-card__status-badge--accepted"
             },
             completed: {
                 label: "Completed",
                 cardCls: "sr-card--completed",
                 badgeCls:
-                    "sr-card__status-badge sr-card__status-badge--completed",
+                    "sr-card__status-badge sr-card__status-badge--completed"
             },
             rejected: {
                 label: "Rejected",
                 cardCls: "sr-card--rejected",
                 badgeCls:
-                    "sr-card__status-badge sr-card__status-badge--rejected",
+                    "sr-card__status-badge sr-card__status-badge--rejected"
             },
             expired: {
                 label: "Expired",
                 cardCls: "sr-card--expired",
-                badgeCls: "sr-card__status-badge sr-card__status-badge--expired",
+                badgeCls: "sr-card__status-badge sr-card__status-badge--expired"
             },
             cancelled: {
                 label: "Cancelled",
                 cardCls: "sr-card--cancelled",
                 badgeCls:
-                    "sr-card__status-badge sr-card__status-badge--cancelled",
-            },
+                    "sr-card__status-badge sr-card__status-badge--cancelled"
+            }
         };
         return (
             map[status] ?? {
                 label: data.status_name ?? "—",
                 cardCls: "",
-                badgeCls: "sr-card__status-badge",
+                badgeCls: "sr-card__status-badge"
             }
         );
     };
 
-    mThis.renderServiceRequestAction = (data) => {
+    mThis.renderServiceRequestAction = data => {
         if (data.action_id > 1) return "";
         if (Number(data.status_id) !== 1) return "";
         return `<a href="javascript:void(0)"
-            class="btn_service_request_action sr-card__menu-btn ${data.action_id > 1 ? "d-none" : ""}"
+            class="btn_service_request_action sr-card__menu-btn ${
+                data.action_id > 1 ? "d-none" : ""
+            }"
             data-id="${data.id}"
             data-statusid="${data.status_id ?? ""}"
             data-status-id="${data.request_status_id ?? ""}"
@@ -180,16 +181,16 @@ var RequestServiceComponent = (function () {
         }
 
         let rowsHtml = "";
-        items.forEach((data) => {
+        items.forEach(data => {
             const status = mThis.getStatusMeta(data);
             const rowCls = status.cardCls ? ` ${status.cardCls}` : "";
             const category = mThis.escapeHtml(
-                data.service_category ?? "Service",
+                data.service_category ?? "Service"
             );
             const serviceName = mThis.escapeHtml(data.service_name ?? "—");
             const code = mThis.escapeHtml(data.code ?? "N/A");
             const duration = mThis.escapeHtml(
-                mThis.formatDurationDisplay(data),
+                mThis.formatDurationDisplay(data)
             );
             const schedule = mThis.escapeHtml(mThis.formatSchedule(data));
             const remarksRaw = (data.remarks ?? "").trim();
@@ -200,7 +201,9 @@ var RequestServiceComponent = (function () {
             const statusLabel = mThis.escapeHtml(status.label);
 
             rowsHtml += `
-            <div class="sr-card${rowCls} service-request" id="service_request_id_${data.id}" data-statusid="${data.status_id ?? ""}">
+            <div class="sr-card${rowCls} service-request" id="service_request_id_${
+                data.id
+            }" data-statusid="${data.status_id ?? ""}">
                 <div class="sr-card__accent"></div>
                 <div class="sr-card__body">
                     <div class="sr-card__main">
@@ -218,7 +221,7 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-clock sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">${LocaleManager.trans('Duration', 'titles')}</span>
+                                    <span class="sr-card__meta-label" vslang="titles.Duration">Duration</span>
                                     <span class="sr-card__meta-value"> ${duration}</span>
                                 </div>
                             </div>
@@ -227,7 +230,7 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-calendar sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">${LocaleManager.trans('Schedule Date', 'titles')}</span>
+                                    <span class="sr-card__meta-label" vslang="titles.Schedule Date">Schedule Date</span>
                                     <span class="sr-card__meta-value">${schedule}</span>
                                 </div>
                             </div>
@@ -236,7 +239,7 @@ var RequestServiceComponent = (function () {
                                     <i class="fa-regular fa-comment sr-card__meta-icon"></i>
                                 </span>
                                 <div class="sr-card__meta-content">
-                                    <span class="sr-card__meta-label">${LocaleManager.trans('Remarks', 'labels')}</span>
+                                    <span class="sr-card__meta-label" vslang="titles.Remarks">Remarks</span>
                                     <span class="sr-card__meta-value">${remarks}</span>
                                 </div>
                             </div>
@@ -245,7 +248,7 @@ var RequestServiceComponent = (function () {
                     <div class="sr-card__stub">
                         <div class="sr-card__stub-top">
                             <div class="sr-card__fee-wrap">
-                                <span class="sr-card__fee-label"> ${LocaleManager.trans('Total Fee', 'titles')}</span>
+                                <span class="sr-card__fee-label" vslang="titles.Total Fee"></span>
                                 <span class="sr-card__fee-value">${totalFee}</span>
                             </div>
                             ${mThis.renderServiceRequestAction(data)}
@@ -260,6 +263,7 @@ var RequestServiceComponent = (function () {
         });
 
         container.innerHTML = `<div class="sr-list"><div class="sr-list__rows">${rowsHtml}</div></div>`;
+        LocaleManager.translateZone(container);
     };
 
     mThis.init = () => {
@@ -272,26 +276,26 @@ var RequestServiceComponent = (function () {
             api: {
                 endpoint: `${main_view.base_url}/tenant/request-service/list`,
                 method: "POST",
-                cacheTTL: 3000,
+                cacheTTL: 3000
             },
             perPage: 10,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
                 mThis.renderServiceRequestList(container, items);
             },
-            listContainerClass: null,
+            listContainerClass: null
         });
 
         if (mThis.elBtnCreate) {
-            mThis.elBtnCreate.onclick = (e) => {
+            mThis.elBtnCreate.onclick = e => {
                 e.preventDefault();
                 CreateServiceRequestDialog.show({
                     id: null,
                     btn: e.target,
                     onClose: () =>
                         mThis.ServiceRequestListView.showPage(
-                            mThis.getFilterData(),
-                        ),
+                            mThis.getFilterData()
+                        )
                 });
             };
         }
@@ -307,7 +311,7 @@ var RequestServiceComponent = (function () {
         mThis.tblServiceRequest = mThis.ServiceRequestListView.getListContainer();
 
         let timeOut = null;
-        mThis.elSearch.onkeyup = function (e) {
+        mThis.elSearch.onkeyup = function(e) {
             e.preventDefault();
             clearTimeout(timeOut);
             timeOut = setTimeout(() => {
@@ -315,17 +319,18 @@ var RequestServiceComponent = (function () {
             }, 250);
         };
 
-        mThis.divFilter.addEventListener("change", (e) => {
+        mThis.divFilter.addEventListener("change", e => {
             e.preventDefault();
             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             el.onchange = () =>
                 mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
 
         mThis.initDropdownMenus(mThis.tblServiceRequest);
+
         mThis.initAlready = true;
     };
 
@@ -333,15 +338,15 @@ var RequestServiceComponent = (function () {
         let p = {
             status_id: mThis.elStatus.value,
             category_id: mThis.elService_category?.value,
-            search_value: mThis.elSearch.value,
+            search_value: mThis.elSearch.value
         };
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             p[el.dataset.field] = el.value;
         });
         return p;
     };
 
-    mThis.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = table => {
         new VSDropdownMenu({
             containerElement: table,
             actionButtonClass: "btn_service_request_action",
@@ -369,21 +374,23 @@ var RequestServiceComponent = (function () {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
-                    cssClass: "border-bottom pb-2",
+                    cssClass: "border-bottom pb-2"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Cancel"></span>',
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     name: "cancel_request",
-                    cssClass: "border-bottom pb-2",
-                },
+                    cssClass: "border-bottom pb-2"
+                }
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = Number(container.dataset.statusid);
                 const isPending = status_id === 1;
                 if (menu.edit_request) {
-                    menu.edit_request.style.display = isPending ? "block" : "none";
+                    menu.edit_request.style.display = isPending
+                        ? "block"
+                        : "none";
                 }
                 if (menu.cancel_request) {
                     menu.cancel_request.style.display = isPending
@@ -404,7 +411,7 @@ var RequestServiceComponent = (function () {
                     mThis.cancelRequest(id, menuLink);
                 if (name === "delete_request")
                     mThis.deleteRequest(id, menuLink);
-            },
+            }
         });
     };
 
@@ -416,27 +423,27 @@ var RequestServiceComponent = (function () {
             inputPlaceholder: "Please enter reason why reject this request",
             reverseButtons: true,
             showCancelButton: true,
-            inputValidator: (value) => {
+            inputValidator: value => {
                 if (!value) return "Remark required!";
                 op.remarks = value;
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/service-request/reject`,
                         op,
-                        null,
+                        null
                     )
-                    .then((res) => {
+                    .then(res => {
                         if (res.status_code === 200) {
                             mThis.ServiceRequestListView.showPage(
-                                mThis.getFilterData(),
+                                mThis.getFilterData()
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message ?? "Something went wrong!",
+                                res.error_message ?? "Something went wrong!"
                             );
                         }
                     });
-            },
+            }
         });
     };
 
@@ -446,32 +453,32 @@ var RequestServiceComponent = (function () {
             {
                 title: "Accept Service Request",
                 context: "update",
-                confirmButtonText: "Accept",
+                confirmButtonText: "Accept"
             },
-            (e) => {
+            e => {
                 if (!e) return;
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/service-request/accept`,
                         { id },
-                        false,
+                        false
                     )
-                    .then((res) => {
+                    .then(res => {
                         if (res.status_code === 200) {
                             mThis.ServiceRequestListView.showPage(
-                                mThis.getFilterData(),
+                                mThis.getFilterData()
                             );
                             cv_interact.success(
-                                "Service Request has been accepted!",
+                                "Service Request has been accepted!"
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Something went wrong",
+                                res.error_message || "Something went wrong"
                             );
                         }
                     })
                     .catch(() => cv_interact.error("Network error"));
-            },
+            }
         );
     };
 
@@ -481,32 +488,32 @@ var RequestServiceComponent = (function () {
             {
                 title: "Complete Service Request",
                 context: "update",
-                confirmButtonText: "Complete",
+                confirmButtonText: "Complete"
             },
-            (e) => {
+            e => {
                 if (!e) return;
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/service-request/complete`,
                         { id },
-                        false,
+                        false
                     )
-                    .then((res) => {
+                    .then(res => {
                         if (res.status_code === 200) {
                             mThis.ServiceRequestListView.showPage(
-                                mThis.getFilterData(),
+                                mThis.getFilterData()
                             );
                             cv_interact.success(
-                                "Service Request has been completed!",
+                                "Service Request has been completed!"
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Something went wrong",
+                                res.error_message || "Something went wrong"
                             );
                         }
                     })
                     .catch(() => cv_interact.error("Network error"));
-            },
+            }
         );
     };
 
@@ -515,7 +522,7 @@ var RequestServiceComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () =>
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData()),
+                mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
     };
 
@@ -525,9 +532,9 @@ var RequestServiceComponent = (function () {
             {
                 title: "Cancel Service Request",
                 context: "delete",
-                confirmButtonText: "Cancel Request",
+                confirmButtonText: "Cancel Request"
             },
-            (confirmed) => {
+            confirmed => {
                 if (!confirmed) return;
                 vsapi
                     .call(
@@ -535,24 +542,24 @@ var RequestServiceComponent = (function () {
                         { id },
                         menuLink,
                         false,
-                        false,
+                        false
                     )
-                    .then((res) => {
+                    .then(res => {
                         if (res.status_code === 200) {
                             cv_interact.success(
-                                "Service request has been cancelled.",
+                                "Service request has been cancelled."
                             );
                             mThis.ServiceRequestListView.showPage(
-                                mThis.getFilterData(),
+                                mThis.getFilterData()
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Cancel failed",
+                                res.error_message || "Cancel failed"
                             );
                         }
                     })
                     .catch(() => cv_interact.error("Network error"));
-            },
+            }
         );
     };
 
@@ -562,9 +569,9 @@ var RequestServiceComponent = (function () {
             "Delete this Service Request?",
             {
                 transTitle: "Delete Service Request",
-                confirmButtonText: "Delete",
+                confirmButtonText: "Delete"
             },
-            (confirmed) => {
+            confirmed => {
                 if (confirmed) {
                     vsapi
                         .call(
@@ -572,9 +579,9 @@ var RequestServiceComponent = (function () {
                             { id },
                             false,
                             false,
-                            false,
+                            false
                         )
-                        .then((res) => {
+                        .then(res => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Service request deleted.");
                                 mThis.ServiceRequestListView.showPage();
@@ -583,19 +590,19 @@ var RequestServiceComponent = (function () {
                             }
                         });
                 }
-            },
+            }
         );
     };
 
-    mThis.prepareFormOptions = (onFinish) => {
+    mThis.prepareFormOptions = onFinish => {
         vsapi
             .call(
                 `${main_view.base_url}/prm/service-request/form-options`,
                 null,
                 null,
-                null,
+                null
             )
-            .then((res) => {
+            .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elStatus,
@@ -603,8 +610,8 @@ var RequestServiceComponent = (function () {
                     "id",
                     "name",
                     "",
-                     LocaleManager.trans('All Statuses', 'titles'),
-                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    ""
                 );
                 VSUtil.setComboItems(
                     mThis.elService_category,
@@ -612,14 +619,14 @@ var RequestServiceComponent = (function () {
                     "id",
                     "service_category",
                     "",
-                     LocaleManager.trans('All Categories', 'titles'),
-                    "",
+                    LocaleManager.trans("All Categories", "titles"),
+                    ""
                 );
                 if (typeof onFinish === "function") onFinish();
             });
     };
 
-    mThis.show = (options) => {
+    mThis.show = options => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
@@ -635,7 +642,7 @@ const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const _updatePricePreview = (me) => {
+    const _updatePricePreview = me => {
         const unit = me.controls.unit_type?.value || "";
         const showDuration = unit === "2";
 
@@ -722,10 +729,10 @@ const CreateServiceRequestDialog = (() => {
     const _populateCategoryAndService = (
         me,
         services,
-        restoreValues = null,
+        restoreValues = null
     ) => {
         const categoryMap = {};
-        services.forEach((s) => {
+        services.forEach(s => {
             const cid = s.category_id;
             const cname = s.service_category ?? "";
             if (cid && !categoryMap[cid])
@@ -738,7 +745,7 @@ const CreateServiceRequestDialog = (() => {
             "id",
             "name",
             "",
-            "Select Category",
+            "Select Category"
         );
 
         if (restoreValues?.category_id) {
@@ -747,7 +754,7 @@ const CreateServiceRequestDialog = (() => {
 
         const activeCategoryId = me.controls.category_id.value;
         const filtered = activeCategoryId
-            ? services.filter((s) => String(s.category_id) === activeCategoryId)
+            ? services.filter(s => String(s.category_id) === activeCategoryId)
             : services;
 
         VSUtil.setComboItems(
@@ -756,13 +763,13 @@ const CreateServiceRequestDialog = (() => {
             "id",
             "service_name",
             "",
-            "Select Service",
+            "Select Service"
         );
 
         if (restoreValues?.service_id) {
             me.controls.service_id.value = String(restoreValues.service_id);
             const svc = services.find(
-                (s) => String(s.id) === String(restoreValues.service_id),
+                s => String(s.id) === String(restoreValues.service_id)
             );
             if (svc) me.servicePrice = parseFloat(svc.price) || 0;
         }
@@ -770,7 +777,7 @@ const CreateServiceRequestDialog = (() => {
         me.controls.service_id.dispatchEvent(new Event("input"));
     };
 
-    self.show = (op) => {
+    self.show = op => {
         dialog = new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -780,34 +787,82 @@ const CreateServiceRequestDialog = (() => {
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="${LocaleManager.trans('Unit', 'titles')}"></select>
+                            <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="${LocaleManager.trans(
+                                "Unit",
+                                "titles"
+                            )}"></select>
                         </div>
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="${LocaleManager.trans('Service Category', 'labels')}"></select>
+                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="${LocaleManager.trans(
+                                "Service Category",
+                                "labels"
+                            )}"></select>
                         </div>
                         <div class="col-12 col-md-4">
-                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="${LocaleManager.trans('Service', 'titles')}"></select>
+                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="${LocaleManager.trans(
+                                "Service",
+                                "titles"
+                            )}"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3 unit-type-wrapper">
-                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="${LocaleManager.trans('Charge As', 'titles')}">
-                                <option value="">${LocaleManager.trans('Charge As', 'titles')}</option>
-                                <option value="1">${LocaleManager.trans('One Time', 'labels')}</option>
-                                <option value="2">${LocaleManager.trans('Hour', 'labels')}</option>
-                                <option value="3">${LocaleManager.trans('Unit', 'titles')}</option>
+                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="${LocaleManager.trans(
+                                "Charge As",
+                                "titles"
+                            )}">
+                                <option value="">${LocaleManager.trans(
+                                    "Charge As",
+                                    "titles"
+                                )}</option>
+                                <option value="1">${LocaleManager.trans(
+                                    "One Time",
+                                    "labels"
+                                )}</option>
+                                <option value="2">${LocaleManager.trans(
+                                    "Hour",
+                                    "labels"
+                                )}</option>
+                                <option value="3">${LocaleManager.trans(
+                                    "Unit",
+                                    "titles"
+                                )}</option>
                             </select>
                         </div>
                         <div class="col-md-3 select-type-time" style="display:none;">
                             <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
-                                <option value="">${LocaleManager.trans('Select Duration', 'labels')}</option>
-                                    <option value="0.5">${LocaleManager.trans('30 minutes', 'labels')}</option>
-                                    <option value="1.0">${LocaleManager.trans('1 hour', 'labels')}</option>
-                                    <option value="1.5">${LocaleManager.trans('1.5 hours', 'labels')}</option>
-                                    <option value="2.0">${LocaleManager.trans('2 hours', 'labels')}</option>
-                                    <option value="2.5">${LocaleManager.trans('2.5 hours', 'labels')}</option>
-                                    <option value="3.0">${LocaleManager.trans('3 hours', 'labels')}</option>
-                                    <option value="4.0">${LocaleManager.trans('4 hours', 'labels')}</option>
+                                <option value="">${LocaleManager.trans(
+                                    "Select Duration",
+                                    "labels"
+                                )}</option>
+                                    <option value="0.5">${LocaleManager.trans(
+                                        "30 minutes",
+                                        "labels"
+                                    )}</option>
+                                    <option value="1.0">${LocaleManager.trans(
+                                        "1 hour",
+                                        "labels"
+                                    )}</option>
+                                    <option value="1.5">${LocaleManager.trans(
+                                        "1.5 hours",
+                                        "labels"
+                                    )}</option>
+                                    <option value="2.0">${LocaleManager.trans(
+                                        "2 hours",
+                                        "labels"
+                                    )}</option>
+                                    <option value="2.5">${LocaleManager.trans(
+                                        "2.5 hours",
+                                        "labels"
+                                    )}</option>
+                                    <option value="3.0">${LocaleManager.trans(
+                                        "3 hours",
+                                        "labels"
+                                    )}</option>
+                                    <option value="4.0">${LocaleManager.trans(
+                                        "4 hours",
+                                        "labels"
+                                    )}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -830,12 +885,18 @@ const CreateServiceRequestDialog = (() => {
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
                                     <div>
-                                        <small class="text-muted d-block mb-1"${LocaleManager.trans('Amount', 'titles')}</small>
+                                        <small class="text-muted d-block mb-1"${LocaleManager.trans(
+                                            "Amount",
+                                            "titles"
+                                        )}</small>
                                         <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">${LocaleManager.trans('Price x Duration', 'labels')}</small>
+                                    <small class="text-muted d-block">${LocaleManager.trans(
+                                        "Price x Duration",
+                                        "labels"
+                                    )}</small>
                                     <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>
@@ -853,11 +914,11 @@ const CreateServiceRequestDialog = (() => {
                 </div>
             `,
 
-            contentCreated: (me) => {
+            contentCreated: me => {
                 // service change → auto-set unit_type & price
                 me.controls.service_id?.addEventListener("change", () => {
                     const svc = (me._availableServices || []).find(
-                        (s) => String(s.id) === me.controls.service_id.value,
+                        s => String(s.id) === me.controls.service_id.value
                     );
                     if (svc) {
                         me.servicePrice = parseFloat(svc.price) || 0;
@@ -865,15 +926,15 @@ const CreateServiceRequestDialog = (() => {
                             svc.charge_as === "hour"
                                 ? "2"
                                 : svc.charge_as === "per_unit"
-                                  ? "3"
-                                  : "1";
+                                ? "3"
+                                : "1";
                         _updatePricePreview(me);
                     }
                 });
 
-                ["unit_type", "duration_hours"].forEach((f) => {
+                ["unit_type", "duration_hours"].forEach(f => {
                     me.controls[f]?.addEventListener("change", () =>
-                        _updatePricePreview(me),
+                        _updatePricePreview(me)
                     );
                 });
             },
@@ -886,8 +947,7 @@ const CreateServiceRequestDialog = (() => {
                     const all = me._availableServices || [];
                     const filtered = categoryId
                         ? all.filter(
-                              (s) =>
-                                  String(s.category_id) === String(categoryId),
+                              s => String(s.category_id) === String(categoryId)
                           )
                         : all;
 
@@ -897,7 +957,7 @@ const CreateServiceRequestDialog = (() => {
                         "id",
                         "service_name",
                         "",
-                        "Select Service",
+                        "Select Service"
                     );
 
                     me.servicePrice = 0;
@@ -913,7 +973,7 @@ const CreateServiceRequestDialog = (() => {
                     "id",
                     "code",
                     "",
-                    "Select Unit",
+                    "Select Unit"
                 );
 
                 me._availableServices = d.services || [];
@@ -929,7 +989,7 @@ const CreateServiceRequestDialog = (() => {
 
                     _populateCategoryAndService(me, me._availableServices, {
                         category_id: detail.category_id,
-                        service_id: detail.service_id,
+                        service_id: detail.service_id
                     });
 
                     if (me.controls.unit_type && detail.unit_type) {
@@ -938,7 +998,7 @@ const CreateServiceRequestDialog = (() => {
 
                     if (me.controls.duration_hours && detail.duration_hours) {
                         me.controls.duration_hours.value = String(
-                            detail.duration_hours,
+                            detail.duration_hours
                         );
                     }
 
@@ -947,8 +1007,10 @@ const CreateServiceRequestDialog = (() => {
                             detail.scheduled_date;
                     }
                     if (me.controls.start_time && detail.start_time) {
-                        me.controls.start_time.value =
-                            detail.start_time.substring(0, 5);
+                        me.controls.start_time.value = detail.start_time.substring(
+                            0,
+                            5
+                        );
                     }
 
                     // Restore remarks
@@ -966,15 +1028,15 @@ const CreateServiceRequestDialog = (() => {
                 targetProp: "request_details",
                 api: {
                     endpoint: `${main_view.base_url}/tenant/request-service/form-options`,
-                    params: (op) => ({ id: op.id }),
-                },
+                    params: op => ({ id: op.id })
+                }
             },
 
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: (me, btn) => me.hide(false),
+                    click: (me, btn) => me.hide(false)
                 },
                 {
                     label: '<span vslang="buttons.Submit"></span>',
@@ -989,26 +1051,26 @@ const CreateServiceRequestDialog = (() => {
                                 `${main_view.base_url}/tenant/request-service/save`,
                                 data,
                                 btn,
-                                null,
+                                null
                             )
-                            .then((res) => {
+                            .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
                                     cv_interact.success(
                                         data.id
                                             ? "Service Request has been updated!"
-                                            : "Service Request has been created.",
+                                            : "Service Request has been created."
                                     );
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || saveFailedMessage,
+                                        res.error_message || saveFailedMessage
                                     );
                                 }
                             })
                             .catch(() => cv_interact.error(saveFailedMessage));
-                    },
-                },
-            ],
+                    }
+                }
+            ]
         });
 
         dialog.show(op);

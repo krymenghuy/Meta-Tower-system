@@ -166,15 +166,15 @@ var AnnouncementComponent = (() => {
                 <div class="ann-detail-profile__body">
                     <div class="row g-3 mb-0">
                         <div class="col-12 col-md-6">
-                            ${renderDetailField("Category", escapeHtml(data.category || "General"))}
-                            ${renderDetailField("Published", escapeHtml(pub ? formatShortDate(pub) : "—"))}
+                            ${renderDetailField(LocaleManager.trans("Category", "titles"), escapeHtml(data.category || "General"))}
+                            ${renderDetailField(LocaleManager.trans("Published", "titles"), escapeHtml(pub ? formatShortDate(pub) : "—"))}
                         </div>
                         <div class="col-12 col-md-6">
-                            ${renderDetailField("Priority", escapeHtml(data.priority || "Low"))}
-                            ${renderDetailField("Expires", escapeHtml(data.expiry_date ? formatShortDate(data.expiry_date) : "No expiration"))}
+                            ${renderDetailField(LocaleManager.trans("Priority", "titles"), escapeHtml(data.priority || "Low"))}
+                            ${renderDetailField(LocaleManager.trans("Expires", "titles"), escapeHtml(data.expiry_date ? formatShortDate(data.expiry_date) : "No expiration"))}
                         </div>
                         <div class="col-12 ann-detail-profile__remark">
-                            ${renderDetailField("Description", data.description ? `<div class="announcement-desc">${data.description}</div>` : "—")}
+                            ${renderDetailField(LocaleManager.trans("Description", "titles"), data.description ? `<div class="announcement-desc">${data.description}</div>` : "—")}
                         </div>
                     </div>
                 </div>
