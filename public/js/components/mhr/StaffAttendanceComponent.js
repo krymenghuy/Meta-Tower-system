@@ -22,14 +22,14 @@ var StaffAttendanceComponent = (function () {
             data: "",
         },
         {
-            title: "Staff ID",
+            transTitle: "titles.Employee Code",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-primary-custom" >${data.code}</span>`;
+                return `<span class="text-primary-custom" >${data.emp_code}</span>`;
             },
         },
         {
-            title: "Full Name",
+            transTitle: "titles.Full Name",
             className: "name text-capitalize align-middle",
             data: (data, index, tr) => {
                 const sex =
@@ -45,70 +45,83 @@ var StaffAttendanceComponent = (function () {
             },
         },
         {
-            title: "Position",
+            transTitle: "titles.Position",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-custom" >${data.position}</span>`;
             },
         },
         {
-            title: "Date",
+            transTitle: "titles.Date",
             className: "text-capitalize align-middle",
             data: (data, index, tr) => {
                 return data.attendance_date ?? "";
             },
         },
         {
-            title: "Work Shift",
+            transTitle: "titles.Work Shift",
             className: "text-capitalize align-middle",
             data: "work_shift",
         },
         {
-            title: "Scan Info",
+            transTitle: "titles.Scan Info",
             className: "align-middle",
             data: (data) => {
-                if (!Array.isArray(data.scan_info)) return "";
-                return data.scan_info
-                    .map((info) => {
-                        const timeParts = info.time.split(":");
-                        let hours = parseInt(timeParts[0]);
-                        const minutes = timeParts[1];
-                        const ampm = hours >= 12 ? "PM" : "AM";
-                        hours = hours % 12 || 12;
-                        const formattedTime = `${hours}:${minutes} ${ampm}`;
+                const time = data.scan_time;
+                if (!time) return "";
+                const timeParts = time.split(":");
+                let hours = parseInt(timeParts[0]);
+                const minutes = timeParts[1];
+                const ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12 || 12;
+                const formattedTime = `${hours}:${minutes} ${ampm}`;
 
-                        const isCheckIn = (info.scan_action || "").toLowerCase().includes("in");
-                        const badgeClass = isCheckIn 
-                            ? "border-success text-success" 
-                            : "border-warning text-warning";
+                const isCheckIn = (data.scan_action || "").toLowerCase().includes("in");
+                const iconClass = isCheckIn ? "fa-right-to-bracket" : "fa-right-from-bracket";
+                const colorClass = isCheckIn ? "success" : "warning";
+                const actionLabel = isCheckIn ? "IN" : "OUT";
 
-                        const shortAction = isCheckIn ? "IN" : "OUT";
-
-                        return `
-                            <span class="badge bg-transparent border ${badgeClass} px-2 py-1 me-1 mb-1 d-inline-flex align-items-center" style="font-size: 78%; font-weight: 500; text-transform: uppercase;">
-                                ${shortAction}: ${formattedTime}
-                            </span>
-                        `;
-                    })
-                    .join("");
+                return `
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-${colorClass}-subtle text-${colorClass}" style="width: 32px; height: 32px; flex-shrink: 0;">
+                            <i class="fa-solid ${iconClass}" style="font-size: 14px;"></i>
+                        </div>
+                        <span class="fw-semibold text-${colorClass}" style="font-size: 90%; letter-spacing: 0.5px;">${actionLabel}</span>
+                        <span class="text-${colorClass} fs-5 px-1">&bull;</span>
+                        <span class="text-dark fw-semibold" style="font-size: 90%;">${formattedTime}</span>
+                    </div>
+                `;
             },
         },
+
         {
-            title: "Status",
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+
+        {
+            transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
                 const status = data.attendance_status ?? "Present";
-                let badgeClass = "bg-success text-white";
+                let badgeClass = "bg-success-subtle text-success border border-success";
                 if (status === "Late") {
-                    badgeClass = "bg-warning text-dark";
+                    badgeClass = "bg-warning-subtle text-warning border border-warning";
                 } else if (status === "Absent") {
-                    badgeClass = "bg-danger text-white";
+                    badgeClass = "bg-danger-subtle text-danger border border-danger";
                 } else if (status === "Leave" || status === "Permission" || status === "Half Day") {
-                    badgeClass = "bg-info text-white";
+                    badgeClass = "bg-info-subtle text-info border border-info";
                 } else if (status === "Holiday" || status === "Weekend") {
-                    badgeClass = "bg-secondary text-white";
+                    badgeClass = "bg-secondary-subtle text-secondary border border-secondary";
                 }
-                return `<span class="badge ${badgeClass} rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center" style="font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
+                return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
             }
         },
 
@@ -118,7 +131,7 @@ var StaffAttendanceComponent = (function () {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_scan_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0)" class="btn_attendance_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
@@ -126,6 +139,9 @@ var StaffAttendanceComponent = (function () {
                 `;
             }
         },
+
+        
+
     ];
 
     mThis.init = function () {
@@ -157,6 +173,11 @@ var StaffAttendanceComponent = (function () {
         };
 
         mThis.pr_tbl = mThis.StaffAttendanceListView.getListContainer();
+        mThis.initDropdownMenus(mThis.pr_tbl);
+        const elDate = mThis.containerFilter.querySelector("[data-select='datepicker']");
+        if (elDate && typeof DateTimePicker !== "undefined") {
+            DateTimePicker.init(elDate);
+        }
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -220,6 +241,92 @@ var StaffAttendanceComponent = (function () {
             });
         return p;
     };
+
+     mThis.initDropdownMenus = (table)=>{
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass:"btn_attendance_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Attendance"></span>',
+                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_attendance"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Delete Attendance"></span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_attendance"
+                },
+            ],
+        //     adjustPosition:{
+        //         top:-200 ,
+        //         left:-300
+        //    },
+
+            onClick:(menuLink, id, name)=>{
+                switch(name){
+                    case 'edit_attendance':{
+                      mThis.editAttendance(id, menuLink);
+                      break;
+                    }
+                    case 'delete_attendance':{
+                        mThis.deleteAttendance(id, menuLink);
+                        break;
+                      }
+
+                    default:{
+                      break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptions);
+    }
+
+    mThis.editAttendance = (id, menuLink) => {
+
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(241)) return;
+        StaffAttendanceDialog.show(op);
+    }
+
+    mThis.deleteAttendance = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Attendance Record?',{
+            title: 'Delete Attendance Record.',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/mhr/attendances/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted successfully');
+                        mThis.StaffAttendanceListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message || 'An error occurred while deleting');
+                    }
+                })
+            }
+        });
+    }
+
     mThis.show = function () {
         mThis.init();
 
@@ -261,7 +368,7 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                              <div class="col-6">
-                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="Attendance Type">
+                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans('Attendance Type', 'labels')}">
                                      <option value="Check In">Check In</option>
                                      <option value="Check Out">Check Out</option>
                                  </select>
@@ -274,14 +381,14 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="Work Shift">
+                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans('Work Shift', 'titles')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="Position"></select>
+                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
                             </div>
                              <div class="col-6">
-                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="Status"></select>
+                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans('Status', 'titles')}"></select>
                              </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
@@ -316,15 +423,14 @@ const StaffAttendanceDialog = (() => {
             ],
             buttons: [
                 {
-                    label: '<span class="text-warning">Cancel</span>',
+                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-default",
                     click: (me, btn) => {
-                        //Close with Cancel button
                         me.hide(false);
                     },
                 },
                 {
-                    label: "<span>Save</span>",
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
@@ -399,8 +505,9 @@ const StaffAttendanceDialog = (() => {
                 };
             },
             prepareFormOptions: {
-                createTitle: "Create Attendance",
-                modifyTitle: "Modify Attendance",
+                createTitle: "vslang:titles.Create Attendance",
+                modifyTitle: "vslang:titles.Modify Attendance",
+                
                 targetProp: "attendance",
                 api: {
                     endpoint: [

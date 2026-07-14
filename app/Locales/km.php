@@ -692,6 +692,15 @@ return [
 
 
 
+        'Employee Code' => 'លេខកូដបុគ្គលិក',
+        'Scan Info' => 'ព័ត៌មានស្កេន',
+        'Full Name' => 'ឈ្មោះបុគ្គលិក',
+
+        'Create Attendance' => 'បន្ថែមវត្តមាន',
+        'Modify Attendance' => 'កែប្រែវត្តមាន',
+        'Staff Attendances' => 'វត្តមានបុគ្គលិក',
+        'Delete Attendance' => 'លុបវត្តមាន',
+
     
 
     ],
@@ -834,6 +843,7 @@ return [
         'Payroll Account' => 'គណនីបើកប្រាក់បៀវត្ស',
         'Wallet Account' => 'គណនីឌីជីថល',
         'Work Shifts' => 'វេនការងារ',
+        'Staff Attendances' => 'វត្តមានបុគ្គលិក',
         'My Team' => 'ក្រុមការងារ',
         'My Contract' => 'កិច្ចសន្យា',
 
@@ -954,6 +964,7 @@ return [
         'Reservation Now' => 'កក់ឥឡូវ',
 
 
+        'Set Attendance' => 'កំណត់វត្តមាន',
 
 
 
@@ -1229,6 +1240,12 @@ return [
 
 
         
+
+        'Employee Code' => 'លេខកូដបុគ្គលិក',
+        'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
+        'Attendance Type' => 'ប្រភេទវត្តមាន',
+        'Time' => 'ម៉ោង',
+        'Work Shift' => 'វេនការងារ'
 
 
 
