@@ -578,7 +578,7 @@ return [
         'Prepare Print Contract' => 'ត្រៀមបោះពុម្ពកិច្ចសន្យា',
         'Print Contract' => 'បោះពុម្ពកិច្ចសន្យា',
         'Position' => 'តួនាទី',
-        
+
 
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Benefits' => 'អត្ថប្រយោជន៍',
@@ -1131,7 +1131,7 @@ return [
         'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Sub Total' => 'សរុបរង',
         'Total Net' => 'ទឹកប្រាក់សរុប',
-        
+
         'Employee' =>  'បុគ្គលិក',
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Tax Options' => 'ជម្រើសពន្ធ',
@@ -1336,7 +1336,7 @@ return [
         'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
-        
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",

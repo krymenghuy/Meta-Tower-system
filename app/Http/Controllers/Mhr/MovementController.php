@@ -17,8 +17,22 @@ class MovementController extends Controller
     public function saveEmployeeMovement(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss);
+
+        $data = $req->all();
+
+        // Profile Movement dialog (Branch / Position / Salary / Work Shift)
+        if (
+            array_key_exists('change_branch', $data) ||
+            array_key_exists('change_position', $data) ||
+            array_key_exists('change_salary', $data) ||
+            array_key_exists('change_work_shift', $data)
+        ) {
+            return JDV::raw($this->movement->applyEmployeeChanges($data, $ss));
+        }
+
+        // List Movement dialog (event_id + event_date)
         $id = $req->id ?? null;
-        $res = $this->movement->upsert($req->all(),$id,$ss);
+        $res = $this->movement->upsert($data, $id, $ss);
 
         return JDV::raw($res);
     }
@@ -59,6 +73,6 @@ class MovementController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->movement->getFormOptions($req->id, $ss));
+        return JDV::result($this->movement->getFormOptions($req->id, $ss, $req->emp_id ?? null));
     }
 }

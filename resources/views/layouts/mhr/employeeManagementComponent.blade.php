@@ -527,6 +527,7 @@
     }
 
     .emp-profile-action-btn-edit { color: var(--emp-primary2); }
+    .emp-profile-action-btn-movement { color: var(--emp-primary2); }
 
     .emp-profile-btn-back {
         border-radius: 10px;

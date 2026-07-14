@@ -331,6 +331,8 @@ var EmployeeManagementComponent = (function () {
     mThis.renderProfile = (data) => {
         if (!mThis.profileInfoEmployee || !data) return;
 
+        mThis.currentEmployeeProfile = data;
+
         const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
         const hasPhoto = !!data.image_url;
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
@@ -433,9 +435,14 @@ var EmployeeManagementComponent = (function () {
                             </h5>
                             <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement" title="Movement" aria-label="Movement">
+                                <i class="fa-solid fa-right-left"></i>
+                            </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="emp-profile-groups">
@@ -537,6 +544,23 @@ var EmployeeManagementComponent = (function () {
             inlineEditBtn.onclick = (e) => {
                 e.preventDefault();
                 openEditDialog();
+            };
+        }
+
+        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_movement");
+        if (inlineMovementBtn) {
+            inlineMovementBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof ProfileMovementDialog === "undefined") return;
+                ProfileMovementDialog.show({
+                    id: null,
+                    emp_id: mThis.currentEmployeeId,
+                    employee: mThis.currentEmployeeProfile || null,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
+                    },
+                });
             };
         }
 

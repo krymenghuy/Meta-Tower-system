@@ -73,7 +73,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
     Route::post('/save', [MovementController::class, 'saveEmployeeMovement']);
     Route::post('/list-paginate', [MovementController::class, 'getEmployeeMovementListPaginate']);
     Route::post('/details', [MovementController::class, 'getDetails']);
-    Route::post('/delete', [MovementController::class, 'deleteEmployeeMovement']);
+    Route::post('/delete', [MovementController::class, 'deleteEmpEvent']);
     Route::post('/form-options', [MovementController::class, 'getFormOptions']);
 });
 
