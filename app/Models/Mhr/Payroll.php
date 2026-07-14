@@ -7,7 +7,8 @@ use DBX;
 use Illuminate\Support\Facades\DB;
 use Vsd\Money\Models\VSMoney;
 use DateTime;
-
+use App\Models\Mhr\Employee;
+use App\Models\Mhr\TaxBracket;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 
@@ -801,7 +802,6 @@ class Payroll
             $allowance_per_day = $allowance_used / $payroll_days;
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
             $deduction = $payroll->deduction;
-
             if ($payroll->apply_payroll_tax == 1) {
 
                 $tax_rate = $payroll->tax_rate ?? 0;
@@ -905,9 +905,9 @@ class Payroll
                 $payroll->total = ($last_salary + $benefit_taxable + $benefit_non_tax + $benefit_flat_rate_sum) - $deduction;
             }
             $flat_rate_details = null;
+            \Log::info(json_encode($benefits_flat_rate));
+
             $flat_rate_details = self::formatFlatRateBenefits($benefits_flat_rate);
-
-
             $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
