@@ -101,11 +101,11 @@ mThis.init_vsapi = async () => {
     //cacheTTL: 3000,
 
     // online: () => {
-    //   console.log('🟢 Back online');
+    //   console.log('ðŸŸ¢ Back online');
     // },
 
     // offline: () => {
-    //   console.warn('🔴 Connection lost');
+    //   console.warn('ðŸ”´ Connection lost');
     // }
     // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
   });
@@ -548,7 +548,7 @@ class SearchWidget{
           if (lnk){
             that.setState(null);
           }
-          
+
        });
     }
 
@@ -569,11 +569,11 @@ class SearchWidget{
              }
              el.onmouseenter = e=>{
                 el.dataset.isfocus =1;
-                clearTimeout(that.mTimeout);  
+                clearTimeout(that.mTimeout);
              }
              el.onmouseleave = e=>{
                 e.preventDefault();
-                el.dataset.isfocus =0; 
+                el.dataset.isfocus =0;
                 let tog_state = this.state ==1? 0 : 1;
                 if(!el.value || (tog_state + '').trim() ==''){
                     that.mTimeout =  setTimeout(()=>{
@@ -582,7 +582,7 @@ class SearchWidget{
                 }
              }
         }
-         
+
       } else{
          let tog_state = this.state ==1? 0 : 1;
          this.setState(tog_state);
@@ -596,7 +596,7 @@ class SearchWidget{
        if(this.state ==1){
          const el = this.container.querySelector('.sw-search-input');
          return el? el.value: null;
-       }else return null;   
+       }else return null;
     }
 
     setValue(value){
@@ -706,7 +706,7 @@ const ChangePasswordDialog = (()=>{
                         return;
                     }
                     delete(p.confirm_password);
-                    
+
                     let login_name = me.dataOptions.login_name ?? "";
                     vsapi.call([main_view.base_url,'/api/user/password/change'].join(''),p,btn,false).then(res => {
                         if(res.status_code === 200)
@@ -716,12 +716,12 @@ const ChangePasswordDialog = (()=>{
                             cv_interact.success(msg);
                         }
                         else cv_interact.error(res.error_message);
-                        
+
                     });
                 }
             }
-        ] 
-        
+        ]
+
       });
        dialog.show(op);
   };
@@ -745,23 +745,23 @@ const FindContext = (()=>{
         "staff":`${main_view.base_url}/api/employee/find`,
         "employee":`${main_view.base_url}/ypg/employee/list`,
         // "parent":`${main_view.base_url}/api/guardian/find`,
-        //"user":`${main_view.base_url}/api/user/find`  
-    };  
+        //"user":`${main_view.base_url}/api/user/find`
+    };
 
     self.getTitle = (role)=>{
        switch(role){
           case  'sfaff':
-          case 'employee':  
+          case 'employee':
             return "Find Staff";
           default:{
             return 'Find Someone'
-          }  
+          }
        }
     };
 
     self.getColumns = (role)=>{
         switch(role){
-            case 'staff': 
+            case 'staff':
             case 'employee':
                {
                    return [
@@ -790,13 +790,13 @@ const FindContext = (()=>{
                         name:"position",
                         data:(data,index,tr)=>{
                            return [`<span class="text-primary">`,data.position_id,` </span>`].join('');
-                        } 
+                        }
                      },
                    ];
-                   
+
                }
-               
-            case 'user':  
+
+            case 'user':
             case 'login':{
                 return [
                      {
@@ -827,7 +827,7 @@ const FindContext = (()=>{
             }
             default:{
                return [];
-            } 
+            }
          }
     };
 
@@ -858,7 +858,7 @@ const FindPersonDialog = (()=>{
                       `</div>`,
                       `<div class="w-100">`,
                          `<table name="tblPersons" id="tblPersons" class="table mt-3">`,
-                             
+
                          `<thead></thead><tbody></tbody>`,
                          `</table>`,
                        `</div>`,
@@ -867,7 +867,7 @@ const FindPersonDialog = (()=>{
             },
             contentCreated:(me)=>{
                 me.renderColumns = (tbl, cols) => {
-                  
+
                     const thead = tbl.querySelector('thead');
                     const tbody = tbl.querySelector('tbody');
                     thead.innerHTML = '';
@@ -878,18 +878,18 @@ const FindPersonDialog = (()=>{
                         html = [html, '<th>',c.title,'</th>'].join('');
                     });
                     thead.innerHTML = ['<tr>',html,'</tr>'].join('');
-                    
+
                     rows = [rows ,`<tr>
                                  <td colspan="100%" >
                                     <span class="d-flex align-items-center justify-content-center">Search for someone here</span>
                                  </td>
                               </tr>`].join('');
                     tbody.innerHTML = rows;
-                    // tbody.addEventListener('click', function(event) 
+                    // tbody.addEventListener('click', function(event)
                     tbody.onclick = (event) =>{
                      let tr = VSUtil.closestLimited(event.target,'tr');
                      if (tr) {
-                        tr.classList.toggle('row-selected'); 
+                        tr.classList.toggle('row-selected');
                         if(me.dataOptions.singleSelect && tr.classList.contains('row-selected')){
                            if(me.prev_selected_tr) me.prev_selected_tr.classList.remove('row-selected');
                         }
@@ -897,7 +897,7 @@ const FindPersonDialog = (()=>{
                      }
                   };
                 };
-              
+
                me.getSelection = (tbl, cols)=>{
                  //const tbl = me.controls.tblPersons;
                  //const context = FindContext.getColumns(me.dataOptions.role);`
@@ -906,7 +906,7 @@ const FindPersonDialog = (()=>{
                  let tds = null;
                  tbody.querySelectorAll('tr').forEach(tr =>{
                      if(tr.classList.contains('row-selected')){
-                        tds = tds||tr.querySelectorAll('td') 
+                        tds = tds||tr.querySelectorAll('td')
                         let item = {};
                         tds.forEach(td=>{
                            item[td.dataset.name] = td.textContent;
@@ -937,7 +937,7 @@ const FindPersonDialog = (()=>{
                         cols.map(c =>{
                            let name = c.name;
                            let val = typeof c.data == 'function' ? c.data(item,index) : (item[c.data || c.name]);
-                           
+
                            row_html = [row_html,'<td data-name="',name,'">',val,'</td>'].join('');
                         });
                         html += ['<tr data-id="',item.id,'">',row_html,'</tr>'].join('');
@@ -969,7 +969,7 @@ const FindPersonDialog = (()=>{
                me.renderColumns(me.controls.tblPersons, context.columns);
                const elTitle = divModal.querySelector('.modal-content .modal-title');
                if(elTitle){
-                  elTitle.textContent = context.title; 
+                  elTitle.textContent = context.title;
                }
                LocaleManager.translateZone(me.divModal);
             },
@@ -985,7 +985,7 @@ const FindPersonDialog = (()=>{
                 label:'<span vslang="DataTransferItemList.OK"></span>',
                 cssClass:'btn btn-primary',
                 click:(me)=>{
-                  me.context = me.context || FindContext.getContext(me.dataOptions.role);  
+                  me.context = me.context || FindContext.getContext(me.dataOptions.role);
                   const p = me.getSelection(me.controls.tblPersons,me.context.columns);
                   if (!p || !p[0]){
                      cv_interact.warning('No one is selected!');
@@ -994,9 +994,9 @@ const FindPersonDialog = (()=>{
                   const d = me.dataOptions.singleSelect ? p[0]: p;
                   me.hide(true,d);
                 }
-              }  
+              }
             ],
-        
+
          });
         dialog.show(op);
      }
@@ -1006,7 +1006,7 @@ const FindPersonDialog = (()=>{
 "use strict";
 const PusherClient = new function(){
     const mThis = this;
- 
+
     this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
     this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
     // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
@@ -1018,14 +1018,14 @@ const PusherClient = new function(){
     this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
     //*** FOr HouExpress */
    // this.backend_channel_name = ['houex.backend.',this.branch_id].join('');
-   
+
     this.pusher_channel = {'bind':()=>{ return;}};
 
     //pusher_app_key are in .env file, and in main.js
-    //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
-    
+    //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php"
+
     //*** For Demo DMS */
-    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY 
+    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
@@ -1049,21 +1049,21 @@ const PusherClient = new function(){
                         }else{
                             console.error('Pusher authorization failed. This can happen when token expired!');
                         }
-                       
+
                     });
                 }
             };
         }
     });
- 
+
     pusher.connection.bind('error', function(err) {
         console.error("Pusher error:", err);
     });
-    
+
     pusher.connection.bind('connected',(payload)=>{
         console.info('Web socket connection successful :)');
     });
- 
+
     mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);
 
     mThis.pusher_channel.bind('pusher:subscription_succeeded',(d)=>{
@@ -1089,7 +1089,7 @@ const PusherClient = new function(){
         });
 
         let order_id = data.order?data.order.id:0;
-        let image_count = (data.order || {}).image_count; 
+        let image_count = (data.order || {}).image_count;
         OrderImagesComponent.addImage(order_id,data.img,image_count);
     });
 
@@ -1134,7 +1134,7 @@ const PusherClient = new function(){
     //     TripListComponent.packageStatusChanged_eventHandler(d);
     // });
 
-    mThis.pusher_channel.bind('order_created', (d)=>{ 
+    mThis.pusher_channel.bind('order_created', (d)=>{
         toastr.info(d.data.message, 'Order Created');
         main_view.addNotificationItem({'title':d.data.title,'message':d.data.message});
         const tr = PickupListComponent.getExpandedRow_tr();
@@ -1185,9 +1185,9 @@ const PusherClient = new function(){
 
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
             PickupListComponent.updatePickupStatus(tr,data);
-        } 
+        }
     });
-                    
+
     mThis.pusher_channel.bind('order_deleted',(d) =>{
         let data = d.data;
         toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted');
@@ -1203,14 +1203,14 @@ const PusherClient = new function(){
             }
         }
     });
-   
+
     mThis.pusher_channel.bind('package_photo_picked',(d) =>{
         let data = d.data;
         data.title = data.title || 'Photo Picked';
         toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title);
         main_view.addNotificationItem({'title':data.title,'message':data.message});
         if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+            PickupListComponent.setImageCount(data.order_id,data.img_count);
         }
     });
 
@@ -1220,7 +1220,7 @@ const PusherClient = new function(){
         toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title);
         main_view.addNotificationItem({'title':data.title,'message':data.message});
         if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+            PickupListComponent.setImageCount(data.order_id,data.img_count);
         }
     });
 
@@ -1245,14 +1245,14 @@ var DashboardComponent =  (function () {
     mThis.title_prop = "Dashboard";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
-    main_view.divTitle = main_view.divTitle || document.querySelector('#screen_title_wrapper'); 
+    main_view.divTitle = main_view.divTitle || document.querySelector('#screen_title_wrapper');
 
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     // mThis.onShow = (options) => {
     //     if (!AuthManager.allowed(254,true)) return;
     //     mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
     //     const btn = main_view.divTitle.querySelector(".btn-db-fitler");
-    //     if (!btn) return; 
+    //     if (!btn) return;
     //     main_view.divTitle.insertAdjacentHTML(
     //         "beforeend",
     //         '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>'
@@ -1445,7 +1445,7 @@ var DashboardComponent =  (function () {
                             label: function (tooltipItem) {
                                 const label = tooltipItem.label || "";
                                 const value = tooltipItem.raw;
-                                return `${label} : ${value} នាក់`;
+                                return `${label} : ${value} áž“áž¶áž€áŸ‹`;
                             },
                         },
                     },
@@ -1458,7 +1458,7 @@ var DashboardComponent =  (function () {
                         formatter: function (value, context) {
                             return `${
                                 context.chart.data.labels[context.dataIndex]
-                            }\n${value} នាក់`;
+                            }\n${value} áž“áž¶áž€áŸ‹`;
                         },
                     },
                 },
@@ -1499,7 +1499,7 @@ var DashboardComponent =  (function () {
                     yAxisID: "y",
                 },
                 {
-                    label: "Total Salary Paid (រៀល)",
+                    label: "Total Salary Paid (ážšáŸ€áž›)",
                     data: data.total_salaries,
                     backgroundColor: "#cab54a",
                     borderColor: "#fff",
@@ -1537,7 +1537,7 @@ var DashboardComponent =  (function () {
                         position: "right",
                         title: {
                             display: true,
-                            text: "Salary in KHR (រៀល)",
+                            text: "Salary in KHR (ážšáŸ€áž›)",
                             color: "#cab54a",
                         },
                         ticks: {
@@ -1902,7 +1902,7 @@ var DashboardComponent =  (function () {
         options = options || {};
         mThis.prepareFormOptions(null, (d) => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-    
+
         });
     };
 
@@ -2236,7 +2236,7 @@ var EmployeeEducationComponent = (function () {
     mThis._yearRange = (start, end) => {
         const s = start != null && start !== "" ? String(start) : "";
         const e = end != null && end !== "" ? String(end) : "";
-        if (s && e) return `${s} – ${e}`;
+        if (s && e) return `${s} â€“ ${e}`;
         if (s) return s;
         if (e) return e;
         return "";
@@ -2247,7 +2247,7 @@ var EmployeeEducationComponent = (function () {
         const major = (edu.major || "").trim();
         const diploma = (edu.diploma || "").trim();
         const parts = [level, major, diploma].filter(Boolean);
-        return parts.join(" · ");
+        return parts.join(" Â· ");
     };
 
     mThis._schoolLabel = (edu) => {
@@ -2583,7 +2583,7 @@ var EmployeeExperienceComponent = (function () {
 
         const lines = desc
             .split(/\r?\n/)
-            .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+            .map((line) => line.replace(/^[-â€¢*]\s*/, "").trim())
             .filter(Boolean);
 
         if (!lines.length) return "";
@@ -3237,6 +3237,8 @@ const DocumentDialog = (() => {
 
 "use strict";
 
+"use strict";
+
 var EmployeeManagementComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Employee";
@@ -3568,6 +3570,8 @@ var EmployeeManagementComponent = (function () {
     mThis.renderProfile = (data) => {
         if (!mThis.profileInfoEmployee || !data) return;
 
+        mThis.currentEmployeeProfile = data;
+
         const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
         const hasPhoto = !!data.image_url;
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
@@ -3670,9 +3674,14 @@ var EmployeeManagementComponent = (function () {
                             </h5>
                             <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement" title="Movement" aria-label="Movement">
+                                <i class="fa-solid fa-right-left"></i>
+                            </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="emp-profile-groups">
@@ -3774,6 +3783,23 @@ var EmployeeManagementComponent = (function () {
             inlineEditBtn.onclick = (e) => {
                 e.preventDefault();
                 openEditDialog();
+            };
+        }
+
+        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_movement");
+        if (inlineMovementBtn) {
+            inlineMovementBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof ProfileMovementDialog === "undefined") return;
+                ProfileMovementDialog.show({
+                    id: null,
+                    emp_id: mThis.currentEmployeeId,
+                    employee: mThis.currentEmployeeProfile || null,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
+                    },
+                });
             };
         }
 
@@ -4181,62 +4207,67 @@ const EmployeeDialog = (() => {
     return self;
 })();
 
-var MovementComponent = (()=> {
+"use strict";
+
+"use strict";
+
+"use strict";
+
+"use strict";
+
+"use strict";
+
+"use strict";
+
+"use strict";
+
+var MovementComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Movements";
+    mThis.title_prop = "Employee Movements";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_employeeMovementComponent");
- 
+
     // mThis.btnAdd = mThis.self.querySelector("#_btnAddMovement");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_emp_movement");
-    mThis.elEvent = mThis.self.querySelector('#el_event');
-    mThis.elEmployee = mThis.self.querySelector('#el_employee');
+    mThis.elEvent = mThis.self.querySelector("#el_event");
+    mThis.elEmployee = mThis.self.querySelector("#el_employee");
 
     mThis.cols = [
-
         {
-            transTitle: "",
-            className: 'align-middle',
-            // data: (data, index, i) => { return (index + 1) },
-
+            title: "",
+            className: "align-middle",
         },
         {
-            transTitle: "titles.Employee",
+            title: "Employee",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${data.image_url ||main_view.asset_url + "/images/default/default-staff.png"}" alt=""style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${
-                                    data.emp_name ?? ""
-                                }</span>
+                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ""}</span>
                                 <br/>
-                                <span style="font-size: 10px; color: #2b3991;">${
-                                    data.position ?? ""
-                                }</span>
+                                <span style="font-size: 10px; color: #2b3991;">${data.position ?? ""}</span>
                             </div>
                         </div>`;
-            }
+            },
         },
-
         {
-            transTitle: "titles.Event",
+            title: "Event",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.event ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.event ?? ""}</p>`;
+            },
         },
         {
-            transTitle: "titles.Date",
+            title: "Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.event_date ?? ""}</p>`;
-            }
+            },
         },
-
         {
-            transTitle: "titles.Last Updated",
+            title: "last Updated",
             className: "align-middle",
             data: (data) => `
             <div style="display: block; align-items: center;">
@@ -4244,48 +4275,59 @@ var MovementComponent = (()=> {
                 <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
             </div>`,
         },
-
         {
-            transTitle: "titles.Impact",
-            className: 'status text-nowrap align-middle',
+            title: "Impact",
+            className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
+                let bg_color = "";
 
-                if ((data.impact || '').toLowerCase() === 'positive') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745';
-                } else if ((data.impact || '').toLowerCase() === 'neutral') {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107';
-                } else if ((data.impact || '').toLowerCase() === 'negative') {
-                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#dc3545';
+                if ((data.impact || "").toLowerCase() === "positive") {
+                    cls_class = "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#28a745";
+                } else if ((data.impact || "").toLowerCase() === "neutral") {
+                    cls_class = "text-white text-center border border-warning rounded-5 p-1";
+                    bg_color = "#ffc107";
+                } else if ((data.impact || "").toLowerCase() === "negative") {
+                    cls_class = "text-white text-center border border-danger rounded-5 p-1";
+                    bg_color = "#dc3545";
                 } else {
-                    bg_color = '#6c757d';
+                    bg_color = "#6c757d";
                 }
 
                 return `<div><a class="d-block" data-status="${data.impact}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:100px; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.impact}
+                                ${data.impact ?? ""}
                             </span>
                         </a></div>`;
-            }
+            },
         },
-
-
+        {
+            className: "col_action align-middle",
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                            <a href="javascript:void(0)" class="btn_movement_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            },
+        },
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.MovementListView = new ListView('_emp_movement_list',{
-            fetchApi : `${main_view.base_url}/mhr/emp-event/list-paginate`,
+        mThis.MovementListView = new ListView("_emp_movement_list", {
+            fetchApi: `${main_view.base_url}/mhr/emp-event/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white overflow-hidden rounded-3 header-uppercase',
-            listContainerClass: null
+            tableClass: "table table--white overflow-hidden rounded-3 header-uppercase",
+            listContainerClass: null,
         });
 
         // mThis.btnAdd.onclick = function (e) {
@@ -4299,112 +4341,100 @@ var MovementComponent = (()=> {
         //     };
         //     MovementDialog.show(op);
         // };
+
         mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.initDropdownMenus(mThis.tblMovement);
-        mThis.sh_container  = mThis.MovementListView.getListContainer();
+        mThis.sh_container = mThis.MovementListView.getListContainer();
 
-        mThis.pr_tbl = mThis.MovementListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        const pr_tbl = mThis.MovementListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 215 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
-
-
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = (e) =>{
-                e.preventDefault();
-                mThis.MovementListView.showPage(mThis.getFilterData());
-            }
-
-        });
-        let timeOut = null;
-        mThis.elSearch.onkeyup = function(e) {
-            e.preventDefault();
-            clearTimeout(timeOut);
-            timeOut = setTimeout(()=>{
-                mThis.MovementListView.showPage(mThis.getFilterData());
-            },250);
-
+            sh_parent.style.maxHeight = window.innerHeight - 215 + "px";
         };
 
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.MovementListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
+                mThis.MovementListView.showPage(mThis.getFilterData());
+            }, 250);
+        };
 
         mThis.initAlready = true;
-
     };
-
-
 
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
-            event: mThis.elEvent.value,
-            employee:mThis.elEmployee.value,
+            event_id: mThis.elEvent.value,
+            emp_id: mThis.elEmployee.value,
         };
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el=>{
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             let f = el.dataset.field;
             p[f] = el.value;
-        })
+        });
         return p;
     };
 
-
-    mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_movement_action",
-            cssClass:"bg-white shadow",
-            //menuItemClass:"",
-            menus:[
-
+            actionButtonClass: "btn_movement_action",
+            cssClass: "bg-white shadow",
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Movement">Modify Movement</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_movement"
+                    html: '<span class="ps-2  " vslang="titles.Modify Movement">Modify Movement</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_movement",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Movement">Delete Movement</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_movement"
+                    html: '<span class="ps-2  " vslang="titles.Delete Movement">Delete Movement</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_movement",
                 },
-
             ],
-
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'edit_movement':{
-                      mThis.editMovement(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_movement": {
+                        mThis.editMovement(id, menuLink);
+                        break;
                     }
-                    case 'delete_movement':{
+                    case "delete_movement": {
                         mThis.deleteMovement(id, menuLink);
                         break;
-                      }
-
-                    default:{
-                      break;
+                    }
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
+    };
 
     mThis.editMovement = (movement_id, menuLink) => {
         let op = {
             id: movement_id,
             btn: menuLink,
             onClose: () => {
-                mThis.MovementListView.showPage(); // Refresh the list after editing
-            }
+                mThis.MovementListView.showPage();
+            },
         };
-
         MovementDialog.show(op);
-    }
+    };
 
     mThis.deleteMovement = (movement_id, menuLink) => {
         const op = {
@@ -4412,166 +4442,464 @@ var MovementComponent = (()=> {
             btn: menuLink,
             onClose: () => {
                 mThis.MovementListView.showPage();
-            }
+            },
         };
-        cv_interact.confirm('Delete this employee movement?',{
-            title: 'Delete Employee Movement',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/emp-event/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
-                        mThis.MovementListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
+        cv_interact.confirm(
+            "Delete this employee movement?",
+            {
+                title: "Delete Employee Movement",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(`${main_view.base_url}/mhr/emp-event/delete`, op, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.MovementListView.showPage();
+                            }
+                        });
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            },
+        );
+    };
 
-    }
     mThis.prepareFormOptions = () => {
+        vsapi
+            .call(`${main_view.base_url}/mhr/emp-event/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elEvent, d.events, "id", "name", true, "All Movements", null);
+                VSUtil.setComboItems(mThis.elEmployee, d.employees, "id", "name", true, "All Employee", null);
+            });
+    };
 
-        vsapi.call(`${main_view.base_url}/mhr/emp-event/form-options`,null,null,null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elEvent,d.events,'id','name','',LocaleManager.trans("All Movements", "titles"),'');
-            VSUtil.setComboItems(mThis.elEmployee,d.employees,'id','name','',LocaleManager.trans("All Employee", "titles"),'');
-
-        })
-    }
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions();
-            mThis.MovementListView.showPage(mThis.getFilterData());
-            main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.MovementListView.showPage(mThis.getFilterData());
+        main_view.setContentView(mThis.self, mThis.title_prop);
     };
 
     return mThis;
 })();
 
-const MovementDialog = (()=>{
-
+const MovementDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
 
-        dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [
-                     `<div class="row">
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
                     <div class="form-group col-12">
                         <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                        <select name="employee" class=" data-input"  data-field="emp_id"></select>
+                        <select name="employee" class=" data-input" data-field="emp_id"></select>
                     </div>
-                    <div class="form-group  col-12 d.none">
+                    <div class="form-group col-12 d-none">
                         <div id="info"></div>
                     </div>
                     <div class="form-group col-6">
                         <label for="event" class="form-label" vslang="titles.Movement Type"></label>
-                        <select name="event" class=" data-input"  data-field="event_id"></select>
+                        <select name="event" class=" data-input" data-field="event_id"></select>
                     </div>
                     <div class="form-group col-6">
                         <label for="event_date" class="form-label" vslang="titles.Date"></label>
                         <input name="event_date" class="form-control data-input form_input" data-field="event_date" />
                     </div>
                     <div class="form-group col-12">
-                        <label for="remarks" class="form-label"
-                        vslang="titles.Remarks"></label>
-                        <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
+                        <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
+                        <textarea type="text" class="form-control data-input" data-field="remarks"></textarea>
                     </div>
-
               </div>`,
-                 ].join("");
-            },
-            contentCreated:(me)=>{
-               //Convert field to be DatePicker : start_date and end_date
-               DateTimePicker.init(me.controls.event_date);
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    DateTimePicker.init(me.controls.event_date);
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                        },
+                        valueField: "id",
+                    },
+                    {
+                        name: "event",
+                        data: "events",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-            },
-            configSelect:[
-               {
-                 name:"employee",
-                 data:'employees',
-                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`; },
-                // textField:"name",
-                 valueField:'id'
-               },
-               {
-                name:"event",
-                data:'events',
-                textField:"name",
-                valueField:'id'
-               },
-               {
-                name:"status",
-                data:'impacts',
-                textField:"name",
-                valueField:'id'
-               }
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
+                            p.id = me.dataOptions.id;
 
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/mhr/emp-event/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Employee Movement',
-               modifyTitle:'Edit Employee Movement',
-               targetProp: 'emp_event',
-               api:{
-                 endpoint: [main_view.base_url,'/mhr/emp-event/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            },
-
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
-
-        });
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/emp-event/save"].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Employee Movement",
+                    modifyTitle: "Edit Employee Movement",
+                    targetProp: "emp_event",
+                    api: {
+                        endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();
+//end:: MovementDialog
 
-"use strict";
+/** Profile Movement — Branch / Position / Salary / Work Shift */
+const ProfileMovementDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    const isChecked = (val) =>
+        val === true || val === 1 || val === "1" || val === "on";
+
+    const fillCurrentValues = (me, data) => {
+        const emp = data?.employee || me.dataOptions.employee || {};
+        const branches = data?.branches || [];
+
+        if (me.controls.emp_id) {
+            me.controls.emp_id.value = emp.id || me.dataOptions.emp_id || "";
+        }
+
+        const branchName =
+            emp.branch_name ||
+            branches.find((b) => String(b.id) === String(emp.branch_id))?.branch_name ||
+            branches.find((b) => String(b.id) === String(emp.branch_id))?.name ||
+            "";
+
+        if (me.controls.current_branch) {
+            me.controls.current_branch.value = branchName;
+        }
+        if (me.controls.current_position) {
+            me.controls.current_position.value = emp.position || emp.position_title || "";
+        }
+        if (me.controls.original_salary) {
+            me.controls.original_salary.value =
+                emp.salary != null && emp.salary !== "" ? emp.salary : "";
+        }
+        if (me.controls.current_work_shift) {
+            me.controls.current_work_shift.value = emp.work_shift || "";
+        }
+    };
+
+    self.show = (op) => {
+        if (!op.emp_id && !op.employee?.id) {
+            cv_interact.error(LocaleManager.trans("Employee is required", "message_box_default"));
+            return;
+        }
+
+        op.emp_id = op.emp_id || op.employee.id;
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-xl vs-modal movement-dialog",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="movement-dialog-body">
+                            <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+
+                            <div class="movement-check-row d-flex flex-wrap align-items-center gap-3 gap-md-4 mb-3">
+                                <label class="movement-check form-check mb-0">
+                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_branch" data-field="change_branch" data-section="branch" value="1" />
+                                    <span class="form-check-label" vslang="labels.Change Branch">Change Branch</span>
+                                </label>
+                                <label class="movement-check form-check mb-0">
+                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_position" data-field="change_position" data-section="position" value="1" />
+                                    <span class="form-check-label" vslang="labels.Change Position">Change Position</span>
+                                </label>
+                                <label class="movement-check form-check mb-0">
+                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_salary" data-field="change_salary" data-section="salary" value="1" />
+                                    <span class="form-check-label" vslang="labels.Change Salary">Change Salary</span>
+                                </label>
+                                <label class="movement-check form-check mb-0">
+                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_work_shift" data-field="change_work_shift" data-section="work_shift" value="1" />
+                                    <span class="form-check-label" vslang="labels.Change Work Shift">Change Work Shift</span>
+                                </label>
+                            </div>
+
+                            <div class="row g-3 movement-section mb-2" data-section-row="branch">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Current Branch">Current Branch <span class="text-danger">*</span></label>
+                                    <input type="text" name="current_branch" class="form-control data-input movement-readonly" data-field="current_branch" readonly />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.To Branch">To Branch <span class="text-danger">*</span></label>
+                                    <select data-style="material" name="to_branch" class="form-control data-input" placeholder="To Branch" data-field="to_branch_id"></select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
+                                    <input type="text" name="branch_remarks" class="form-control data-input" data-field="branch_remarks" />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 movement-section mb-2" data-section-row="position">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Current Position">Current Position <span class="text-danger">*</span></label>
+                                    <input type="text" name="current_position" class="form-control data-input movement-readonly" data-field="current_position" readonly />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.To Position">To Position <span class="text-danger">*</span></label>
+                                    <select data-style="material" name="to_position" class="form-control data-input" placeholder="To Position" data-field="to_position_id"></select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
+                                    <input type="text" name="position_remarks" class="form-control data-input" data-field="position_remarks" />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 movement-section mb-2" data-section-row="salary">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Original Salary">Original Salary</label>
+                                    <input type="text" name="original_salary" class="form-control data-input movement-readonly" data-field="original_salary" readonly />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.New Salary">New Salary <span class="text-danger">*</span></label>
+                                    <input type="number" name="new_salary" class="form-control data-input" data-field="new_salary" min="0" step="0.01" />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
+                                    <input type="text" name="salary_remarks" class="form-control data-input" data-field="salary_remarks" />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 movement-section mb-2" data-section-row="work_shift">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Current Work Shift">Current Work Shift <span class="text-danger">*</span></label>
+                                    <input type="text" name="current_work_shift" class="form-control data-input movement-readonly" data-field="current_work_shift" readonly />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.To Work Shift">To Work Shift <span class="text-danger">*</span></label>
+                                    <select data-style="material" name="to_work_shift" class="form-control data-input" placeholder="To Work Shift" data-field="to_work_shift_id"></select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
+                                    <input type="text" name="work_shift_remarks" class="form-control data-input" data-field="work_shift_remarks" />
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    me.syncMovementSections = () => {
+                        me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
+                            const key = chk.dataset.section;
+                            const row = me.divModal.querySelector(`[data-section-row="${key}"]`);
+                            if (!row) return;
+                            row.classList.toggle("is-open", chk.checked);
+                            row.querySelectorAll(
+                                "input:not([type=checkbox]), select, textarea",
+                            ).forEach((el) => {
+                                el.disabled = false;
+                                el.removeAttribute("disabled");
+                                if (el.classList.contains("movement-readonly")) {
+                                    el.readOnly = true;
+                                }
+                            });
+                        });
+                    };
+                    me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
+                        chk.addEventListener("change", () => {
+                            me.syncMovementSections();
+                            fillCurrentValues(me, me._formData || {});
+                        });
+                    });
+                    me.syncMovementSections();
+                },
+                configSelect: [
+                    {
+                        name: "to_branch",
+                        data: "branches",
+                        textField: "branch_name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "to_position",
+                        data: "positions",
+                        textField: "position_name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "to_work_shift",
+                        data: "work_shifts",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.emp_id =
+                                me.dataOptions.emp_id || me.dataOptions.employee?.id || p.emp_id;
+                            p.change_branch = isChecked(p.change_branch) ? 1 : 0;
+                            p.change_position = isChecked(p.change_position) ? 1 : 0;
+                            p.change_salary = isChecked(p.change_salary) ? 1 : 0;
+                            p.change_work_shift = isChecked(p.change_work_shift) ? 1 : 0;
+
+                            if (
+                                !p.change_branch &&
+                                !p.change_position &&
+                                !p.change_salary &&
+                                !p.change_work_shift
+                            ) {
+                                cv_interact.warning(
+                                    LocaleManager.trans(
+                                        "Please select at least one change",
+                                        "message_box_default",
+                                    ),
+                                );
+                                return;
+                            }
+                            if (p.change_branch && !p.to_branch_id) {
+                                cv_interact.warning(
+                                    LocaleManager.trans("To Branch is required", "message_box_default"),
+                                );
+                                return;
+                            }
+                            if (p.change_position && !p.to_position_id) {
+                                cv_interact.warning(
+                                    LocaleManager.trans("To Position is required", "message_box_default"),
+                                );
+                                return;
+                            }
+                            if (p.change_salary && (p.new_salary === "" || p.new_salary == null)) {
+                                cv_interact.warning(
+                                    LocaleManager.trans("New Salary is required", "message_box_default"),
+                                );
+                                return;
+                            }
+                            if (p.change_work_shift && !p.to_work_shift_id) {
+                                cv_interact.warning(
+                                    LocaleManager.trans(
+                                        "To Work Shift is required",
+                                        "message_box_default",
+                                    ),
+                                );
+                                return;
+                            }
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/emp-event/save"].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (typeof me.dataOptions.onClose === "function") {
+                                            me.dataOptions.onClose(p);
+                                        }
+                                        cv_interact.success("Set movement successfully");
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Movement",
+                    modifyTitle: "Movement",
+                    targetProp: "employee",
+                    api: {
+                        endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
+                        params: (op) => {
+                            return {
+                                id: op.id || null,
+                                emp_id: op.emp_id || op.employee?.id || null,
+                            };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    me._formData = data || {};
+                    fillCurrentValues(me, me._formData);
+                    if (typeof me.syncMovementSections === "function") {
+                        me.syncMovementSections();
+                    }
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+//end:: ProfileMovementDialog
 
 var LeaveComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Leaves";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
-    
+
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
@@ -4691,7 +5019,7 @@ var LeaveComponent = (function () {
                     m?.text ||
                     (statusKey === "terminated"
                         ? "Terminated"
-                        : (data.status ?? "—"));
+                        : (data.status ?? "â€”"));
                 const cls =
                     m?.cls || byName[statusKey] || "bg-light text-muted";
                 return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
@@ -4736,9 +5064,9 @@ var LeaveComponent = (function () {
             rowCreated:(data,index,tr)=>{
               tr.dataset.statusid = data.status_id;
               tr.classList.add('leave');
-              tr.setAttribute('id',['leave_id',data.id].join('')); 
+              tr.setAttribute('id',['leave_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -4846,7 +5174,7 @@ var LeaveComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-   
+
 
     mThis.editLeave = (id, menuLink) => {
 
@@ -4900,7 +5228,7 @@ var LeaveComponent = (function () {
 
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.prepareFormOptions();
         mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
            main_view.setContentView(mThis.self, mThis.title_prop);
@@ -5039,7 +5367,7 @@ var PayrollComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_payrollComponent");
-    
+
     mThis.title_prop = "Payroll";
     mThis.elAuthorized = mThis.self.querySelector("#el_authorized");
     mThis.elDisbursed = mThis.self.querySelector("#el_disbursed");
@@ -5093,7 +5421,7 @@ var PayrollComponent = new (function () {
             data: (data) =>
                 `<span class="text-dark">(<small class="text-dark">${
                     data.start_date ?? ""
-                }​ <small class="text-warning">~</small> ${
+                }â€‹ <small class="text-warning">~</small> ${
                     data.end_date ?? ""
                 }</small>)</span>`,
         },
@@ -5600,7 +5928,7 @@ var PayrollComponent = new (function () {
     };
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.prepareFormOptions();
         mThis.PayrollListView.showPage();
         main_view.setContentView(mThis.self, mThis.title_prop);
@@ -5862,7 +6190,7 @@ var PayrollListComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_payrollListComponent");
-    
+
     mThis.title_prop = "Payroll List";
     mThis.elFilter = mThis.self.querySelector('#el_filter_payrollList');
     mThis.elFilterBranch = mThis.self.querySelector('#el_filter_branch');
@@ -6404,9 +6732,9 @@ var PayrollListComponent = new (function () {
                         <div class="payment-title">
                         <h4>Pay Slip : ${data.start_date} - ${data.end_date}</h4>
                         </div>
-                        
+
                         </div>
-                        
+
                         <div class="payment_profile">
                         <div class="row cols-2 mb-0">
                         <div class="col-2">
@@ -6679,7 +7007,7 @@ var PayrollListComponent = new (function () {
     mThis.show = function (option) {
         mThis.option = option;
         mThis.init();
-        
+
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
             mThis.elFilter.dispatchEvent(new Event('change'));
@@ -6917,7 +7245,7 @@ var BenefitComponent =  (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_benefit_component");
- 
+
     mThis.title_prop = "Benefit List";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -7033,7 +7361,7 @@ var BenefitComponent =  (function () {
 
         mThis.initAlready = true;
     };
- 
+
     mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
@@ -7098,7 +7426,7 @@ var BenefitComponent =  (function () {
             p[f] = el.value;
 
         });
-        
+
         return p;
     };
     mThis.prepareFormOptions = (onFinish) => {
@@ -7118,7 +7446,7 @@ var BenefitComponent =  (function () {
             mThis.BenefitListView.showPage(mThis.getFilterData());
 
         });
-       
+
     };
     return mThis;
 })();
@@ -7229,7 +7557,7 @@ var EmployeeBenefitComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_employee_benefit_component");
- 
+
     mThis.title_prop = "Employee Benefits";
 
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
@@ -8394,12 +8722,12 @@ const AccountDialog = (() => {
                 },
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
-                    
+
                     if (currency_codeField && !currency_codeField.value) {
                         currency_codeField.value = VSMoney.getCurrency().code;
 
                     }
-                  
+
                 },
                 configSelect: [
                     {
@@ -9029,7 +9357,7 @@ var StaffAttendanceComponent = (function () {
                             <div class="d-flex flex-column mb-1">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-primary-custom fw-bold" style="font-size: 80%;">${info.action_type}</small>
-                                    <small class="text-info px-2" style="font-size: 80%;">→</small>
+                                    <small class="text-info px-2" style="font-size: 80%;">â†’</small>
                                     <small class="text-success  fw-bold" style="font-size: 80%;">${formattedTime}</small>
                                 </div>
                                 ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ""}
@@ -9307,7 +9635,7 @@ const StaffAttendanceDialog = (() => {
                     type: "select",
                     prefetch: true,
                     maxDropdownHeight: "380px",
-                    
+
                     api: {
                         endpoint: `${main_view.base_url}/mhr/attendance/form-options`,
                     },
@@ -9340,7 +9668,7 @@ const StaffAttendanceDialog = (() => {
                     },
                 });
                 DateTimePicker.init(me.controls.attendance_date);
-                
+
 
                 me.saveStaffAttendance = (p) => {
                     alert("Data saved.");

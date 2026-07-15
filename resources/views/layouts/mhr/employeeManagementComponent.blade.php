@@ -527,6 +527,55 @@
     }
 
     .emp-profile-action-btn-edit { color: var(--emp-primary2); }
+    .emp-profile-action-btn-movement { color: var(--emp-primary2); }
+    .emp-profile-action-btn-resign {
+        color: #b45309;
+        border-color: #fcd34d;
+        background: #fffbeb;
+    }
+    .emp-profile-action-btn-resign:hover {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .resign-dialog .modal-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 12px;
+    }
+
+    .resign-dialog .modal-title {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .resign-dialog-body {
+        padding: 4px 2px 8px;
+    }
+
+    .resign-field-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .resign-field-input {
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        min-height: 42px;
+        box-shadow: none;
+    }
+
+    .resign-field-input:focus {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.15);
+    }
+
+    .resign-field-remarks {
+        min-height: 110px;
+        resize: vertical;
+    }
 
     .emp-profile-btn-back {
         border-radius: 10px;

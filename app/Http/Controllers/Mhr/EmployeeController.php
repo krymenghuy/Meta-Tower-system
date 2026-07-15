@@ -58,6 +58,19 @@ class EmployeeController extends Controller
         return JDV::result($this->employees->getFormOptions($req->id, $ss));
     }
 
+    public function setResign(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $emp_id = $req->emp_id ?? $req->id;
+        $emp = new Employee($emp_id, $ss);
+        $res = $emp->setResign($req->all(), $ss);
+        return JDV::raw($res);
+    }
+
     // public function deleteEmployee(Request $req){
     //     $ss =XAuthService::verifyAuth($req,-1);
     //     if($ss->status_code !== 200){

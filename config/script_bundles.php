@@ -254,6 +254,7 @@ return [
                 '/js/components/mhr/PayrollAccountComponent.js',
                 '/js/components/mhr/walletAccountComponent.js',
                 '/js/components/mhr/StaffAttendanceComponent.js',
+                '/js/components/mhr/WarningComponent.js',
 
 
 

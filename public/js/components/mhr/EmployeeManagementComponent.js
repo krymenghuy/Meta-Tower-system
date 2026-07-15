@@ -331,6 +331,8 @@ var EmployeeManagementComponent = (function () {
     mThis.renderProfile = (data) => {
         if (!mThis.profileInfoEmployee || !data) return;
 
+        mThis.currentEmployeeProfile = data;
+
         const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
         const hasPhoto = !!data.image_url;
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
@@ -433,9 +435,17 @@ var EmployeeManagementComponent = (function () {
                             </h5>
                             <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement" title="Movement" aria-label="Movement">
+                                <i class="fa-solid fa-right-left"></i>
+                            </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_resign" title="Set Resign" aria-label="Set Resign">
+                                <i class="fa-solid fa-user-xmark"></i>
+                            </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="emp-profile-groups">
@@ -537,6 +547,39 @@ var EmployeeManagementComponent = (function () {
             inlineEditBtn.onclick = (e) => {
                 e.preventDefault();
                 openEditDialog();
+            };
+        }
+
+        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_movement");
+        if (inlineMovementBtn) {
+            inlineMovementBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof ProfileMovementDialog === "undefined") return;
+                ProfileMovementDialog.show({
+                    id: null,
+                    emp_id: mThis.currentEmployeeId,
+                    employee: mThis.currentEmployeeProfile || null,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
+                    },
+                });
+            };
+        }
+
+        const inlineResignBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_resign");
+        if (inlineResignBtn) {
+            inlineResignBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof ProfileResignDialog === "undefined") return;
+                ProfileResignDialog.show({
+                    emp_id: mThis.currentEmployeeId,
+                    employee: mThis.currentEmployeeProfile || null,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.showPage("employee_list", mThis.getFilterData());
+                    },
+                });
             };
         }
 
@@ -939,6 +982,155 @@ const EmployeeDialog = (() => {
                 ],
             });
         dialog.show(op);
+    };
+
+    return self;
+})();
+
+const ProfileResignDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        if (!op.emp_id && !op.employee?.id) {
+            cv_interact.error(LocaleManager.trans("Employee is required", "message_box_default"));
+            return;
+        }
+        op.emp_id = op.emp_id || op.employee.id;
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal resign-dialog",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return `
+                    <div class="resign-dialog-body">
+                        <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+
+                        <div class="mb-3">
+                            <label class="form-label resign-field-label">
+                                Resign Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" data-type="date" name="resign_date"
+                                class="form-control data-input resign-field-input"
+                                data-field="resign_date" placeholder="dd-MM-yyyy" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label resign-field-label">
+                                Effective Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" data-type="date" name="effective_date"
+                                class="form-control data-input resign-field-input"
+                                data-field="effective_date" placeholder="dd-MM-yyyy" />
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label resign-field-label">Remarks</label>
+                            <textarea name="remarks" rows="4"
+                                class="form-control data-input resign-field-input resign-field-remarks"
+                                data-field="remarks"></textarea>
+                        </div>
+                    </div>`;
+                },
+                contentCreated: (me) => {
+                    if (me.controls.resign_date) DateTimePicker.init(me.controls.resign_date);
+                    if (me.controls.effective_date) DateTimePicker.init(me.controls.effective_date);
+
+                    const setTitle = () => {
+                        const titleEl =
+                            me.divModal.querySelector(".modal-title") ||
+                            me.divModal.querySelector(".modal-header h5") ||
+                            me.divModal.querySelector(".modal-header .modal-title");
+                        if (titleEl) titleEl.textContent = "Set Resign";
+                    };
+                    setTitle();
+                    me._setResignTitle = setTitle;
+                },
+                prepareFormOptions: {
+                    createTitle: "Set Resign",
+                    modifyTitle: "Set Resign",
+                },
+                onPrepareForm: (me) => {
+                    if (typeof me._setResignTitle === "function") me._setResignTitle();
+
+                    const emp = me.dataOptions.employee || {};
+                    if (me.controls.emp_id) {
+                        me.controls.emp_id.value = me.dataOptions.emp_id || emp.id || "";
+                    }
+                    LocaleManager.translateZone(me.divModal);
+                },
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.emp_id =
+                                me.dataOptions.emp_id ||
+                                me.dataOptions.employee?.id ||
+                                p.emp_id;
+
+                            if (!p.resign_date) {
+                                cv_interact.warning(
+                                    LocaleManager.trans(
+                                        "Resign Date is required",
+                                        "message_box_default",
+                                    ),
+                                );
+                                return;
+                            }
+                            if (!p.effective_date) {
+                                cv_interact.warning(
+                                    LocaleManager.trans(
+                                        "Effective Date is required",
+                                        "message_box_default",
+                                    ),
+                                );
+                                return;
+                            }
+
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/resign`,
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (typeof me.dataOptions.onClose === "function") {
+                                            me.dataOptions.onClose(p);
+                                        }
+                                        cv_interact.success(
+                                            LocaleManager.trans(
+                                                "Employee resigned successfully",
+                                                "message_box_default",
+                                            ),
+                                        );
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+        setTimeout(() => {
+            const titleEl = document.querySelector(
+                ".resign-dialog .modal-title, .resign-dialog .modal-header h5",
+            );
+            if (titleEl) titleEl.textContent = "Set Resign";
+        }, 0);
     };
 
     return self;

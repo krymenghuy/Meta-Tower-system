@@ -23,6 +23,7 @@ use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
 use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
+use App\Http\Controllers\Mhr\WarningController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -43,6 +44,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    Route::post('/resign', [EmployeeController::class, 'setResign']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     // skills
     Route::post('/skills/list', [EmployeeSkillController::class, 'getList']);
@@ -75,7 +77,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
     Route::post('/save', [MovementController::class, 'saveEmployeeMovement']);
     Route::post('/list-paginate', [MovementController::class, 'getEmployeeMovementListPaginate']);
     Route::post('/details', [MovementController::class, 'getDetails']);
-    Route::post('/delete', [MovementController::class, 'deleteEmployeeMovement']);
+    Route::post('/delete', [MovementController::class, 'deleteEmpEvent']);
     Route::post('/form-options', [MovementController::class, 'getFormOptions']);
 });
 
@@ -143,7 +145,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')
     Route::post('/save', [WarningController::class, 'saveWarning']);
     Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
     Route::post('/details', [WarningController::class, 'getDetails']);
-    Route::post('/delete', [WarningController::class, 'deleteWarning']);
+    Route::post('/delete', [WarningController::class, 'delete']);
     Route::post('/form-options', [WarningController::class, 'getFormOptions']);
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
     Route::post('/list', [WarningController::class, 'warningList']);

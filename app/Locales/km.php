@@ -592,7 +592,7 @@ return [
 
 
         'Announcements' => 'សេចក្តីជូនដំណឹង',
-        
+
 
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Benefits' => 'អត្ថប្រយោជន៍',
@@ -693,8 +693,11 @@ return [
 
 
 
-        
-        
+
+
+
+
+
 
 
 
@@ -710,6 +713,7 @@ return [
         'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
+
 
 
     ],
@@ -1235,7 +1239,7 @@ return [
         'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Sub Total' => 'សរុបរង',
         'Total Net' => 'ទឹកប្រាក់សរុប',
-        
+
         'Employee' =>  'បុគ្គលិក',
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Tax Options' => 'ជម្រើសពន្ធ',
@@ -1254,7 +1258,7 @@ return [
 
 
 
-        
+
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
