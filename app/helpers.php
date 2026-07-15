@@ -271,42 +271,83 @@ function processOfficialColumn(&$row, string $definition, string $format): void
 //   return null;
 // }
 
-function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
-    if (!$key_field) return null;
-    if(!$len) $len=4;
-
-    $where_branch ="1=1";
-    if($branch_id>0){
-        $where_branch = "branch_id =$branch_id";
+function setOfficialCode(
+    $branch_id,
+    $code_control_table,
+    $target_table,
+    $key_field = [],
+    $def_prefix = "",
+    $len = 3,
+    Closure $onSuccess = null
+) {
+    if (!$key_field) {
+        return null;
     }
-    if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
 
-    $str_where=null;
-    foreach($key_field as $pk_field=>$pk_value) $str_where ="$pk_field='$pk_value'";
-    if(!$str_where) return null;
+    $where = ['branch_id' => $branch_id];
 
-    $rows = DB::table($code_control_table)->whereRaw($where_branch)->selectRaw("last_id,prefix")->take(1)->get();
-    $next_num = 0;
-    $prefix=null;
-    foreach($rows as $row){
-      $next_num = $row->last_id;
-      $prefix =$row->prefix;
+    if ($def_prefix) {
+        $where['prefix'] = $def_prefix;
     }
-    if(!$prefix) $prefix = $def_prefix;
 
-    $next_num++;
-    $new_code = $prefix.$branch_id.formatNumber($next_num,$len);
-
-    $x = DB::table($target_table)->whereRaw($str_where)->update(['code'=>$new_code]);
-    \Log::info('str'.json_encode($str_where));
-    if($x || $x===1){
-       $updated = DB::table($code_control_table)->whereRaw($where_branch)->update(['last_id'=>$next_num]);
-       if (!$updated) DB::table($code_control_table)->insert(['branch_id'=>$branch_id,'prefix'=>$def_prefix,'last_id'=>$next_num]);
-       if ($onSuccess) $onSuccess();
-       return (object)['status'=>'OK','code'=>$new_code];
+    $str_where = [];
+    foreach ($key_field as $field => $value) {
+        $str_where[$field] = $value;
     }
+
+    $row = DB::table($code_control_table)
+        ->where($where)
+        ->select('last_id', 'prefix')
+        ->first();
+
+    $next_num = 1;
+    $prefix = $def_prefix;
+
+    if ($row) {
+        $next_num = $row->last_id + 1;
+        $prefix = $row->prefix ?: $def_prefix;
+    }
+
+    // Last 2 digits of current year (e.g. 2026 => 26)
+    $year = date('y');
+
+    // MT-26-001
+    $new_code = sprintf(
+        '%s-%s-%0' . $len . 'd',
+        $prefix,
+        $year,
+        $next_num
+    );
+
+    $updated = DB::table($target_table)
+        ->where($str_where)
+        ->update(['code' => $new_code]);
+
+    if ($updated) {
+
+        if ($row) {
+            DB::table($code_control_table)
+                ->where($where)
+                ->update(['last_id' => $next_num]);
+        } else {
+            DB::table($code_control_table)->insert([
+                'branch_id' => $branch_id,
+                'prefix'    => $def_prefix,
+                'last_id'   => $next_num,
+            ]);
+        }
+
+        if ($onSuccess) {
+            $onSuccess();
+        }
+
+        return (object)[
+            'status' => 'OK',
+            'code'   => $new_code,
+        ];
+    }
+
     return null;
-    //return $prefix.$branch_id.formatNumber(1,$len);
 }
 
 function setOfficialCodeInvoice($branch_id, $code_control_table, $target_table, $key_field=[], $def_prefix="", $len=4, $onSuccess=null)

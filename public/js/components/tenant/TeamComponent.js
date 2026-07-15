@@ -173,7 +173,7 @@ var TeamComponent = new (function() {
             placeholder.className = "text-center py-5 text-muted";
             placeholder.innerHTML = `
                 <i class="fa-solid fa-arrow-pointer fa-2x mb-2 opacity-50"></i>
-                <p>Please click a team card first to see its members.</p>
+                <p>${LocaleManager.trans('Please click a team card first to see its members.', 'titles')}</p>
             `;
             mThis.listViewContainer.appendChild(placeholder);
         }
@@ -182,7 +182,7 @@ var TeamComponent = new (function() {
         // which is why selecting a status did nothing (there was nothing to select).
         if (mThis.elStatus && !mThis.elStatus.dataset.populated) {
             mThis.elStatus.innerHTML = `
-                <option value="">All Statuses</option>
+                <option value=""> All Statuses</option>
                 <option value="1">Pending</option>
                 <option value="2">Active</option>
                 <option value="3">Inactive</option>
@@ -394,7 +394,7 @@ var TeamComponent = new (function() {
                                         <div data-field="member_count" style="font-size: 22px; font-weight: 700; color: #1a2566; line-height: 1;">
                                             ${team.member_count}
                                         </div>
-                                        <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Members</div>
+                                        <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">${LocaleManager.trans('Members', 'titles')}</div>
                                     </div>
                                 </div>
                             </div>
@@ -1081,9 +1081,9 @@ const CreateTeamMemberDialog = (() => {
                             </div>
                             
                             <div class="col-12 col-md-6">
-                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Gender">
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
+                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="${LocaleManager.trans("Gender", "labels")}">
+                                      <option value="M">${LocaleManager.trans("Male", "labels")}</option>
+                                    <option value="F">${LocaleManager.trans("Female", "labels")}</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1112,7 +1112,7 @@ const CreateTeamMemberDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6" >
-                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
+                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                             </div>
                     </div>
                     <div class="col-12 row g-2"> 
