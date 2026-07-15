@@ -293,6 +293,14 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Wallet Accounts">Wallet Accounts</span>
                     </a>
                 </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(302); ?>>
+                    <a href="BenefitDisbursementComponent" modid="302" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Benefit Disbursements">Benefit Disbursements</span>
+                    </a>
+                </li>
                 <li class="mb-2 kt-menu__section">
                     <h4 class="kt-menu__section-text" vslang="menus.System & Settings"></h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>

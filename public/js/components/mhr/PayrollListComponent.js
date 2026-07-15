@@ -1,6 +1,6 @@
 "use strict";
 
-var PayrollListComponent = new (function () {
+var PayrollListComponent = (()=> {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_payrollListComponent");
@@ -789,7 +789,8 @@ var PayrollListComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
+        console.log(123,p);
+        
         return p;
     };
 
@@ -811,25 +812,24 @@ var PayrollListComponent = new (function () {
             });
 
 
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',"","All Payroll",payroll_id);
+            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',null,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', "", 'All Branches', "");
             // VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
     };
 
-    mThis.show = function (option) {
-        mThis.option = option;
+    mThis.show = (options)=> {
         mThis.init();
-        
+        mThis.options = options;
         mThis.prepareFormOptions(() => {
-            mThis.elFilter.value = option.payroll_id;
-            mThis.elFilter.dispatchEvent(new Event('change'));
             main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+
         });
     };
     return mThis;
-});
+})();
 
 const AddDeductionDialog = (() => {
     const self = {};

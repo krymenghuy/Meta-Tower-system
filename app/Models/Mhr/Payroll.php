@@ -31,12 +31,12 @@ class Payroll
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
-            'name' => '1|string|1-150',
-            'month' => '1|number',
-            'year' => '1|number',
-            'start_date' => '1|date',
-            'end_date' => '1|date',
-            'p_number' => '1|number',
+            'month' => '1|number|text=month_required',
+            'year' => '1|number|text=year_required',
+            'name' => '1|string|1-150|text=name_required::@key;@max;@value',
+            'p_number' => '1|number|text=payroll_number_required',
+            'start_date' => '1|date|text=start_date_required',
+            'end_date' => '1|date|text=end_date_required',
             'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
@@ -743,7 +743,6 @@ class Payroll
             $benefits_taxable = self::getSimpleBenefits($benefits,$row->emp_id,1,$payroll);
             $benefits_not_taxable = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll);
             $benefits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
-
             if($row->allowance){
                 foreach ($row->allowance as $allowance) {
                             if ($allowance->allowance_currency != $row->payroll_currency) {
@@ -905,9 +904,10 @@ class Payroll
                 $payroll->total = ($last_salary + $benefit_taxable + $benefit_non_tax + $benefit_flat_rate_sum) - $deduction;
             }
             $flat_rate_details = null;
-            \Log::info(json_encode($benefits_flat_rate));
 
             $flat_rate_details = self::formatFlatRateBenefits($benefits_flat_rate);
+            // \Log::info(json_encode($flat_rate_details));
+
             $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
@@ -987,6 +987,7 @@ class Payroll
         $success = 0;
         $error = 0;
         foreach ($employees as $emp) {
+            \Log::info(json_encode($payroll_id));
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
 

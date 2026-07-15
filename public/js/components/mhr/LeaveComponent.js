@@ -27,7 +27,7 @@ var LeaveComponent = (function () {
         },
 
         {
-            transTitle: "titles.Name",
+            transTitle: "titles.Employee Name",
             className: "align-middle text-nowrap",
             data: (data, index) => {
                 return `
@@ -82,18 +82,7 @@ var LeaveComponent = (function () {
                 `;
             }
         },
-        {
-            transTitle: "titles.Remark",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-prm text-capitalize" style="width:250px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
-                    </div>
-                `;
-            },
-        },
-        {
+          {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
@@ -131,6 +120,18 @@ var LeaveComponent = (function () {
                 return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
             },
         },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:250px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+      
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
@@ -243,6 +244,13 @@ var LeaveComponent = (function () {
             //menuItemClass:"",
             menus:[
                 {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_leave_request_status"
+                },
+                {
                     html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
                     icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass:"border-bottom pb-2",
@@ -265,6 +273,10 @@ var LeaveComponent = (function () {
                     case 'edit_leave':{
                       mThis.editLeave(id, menuLink);
                       break;
+                    }
+                    case 'change_leave_request_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
                     }
                     case 'delete_leave':{
                         mThis.deleteLeave(id, menuLink);
@@ -321,6 +333,49 @@ var LeaveComponent = (function () {
             }
         });
     }
+   
+     mThis.changeStatus = (id, link) => {
+        const tr = link.closest("tr");
+        const status_id = tr?.dataset.statusid || "";
+        // if (!AuthManager.allowed(268,false)) return;
+        const inputOptions = {
+            context: "success",
+            title: `${LocaleManager.trans('Change Status', "titles")}`,
+            label: "Leave Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+            requiredMessage: "Please select a status",
+            data: [
+                { status_id: "1", name: "Pending" },
+                { status_id: "2", name: "Approved" },
+                { status_id: "3", name: "Rejected" },
+            ],
+            defaultValue: status_id,
+            onConfirm: (status, btn, me) => {
+                const payload = { id, status_id: status.status_id };
+                vsapi
+                    .post(
+                        `${mThis.base_url}/mhr/leave/update-status`,
+                        payload,
+                        { loader: false, agent: btn },
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success("update_success_status");
+                            mThis.LeaveRequestListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            me.setError(res.error_message);
+                        }
+                    });
+            },
+        };
+        InputBox.show(inputOptions);
+    };
 
     mThis.prepareFormOptions = () => {
         vsapi.call(`${main_view.base_url}/mhr/leave/form-options`, null, null, null)
@@ -441,8 +496,8 @@ const LeaveRequestDialog = (()=>{
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Set Leave",
-                    modifyTitle: "Edit Leave",
+                    createTitle: "vslang:titles.Leave Request",
+                    modifyTitle: "vslang:titles.Edit Leave",
                     targetProp: "leave_request",
                     api: {
                         endpoint: [

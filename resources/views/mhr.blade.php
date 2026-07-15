@@ -322,6 +322,8 @@
                             @include('layouts.mhr.dashboardComponent')
                             @include('layouts.mhr.employeeManagementComponent')
                             @include('layouts.mhr.leaveComponent')
+                            @include('layouts.mhr.holidayComponent')
+                            @include('layouts.mhr.benefitDisbursementComponent')
                             @include('layouts.mhr.uninformedLeaveComponent')
                             @include('layouts.mhr.payrollAccountComponent')
                             @include('layouts.mhr.payrollComponent')
