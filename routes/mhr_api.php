@@ -21,6 +21,7 @@ use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
 use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
+use App\Http\Controllers\Mhr\WarningController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -141,7 +142,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')
     Route::post('/save', [WarningController::class, 'saveWarning']);
     Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
     Route::post('/details', [WarningController::class, 'getDetails']);
-    Route::post('/delete', [WarningController::class, 'deleteWarning']);
+    Route::post('/delete', [WarningController::class, 'delete']);
     Route::post('/form-options', [WarningController::class, 'getFormOptions']);
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
     Route::post('/list', [WarningController::class, 'warningList']);
