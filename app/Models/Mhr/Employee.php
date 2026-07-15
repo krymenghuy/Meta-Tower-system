@@ -266,6 +266,9 @@ class Employee extends VSModel
         }
         if ($status_id) {
             $str_moreWhere .= ' AND emp.status_id =' . (int) $status_id;
+        } else {
+            // Hide resigned/inactive from default employee cards
+            $str_moreWhere .= ' AND emp.status_id = 10';
         }
         if ($branch_id_filter) {
             $str_moreWhere .= ' AND emp.branch_id =' . (int) $branch_id_filter;
@@ -585,5 +588,69 @@ class Employee extends VSModel
                 'a.account_number',
             ])
             ->first();
+    }
+
+    public function setResign($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $d = (object) $arr;
+        $emp_id = $d->emp_id ?? $this->id;
+
+        $v_rule = [
+            'emp_id' => '1|number|exists=employees.id',
+            'resign_date' => '1|date',
+            'effective_date' => '1|date',
+            'remarks' => '0|string|0-250',
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $emp_id = $inputs['emp_id'];
+
+        $emp = DB::table('employees')->where('id', $emp_id)->first();
+        if (!$emp) {
+            return DV::error('Employee not found');
+        }
+        if ((int) $emp->status_id === 11) {
+            return DV::error('Employee is already inactive');
+        }
+
+        $resign_date = $inputs['resign_date'];
+        $effective_date = $inputs['effective_date'];
+        if (strtotime($effective_date) < strtotime($resign_date)) {
+            return DV::error('Effective date cannot be earlier than resign date');
+        }
+
+        $payload = [
+            'emp_id' => $emp_id,
+            'resign_date' => $resign_date,
+            'effective_date' => $effective_date,
+            'remarks' => $inputs['remarks'] ?? null,
+        ];
+
+        $id = DBX::saveData($ss, 'resignations', ['id' => null], $payload, [], 1);
+        if (!($id > 0)) {
+            return DV::error('Error saving resignation');
+        }
+
+        DBX::saveData($ss, 'employees', ['id' => $emp_id], ['status_id' => 11], [], 1, false);
+
+        // Show on Employee Movements list
+        $resignEvent = DB::table('events')->where('name', 'Resignation')->first();
+        $event_id = $resignEvent->id ?? 5;
+        $movement = new Movement(null, $ss);
+        $movement->upsert([
+            'emp_id' => $emp_id,
+            'event_id' => $event_id,
+            'event_date' => $resign_date,
+            'remarks' => $inputs['remarks'] ?? null,
+            'impact' => $resignEvent->impact ?? 'Negative',
+        ], null, $ss);
+
+        return DV::depends(1, ['id' => $id, 'emp_id' => $emp_id]);
     }
 }

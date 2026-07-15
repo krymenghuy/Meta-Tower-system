@@ -41,6 +41,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    Route::post('/resign', [EmployeeController::class, 'setResign']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     // skills
     Route::post('/skills/list', [EmployeeSkillController::class, 'getList']);

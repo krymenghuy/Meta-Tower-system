@@ -20,79 +20,54 @@ var MovementComponent = (() => {
         {
             title: "Employee",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ""}</span>
-                                <br/>
-                                <span style="font-size: 10px; color: #2b3991;">${data.position ?? ""}</span>
-                            </div>
-                        </div>`;
+            data: (data) => {
+                const photo =
+                    data.image_url ||
+                    `${main_view.base_url}/assets/images/default/default-staff.png`;
+                return `<div class="d-flex align-items-center">
+                    <img class="image-student-tbl" src="${photo}" alt=""
+                        style="width:40px;height:40px;border-radius:50%;margin-right:10px;object-fit:cover;background:#cfe2ff;" />
+                    <div>
+                        <span style="font-size:14px;font-weight:700;color:#1e293b;">${data.emp_name ?? ""}</span><br/>
+                        <span style="font-size:11px;color:#2b3991;">${data.position ?? ""}</span>
+                    </div>
+                </div>`;
             },
         },
         {
             title: "Event",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.event ?? ""}</p>`;
-            },
+            data: (data) => `<span>${data.event ?? ""}</span>`,
         },
         {
             title: "Date",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.event_date ?? ""}</p>`;
-            },
+            className: "align-middle text-nowrap",
+            data: (data) => `<span>${data.event_date ?? ""}</span>`,
         },
         {
-            title: "last Updated",
+            title: "Last Updated",
             className: "align-middle",
             data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
-            </div>`,
+                <div>
+                    <span style="font-size:14px;font-weight:700;color:#1e293b;">${data.update_user ?? ""}</span><br/>
+                    <span style="font-size:11px;color:#2b3991;">${data.updated_at ?? ""}</span>
+                </div>`,
         },
         {
             title: "Impact",
             className: "status text-nowrap align-middle",
-            data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-5";
-                let bg_color = "";
+            data: (data) => {
+                const impact = (data.impact || "").trim();
+                const key = impact.toLowerCase();
+                let bg = "#6c757d";
+                if (key === "positive") bg = "#28a745";
+                else if (key === "neutral") bg = "#ffc107";
+                else if (key === "negative") bg = "#dc3545";
 
-                if ((data.impact || "").toLowerCase() === "positive") {
-                    cls_class = "text-white text-center border border-success rounded-5 p-1";
-                    bg_color = "#28a745";
-                } else if ((data.impact || "").toLowerCase() === "neutral") {
-                    cls_class = "text-white text-center border border-warning rounded-5 p-1";
-                    bg_color = "#ffc107";
-                } else if ((data.impact || "").toLowerCase() === "negative") {
-                    cls_class = "text-white text-center border border-danger rounded-5 p-1";
-                    bg_color = "#dc3545";
-                } else {
-                    bg_color = "#6c757d";
-                }
-
-                return `<div><a class="d-block" data-status="${data.impact}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:100px; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.impact ?? ""}
-                            </span>
-                        </a></div>`;
-            },
-        },
-        {
-            className: "col_action align-middle",
-            data: function (data, row, display) {
-                return `
-                    <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                            <a href="javascript:void(0)" class="btn_movement_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
+                return `<span class="d-inline-block text-center text-white text-capitalize"
+                    style="min-width:100px;padding:6px 14px;border-radius:999px;background:${bg};font-size:13px;font-weight:600;">
+                    ${impact || "_"}
+                </span>`;
             },
         },
     ];
@@ -122,7 +97,6 @@ var MovementComponent = (() => {
         // };
 
         mThis.tblMovement = mThis.MovementListView.getTable();
-        mThis.initDropdownMenus(mThis.tblMovement);
         mThis.sh_container = mThis.MovementListView.getListContainer();
 
         const pr_tbl = mThis.MovementListView.getListContainer();
@@ -135,116 +109,33 @@ var MovementComponent = (() => {
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = (e) => {
-                e.preventDefault();
+            el.onchange = () => {
                 mThis.MovementListView.showPage(mThis.getFilterData());
             };
         });
 
-        let timeOut = null;
-        mThis.elSearch.onkeyup = function (e) {
+        mThis.elSearch.addEventListener("keyup", (e) => {
             e.preventDefault();
-            clearTimeout(timeOut);
-            timeOut = setTimeout(() => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
                 mThis.MovementListView.showPage(mThis.getFilterData());
-            }, 250);
-        };
+            }, 300);
+        });
 
         mThis.initAlready = true;
     };
 
     mThis.getFilterData = () => {
-        let p = {
+        const filters = {
             search_value: mThis.elSearch.value,
-            event_id: mThis.elEvent.value,
             emp_id: mThis.elEmployee.value,
+            event_id: mThis.elEvent.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            let f = el.dataset.field;
-            p[f] = el.value;
+            const field = el.dataset.field;
+            if (field) filters[field] = el.value;
         });
-        return p;
-    };
-
-    mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass: "btn_movement_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Modify Movement">Modify Movement</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_movement",
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete Movement">Delete Movement</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_movement",
-                },
-            ],
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case "edit_movement": {
-                        mThis.editMovement(id, menuLink);
-                        break;
-                    }
-                    case "delete_movement": {
-                        mThis.deleteMovement(id, menuLink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptopns);
-    };
-
-    mThis.editMovement = (movement_id, menuLink) => {
-        let op = {
-            id: movement_id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.MovementListView.showPage();
-            },
-        };
-        MovementDialog.show(op);
-    };
-
-    mThis.deleteMovement = (movement_id, menuLink) => {
-        const op = {
-            id: movement_id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.MovementListView.showPage();
-            },
-        };
-        cv_interact.confirm(
-            "Delete this employee movement?",
-            {
-                title: "Delete Employee Movement",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(`${main_view.base_url}/mhr/emp-event/delete`, op, false, false, false)
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
-                                mThis.MovementListView.showPage();
-                            }
-                        });
-                } else {
-                    cv_interact.error(res.error_message);
-                }
-            },
-        );
+        return filters;
     };
 
     mThis.prepareFormOptions = () => {
@@ -252,8 +143,24 @@ var MovementComponent = (() => {
             .call(`${main_view.base_url}/mhr/emp-event/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elEvent, d.events, "id", "name", true, "All Movements", null);
-                VSUtil.setComboItems(mThis.elEmployee, d.employees, "id", "name", true, "All Employee", null);
+                VSUtil.setComboItems(
+                    mThis.elEmployee,
+                    d.employees,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Employee", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elEvent,
+                    d.events,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Movements", "titles"),
+                    "",
+                );
             });
     };
 
@@ -383,9 +290,6 @@ const ProfileMovementDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const isChecked = (val) =>
-        val === true || val === 1 || val === "1" || val === "on";
-
     const fillCurrentValues = (me, data) => {
         const emp = data?.employee || me.dataOptions.employee || {};
         const branches = data?.branches || [];
@@ -436,19 +340,19 @@ const ProfileMovementDialog = (() => {
 
                             <div class="movement-check-row d-flex flex-wrap align-items-center gap-3 gap-md-4 mb-3">
                                 <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_branch" data-field="change_branch" data-section="branch" value="1" />
+                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_branch" data-field="change_branch" data-section="branch" value="1" />
                                     <span class="form-check-label" vslang="labels.Change Branch">Change Branch</span>
                                 </label>
                                 <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_position" data-field="change_position" data-section="position" value="1" />
+                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_position" data-field="change_position" data-section="position" value="1" />
                                     <span class="form-check-label" vslang="labels.Change Position">Change Position</span>
                                 </label>
                                 <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_salary" data-field="change_salary" data-section="salary" value="1" />
+                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_salary" data-field="change_salary" data-section="salary" value="1" />
                                     <span class="form-check-label" vslang="labels.Change Salary">Change Salary</span>
                                 </label>
                                 <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input movement-toggle" name="change_work_shift" data-field="change_work_shift" data-section="work_shift" value="1" />
+                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_work_shift" data-field="change_work_shift" data-section="work_shift" value="1" />
                                     <span class="form-check-label" vslang="labels.Change Work Shift">Change Work Shift</span>
                                 </label>
                             </div>
@@ -520,7 +424,6 @@ const ProfileMovementDialog = (() => {
                     me.syncMovementSections = () => {
                         me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
                             const key = chk.dataset.section;
-                            console.log(111,key);
                             const row = me.divModal.querySelector(`[data-section-row="${key}"]`);
                             if (!row) return;
                             row.classList.toggle("is-open", chk.checked);
@@ -574,13 +477,20 @@ const ProfileMovementDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+                            const toggleChecked = (name) => {
+                                const el = me.divModal.querySelector(
+                                    `.movement-toggle[name="${name}"]`,
+                                );
+                                return !!(el && el.checked);
+                            };
 
                             p.emp_id =
                                 me.dataOptions.emp_id || me.dataOptions.employee?.id || p.emp_id;
-                            p.change_branch = isChecked(p.change_branch) ? 1 : 0;
-                            p.change_position = isChecked(p.change_position) ? 1 : 0;
-                            p.change_salary = isChecked(p.change_salary) ? 1 : 0;
-                            p.change_work_shift = isChecked(p.change_work_shift) ? 1 : 0;
+                            // Prefer DOM .checked — getData() often misses unchecked/checked box values
+                            p.change_branch = toggleChecked("change_branch") ? 1 : 0;
+                            p.change_position = toggleChecked("change_position") ? 1 : 0;
+                            p.change_salary = toggleChecked("change_salary") ? 1 : 0;
+                            p.change_work_shift = toggleChecked("change_work_shift") ? 1 : 0;
 
                             if (
                                 !p.change_branch &&
@@ -604,13 +514,22 @@ const ProfileMovementDialog = (() => {
                             }
                             if (p.change_position && !p.to_position_id) {
                                 cv_interact.warning(
-                                    LocaleManager.trans("To Position is required", "message_box_default"),
+                                    LocaleManager.trans(
+                                        "To Position is required",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
-                            if (p.change_salary && (p.new_salary === "" || p.new_salary == null)) {
+                            if (
+                                p.change_salary &&
+                                (p.new_salary === "" || p.new_salary == null)
+                            ) {
                                 cv_interact.warning(
-                                    LocaleManager.trans("New Salary is required", "message_box_default"),
+                                    LocaleManager.trans(
+                                        "New Salary is required",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
