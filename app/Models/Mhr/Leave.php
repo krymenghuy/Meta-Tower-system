@@ -25,12 +25,11 @@ class Leave extends VSModel
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id',
-            'start_date' => '1|date',
-            'end_date' => '1|date',
-            'leave_type_id' => '1|number',
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
+            'start_date' => '1|date|text=start_date_required',
+            'end_date' => '1|date|text=end_date_required',
+            'leave_type_id' => '1|number|exists=leave_types.id',
             'remarks' => '0|string|250',
-            'status_id' => '0|choice|1,2,3|default=1',
         ];
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
         $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
@@ -397,10 +396,14 @@ class Leave extends VSModel
     {
 
         $ss = $ss ? $ss : $this->userInfo;
+         $currentStatus = DB::table('vendors')->where('id', $id)->value('status_id');
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status.');
+        }
         $x = DB::table('leaves')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
-            'update_date'=>getNowTime(),
+            'updated_at'=>getNowTime(),
             'update_uid'=>$ss->user_id
         ]);
         return DV::depends($x, ['Leave  status', 'updated']);

@@ -9,10 +9,12 @@ use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
 use App\Http\Controllers\Mhr\EmployeeSkillController;
+use App\Http\Controllers\Mhr\BenefitDisbursementController;
 use App\Http\Controllers\Mhr\EmployeeEducationController;
 use App\Http\Controllers\Mhr\EmployeeExperienceController;
 use App\Http\Controllers\Mhr\EmployeeDocumentController;
 use  App\Http\Controllers\Mhr\LeaveController;
+use  App\Http\Controllers\Mhr\HolidayController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
@@ -258,4 +260,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
     Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp/benefit-disbursement')->group(function () {
+
+    Route::post('/save', [BenefitDisbursementController::class, 'saveBenefitDisbursement']);
+    Route::post('/details', [BenefitDisbursementController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursementController::class, 'deleteBenefitDisbursement']);
+    Route::post('/form-options', [BenefitDisbursementController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
+    Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });

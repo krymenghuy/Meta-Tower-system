@@ -34,7 +34,7 @@ var PayrollComponent = new (function () {
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<div class="d-block">
                             <p class="p-0 m-0">${
                                 data.name
@@ -53,20 +53,20 @@ var PayrollComponent = new (function () {
         },
         {
             transTitle: "titles.Duration",
-            className: "align-middle w-15",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-prm-custom">(${data.start_date ?? ""}​ ~ ${data.end_date ?? ""}</small>)</span>`,
         },
         {
             transTitle: "titles.Staff Count",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<a href="javascript:void(0);" class="text-success show_payroll_list" data-id="${data.id}">${data.head_count}</a>`,
         },
 
         {
             transTitle: "titles.Total",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.total,
@@ -76,7 +76,7 @@ var PayrollComponent = new (function () {
         },
         {
             transTitle: "titles.Exchange Rate",
-            className: "align-middle w-12",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 let x_rate = data.exchange_rate;
                 return `<p class="p-0 m-0">${x_rate}</p>`;
@@ -146,7 +146,7 @@ var PayrollComponent = new (function () {
             },
         },
         {
-            transTitle: "titles.Actions",
+            transTitle: "titles.Action",
             className: "align-middle",
             data: (data) =>
                 `<div class="d-flex align-items-center gap-1">
@@ -635,7 +635,7 @@ const AddPayRollListDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="number" name="exchange_rate" class="form-control data-input" data-field="exchange_rate" placeholder=" " />
-                                <label vslang="titles.Exchange Rate"></label>
+                                <label vslang="labels.Exchange Rate"></label>
                             </div>
                         </div>
 
@@ -657,14 +657,14 @@ const AddPayRollListDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span vslang="titles.Cancel"></span>',
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span vslang="titles.save"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -696,8 +696,8 @@ const AddPayRollListDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Add Payroll",
-                    modifyTitle: "Edit Payroll",
+                    createTitle: "vslang:titles.Add Payroll",
+                    modifyTitle: "vslang:titles.Edit Payroll",
                     targetProp: "payrolls",
                     api: {
                         endpoint: [
@@ -757,7 +757,6 @@ const AddPayRollListDialog = (() => {
                 me.controls.year.onchange = updatePayrollName;
                 me.controls.p_number.oninput = updatePayrollName;
 
-                LocaleManager.translateZone(me.divModal);
             },
 
             });
@@ -767,20 +766,3 @@ const AddPayRollListDialog = (() => {
     return self;
 })();
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     document.body.addEventListener('click', function (event) {
-//         if (event.target.classList.contains('payroll-link')) {
-//             const payrollId = event.target.getAttribute('data-payroll-id');
-//             const option = {
-//                  payroll_id: payrollId
-//                 };
-
-//             if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
-//                 VSRoute.showComponent('PayrollListComponent', option);
-//                 //PayrollListComponent.show(option);
-//             } else {
-//                 console.error('PayrollListComponent.show is not defined.');
-//             }
-//         }
-//     });
-// });

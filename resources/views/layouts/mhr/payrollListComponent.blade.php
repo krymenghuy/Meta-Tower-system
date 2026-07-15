@@ -1,6 +1,6 @@
 <div id="_main_payrollListComponent" class="mobile-padding px-3" style="display:none;">
     <div id="sub_content">
-        <div class="p-4 mt-2 rounded-2 shadow" id="_divFilter">
+        <div class="p-3 mt-2 rounded-2 shadow" id="_divFilter">
             <div class="align-items-center row g-3">
                 <button class="btn btn-warning d-none" id = "_btn_issues" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" vslang="buttons.Issues">
