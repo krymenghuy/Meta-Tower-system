@@ -689,6 +689,18 @@ return [
         'Leave Request' => 'សំណើសុំច្បាប់',
         'Employee Name' => 'ឈ្មោះបុគ្គលិក',
         'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
+        'to' => 'ដល់',
+        'and upwards' => 'ឡើងទៅ',
+        'Salary Range' => 'ប្រាក់ខែចាប់ពី',
+        'Salary ranges from' =>"ប្រាក់ខែចាប់ពី",
+        'Rate' =>"អត្រា",
+        'Tax Bracket' =>'ប្រាក់ខែចាប់ពី',
+        'Bias' =>'ប្រាក់ខែចាប់ពី',
+        'Lower Amount' => 'ទឹកប្រាក់អប្បបរមា',
+        'Upper Amount' => 'ទឹកប្រាក់អតិបរមា',
+        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
+        'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
+
         
 
 
@@ -981,6 +993,8 @@ return [
 
         'Set Attendance' => 'កំណត់វត្តមាន',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
+        
         
 
 
@@ -1267,6 +1281,7 @@ return [
         'Work Shift' => 'វេនការងារ',
         'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
         'Withdraw Percent' => 'ភាគរយដក',
+
 
 
 
