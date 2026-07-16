@@ -25,6 +25,10 @@ use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
 use App\Http\Controllers\Mhr\WarningController;
 use App\Http\Controllers\Mhr\TaxBracketController;
+use App\Http\Controllers\Mhr\PositionController;
+use App\Http\Controllers\Mhr\DepartmentController;
+use App\Http\Controllers\Mhr\JobLevelController;
+
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
