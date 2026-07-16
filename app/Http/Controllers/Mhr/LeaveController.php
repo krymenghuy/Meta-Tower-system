@@ -71,4 +71,14 @@ class LeaveController extends Controller
         $res = $this->leaves->delete($req->id, $ss);
         return JDV::raw($res);
     }
+    public function updateStatus(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, 321);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        $id = $req->id;
+        $res = $this->leaves->updateStatus($req->status_id, $id,$ss);
+
+        return JDV::raw($res);
+    }
 }

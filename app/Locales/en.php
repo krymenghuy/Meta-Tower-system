@@ -61,6 +61,7 @@ return [
         'enter_address' => 'Please enter address.',
 
         'select_tenant' => 'Please select a tenant.',
+        'select_employee' => 'Please select a employee.',
 
         'please_select_a_valid_category' => 'Please select a valid category.',
         'please_select_a_valid_unit' => 'Please select a valid unit.',
@@ -166,7 +167,9 @@ return [
         'scheduled_date_required'  => 'Scheduled date is required.',
         'start_time_required'      => 'Start time is required.',
        
-
+        'month_required'      => 'Please select a valid month.',
+        'year_required' => 'Please select a valid year.',
+        'payroll_number_required' => 'Please select a valid payroll number.',
 
 
 
@@ -191,6 +194,7 @@ return [
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
+
     ],
     'labels' => [
         'Name' => 'Name',
@@ -398,6 +402,11 @@ return [
         'create_success_payroll' => 'Payroll has been created successfully.',
         'update_success_payroll' => 'Payroll has been updated successfully.',
         'delete_success_payroll' => 'Payroll has been deleted successfully.',
+
+        'create_success_benefit_disbursement' => 'Created benefit disbursement successfully.',
+        'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
+        'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
+
         '' => '',
         '' => '',
 

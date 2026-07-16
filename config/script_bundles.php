@@ -241,11 +241,12 @@ return [
                 '/js/components/mhr/EmployeeManagementComponent.js',
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/WorkShiftListComponent.js',
-                '/js/components/mhr/InvoicesComponent.js',
+                '/js/components/mhr/BenefitDisbursementComponent.js',
                 '/js/components/mhr/TransactionComponent.js',
                 '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/UninformedLeaveComponent.js',
+                '/js/components/mhr/HolidayComponent.js',
                 '/js/components/mhr/PayrollComponent.js',
                 '/js/components/mhr/PayrollListComponent.js',
                 '/js/components/mhr/BenefitComponent.js',
@@ -253,6 +254,7 @@ return [
                 '/js/components/mhr/PayrollAccountComponent.js',
                 '/js/components/mhr/walletAccountComponent.js',
                 '/js/components/mhr/StaffAttendanceComponent.js',
+                '/js/components/mhr/WarningComponent.js',
 
 
 

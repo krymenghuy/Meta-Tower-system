@@ -76,6 +76,7 @@ return [
         'required_end_time' => 'ពេលវេលាបញ្ចប់ត្រូវតែបញ្ចូល។',
 
         'select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
+        'select_employee' => 'សូមជ្រើសរើសបុគ្គលិក។',
 
         'contact_person_required' => 'សូមបញ្ចូលអ្នកទំនាក់ទំនង។',
         'contact_phone_required' => 'សូមបញ្ចូលលេខទូរស័ព្ទអ្នកទំនាក់ទំនង។',
@@ -209,8 +210,9 @@ return [
         'scheduled_date_required'  => 'កាលបរិច្ឆេទកំណត់ពេលត្រូវតែបំពេញ។',
         'start_time_required'      => 'ម៉ោងចាប់ផ្តើមត្រូវតែបំពេញ។',
 
-
-
+        'month_required' => 'សូមជ្រើសរើសខែដែលត្រឹមត្រូវ។',
+        'year_required' => 'សូមជ្រើសរើសឆ្នាំដែលត្រឹមត្រូវ.',
+        'payroll_number_required' => 'សូមជ្រើសរើសលេខបៀវត្សរ៍ដែលត្រឹមត្រូវ.',
 
 
 
@@ -681,6 +683,13 @@ return [
         'Expires' =>'កាលបរិច្ឆេទផុតកំណត់',
         'Transaction'=> 'ប្រតិបត្តិការ',
         'Reservation Now' =>'កក់ឥឡូវ',
+        'Target Month' => 'ខែគោលដៅ',
+        'Target Year' => 'ឆ្នាំគោលដៅ',
+        'Withdraw Percent' => 'ភាគរយដក',
+        'Leave Request' => 'សំណើសុំច្បាប់',
+        'Employee Name' => 'ឈ្មោះបុគ្គលិក',
+        'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
+        
 
 
 
@@ -700,6 +709,10 @@ return [
         'Modify Attendance' => 'កែប្រែវត្តមាន',
         'Staff Attendances' => 'វត្តមានបុគ្គលិក',
         'Delete Attendance' => 'លុបវត្តមាន',
+        'Add Payroll' => 'បន្ថែមបញ្ជីប្រាក់បៀវត្សរ៍',
+        'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
+        'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
+        'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
 
 
 
@@ -773,7 +786,7 @@ return [
         'Partner' => 'ដៃគូរ',
         'General Settings' => 'ការកំណត់ទូទៅ',
         'Product Categories' => 'ប្រភេទទំនិញ',
-        'Exchange Rates' => 'អត្រាការប្រាក់',
+        'Exchange Rate' => 'អត្រាការប្រាក់',
         'Currencies' => 'រូបិយប័ណ្',
         'Currency' => 'រូបិយប័ណ្',
         'Delivery Zones' => 'តំបន់ដឹកជញ្ជូន',
@@ -799,7 +812,7 @@ return [
         'Shift List' => 'វេនធ្វើការ',
         'Attendance Tracking' => 'ម៉ោងស្កេន',
         'Employee Movement' => 'ចលនាបុគ្គលិក',
-        'Employee Benefits' => 'អត្ថប្រយោជន៍បុគ្គលិក',
+        'Employee Benefits' => 'បញ្ជីអត្ថប្រយោជន៍បុគ្គលិក',
         'Benefit List' => 'បញ្ជីអត្ថប្រយោជន៍',
         'Staff Benefits' => 'បញ្ជីអត្ថប្រយោជន៍បុគ្គលិក',
         'Special Disburse Plan' => 'ផែនការចំំំណាយពិសេស',
@@ -846,9 +859,11 @@ return [
         'Staff Attendances' => 'វត្តមានបុគ្គលិក',
         'My Team' => 'ក្រុមការងារ',
         'My Contract' => 'កិច្ចសន្យា',
-
-
-
+        'Human Resources' => 'ធនធានមនុស្ស',
+        'Attendance' => 'វត្តមាន',
+        'Employee Warnings' => 'ការពិន័យបុគ្គលិក',
+        'Leave Request' => 'សំណើសុំច្បាប់',
+        'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -965,7 +980,8 @@ return [
 
 
         'Set Attendance' => 'កំណត់វត្តមាន',
-
+        'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
+        
 
 
 
@@ -1057,6 +1073,9 @@ return [
         'End Time' => 'ម៉ោងបញ្ចប់',
         'Lease Terms' => 'លក្ខខណ្ឌជួល',
         'Monthly' => 'តម្លៃជួលសម្រាប់ខែ',
+        'Month' => 'ជ្រើសរើសខែ',
+        'Year' => 'ជ្រើសរើសឆ្នាំ',
+        'Payroll Number' => 'លេខបើកបៀវត្សរ៍',
         'Deposit' => 'ប្រាក់កក់',
 
         'Type' => 'ប្រភេទ',
@@ -1245,7 +1264,9 @@ return [
         'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
         'Attendance Type' => 'ប្រភេទវត្តមាន',
         'Time' => 'ម៉ោង',
-        'Work Shift' => 'វេនការងារ'
+        'Work Shift' => 'វេនការងារ',
+        'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
+        'Withdraw Percent' => 'ភាគរយដក',
 
 
 
@@ -1441,6 +1462,11 @@ return [
         'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
+
+
+        'update_success_benefit_disbursement' => 'បានកែប្រែការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
+        'create_success_benefit_disbursement' => 'បានបន្ថែមការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
+        'delete_success_benefit_disbursement' => 'បានលុបការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",

@@ -9,10 +9,12 @@ use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
 use App\Http\Controllers\Mhr\EmployeeSkillController;
+use App\Http\Controllers\Mhr\BenefitDisbursementController;
 use App\Http\Controllers\Mhr\EmployeeEducationController;
 use App\Http\Controllers\Mhr\EmployeeExperienceController;
 use App\Http\Controllers\Mhr\EmployeeDocumentController;
 use  App\Http\Controllers\Mhr\LeaveController;
+use  App\Http\Controllers\Mhr\HolidayController;
 use  App\Http\Controllers\Mhr\PayrollController;
 use  App\Http\Controllers\Mhr\PayrollListController;
 use  App\Http\Controllers\Mhr\DashboardController;
@@ -21,6 +23,7 @@ use  App\Http\Controllers\Mhr\AccountController;
 use  App\Http\Controllers\Mhr\StaffAttendanceController;
 use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
+use App\Http\Controllers\Mhr\WarningController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -142,7 +145,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')
     Route::post('/save', [WarningController::class, 'saveWarning']);
     Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
     Route::post('/details', [WarningController::class, 'getDetails']);
-    Route::post('/delete', [WarningController::class, 'deleteWarning']);
+    Route::post('/delete', [WarningController::class, 'delete']);
     Route::post('/form-options', [WarningController::class, 'getFormOptions']);
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
     Route::post('/list', [WarningController::class, 'warningList']);
@@ -257,4 +260,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
     Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp/benefit-disbursement')->group(function () {
+
+    Route::post('/save', [BenefitDisbursementController::class, 'saveBenefitDisbursement']);
+    Route::post('/details', [BenefitDisbursementController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursementController::class, 'deleteBenefitDisbursement']);
+    Route::post('/form-options', [BenefitDisbursementController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
+    Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
