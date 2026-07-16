@@ -243,12 +243,24 @@ var LeaveComponent = (function () {
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
-                {
-                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa fa-exchange fs-5"></i>`,
+                // {
+                //     html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                //     icon:`<i class="fa fa-exchange fs-5"></i>`,
 
-                    cssClass:"border-bottom pb-2",
-                    name:"change_leave_request_status"
+                //     cssClass:"border-bottom pb-2",
+                //     name:"change_leave_request_status"
+                // },
+                 {
+                        html: '<span class="ps-2" vslang="titles.Accept"></span>',
+                        icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
+                        name: "accept_request",
+                        cssClass: "border-bottom pb-2"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Reject"></span>',
+                    icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                    name: "reject_request",
+                    cssClass: "border-bottom pb-2"
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
@@ -263,10 +275,17 @@ var LeaveComponent = (function () {
                     name:"delete_leave"
                 },
             ],
-        //     adjustPosition:{
-        //         top:-200 ,
-        //         left:-300
-        //    },
+
+            onShow:(me,container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
+                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
+                // menu.edit_request.style.display = (status_id = 2) ? 'none' : 'block';
+                // menu.delete_leave.style.display = (status_id >= 2) ? 'none' : 'block';
+                
+            },
+  
 
             onClick:(menuLink, id, name)=>{
                 switch(name){
@@ -274,10 +293,18 @@ var LeaveComponent = (function () {
                       mThis.editLeave(id, menuLink);
                       break;
                     }
-                    case 'change_leave_request_status':{
-                        mThis.changeStatus(id,menuLink);
+                    case 'accept_request':{
+                        mThis.acceptRequest(id, menuLink);
                         break;
                     }
+                    case 'reject_request':{
+                        mThis.rejectRequest(id, menuLink);
+                        break;
+                    }
+                    // case 'change_leave_request_status':{
+                    //     mThis.changeStatus(id,menuLink);
+                    //     break;
+                    // }
                     case 'delete_leave':{
                         mThis.deleteLeave(id, menuLink);
                         break;
@@ -292,6 +319,76 @@ var LeaveComponent = (function () {
         new VSDropdownMenu(menuOptions);
     }
 
+
+    mThis.rejectRequest = (id, menuLink) => {
+        let op = {
+            id: id
+        };
+        
+        if (!AuthManager.allowed(259, false)) return;
+
+        Swal.fire({
+            input: "textarea",
+            inputLabel: " ",
+            inputPlaceholder: "Please enter reason why reject this request",
+            reverseButtons: true,
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Remark required!";
+                } else {
+                    op.remarks = value;
+                    // Pass menuLink instead of null to match structural view behavior
+                    vsapi.call(`${main_view.base_url}/mhr/leave/reject-leave`, op, menuLink).then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+                            cv_interact.success(res.message || "Rejected successfully");
+                        } else {
+                            cv_interact.error(res.error_message || "Something went wrong!");
+                        }
+                    });
+                }
+            },
+        });
+    };
+
+    mThis.acceptRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(260, false)) return;
+        cv_interact.confirm(
+            'Are you sure to accept this request?',
+            {
+                'langSection': "message_box_default",
+                'translate': true,
+                // 'title': "accepted",
+                'context': 'update',
+                'confirmButtonText': LocaleManager.trans('Accept', 'buttons')
+            },
+            (e) => {
+                if (!e) return;
+                vsapi.call(
+                    `${main_view.base_url}/mhr/leave/accept-leave`,
+                    { id },
+                    false
+                )
+                .then(res => {
+                    if (res.status_code === 200) {
+                        // FIXED: Changed from ServiceRequestListView to LeaveRequestListView
+                        mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+                        cv_interact.success(LocaleManager.trans('complete_success_request', 'message_box_default'));
+                    } else {
+                        cv_interact.error(res.error_message || 'Something went wrong');
+                    }
+                })
+                .catch((err) => {
+                    // Log the actual error to the console for easier future debugging
+                    console.error("Accept request failed: ", err);
+                    cv_interact.error('Network error');
+                });
+            }
+        );
+    };
+
+   
    
 
     mThis.editLeave = (id, menuLink) => {

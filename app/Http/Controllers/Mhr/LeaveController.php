@@ -81,4 +81,22 @@ class LeaveController extends Controller
 
         return JDV::raw($res);
     }
+
+    function acceptLeave(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, 321);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::raw($this->leaves->acceptLeave($req->all(), $ss));
+    }
+
+    function rejectLeave(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::raw($this->leaves->rejectLeave($req->all(), $ss));
+    }
 }
