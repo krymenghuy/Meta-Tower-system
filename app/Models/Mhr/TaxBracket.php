@@ -74,7 +74,7 @@ class TaxBracket //extends VSModel
 
 
 
-        $update_date = DBX::formatTime("tb.update_date", 'update_date');
+        $update_date = DBX::formatTime("tb.updated_at", 'updated_at');
         $query = DB::table('tax_brackets as tb')
             ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code, tb.update_user, ' . $update_date)
             ->where('tb.branch_id', $branch_id)
