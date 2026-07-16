@@ -364,9 +364,9 @@ class EmployeeBenefit extends VSModel
             'currency_codes' => VSMoney::options_currency($ss),
             'emp_benefits' => $emp_benefits,
             'tax_options' => [
-                ['id' => '1', 'name' => 'taxable'],
-                ['id' => '2', 'name' => 'none taxable'],
-                ['id' => '3', 'name' => 'flat rate'],
+                ['id' => '1', 'name' => 'Taxable'],
+                ['id' => '2', 'name' => 'None Taxable'],
+                ['id' => '3', 'name' => 'Flat Rate'],
             ],
         ];
     }
