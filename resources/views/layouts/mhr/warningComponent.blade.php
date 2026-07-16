@@ -11,7 +11,7 @@
 
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddWarning" title="Create warning">
-                    <i class="fa-solid fa-exclamation" style="color: rgb(255, 255, 255);"></i>
+                    <i class="fa-solid fa-triangle-exclamation" style="color: rgb(255, 255, 255);"></i>
                     <span vslang="buttons.Create warning"></span>
                 </button>
             </div>

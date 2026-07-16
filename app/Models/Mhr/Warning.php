@@ -133,7 +133,7 @@ class Warning extends VSModel
             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
             ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->where('w.id', $id)
-            ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
+            ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
             ->first();
         return $row;
     }
@@ -161,9 +161,15 @@ class Warning extends VSModel
 
         $employees = GeneralSettings::options_employee(10, $ss);
 
+        $positions = DB::table('positions')
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
         return (object) [
             'warning_types' => $warning_types,
             'employees' => $employees,
+            'positions' => $positions,
             'warning' => $warning
         ];
     }
