@@ -242,8 +242,6 @@ return [
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/WorkShiftListComponent.js',
                 '/js/components/mhr/BenefitDisbursementComponent.js',
-                '/js/components/mhr/TransactionComponent.js',
-                '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/UninformedLeaveComponent.js',
                 '/js/components/mhr/HolidayComponent.js',

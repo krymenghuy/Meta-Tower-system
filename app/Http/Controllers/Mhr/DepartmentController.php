@@ -10,10 +10,10 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    protected $departmentModel;
+    protected $department;
     public function __construct()
     {
-        $this->departmentModel = new Department();
+        $this->department = new Department();
     }
 
     public function saveDepartment(Request $req)
@@ -25,7 +25,7 @@ class DepartmentController extends Controller
             return JDV::raw($ss);
         }
 
-        $res = $this->departmentModel->save($req->all(),$id,$ss);
+        $res = $this->department->upsert($req->all(),$id,$ss);
         return JDV::raw($res);
     }
 
@@ -35,7 +35,7 @@ class DepartmentController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->departmentModel->getList($req->all(), $ss));
+        return JDV::result($this->department->getList($req->all(), $ss));
     }
 
 
@@ -49,7 +49,7 @@ class DepartmentController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->departmentModel->getDetails($req->id));
+        return JDV::result($this->department->getDetails($req->id));
     }
 
     public function deleteDepartment(Request $req)
@@ -61,7 +61,7 @@ class DepartmentController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res =  $this->departmentModel->deleteDepartment($req->id);
+        $res =  $this->department->deleteDepartment($req->id);
         return JDV::raw($res);
     }
 
@@ -71,6 +71,6 @@ class DepartmentController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->departmentModel->getFormOptions($req->id, $ss));
+        return JDV::result($this->department->getFormOptions($req->id, $ss));
     }
 }
