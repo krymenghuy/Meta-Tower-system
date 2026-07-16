@@ -2,16 +2,17 @@
 
 namespace App\Models\Mhr;
 
+use App\Models\Prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
+use Vsd\Vsloquent\VSModel;
 
-class Department
+class Department extends VSModel
 {
-    protected $id = null;
-    protected $userInfo = null;
-
+    protected $table = 'departments';
+    
     protected static $fk_tables = [
        'positions'=>'department_id'
     ];
@@ -22,7 +23,7 @@ class Department
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $id = null ,$ss = null){
+    public function upsert($arr, $id = null ,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -34,9 +35,12 @@ class Department
             'inactive' => '0|number|default = 0',
         ];
 
-
-        $checkUnque = ["$branch_id|departments|name|id=id|text=Department already exists."];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '(', ')', ' '];
+        $allow_chars = [
+            'name' => ['(', ')', '-', '/', '.', ' ', ','],
+            'description' => $pos_char,
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -94,8 +98,8 @@ class Department
         $id = $id ?? $this->id;
         $d = self::getProps($id,'name');
         if(!$d) return DV::error('Department ID is not valid');
-        $cnt = DBX::count_fk_items($id,self::$fk_tables,'positions');
-        if($cnt > 0) return DV::error('Cannot delete ?? because it is already in use::'. $d->name);
+        $cnt = \Vsd\Xauth\DbHelper::count_fk_items($id,self::$fk_tables,'positions');
+        if($cnt > 0) return DV::error('Cannot delete this department because it is already in use: '. $d->name);
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
         return DV::depends($delete,null,'Failed to delete department');
     }
