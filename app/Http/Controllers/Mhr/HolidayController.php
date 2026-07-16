@@ -22,7 +22,7 @@ class HolidayController extends Controller
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $holiday = new Holiday($req->id, $ss);
-        $res = $holiday->save($req->all());
+        $res = $holiday->upsert($req->all());
         return JDV::raw($res);
     }
     public function getFormOptions(Request $req)
