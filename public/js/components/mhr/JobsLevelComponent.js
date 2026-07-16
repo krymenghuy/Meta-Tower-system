@@ -7,62 +7,62 @@ var JobsLevelComponent = new (function () {
     mThis.initAlready = false;
     mThis.title_prop = "Job Levels";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_jobsLevelComponent");
     mThis.elSearch = mThis.self.querySelector("#_job_level_search");
-    mThis.elCard = mThis.self.querySelector(".top_level_card");
     mThis.cols = [
         {
-            title: "",
-            className: "align-middle text-capitalize text-nowrap",
-            // data: (data, index, i) => {
-            //     return index + 1;
-            // },
+            transTitle: "",
+            className: "align-middle",
         },
 
         {
-            title: "Ranking",
-            className: "align-middle",
+            transTitle: "titles.Ranking",
+            className: "align-middle text-nowrap",
             data: (data)=>
                 `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991;width:30px; height:30px;"><span class="">${data.rank}</span></div>`,
 
         },
         {
-            title: "Job Level",
-            className: "align-middle ",
+            transTitle: "titles.Job Level",
+            className: "align-middle text-nowrap",
             data: (data)=>
                 `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
         },
 
         {
-            title: "Description",
-            className: "align-middle",
+            transTitle: "titles.Description",
+            className: "align-middle text-nowrap",
             data: (data)=>
                 `<div  class="text-remark text-muted" >${data.description}</div>`,
         },
         {
-            title: "Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
             data: (data) => `
             <div style="display: block; align-items: center;">
                 <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
                 <span style="font-size: 12px; color: #2b3991;">${data.update_date ?? ""}</span>
             </div>`,
         },
+
+
         {
-            title: "Action",
             className: "col_action align-middle",
-            data: function (data, row, display) {
-                return `
-                    <div class="d-flex align-items-center justify-content-center gap-3">
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-modify">
-                            <i class="fa-solid fa-pencil text-warning fs-6"></i>
-                        </a>
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-delete">
-                            <i class="fa-solid fa-xmark text-danger fs-6"></i>
-                        </a>
-                    </div>
-                `;
-            },
-        },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_jobLevel_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
     ];
 
     mThis.init = function () {
@@ -108,14 +108,51 @@ var JobsLevelComponent = new (function () {
             }, 200);
         });
 
-
         mThis.initDropdownMenus(mThis.pr_tbl);
-
 
         mThis.initAlready = true;
     };
 
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_jobLevel_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_jobevel"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_jobevel"
+                }
+            ],
 
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_jobevel": {
+                        mThis.editJobLevel(id, menuLink);
+                        break;
+                    }
+                    case "delete_jobevel": {
+                        mThis.deleteJobLevel(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
 
     mThis.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
@@ -126,18 +163,7 @@ var JobsLevelComponent = new (function () {
         p.search_value = mThis.elSearch.value;
         return p;
     };
-    mThis.initDropdownMenus = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-job-level-modify");
-            if (btn) {
-                mThis.editJobLevel(btn.dataset.id, btn);
-            }
-            btn = VSUtil.closestLimited(e.target, ".btn-job-level-delete");
-            if (btn) {
-                mThis.deleteJobLevel(btn.dataset.id, btn);
-            }
-        });
-    };
+
     mThis.editJobLevel = (id, menulink) => {
         let op = {
             id: id,
@@ -149,6 +175,7 @@ var JobsLevelComponent = new (function () {
         if (!AuthManager.allowed(205)) return;
         JobLevelDialog.show(op);
     };
+
     mThis.deleteJobLevel = (id, menulink) => {
         let op = {
             id: id,
@@ -178,7 +205,7 @@ var JobsLevelComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Job level delete successfully"
+                                    "Job level deleted successfully"
                                 );
                                 mThis.JobLevelListView.showPage();
                             }
@@ -221,38 +248,38 @@ const JobLevelDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static", 
+                keyboard: true, 
                 createContent: () => {
                     return [
-                        `<div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="name" class="form-label">Name</label>
-                                <span class="text-danger">*</span>
-                                <input type="text" class="form-control data-input" data-field="name" id="name" required>
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text"  name="name" class="form-control data-input" data-field="name" />
+                                    <label vslang="titles.Name"></label>
+                                </div>
                             </div>
-                             <div class="form-group col-md-6">
-                                <label for="rank" class="form-label">Rank</label>
-                                <span class="text-danger">*<small>(1-100)</small></span>
-                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="" required>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="number"  name="rank" class="form-control data-input" data-field="rank" />
+                                    <label vslang="titles.Rank"></label>
+                                </div>  
                             </div>
-                            <div class="form-group col-md-12">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description"></textarea>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
+                                    <label vslang="titles.Description"></label>
+                                </div>
                             </div>
-
-
-
                          </div>`,
                     ].join("");
                 },
                 buttons: [
                     {
                         label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn btn-secondary",
                         click: (me, btn) => {
-
                             me.hide(false);
                         },
                     },
@@ -296,8 +323,8 @@ const JobLevelDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Job Level",
-                    modifyTitle: "Edit Job Level",
+                    createTitle: "vslang.titles.Create Job Level",
+                    modifyTitle: "vslang.titles.Modify Job Level",
                     targetProp: "job_levels",
                     api: {
                         endpoint: [
@@ -308,9 +335,6 @@ const JobLevelDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    // onResponse: (me, res) => {
-                    //     console.log('result from api "/form-options": ', res);
-                    // },
                 },
 
                 onPrepareForm: (me, data) => {
