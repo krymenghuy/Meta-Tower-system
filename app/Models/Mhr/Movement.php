@@ -9,6 +9,7 @@ use Vsd\Vsloquent\VSModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Prm\GeneralSettings;
+use XBranch;
 class Movement extends VSModel
 {
     protected $userInfo = null;
@@ -300,7 +301,8 @@ class Movement extends VSModel
         }
 
         // um_branches.subs_id may not match session hex filter — load all for dropdown
-        $branches = DB::table('um_branches')->selectRaw('id, name AS branch_name, name')->get();
+        $branches = XBranch::query()->alias('b')->whereRaw(DBX::whereBinary('subs_id', $ss->subs_id))->selectRaw('id,name')->get();
+
         if ($branches->isEmpty()) {
             $branches = GeneralSettings::options_branch($ss);
         }

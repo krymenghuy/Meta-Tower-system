@@ -1,12 +1,15 @@
-<div id="_main_taxBracketComponent" style="display:none;padding:20px 0 0;">
-    <div class="d-flex justify-content-end w-100 shadow rounded-3 p-3" id="_divFilter">
-        <div class="d-flex align-items-center justify-content-end w-100">
-            <button type="button" class="btn_add" id="_btnAddTaxBracket">
-                <i class="fa fa-usd mr-2"></i>
-                <span>Create Tax Bracket</span>
-            </button>
+<div id="_main_taxBracketComponent"  class="mobile-padding px-3" style="display: none;">
+    <div id="_divFilter_taxBracketComponent" class="bg-white shadow p-3 rounded-2">
+        <div class="row align-items-center g-3">
+
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm"  id="_btnAddTaxBracket">
+                    <i class="fa-brands fa-nfc-symbol" style="color: rgb(249, 251, 255);"></i>
+                     <span vslang="buttons.Create Tax Bracket">Create Tax Bracket</span>
+                </button>
+            </div> 
         </div>
     </div>
+
     <div id="_taxBracket_list" class="mt-3 px-3"></div>
 </div>
-

@@ -111,7 +111,7 @@ class Leave extends VSModel
     //     return null;
     // }
 
-
+    
     function getLeaveListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
@@ -334,6 +334,112 @@ class Leave extends VSModel
         return new LengthAwarePaginator($emp_leav_uninform, $count, $per_page, $current_page);
     }
 
+
+    public function acceptLeave($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $d  = (object) $arr;
+
+        $id = $d->id ?? null;
+
+        if (!$id) {
+            return DV::error('Invalid request id');
+        }
+
+        // 1. Added emp_id to selection to scope the conflict check to the specific employee
+        $req = DB::table('leaves as l')
+            ->select(
+                'id',
+                'emp_id',
+                'status_id',
+                'start_date',
+                'end_date',
+                'leave_type_id'
+            )
+            ->where('id', $id)
+            ->first();
+
+        if (!$req) {
+            return DV::error('Leave not found');
+        }
+
+        if ($req->status_id == 2) {
+            return DV::error('You already accepted this leave.');
+        }
+
+        if (in_array($req->status_id, [3, 4, 5])) {
+            return DV::error('Request already processed.');
+        }
+
+        $start_date_col = DBX::convertToDate('start_date');
+        $end_date_col = DBX::convertToDate('end_date');
+
+        // 2. Fixed slot checking logic to catch any overlapping dates for this employee
+        $exists = DB::table('leaves')
+            ->where('id', '!=', $id)
+            ->where('emp_id', $req->emp_id) // Scoped to the individual employee
+            ->where('status_id', 2)         // Only look at already accepted leaves
+            ->whereRaw("
+                $start_date_col <= ? AND $end_date_col >= ?
+            ", [$req->end_date, $req->start_date])
+            ->exists();
+
+        if ($exists) {
+            return DV::error(
+                'This employee already has an accepted leave request that overlaps with this date range.'
+            );
+        }
+
+        $updated = DB::table('leaves')
+            ->where('id', $id)
+            ->update([
+                'status_id'   => 2,
+                'update_user' => $ss->full_name ?? '',
+                'update_uid'  => $ss->user_id ?? $ss->id ?? null,
+                'updated_at'  => getNowTime(),
+            ]);
+
+        if (!$updated) {
+            return DV::error('Update failed.');
+        }
+
+        return DV::success([
+            'message' => 'Leave accepted successfully'
+        ]);
+    }
+
+ function rejectLeave($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $d = (object) $arr;
+
+        $id = $d->id ?? null;
+        $remarks = $d->remarks ?? $d->remark ?? null;
+
+        if (empty($id)) {
+            return DV::error('ID is required.');
+        }
+
+        $reject = DB::table('leaves')
+            ->where('id', $id)
+            ->update([
+                'status_id'   => 3,
+                'remarks'     => $remarks,
+                'update_user' => $ss->full_name ?? '',
+                'update_uid'  => $ss->user_id ?? $ss->id ?? null,
+                'updated_at'  => getNowTime(),
+            ]);
+
+        if (!$reject) {
+            return DV::error('Reject process failed.');
+        }
+
+        return DV::success([
+            'message' => 'Leave request rejected successfully.'
+        ]);
+    }
+
+
     function getDatesWithDays($start_date, $end_date) {
         $start = Carbon::createFromFormat('d-M-Y', $start_date);
         $end = Carbon::createFromFormat('d-M-Y', $end_date);
@@ -396,7 +502,7 @@ class Leave extends VSModel
     {
 
         $ss = $ss ? $ss : $this->userInfo;
-         $currentStatus = DB::table('vendors')->where('id', $id)->value('status_id');
+        $currentStatus = DB::table('leaves')->where('id', $id)->value('status_id');
         if ($currentStatus == $status_id) {
             return DV::error('It is the same current status.');
         }
@@ -404,7 +510,7 @@ class Leave extends VSModel
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
             'updated_at'=>getNowTime(),
-            'update_uid'=>$ss->user_id
+            'update_uid'=>$ss->user_id ?? $ss->id ?? null
         ]);
         return DV::depends($x, ['Leave  status', 'updated']);
     }
