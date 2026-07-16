@@ -22,14 +22,14 @@ var WarningComponent = (function () {
         },
         {
             transTitle: "titles.Employee Code",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-prm text-capitalize">${data.emp_code}</span>`;
             },
         },
         {
             transTitle: "titles.Full Name",
-            className: "name text-capitalize align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 const sex =
                     data.sex === "M"
@@ -45,7 +45,7 @@ var WarningComponent = (function () {
         },
         {
             transTitle: "titles.Position",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-custom" >${data.position}</span>`;
             },
@@ -78,6 +78,16 @@ var WarningComponent = (function () {
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.issues ?? "-"}</span>
                     </div>
                 `;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                </div>`;
             },
         },
         {
@@ -300,6 +310,9 @@ const WarningDialog = (() => {
                             <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee" data-field="emp_id"></select>
                         </div>
                         <div class="col-6">
+                            <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id" disabled></select>
+                        </div>
+                        <div class="col-6">
                             <select data-style="material" name="warning_type" class="form-control data-input" placeholder="Warning Type" data-field="warning_type_id"></select>
                         </div>
                         <div class="col-6">
@@ -308,7 +321,7 @@ const WarningDialog = (() => {
                                 <label vslang="labels.Warning Date"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="issues" class="data-input form-control form_input" data-field="issues" placeholder=" " />
                                 <label vslang="labels.Reason"></label>
@@ -335,6 +348,13 @@ const WarningDialog = (() => {
                     },
                     valueField: "id",
                     emptyText: LocaleManager.trans("Employee", "titles"),
+                },
+                {
+                    name: "position",
+                    data: "positions",
+                    textField: "name",
+                    valueField: "id",
+                    emptyText: LocaleManager.trans("Position", "titles"),
                 },
                 {
                     name: "warning_type",
@@ -400,6 +420,30 @@ const WarningDialog = (() => {
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+
+                if (me.controls.employee_id && me.controls.position) {
+                    me.controls.position.setAttribute('disabled', 'true');
+
+                    const updatePosition = () => {
+                        const empId = me.controls.employee_id.value;
+                        const emp = (data.employees || []).find(e => e.id == empId);
+                        if (emp) {
+                            me.controls.position.value = emp.position_id || "";
+                        } else {
+                            me.controls.position.value = "";
+                        }
+                        me.controls.position.dispatchEvent(new Event("change"));
+                        if (window.jQuery) {
+                            jQuery(me.controls.position).change();
+                        }
+                    };
+
+                    me.controls.employee_id.addEventListener("change", updatePosition);
+
+                    if (me.controls.employee_id.value) {
+                        updatePosition();
+                    }
+                }
             },
         });
 

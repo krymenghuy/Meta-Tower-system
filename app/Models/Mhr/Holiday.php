@@ -2,14 +2,15 @@
 
 namespace App\Models\Mhr;
 
+use App\Models\Prm\GeneralSettings;
 use DV;
 use DBX;
+use Vsd\Vsloquent\VSModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-class Holiday //extends Model
+class Holiday extends VSModel
 {
-    protected $id = null;
-    protected $userInfo = null;
+    protected $table = 'holidays';
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -17,28 +18,37 @@ class Holiday //extends Model
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr = [], $id = null, $ss = null)
+    public function upsert($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100',
+            'name' => '1|string|0-150',
             'holiday_type_id' => '1|number',
             'start_date' => '1|date',
             'end_date' => '1|date',
             'description' => '0|string|0-300',
         ];
 
-        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?',','];
-        $checkUnique = ["$branch_id|holidays|name|id=id|text=Holiday already exists."];
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '(', ')', ' '];
+        $allow_chars = [
+            'name' => ['(', ')', '-', '/', '.', ' ', ','],
+            'description' => $pos_char,
+        ];
 
-        $res = DBX::validateObject($arr, $v_rule, true, ['description' => $pos_char], $ss->lang, false, $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, $allow_chars, $ss->lang, false, $checkUnique=null);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
+        $inputs['description'] = $inputs['description'] ?? '';
+
+        $err = self::checkDuplicateName($inputs['name'], $id, $branch_id);
+        if ($err) {
+            return DV::error($err);
+        }
 
         $id = DBX::saveData($ss, 'holidays', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
@@ -46,6 +56,23 @@ class Holiday //extends Model
         }
 
         return DV::error('Error saving holiday');
+    }
+    static function checkDuplicateName($name, $id, $branch_id)
+    {
+        $query = DB::table('holidays as h')
+            ->where('h.branch_id', $branch_id)
+            ->where('h.name', $name);
+
+        if ($id) {
+            $query->where('h.id', '<>', $id);
+        }
+
+        $test = $query->select('id')->first();
+        if ($test) {
+            return 'Holiday already exists::' . $name;
+        }
+
+        return null;
     }
 
     public function getHolidayListPaginate($arr, $ss)
@@ -62,31 +89,36 @@ class Holiday //extends Model
         $start_date = DBX::formatDate('h.start_date','start_date');
         $end_date = DBX::formatDate('h.end_date','end_date');
         $updated_at = DBX::formatTime('h.updated_at','updated_at');
-        $str_srch = '1=1';
-        if($search_value){
+        $str_search = '1=1';
+        if ($search_value) {
             $skip_rows = 0;
-            $str_srch = "(h.name LIKE '%".$search_value ."%')";
+            $search_value = escape_like_str($search_value);
+            $str_search = "(h.name LIKE '%" . $search_value . "%')";
         }
 
 
         $selectRow = 'h.id,h.name,h.holiday_type_id,ht.name as holiday_type,'.$start_date.','.$end_date.',h.description,h.update_user,'.$updated_at.'';
-        $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereYear('h.start_date', $year)->whereRaw($str_srch)->selectRaw($selectRow);
+        $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereYear('h.start_date', $year)->whereRaw($str_search)->selectRaw($selectRow);
+
+        $holiday_type_id = $d->holiday_type_id ?? null;
+        if ($holiday_type_id) {
+            $query->where('h.holiday_type_id', $holiday_type_id);
+        }
+
         $count_query = clone $query;
         $count = $count_query->count('h.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('h.id ASC')->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
-
-
-
     public function getDetails($id=null, $ss=null)
     {
         $row = DB::table('holidays as h')
             ->selectRaw('h.id,h.name,h.holiday_type_id,h.start_date,h.end_date,h.description,h.updated_at,h.update_user')
             ->where('h.id', $id)->get()->first();
-
+        if($row) {
+            setOfficialDates($row, ['start_date','end_date'], ['updated_at'],['']);
+        }
         return $row;
     }
 
@@ -94,6 +126,7 @@ class Holiday //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        if(!$id) return DV::error('Holiday ID is not valid');
         $delete = DB::table('holidays')->where('id', $id)->delete();
         return DV::depends($delete, null, 'Error deleting holiday');
     }
@@ -106,7 +139,6 @@ class Holiday //extends Model
         }
         return (object) [
             'holiday_types' => DB::table('holiday_types')->selectRaw('id,name')->get(),
-            'branches' => GeneralSettings::options_branch($ss),
             'holidays' => $holidays,
         ];
     }

@@ -243,8 +243,6 @@ return [
                 '/js/components/mhr/WorkShiftListComponent.js',
                 '/js/components/mhr/skillsComponent.js',
                 '/js/components/mhr/BenefitDisbursementComponent.js',
-                '/js/components/mhr/TransactionComponent.js',
-                '/js/components/mhr/RequestServiceComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/UninformedLeaveComponent.js',
                 '/js/components/mhr/HolidayComponent.js',
@@ -257,6 +255,9 @@ return [
                 '/js/components/mhr/StaffAttendanceComponent.js',
                 '/js/components/mhr/WarningComponent.js',
                 '/js/components/mhr/TaxBracketComponent.js',
+                '/js/components/mhr/PositionComponent.js',
+                '/js/components/mhr/DepartmentComponent.js',
+                '/js/components/mhr/JobsLevelComponent.js',
 
 
 

@@ -99,8 +99,12 @@ class Employee extends VSModel
         $today = date('Y-m-d');
         $start_date = DBX::convertToDate('l.start_date');
         $end_date = DBX::convertToDate('l.end_date');
-        $str_dates = $today . " BETWEEN $start_date AND $end_date";
-        return DB::table('leaves as l')->where('l.id',$id)->whereRaw($str_dates)->value('id');
+        $str_dates = "'$today' BETWEEN $start_date AND $end_date";
+        return DB::table('leaves as l')
+            ->where('l.emp_id', $id)
+            ->where('l.status_id', 2)
+            ->whereRaw($str_dates)
+            ->value('id');
     }
     public function upsert($arr = [], $id = null, $ss = null)
     {

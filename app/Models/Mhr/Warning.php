@@ -39,7 +39,6 @@ class Warning extends VSModel
         $emp_id = $inputs['emp_id'];
         if (!$d->emp_id) return DV::error('Employee ID is missing');
         
-        // Fetch employee details (position and branch)
         $employee_info = DB::table('employees as emp')
                             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
                             ->where('emp.id', $emp_id)
@@ -56,7 +55,6 @@ class Warning extends VSModel
             return DV::error('It seems your warning date is in the past. Please check the warning date!');
         }
 
-        // Map inputs to match actual database columns
         $saveData = [
             'emp_id' => $inputs['emp_id'],
             'warning_type_id' => $inputs['warning_type_id'],
@@ -114,10 +112,6 @@ class Warning extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row->image_url = '';
-            if (isset($row->emp_id)) {
-                $row->image_url = Employee::profilePicture($row->emp_id);
-            }
             $row = setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
         }
 
@@ -133,7 +127,7 @@ class Warning extends VSModel
             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
             ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->where('w.id', $id)
-            ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
+            ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
             ->first();
         return $row;
     }
@@ -161,9 +155,15 @@ class Warning extends VSModel
 
         $employees = GeneralSettings::options_employee(10, $ss);
 
+        $positions = DB::table('positions')
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
         return (object) [
             'warning_types' => $warning_types,
             'employees' => $employees,
+            'positions' => $positions,
             'warning' => $warning
         ];
     }
