@@ -357,7 +357,7 @@ class Employee extends VSModel
                 emp.code,
                 emp.id,
                 emp.branch_id,
-                // b.name as branch_name,
+              
                 emp.name,
                 emp.name_kh,
                 emp.email,
