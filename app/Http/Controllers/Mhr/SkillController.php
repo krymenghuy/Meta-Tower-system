@@ -3,41 +3,43 @@
 namespace App\Http\Controllers\Mhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Mhr\Department;
+use App\Models\Mhr\Skill;
+use Illuminate\Http\Request;
 use JDV;
 use XAuthService;
-use Illuminate\Http\Request;
 
-class DepartmentController extends Controller
+class SkillController extends Controller
 {
-    protected $department;
+    protected $skillModel;
+
     public function __construct()
     {
-        $this->department = new Department();
+        $this->skillModel = new Skill();
     }
 
-    public function saveDepartment(Request $req)
-    {
-        $id = $req->id ?? null;
-        $prn_code = $id ? 216 : 217;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-
-        $res = $this->department->upsert($req->all(),$id,$ss);
-        return JDV::raw($res);
-    }
-
-    public function getList(Request $req)
+    public function saveSkill(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->department->getList($req->all(), $ss));
+
+        $id = $req->skill_id ?? $req->id;
+        $skill = new Skill($id, $ss);
+        $res = $skill->upsert($req->all(), $id, $ss);
+
+        return JDV::raw($res);
     }
 
+    public function getSkillListPaginate(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        return JDV::result($this->skillModel->getSkillListPaginate($req->all(), $ss));
+    }
 
     public function getDetails(Request $req)
     {
@@ -49,19 +51,22 @@ class DepartmentController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->department->getDetails($req->id));
+
+        return JDV::result(Skill::getDetails($req->id, $ss));
     }
 
-    public function deleteDepartment(Request $req)
+    public function deleteSkill(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 218);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
+
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res =  $this->department->deleteDepartment($req->id);
+
+        $res = $this->skillModel->deleteSkill($req->id, $ss);
         return JDV::raw($res);
     }
 
@@ -71,6 +76,7 @@ class DepartmentController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->department->getFormOptions($req->id, $ss));
+
+        return JDV::result($this->skillModel->getAdminFormOptions($req->id, $ss));
     }
 }

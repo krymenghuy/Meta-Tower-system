@@ -2,8 +2,10 @@
 var HolidayComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_holidayComponent");
-    
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_holidayComponent",
+    );
+
     mThis.title_prop = "Manage Holiday";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_holiday");
@@ -20,30 +22,30 @@ var HolidayComponent = (function () {
         {
             transTitle: "titles.Holiday Date",
             className: "align-middle",
-            data: (data)=>{
+            data: (data) => {
                 return ` <div class="d-flex flex-column">
                                 <div class="d-flex justify-content-start align-items-center">
                                     <span class="text-nowrap" style="font-size: 90%;">${data.start_date}</span>
                                     <span class="text-primary px-1">~</span>
                                     <span class="text-nowrap" style="font-size: 90%;">${data.end_date}</span>
                                 </div>
-                            </div>`
+                            </div>`;
             },
         },
 
         {
             transTitle: "titles.Holiday",
             className: "align-middle fw-bold",
-            data: (data)=>{
-                return `<span class="text-danger text-capitalize">${data.name}</span>`
+            data: (data) => {
+                return `<span class="text-danger text-capitalize">${data.name}</span>`;
             },
         },
         {
             transTitle: "titles.Holiday Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.holiday_type ?? ''}</span>`;
-            }
+                return `<span class="text-nowrap text-prm-custom">${data.holiday_type ?? ""}</span>`;
+            },
         },
         {
             transTitle: "titles.Last Updated",
@@ -56,11 +58,10 @@ var HolidayComponent = (function () {
                         <small class="text-nowrap">${data.updated_at}</small>
                     </span>
                 </div>`;
-
-            }
+            },
         },
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
@@ -71,7 +72,7 @@ var HolidayComponent = (function () {
                         </div>
                     </div>
                 `;
-            }
+            },
         },
     ];
     mThis.init = () => {
@@ -108,12 +109,12 @@ var HolidayComponent = (function () {
         };
         mThis.listContainer = mThis.HolidayListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
@@ -184,7 +185,6 @@ var HolidayComponent = (function () {
     };
 
     mThis.editHoliday = (id, menuLink) => {
-
         let op = {
             id: id,
             btn: menuLink,
@@ -221,21 +221,23 @@ var HolidayComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Deleted successfully");
-                                mThis.HolidayListView.showPage(mThis.getFilterData());
+                                mThis.HolidayListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(
-                                    "Deletion failed. Try again."
+                                    "Deletion failed. Try again.",
                                 );
                             }
                         })
                         .catch(() => {
                             cv_interact.error(
-                                "An error occurred. Please try again."
+                                "An error occurred. Please try again.",
                             );
                         })
                         .finally(() => {
@@ -244,7 +246,7 @@ var HolidayComponent = (function () {
                 } else {
                     menuLink.disabled = false;
                 }
-            }
+            },
         );
     };
 
@@ -273,9 +275,9 @@ var HolidayComponent = (function () {
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions();
-        
+
         mThis.HolidayListView.showPage(mThis.getFilterData(), null, () => {
-           main_view.setContentView(mThis.self, mThis.title_prop);
+            main_view.setContentView(mThis.self, mThis.title_prop);
         });
     };
     return mThis;
@@ -324,7 +326,6 @@ const HolidayDialog = (() => {
             contentCreated: (me) => {
                 DateTimePicker.init(me.controls.start_date);
                 DateTimePicker.init(me.controls.end_date);
-
             },
             configSelect: [
                 {
@@ -352,21 +353,23 @@ const HolidayDialog = (() => {
 
                         vsapi
                             .call(
-                                [main_view.base_url, "/mhr/holiday/save"].join(""),
+                                [main_view.base_url, "/mhr/holiday/save"].join(
+                                    "",
+                                ),
                                 p,
                                 btn,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Updated holiday successfully"
+                                            "Updated holiday successfully",
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "Added holiday successfully"
+                                            "Added holiday successfully",
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);

@@ -726,6 +726,14 @@ return [
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
 
+        'Search by job level'=> 'ស្វែងរកតាមកម្រិតការងារ',
+        'Ranking'=> 'ចំណាត់ថ្នាក់',
+        'Job Level'=> 'កម្រិតការងារ',
+        'Create Job Level' => 'បង្កើតកម្រិតការងារ',
+        'Modify Job Level' => 'កែប្រែeកម្រិតការងារ',
+
+
+
 
 
     ],
@@ -994,9 +1002,7 @@ return [
         'Set Attendance' => 'កំណត់វត្តមាន',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
-        
-        
-
+        'Create Job Level' => 'បង្កើតកម្រិតការងារ',
 
 
     ],

@@ -1,9 +1,11 @@
 "use strict";
-var PositionComponent =  (function () {
+var PositionComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_positionComponent");
-    
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_positionComponent",
+    );
+
     mThis.title_prop = "Positions";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -17,25 +19,29 @@ var PositionComponent =  (function () {
             data: "",
         },
         {
-            title: "Position",
+            transTitle: "titles.Position",
             className: "align-middle text-capitalize",
-            data:(data)=>`<span class="text-primary-custom">${data.title}</span>`,
+            data: (data) =>
+                `<span class="text-primary-custom">${data.title}</span>`,
         },
         {
             title: "Staff Group",
             className: "align-middle text-capitalize",
-            data:(data)=>`<span class="text-primary-custom">${data.staff_group}</span>`,
+            data: (data) =>
+                `<span class="text-primary-custom">${data.staff_group}</span>`,
         },
         {
             title: "Job Level",
             className: "align-middle text-capitalize",
-            data:(data)=>`<span class="text-capitalize text-primary-custom">${data.level}</span>`,
+            data: (data) =>
+                `<span class="text-capitalize text-primary-custom">${data.level}</span>`,
         },
 
         {
             title: "Department",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data:(data)=>`<span class="text-primary-custom ">${data.department}</span>`
+            data: (data) =>
+                `<span class="text-primary-custom ">${data.department}</span>`,
         },
         {
             title: "Salary",
@@ -65,7 +71,6 @@ var PositionComponent =  (function () {
                 </div>
             </div>`,
         },
-
     ];
 
     mThis.init = () => {
@@ -73,10 +78,11 @@ var PositionComponent =  (function () {
 
         mThis.PositionListView = new ListView("_position_list", {
             fetchApi: `${main_view.base_url}/mhr/position/list-paginate`,
-            perPage:10,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 
@@ -98,12 +104,12 @@ var PositionComponent =  (function () {
         };
         mThis.listContainer = mThis.PositionListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
@@ -115,8 +121,6 @@ var PositionComponent =  (function () {
                 }
             }, 200);
         });
-
-
 
         mThis.initDropdownMenus(mThis.listContainer);
 
@@ -211,31 +215,45 @@ var PositionComponent =  (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("The position was deleted!");
+                                cv_interact.success(
+                                    "The position was deleted!",
+                                );
                                 mThis.PositionListView.showPage();
-                            }else cv_interact.error(res.error_message);
+                            } else cv_interact.error(res.error_message);
                         });
                 }
-            }
+            },
         );
     };
     mThis.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/mhr/position/form-options`, null, null, null)
+                `${main_view.base_url}/mhr/position/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems( mThis.elDepartment, d.departments, "id", "name", true, "All Department", null);
+                VSUtil.setComboItems(
+                    mThis.elDepartment,
+                    d.departments,
+                    "id",
+                    "name",
+                    true,
+                    "All Department",
+                    null,
+                );
             });
     };
 
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.PositionListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
         main_view.setContentView(mThis.self, mThis.title_prop);
@@ -243,34 +261,29 @@ var PositionComponent =  (function () {
     return mThis;
 })();
 
-const PositionDialog = (()=>{
-
+const PositionDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
-
+    self.show = (op) => {
         dialog = new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [
-                     `<div class="row">
-                 <div class="form-group col-md-6">
-                     <label for="department" class="form-label" vslang="titles.Department"></label>
-                     <span class="text-danger" >*</span>
-                     <select name="department" class="data-input"  data-field="department_id"></select>
-                 </div>
-                 <div class="form-group col-md-6">
-                     <label for="job_level" class="form-label" vslang="titles.Job Level"></label>
-                     <span class="text-danger" >*</span>
-                     <select name="job_level" class="data-input"  data-field="job_level_id"></select>
-                 </div>
-                 <div class="form-group col-md-4">
-                     <label for="title" class="form-label" vslang="titles.Position"></label>
-                     <span class="text-danger" >*</span>
-                     <input type="text" class="form-control data-input" data-field="title">
-                 </div>
+            cssClass: "modal-md vs-modal",
+            backdrop: "static", //User click outside form, do not close form
+            keyboard: true, //prevent user from using ESC key
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                <div class="col-6">
+                    <select data-style="material" name="department" class="form-control data-input" placeholder="Department"  data-field="department_id"></select>
+                </div>
+                <div class="col-6">
+                    <select data-style="material" name="job_level" class="form-control data-input" placeholder="Job Level"  data-field="job_level_id"></select>
+                </div>
+                <div class="col-6">
+                    <div class="vs-material-field">
+                        <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                        <label vslang="labels.Position"></label>
+                    </div>
+                </div>
                   <div class="form-group col-md-4">
                         <label for="staff_group" class="form-label" vslang="titles.Staff Group">Staff Group</label>
                         <span class="text-danger">*</span>
@@ -290,84 +303,95 @@ const PositionDialog = (()=>{
 
 
               </div>`,
-                 ].join("");
+                ].join("");
             },
 
-            configSelect:[
-               {
-                 name:"department",
-                 data:'departments',
-                 textField:"name",
-                 valueField:'id'
-               },
-               {
-                name:"job_level",
-                data:"job_levels",
-                textField:"level",
-                valueField:'id'
-               }, {
-                name:"staff_group",
-                data:"staff_groups",
-                textField:"name",
-                valueField:'id'
-               },
-               {
-                name: "currency_code",
-                data: "currency_codes",
-                textField: "code",
-                valueField: "code",
-                }
+            configSelect: [
+                {
+                    name: "department",
+                    data: "departments",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "job_level",
+                    data: "job_levels",
+                    textField: "level",
+                    valueField: "id",
+                },
+                {
+                    name: "staff_group",
+                    data: "staff_groups",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                },
             ],
-            buttons:[
-               {
-                label:'<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
-                cssClass:'btn btn-sm-outline rounded-3',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-            },
-               {
-                label:'<span><i class="fa-solid text-success fa-check"></i></span>',
-                cssClass:'btn btn-sm-outline rounded-3',
-                click:(me,btn)=>{
-                    const p = me.getData();
-                    p.staff_group = Number(p.staff_group);
-                    p.id = me.dataOptions.id; //get "id" from op
-                    console.log(123,p);
-                    
-                    vsapi.call( [main_view.base_url,'/mhr/position/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Position',
-               modifyTitle:'Edit Position',
-               targetProp: 'positions',
-               api:{
-                 endpoint: [main_view.base_url,'/mhr/position/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-                 me.controls.currency_code.value = VSMoney.getCurrency().code;
-            }
+            buttons: [
+                {
+                    label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
+                    cssClass: "btn btn-sm-outline rounded-3",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                    cssClass: "btn btn-sm-outline rounded-3",
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.staff_group = Number(p.staff_group);
+                        p.id = me.dataOptions.id; //get "id" from op
+                        console.log(123, p);
 
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/mhr/position/save"].join(
+                                    "",
+                                ),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "Add Position",
+                modifyTitle: "Edit Position",
+                targetProp: "positions",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/position/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                //    onResponse: (me, res)=>{
+                //      console.log('result from api "/form-options": ', res);
+                //    }
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.controls.currency_code.value = VSMoney.getCurrency().code;
+            },
         });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();
-

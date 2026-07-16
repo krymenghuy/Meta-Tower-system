@@ -439,6 +439,9 @@ var EmployeeManagementComponent = (function () {
                             <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement" title="Movement" aria-label="Movement">
                                 <i class="fa-solid fa-right-left"></i>
                             </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement-detail d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement_detail" title="Detail Movement" aria-label="Detail Movement">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </button>
                             <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_resign" title="Set Resign" aria-label="Set Resign">
                                 <i class="fa-solid fa-user-xmark"></i>
                             </button>
@@ -567,6 +570,21 @@ var EmployeeManagementComponent = (function () {
             };
         }
 
+        const inlineMovementDetailBtn = mThis.profileInfoEmployee.querySelector(
+            "#_emp_profile_btn_movement_detail",
+        );
+        if (inlineMovementDetailBtn) {
+            inlineMovementDetailBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof EmployeeMovementHistoryDialog === "undefined") return;
+                EmployeeMovementHistoryDialog.show({
+                    emp_id: mThis.currentEmployeeId,
+                    employee: mThis.currentEmployeeProfile || null,
+                    btn: e.currentTarget,
+                });
+            };
+        }
+
         const inlineResignBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_resign");
         if (inlineResignBtn) {
             inlineResignBtn.onclick = (e) => {
@@ -670,172 +688,123 @@ const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const ph = (text, required = false) => {
-        const t = LocaleManager.trans(text, "labels");
-        return required ? `${t} *` : t;
+    const materialField = (name, dataField, label, opts = {}) => {
+        const typeAttr = opts.date ? ' data-type="date"' : opts.type ? ` type="${opts.type}"` : ' type="text"';
+        const required = opts.required ? " required" : "";
+        return `
+            <div class="vs-material-field">
+                <input${typeAttr} name="${name}" class="form-control data-input" data-field="${dataField}" placeholder=" "${required} />
+                <label>${label}</label>
+            </div>`;
     };
 
-    const wrapField = (controlHtml) => `<div class="mb-0">${controlHtml}</div>`;
+    const sectionTitle = (text) =>
+        `<div class="col-12"><div class="fw-semibold mb-1">${text}</div></div>`;
 
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-xl vs-modal emp-employee-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                title: (me) =>
-                    LocaleManager.trans(
-                        me.dataOptions.id ? "Modify Employee" : "Add Employee",
-                        "titles",
-                    ),
-                createContent: () => `
-                    <div class="emp-employee-dialog">
-                        <div class="row g-3 align-items-start mb-2">
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
                             <div class="col-md-3">
                                 <div id="_emp_dialog_photo" class="emp-dialog-photo-wrap d-flex align-items-center justify-content-center"></div>
                             </div>
                             <div class="col-md-9">
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        ${wrapField(
-                                            `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder="${ph("Name", true)}" />`,
-                                        )}
+                                    <div class="col-12">
+                                        ${materialField("name", "name", "Full Name", { required: true })}
                                     </div>
                                     <div class="col-md-6">
-                                        ${wrapField(
-                                            `<input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder="${ph("Khmer Name", true)}" />`,
-                                        )}
+                                        ${materialField("name_kh", "name_kh", "Khmer Name", { required: true })}
                                     </div>
-                                    <div class="col-md-4">
-                                        ${wrapField(
-                                            `<select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${ph("Sex")}">
-                                                <option value="">${LocaleManager.trans("Select", "labels")}</option>
-                                                <option value="M">${LocaleManager.trans("Male", "titles")}</option>
-                                                <option value="F">${LocaleManager.trans("Female", "titles")}</option>
-                                            </select>`,
-                                        )}
+                                    <div class="col-md-6">
+                                        ${materialField("date_of_birth", "date_of_birth", "Date of Birth", { date: true, required: true })}
                                     </div>
-                                    <div class="col-md-4">
-                                        ${wrapField(
-                                            `<select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${ph("Marital Status", true)}">
-                                                <option value="single">${LocaleManager.trans("Single", "titles")}</option>
-                                                <option value="married">${LocaleManager.trans("Married", "titles")}</option>
-                                                <option value="divorced">${LocaleManager.trans("Divorced", "titles")}</option>
-                                                <option value="widowed">${LocaleManager.trans("Widowed", "titles")}</option>
-                                            </select>`,
-                                        )}
+                                    <div class="col-md-6">
+                                        <select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="Sex" required>
+                                            <option value="">Select</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
                                     </div>
-                                    <div class="col-md-4">
-                                        ${wrapField(
-                                            `<input type="text" data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" placeholder="${ph("Date Of Birth", true)}" />`,
-                                        )}
+                                    <div class="col-md-6">
+                                        <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="Marital Status" required>
+                                            <option value="single">Single</option>
+                                            <option value="married">Married</option>
+                                            <option value="divorced">Divorced</option>
+                                            <option value="widowed">Widowed</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <hr class="border-secondary-subtle my-3" />
-
-                        <div class="row g-3">
+                            ${sectionTitle("Identification")}
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="${ph("Nationality", true)}"></select>`,
-                                )}
+                                <select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="Nationality" required></select>
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder="${ph("Identity Card", true)}" />`,
-                                )}
+                                ${materialField("nid", "nid", "Identity Card", { required: true })}
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder="${ph("Identity Card Expiry", true)}" />`,
-                                )}
-                            </div>
-
-                            <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="${ph("NSSF ID")}" />`,
-                                )}
+                                ${materialField("nid_expiry_date", "nid_expiry_date", "Identity Card Expiry", { date: true, required: true })}
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder="${ph("Passport Number")}" />`,
-                                )}
+                                ${materialField("nssf_id", "nssf_id", "NSSF ID")}
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" placeholder="${ph("Passport Expiry", true)}" />`,
-                                )}
+                                ${materialField("passport_number", "passport_number", "Passport Number")}
+                            </div>
+                            <div class="col-md-4">
+                                ${materialField("passport_expiry_date", "passport_expiry_date", "Passport Expiry", { date: true })}
                             </div>
 
+                            ${sectionTitle("Employment & Contact")}
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="${ph("Place of Birth")}"></select>`,
-                                )}
+                                <select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="Place of Birth"></select>
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="${ph("Employee Type", true)}"></select>`,
-                                )}
+                                <select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="Employee Type" required></select>
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="${ph("Position", true)}"></select>`,
-                                )}
+                                <select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="Position" required></select>
+                            </div>
+                            <div class="col-md-4">
+                                ${materialField("phone_number", "phone_number", "Phone", { required: true })}
+                            </div>
+                            <div class="col-md-4">
+                                ${materialField("email", "email", "Email", { type: "email", required: true })}
+                            </div>
+                            <div class="col-md-4">
+                                ${materialField("salary", "salary", "Salary", { type: "number" })}
+                            </div>
+                            <div class="col-md-4">
+                                ${materialField("joining_date", "joining_date", "Joining Date", { date: true, required: true })}
+                            </div>
+                            <div class="col-md-8">
+                                ${materialField("address", "address", "Address", { required: true })}
                             </div>
 
+                            ${sectionTitle("Family & Payroll")}
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder="${ph("Phone", true)}" />`,
-                                )}
-                            </div>
-                            <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="email" name="email" class="form-control data-input" data-field="email" placeholder="${ph("Email", true)}" />`,
-                                )}
+                                ${materialField("spouse_name", "spouse_name", "Spouse Name")}
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder="${ph("Salary")}" />`,
-                                )}
-                            </div>
-
-                            <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" placeholder="${ph("Joining Date", true)}" />`,
-                                )}
+                                ${materialField("spouse_occ_code", "spouse_occ_code", "Spouse Occupation")}
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="${ph("Apply Payroll Tax", true)}"></select>`,
-                                )}
-                            </div>
-
-                            <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder="${ph("Spouse Name")}" />`,
-                                )}
+                                <select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="Spouse Employee"></select>
                             </div>
                             <div class="col-md-4">
-                                ${wrapField(
-                                    `<select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="${ph("Spouse Employee")}"></select>`,
-                                )}
+                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="Apply Payroll Tax" required></select>
                             </div>
-                            <div class="col-md-4">
-                                ${wrapField(
-                                    `<input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder="${ph("Spouse Occupation")}" />`,
-                                )}
-                            </div>
-
-                            <div class="col-12">
-                                ${wrapField(
-                                    `<textarea name="address" rows="3" class="form-control data-input" data-field="address" placeholder="${ph("Address", true)}"></textarea>`,
-                                )}
-                            </div>
-                        </div>
-                    </div>`,
+                        </div>`,
+                    ].join("");
+                },
                 contentCreated: (me) => {
                     const photoEl = me.self.querySelector("#_emp_dialog_photo");
                     if (photoEl && !me.controls._empPhotoBox) {
@@ -845,11 +814,6 @@ const EmployeeDialog = (() => {
                             defaultPhotoName: "default-staff",
                         });
                     }
-                    me.self
-                        .querySelectorAll('input[data-type="date"]')
-                        .forEach((el) => {
-                            if (!el._dtp) new DateTimePicker(el, null);
-                        });
                 },
                 configSelect: [
                     {
@@ -894,9 +858,14 @@ const EmployeeDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
+                    createTitle: "vslang:titles.Add Employee",
+                    modifyTitle: "vslang:titles.Modify Employee",
                     targetProp: "employee",
                     api: {
-                        endpoint: `${main_view.base_url}/mhr/employee/form-options`,
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/form-options",
+                        ].join(""),
                         params: (op) => ({ id: op.id }),
                     },
                 },
@@ -924,13 +893,13 @@ const EmployeeDialog = (() => {
                 },
                 buttons: [
                     {
-                        label: LocaleManager.trans("Cancel", "buttons"),
-                        cssClass: "btn emp-dialog-btn-cancel",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
                         click: (me) => me.hide(false),
                     },
                     {
-                        label: LocaleManager.trans("Save", "buttons"),
-                        cssClass: "btn emp-dialog-btn-save",
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
@@ -949,12 +918,15 @@ const EmployeeDialog = (() => {
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/save`,
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/employee/save",
+                                    ].join(""),
                                     op,
                                     btn,
                                 )
                                 .then((res) => {
-                                    if (res.status_code === 200) {
+                                    if (res.status_code == 200) {
                                         me.hide(true, op);
                                         if (
                                             typeof me.dataOptions.onClose ===
@@ -981,6 +953,7 @@ const EmployeeDialog = (() => {
                     },
                 ],
             });
+
         dialog.show(op);
     };
 

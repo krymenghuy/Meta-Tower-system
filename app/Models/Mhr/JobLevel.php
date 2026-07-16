@@ -108,6 +108,7 @@ class JobLevel //extends Model
         ->whereRaw($str_search)
         ->selectRaw('j.id, j.name, j.description, j.rank,'.$col_update_date.', j.update_user')
         ->orderBy('j.rank', 'ASC'); // Sort by rank in ascending order
+            // ->orderBy('sr.id', 'DESC');
 
         if ($search_id) {
             $query->where('j.id', $search_id);

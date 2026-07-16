@@ -311,8 +311,15 @@ const ProfileMovementDialog = (() => {
             me.controls.current_position.value = emp.position || emp.position_title || "";
         }
         if (me.controls.original_salary) {
-            me.controls.original_salary.value =
-                emp.salary != null && emp.salary !== "" ? emp.salary : "";
+            const sal = emp.salary;
+            if (sal != null && sal !== "") {
+                me.controls.original_salary.value =
+                    typeof VSMoney !== "undefined" && VSMoney.formatAmount
+                        ? VSMoney.formatAmount(sal, emp.currency_code || "USD")
+                        : Number(sal).toFixed(2);
+            } else {
+                me.controls.original_salary.value = "";
+            }
         }
         if (me.controls.current_work_shift) {
             me.controls.current_work_shift.value = emp.work_shift || "";
@@ -593,3 +600,200 @@ const ProfileMovementDialog = (() => {
     return self;
 })();
 //end:: ProfileMovementDialog
+
+/** Employee movement history timeline (profile Detail Movement) */
+const EmployeeMovementHistoryDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    const MOVEMENT_EVENTS = [
+        "change branch",
+        "change position",
+        "change salary",
+        "change work shift",
+    ];
+
+    const esc = (s) =>
+        String(s ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+
+    const initialOf = (name) => {
+        const n = String(name || "").trim();
+        return n ? n.charAt(0).toUpperCase() : "?";
+    };
+
+    const formatSalaryValue = (value) => {
+        const raw = String(value ?? "").trim();
+        const cleaned = raw.replace(/[$,\s]/g, "");
+        if (!cleaned) return raw;
+
+        let n;
+        if (cleaned.includes(".")) {
+            n = parseFloat(cleaned);
+        } else if (/^\d+$/.test(cleaned) && cleaned.length >= 5) {
+            // Legacy remarks lost "." when saving (100.00 became 10000)
+            n = parseFloat(cleaned.slice(0, -2) + "." + cleaned.slice(-2));
+        } else {
+            n = parseFloat(cleaned);
+        }
+
+        if (!Number.isFinite(n)) return raw;
+        return n.toFixed(2);
+    };
+
+    const changeText = (remarks, event) => {
+        const raw = String(remarks || "").trim();
+        if (!raw) return "—";
+        const arrowPart = raw.split("|")[0].trim();
+        if (!arrowPart) return raw;
+
+        if (String(event || "").trim().toLowerCase() === "change salary") {
+            const parts = arrowPart.split("→");
+            if (parts.length === 2) {
+                return `${formatSalaryValue(parts[0])} → ${formatSalaryValue(parts[1])}`;
+            }
+        }
+
+        return arrowPart;
+    };
+
+    /** Newest-first list → keep one row per movement type (max 4) */
+    const latestPerMovementType = (rows) => {
+        const seen = {};
+        const out = [];
+        (rows || []).forEach((row) => {
+            const key = String(row?.event || "")
+                .trim()
+                .toLowerCase();
+            if (!MOVEMENT_EVENTS.includes(key) || seen[key]) return;
+            seen[key] = true;
+            out.push(row);
+        });
+        return out;
+    };
+
+    const renderContent = (me, data) => {
+        const emp = me.dataOptions.employee || {};
+        const page = data || {};
+        const allRows = Array.isArray(page)
+            ? page
+            : page.data || page.items || page.rows || [];
+        const rows = latestPerMovementType(allRows);
+        const first = rows[0] || allRows[0] || {};
+        const name = emp.name || first.emp_name || "Employee";
+        const photo = emp.image_url || first.image_url || "";
+        const count = rows.length;
+        const titleText = "Detail Movement";
+
+        const titleEl =
+            me.divModal.querySelector(".modal-title") ||
+            me.divModal.querySelector(".modal-header h5") ||
+            me.divModal.querySelector(".modal-header .modal-title");
+        if (titleEl) {
+            titleEl.textContent = titleText;
+        }
+
+        const header = me.divModal.querySelector("#_mv_history_header");
+        const list = me.divModal.querySelector("#_mv_history_list");
+        if (!header || !list) return;
+
+        const avatarHtml = photo
+            ? `<img class="mv-history-avatar-img" src="${esc(photo)}" alt="" />`
+            : `<span class="mv-history-avatar-letter">${esc(initialOf(name))}</span>`;
+
+        header.innerHTML = `
+            <div class="mv-history-avatar">${avatarHtml}</div>
+            <div class="mv-history-header-text">
+                <div class="mv-history-title">${esc(titleText)}</div>
+                <div class="mv-history-subtitle">${count} event${count === 1 ? "" : "s"}</div>
+            </div>`;
+
+        if (!rows.length) {
+            list.innerHTML = `<div class="mv-history-empty text-muted">No movements found</div>`;
+            return;
+        }
+
+        list.innerHTML = rows
+            .map((row) => {
+                return `
+                    <div class="mv-history-item">
+                        <div class="mv-history-dot"></div>
+                        <div class="mv-history-item-body">
+                            <div class="mv-history-item-main">
+                                <div class="mv-history-event">${esc(row.event || "Event")}</div>
+                                <div class="mv-history-change">${esc(changeText(row.remarks, row.event))}</div>
+                            </div>
+                            <div class="mv-history-date">${esc(row.event_date || "")}</div>
+                        </div>
+                    </div>`;
+            })
+            .join("");
+    };
+
+    self.show = (op) => {
+        if (!op.emp_id && !op.employee?.id) {
+            cv_interact.error(
+                LocaleManager.trans("Employee is required", "message_box_default"),
+            );
+            return;
+        }
+        op.emp_id = op.emp_id || op.employee.id;
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <div id="_mv_history_header" class="mv-history-header"></div>
+                            </div>
+                            <div class="col-12">
+                                <div id="_mv_history_list" class="mv-history-timeline"></div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {},
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Close"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => me.hide(false),
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Detail Movement",
+                    modifyTitle: "Detail Movement",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/emp-event/list-paginate",
+                        ].join(""),
+                        params: (op) => {
+                            return {
+                                emp_id: op.emp_id || op.employee?.id || null,
+                                per_page: 100,
+                                current_page: 1,
+                            };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    renderContent(me, data);
+                    setTimeout(() => renderContent(me, data), 0);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+//end:: EmployeeMovementHistoryDialog

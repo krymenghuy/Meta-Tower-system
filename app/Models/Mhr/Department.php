@@ -2,19 +2,16 @@
 
 namespace App\Models\Mhr;
 
+use App\Models\Prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
+use Vsd\Vsloquent\VSModel;
 
-class Department
+class Department extends VSModel
 {
-    protected $id = null;
-    protected $userInfo = null;
-
-    protected static $fk_tables = [
-       'positions'=>'department_id'
-    ];
+    protected $table = 'departments';
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -22,7 +19,7 @@ class Department
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $id = null ,$ss = null){
+    public function upsert($arr, $id = null ,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -34,9 +31,12 @@ class Department
             'inactive' => '0|number|default = 0',
         ];
 
-
-        $checkUnque = ["$branch_id|departments|name|id=id|text=Department already exists."];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '(', ')', ' '];
+        $allow_chars = [
+            'name' => ['(', ')', '-', '/', '.', ' ', ','],
+            'description' => $pos_char,
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -81,7 +81,7 @@ class Department
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
+    public function getDetails($id) {
         $row  = DB::table('departments as d')
             ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.id',$id)->first();
         return $row;
@@ -90,26 +90,21 @@ class Department
        return DB::table('departments')->where('id',$id)->selectRaw($cols)->first();
      }
 
-    function deleteDepartment($id = null) {
+    public function deleteDepartment($id = null) {
         $id = $id ?? $this->id;
         $d = self::getProps($id,'name');
         if(!$d) return DV::error('Department ID is not valid');
-        $cnt = DBX::count_fk_items($id,self::$fk_tables,'positions');
-        if($cnt > 0) return DV::error('Cannot delete ?? because it is already in use::'. $d->name);
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
         return DV::depends($delete,null,'Failed to delete department');
     }
 
-    function getFormOptions($id, $ss)
+    public function getFormOptions($id, $ss)
     {
         $department = null;
         if ($id) {
             $department = self::getDetails($id, $ss);
         }
         return (object) [
-
-            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-
 
             'departments' => $department,
         ];
