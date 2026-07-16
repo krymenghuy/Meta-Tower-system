@@ -1,20 +1,21 @@
-<div id="_main_positionComponent" style="display:none;padding:20px 0 0;">
-    <div class="d-flex justify-content-between w-100 rounded-3 shadow p-3" id="_divFilter">
-        <div class="d-flex align-items-start justify-content-between w-100 gap-2">
-            <div class="d-flex align-items-center w-50">
-                <input type="text" class="form-control btn_search filter-field" id="_search_position" placeholder="Search">
+<div id="_main_positionComponent" style="display:none;">
+    <div class="bg-white shadow p-3 rounded-2" id="_divFilter">
+        <div class="align-items-center row g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_position" placeholder="Search position">
             </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-                <select type="id" id="el_department" class="data-input filter-field" data-field="department_id"></select>
+            <div class="col-12 col-md-6 col-lg-3">
+                <select type="id" id="el_department" class="filter-field data-input" data-field="department_id"></select>
             </div>
-        </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-100">
-            <button type="button" class="btn_add" id="_btnAddPosition">
-                <i class="fa fa-street-view mr-2"></i>
-                <span>Add Position</span>
-            </button>
+            
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddPosition">
+                    <i class="fa-solid fa-cubes-stacked" style="color: rgb(255, 255, 255);"></i>
+                    <span vslang="buttons.Add Position"></span>
+                </button>
+            </div>
         </div>
     </div>
-    <div id="_position_list" class="pt-3 mx-3"></div>
+    <div id="_position_list" class="mt-3"></div>
 </div>
 

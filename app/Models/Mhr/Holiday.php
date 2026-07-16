@@ -126,6 +126,7 @@ class Holiday extends VSModel
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        if(!$id) return DV::error('Holiday ID is not valid');
         $delete = DB::table('holidays')->where('id', $id)->delete();
         return DV::depends($delete, null, 'Error deleting holiday');
     }

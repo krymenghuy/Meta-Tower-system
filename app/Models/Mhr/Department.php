@@ -12,10 +12,6 @@ use Vsd\Vsloquent\VSModel;
 class Department extends VSModel
 {
     protected $table = 'departments';
-    
-    protected static $fk_tables = [
-       'positions'=>'department_id'
-    ];
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -85,7 +81,7 @@ class Department extends VSModel
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
+    public function getDetails($id) {
         $row  = DB::table('departments as d')
             ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.id',$id)->first();
         return $row;
@@ -94,26 +90,21 @@ class Department extends VSModel
        return DB::table('departments')->where('id',$id)->selectRaw($cols)->first();
      }
 
-    function deleteDepartment($id = null) {
+    public function deleteDepartment($id = null) {
         $id = $id ?? $this->id;
         $d = self::getProps($id,'name');
         if(!$d) return DV::error('Department ID is not valid');
-        $cnt = \Vsd\Xauth\DbHelper::count_fk_items($id,self::$fk_tables,'positions');
-        if($cnt > 0) return DV::error('Cannot delete this department because it is already in use: '. $d->name);
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
         return DV::depends($delete,null,'Failed to delete department');
     }
 
-    function getFormOptions($id, $ss)
+    public function getFormOptions($id, $ss)
     {
         $department = null;
         if ($id) {
             $department = self::getDetails($id, $ss);
         }
         return (object) [
-
-            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-
 
             'departments' => $department,
         ];
