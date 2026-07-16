@@ -257,6 +257,8 @@ return [
                 '/js/components/mhr/WarningComponent.js',
                 '/js/components/mhr/TaxBracketComponent.js',
                 '/js/components/mhr/PositionComponent.js',
+                '/js/components/mhr/DepartmentComponent.js',
+                '/js/components/mhr/JobsLevelComponent.js',
 
 
 
