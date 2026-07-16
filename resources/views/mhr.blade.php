@@ -336,6 +336,7 @@
                             @include('layouts.mhr.walletAccountComponent')
                             @include('layouts.mhr.workShiftListComponent')
                             @include('layouts.mhr.taxBracketComponent')
+                            @include('layouts.mhr.positionComponent')
 
 
 
