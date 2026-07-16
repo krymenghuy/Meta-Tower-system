@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use DBX;
 use Illuminate\Support\Facades\DB;
 //use Illuminate\Support\Collection;
+use XBranch;
 
 class GeneralSettings //extends Model
 {
@@ -281,7 +282,8 @@ class GeneralSettings //extends Model
 
     static function options_branch($ss)
     {
-        return DB::table('um_branches')->where('subs_id', hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
+        // return DB::table('um_branches')->where('subs_id', hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
+        return $campus_map = XBranch::query()->alias('b')->whereRaw(DBX::whereBinary('subs_id', $ss->subs_id))->selectRaw('id,name')->get();
     }
 
     static function select_options($arr, $ss)
