@@ -528,6 +528,7 @@
 
     .emp-profile-action-btn-edit { color: var(--emp-primary2); }
     .emp-profile-action-btn-movement { color: var(--emp-primary2); }
+    .emp-profile-action-btn-movement-detail { color: var(--emp-primary2); }
     .emp-profile-action-btn-resign {
         color: #b45309;
         border-color: #fcd34d;
@@ -604,38 +605,24 @@
         box-shadow: 0 4px 10px rgba(242, 201, 76, 0.35);
     }
 
-    /* Dialog photo only — labels/inputs use Bootstrap form-* */
+    /* Employee dialog photo */
     .emp-dialog-photo-wrap {
         width: 100%;
-        min-height: 170px;
-        border: 1px solid #d9dbe3;
-        border-radius: 10px;
-        background: #f8f9fb;
+        aspect-ratio: 1 / 1;
+        max-height: 160px;
+        min-height: 120px;
+        border: 1.5px dashed #c5c9d4;
+        border-radius: 8px;
+        background: #fafbfc;
         overflow: hidden;
+        cursor: pointer;
     }
 
-    .emp-dialog-btn-cancel {
-        background: #d88994;
-        border: none;
-        color: #fff;
-        min-width: 90px;
-    }
-
-    .emp-dialog-btn-cancel:hover {
-        background: #c97783;
-        color: #fff;
-    }
-
-    .emp-dialog-btn-save {
-        background: #4f5fd0;
-        border: none;
-        color: #fff;
-        min-width: 90px;
-    }
-
-    .emp-dialog-btn-save:hover {
-        background: #3f4fc0;
-        color: #fff;
+    .emp-dialog-photo-wrap .image-box,
+    .emp-dialog-photo-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     @media (max-width: 991.98px) {

@@ -25,6 +25,7 @@ use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
 use App\Http\Controllers\Mhr\WarningController;
 use App\Http\Controllers\Mhr\TaxBracketController;
+use App\Http\Controllers\Mhr\SkillController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -213,14 +214,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->group(function () {
     Route::post('/save', [SkillController::class, 'saveSkill']);
-    Route::post('/list', [SkillController::class, 'getSkillList']);
     Route::post('/list-paginate', [SkillController::class, 'getSkillListPaginate']);
     Route::post('/details', [SkillController::class, 'getDetails']);
     Route::post('/delete', [SkillController::class, 'deleteSkill']);
     Route::post('/form-options', [SkillController::class, 'getFormOptions']);
-    Route::post('/save/skill/photo', [SkillController::class, 'saveSkillPhoto']);
-    Route::post('/skill/photo', [SkillController::class, 'getSkillPhoto']);
-    Route::post('/delete/skill/photo', [SkillController::class, 'deleteSkillPhoto']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->group(function () {
     Route::post('/save', [JobLevelController::class, 'saveJobLevel']);
