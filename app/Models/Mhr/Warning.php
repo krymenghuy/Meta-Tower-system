@@ -39,7 +39,6 @@ class Warning extends VSModel
         $emp_id = $inputs['emp_id'];
         if (!$d->emp_id) return DV::error('Employee ID is missing');
         
-        // Fetch employee details (position and branch)
         $employee_info = DB::table('employees as emp')
                             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
                             ->where('emp.id', $emp_id)
@@ -56,7 +55,6 @@ class Warning extends VSModel
             return DV::error('It seems your warning date is in the past. Please check the warning date!');
         }
 
-        // Map inputs to match actual database columns
         $saveData = [
             'emp_id' => $inputs['emp_id'],
             'warning_type_id' => $inputs['warning_type_id'],
@@ -114,10 +112,6 @@ class Warning extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row->image_url = '';
-            if (isset($row->emp_id)) {
-                $row->image_url = Employee::profilePicture($row->emp_id);
-            }
             $row = setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
         }
 

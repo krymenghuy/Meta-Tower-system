@@ -22,14 +22,14 @@ var WarningComponent = (function () {
         },
         {
             transTitle: "titles.Employee Code",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-prm text-capitalize">${data.emp_code}</span>`;
             },
         },
         {
             transTitle: "titles.Full Name",
-            className: "name text-capitalize align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 const sex =
                     data.sex === "M"
@@ -45,7 +45,7 @@ var WarningComponent = (function () {
         },
         {
             transTitle: "titles.Position",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-custom" >${data.position}</span>`;
             },
@@ -309,9 +309,8 @@ const WarningDialog = (() => {
                         <div class="col-6"> 
                             <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee" data-field="emp_id"></select>
                         </div>
-                       
                         <div class="col-6">
-                            <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id"></select>
+                            <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id" disabled></select>
                         </div>
                         <div class="col-6">
                             <select data-style="material" name="warning_type" class="form-control data-input" placeholder="Warning Type" data-field="warning_type_id"></select>
@@ -322,7 +321,7 @@ const WarningDialog = (() => {
                                 <label vslang="labels.Warning Date"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="issues" class="data-input form-control form_input" data-field="issues" placeholder=" " />
                                 <label vslang="labels.Reason"></label>
