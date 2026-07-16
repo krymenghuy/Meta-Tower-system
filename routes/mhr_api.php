@@ -92,6 +92,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
     Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
     Route::post('/update-status', [LeaveController::class, 'updateStatus']);
     Route::post('/list', [LeaveController::class, 'getLeaveList']);
+    Route::post('/accept-leave', [LeaveController::class, 'acceptLeave']);
+    Route::post('/reject-leave', [LeaveController::class, 'rejectLeave']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
