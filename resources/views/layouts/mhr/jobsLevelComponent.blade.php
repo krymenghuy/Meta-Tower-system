@@ -1,18 +1,19 @@
-<div id="_main_jobsLevelComponent" style="display:none;padding:20px 0 0;">
-    <div class="d-flex justify-content-between  rounded-3 shadow p-3 w-100">
-        <div class="d-flex align-items-center w-100">
-            <div class="d-flex align-items-center w-50">
-                <input type="text" class="form-control btn_search filter-field" id="_job_level_search" placeholder="search">
+
+<div id="_main_jobsLevelComponent" class="px-3 mobile-padding" style="display:none;">
+    <div id="_divFilter_jobsLevelComponent" class="bg-white rounded-2 shadow p-3">
+        <div class="align-items-center row g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <input type="text" class="filter-field rounded-2 input-search" id="_job_level_search"
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by job level', 'titles') }}">
+            </div>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddJobLevel">
+                    <i class="fa-solid fa-right-from-bracket" style="color: rgb(249, 251, 255);"></i>
+                    <span vslang="buttons.Create Job Level"></span>
+                </button>
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end w-100">
-            <button type="button" class="btn_add" id="_btnAddJobLevel">
-                <i class="fas fa-line-chart mr-2"></i>
-                <span>Add Job Level</span>
-            </button>
-        </div>
     </div>
-    <div id="_job_level_list" class="mt-3 px-3">
-    </div>
+    <div id="_job_level_list" class="mt-3"></div>
 </div>
 
