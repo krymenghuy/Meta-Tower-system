@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
+use App\Http\Controllers\Mhr\JobLevelController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
 use App\Http\Controllers\Mhr\EmployeeSkillController;
