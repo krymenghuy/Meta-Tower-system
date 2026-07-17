@@ -7,6 +7,7 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
 use App\Http\Controllers\Mhr\JobLevelController;
+use App\Http\Controllers\Mhr\BenefitDisbursePolicyController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
 use App\Http\Controllers\Mhr\EmployeeSkillController;
@@ -303,4 +304,11 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-ca
     Route::post('/delete', [CheckPointCategoryController::class, 'delete']);
     Route::post('/form-options', [CheckPointCategoryController::class, 'getFormOptions']);
     Route::post('/list-all', [CheckPointCategoryController::class, 'getAllList']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-policy')->group(function(){
+    Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
+    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getList']);
+    Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursePolicyController::class, 'delete']);
+    Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
 });

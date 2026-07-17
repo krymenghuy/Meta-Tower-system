@@ -258,6 +258,7 @@ return [
                 '/js/components/mhr/PositionComponent.js',
                 '/js/components/mhr/DepartmentComponent.js',
                 '/js/components/mhr/JobsLevelComponent.js',
+                '/js/components/mhr/BenefitDisbursePolicyComponent.js',
 
 
 
