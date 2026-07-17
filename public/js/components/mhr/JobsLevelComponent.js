@@ -323,8 +323,8 @@ const JobLevelDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "vslang.titles.Create Job Level",
-                    modifyTitle: "vslang.titles.Modify Job Level",
+                    createTitle: "vslang:titles.Create Job Level",
+                    modifyTitle: "vslang:titles.Modify Job Level",
                     targetProp: "job_levels",
                     api: {
                         endpoint: [

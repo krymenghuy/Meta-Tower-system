@@ -532,9 +532,9 @@ var PayrollComponent = new (function () {
                     d.disbursed,
                     "id",
                     "name",
-                    true,
+                    "",
                     "All",
-                    null
+                    ""
                 );
             });
     };
