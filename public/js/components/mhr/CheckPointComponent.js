@@ -1,15 +1,15 @@
 "use strict";
 
-var BenefitComponent =  (function () {
+var CheckPointComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_chackpoints_component");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_component");
 
-    mThis.title_prop = "Benefit List";
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
+    mThis.title_prop = "Checkpoints";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPoint");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
-    mThis.elSearch = mThis.self.querySelector("#_benefit_search");
-    mThis.elBenefitType = mThis.self.querySelector("#el_benefit_type");
+    mThis.elSearch = mThis.self.querySelector("#_check_point_search");
+    mThis.elCategory = mThis.self.querySelector("#el_check_point_category");
 
     mThis.cols = [
         {
@@ -21,38 +21,21 @@ var BenefitComponent =  (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.name ?? "-"}</span>
                     </div>
                 `;
-             }
-        },
-        {
-            transTitle: "titles.Type",
-            className: 'type text-nowrap',
-            data: function (data, index, tr) {
-                let cls_class = "text-info";
-                if (data.type_id == 1) {
-                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
-                } else if (data.type_id == 2) {
-                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
-                }
-
-                return `<div class="text-primary-custom" style="width:80px;">
-                            <span class="${cls_class} text-capitalize d-inline-block text-center" style="min-width:70px">
-                                ${data.type_id == 1 ? 'Remuneration' : 'Fringe Benefit'}
-                            </span>
-                        </div>`;
             }
         },
         {
-            transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
+            transTitle: "titles.Category",
+            className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
-                return `<div class="d-flex flex-column" style="width:180px;">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? "-"}</span>
-                    <small class="text-muted">${data.updated_at ?? "-"}</small>
-                </div>`;
-            },
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.category_name ?? "-"}</span>
+                    </div>
+                `;
+            }
         },
         {
             title: "",
@@ -61,10 +44,10 @@ var BenefitComponent =  (function () {
                 return `
                 <div class="d-flex justify-content-center align-items-middle">
                     <div class="text-middle gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_benefit" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_check_point" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_check_point" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
@@ -75,8 +58,8 @@ var BenefitComponent =  (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.ChackpointsListView = new ListView("_chackpoints_list", {
-            fetchApi: `${main_view.base_url}/mhr/chackpoints/list-paginate`,
+        mThis.CheckPointListView = new ListView("_check_point_list", {
+            fetchApi: `${main_view.base_url}/mhr/check-point/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -91,13 +74,13 @@ var BenefitComponent =  (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.ChackpointsListView.showPage(mThis.getFilterData());
+                    mThis.CheckPointListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(270)) return;
-            BenefitDialog.show(op);
+            if (!AuthManager.allowed(302)) return;
+            CheckPointDialog.show(op);
         };
-        mThis.pr_tbl = mThis.ChackpointsListView.getListContainer();
+        mThis.pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -108,12 +91,12 @@ var BenefitComponent =  (function () {
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
-                mThis.ChackpointsListView.showPage(mThis.getFilterData());
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
         });
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.ChackpointsListView.showPage(mThis.getFilterData());
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             }, 200);
         });
         mThis.setActionListeners();
@@ -123,47 +106,40 @@ var BenefitComponent =  (function () {
 
     mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_chackpoints");
+            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point");
             if (btn) {
-                mThis.deleteBenefit(btn.dataset.id, btn);
+                mThis.deleteCheckPoint(btn.dataset.id, btn);
             }
 
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_chackpoints");
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_check_point");
             if (btn) {
-                mThis.editChackpoints(btn.dataset.id, btn);
+                mThis.editCheckPoint(btn.dataset.id, btn);
             }
         });
     };
 
-    mThis.editBenefit = (id, btn) => {
-        if (!AuthManager.allowed(271)) return;
-        ChackpointsDialog.show({ id, btn, onClose: () => mThis.ChackpointsListView.showPage(mThis.getFilterData()),});
+    mThis.editCheckPoint = (id, btn) => {
+        if (!AuthManager.allowed(301)) return;
+        CheckPointDialog.show({ id, btn, onClose: () => mThis.CheckPointListView.showPage(mThis.getFilterData()), });
     };
 
-    mThis.deleteChackpoints = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.BenefitListView.showPage(mThis.getFilterData());
-            },
-        };
-        // if (!AuthManager.allowed(272)) return;
+    mThis.deleteCheckPoint = (id, menuLink) => {
+        if (!AuthManager.allowed(303)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
-                title: "Delete Benefit",
+                title: "Delete Checkpoint",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
             function (e) {
                 if (e) {
                     vsapi
-                        .call( `${main_view.base_url}/mhr/chackpoints/delete`, op, false, false, false)
+                        .call(`${main_view.base_url}/mhr/check-point/delete`, { id: id }, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_benefit");
-                                mThis.ChackpointsListView.showPage();
+                                cv_interact.success("delete_success_check_point");
+                                mThis.CheckPointListView.showPage(mThis.getFilterData());
                             }
                             else {
                                 cv_interact.error(res.error_message);
@@ -177,40 +153,35 @@ var BenefitComponent =  (function () {
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
-            type_id: mThis.elBenefitType.value,
-
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
-
         });
 
         return p;
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/mhr/benefit/form-options`,null,null,null)
+            .call(`${main_view.base_url}/mhr/check-point/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name","",LocaleManager.trans("All Types", "titles"),"");
+                VSUtil.setComboItems(mThis.elCategory, d.check_point_categories, "id", "name", "", LocaleManager.trans("All Categories", "titles"), "");
                 if (typeof onFinish === "function") onFinish();
             });
     };
-    mThis.show =  (options) => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.BenefitListView.showPage(mThis.getFilterData());
-
+            mThis.CheckPointListView.showPage(mThis.getFilterData());
         });
-
     };
     return mThis;
 })();
 
-const BenefitDialog = (() => {
+const CheckPointDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -230,14 +201,21 @@ const BenefitDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="type_id" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
-                                    <option value="1" >Remuneration</option>
-                                    <option value="2">Fringe Benefit</option>
+                                <select data-style="material" name="category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
                                 </select>
                             </div>
                         </div>`,
                     ].join("");
                 },
+
+                configSelect: [
+                    {
+                        name: "category",
+                        data: "check_point_categories",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
 
                 buttons: [
                     {
@@ -260,7 +238,7 @@ const BenefitDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/mhr/benefit/save",
+                                        "/mhr/check-point/save",
                                     ].join(""),
                                     p,
                                     btn,
@@ -269,12 +247,11 @@ const BenefitDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("update_success_benefit");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_check_point");
                                         }
-                                        else{
-                                        cv_interact.success("create_success_benefit");
+                                        else {
+                                            cv_interact.success("create_success_check_point");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -282,21 +259,18 @@ const BenefitDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Create Benefit",
-                    modifyTitle: "vslang:titles.Edit Benefit",
-                    targetProp: "benefits",
+                    createTitle: "vslang:titles.Create Checkpoint",
+                    modifyTitle: "vslang:titles.Edit Checkpoint",
+                    targetProp: "check_points",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/mhr/benefit/form-options",
+                            "/mhr/check-point/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
                 },
 
                 onPrepareForm: (me, data) => {

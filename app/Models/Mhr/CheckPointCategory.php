@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Uhr;
+namespace App\Models\Mhr;
 
 use DBX;
 use DV;
