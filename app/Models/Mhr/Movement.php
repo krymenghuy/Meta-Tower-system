@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use DV;
+use XBranch;
 use Vsd\Money\Models\VSMoney;
 use Vsd\Vsloquent\VSModel;
 
@@ -363,7 +364,7 @@ class Movement extends VSModel
             }
         }
 
-        $branches = DB::table('um_branches')->selectRaw('id, name AS branch_name, name')->get();
+        $branches = XBranch::query()->alias('b')->whereRaw(DBX::whereBinary('subs_id', $ss->subs_id))->selectRaw('id,name')->get();
         if ($branches->isEmpty()) {
             $branches = GeneralSettings::options_branch($ss);
         }
