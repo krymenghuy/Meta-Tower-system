@@ -19,7 +19,7 @@ var JobsLevelComponent = new (function () {
             transTitle: "titles.Ranking",
             className: "align-middle text-nowrap",
             data: (data)=>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991;width:30px; height:30px;"><span class="">${data.rank}</span></div>`,
+                `<div class=" text-start p-1 " ><span class="">${data.rank}</span></div>`,
 
         },
         {
@@ -323,8 +323,8 @@ const JobLevelDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "vslang.titles.Create Job Level",
-                    modifyTitle: "vslang.titles.Modify Job Level",
+                    createTitle: "vslang:titles.Create Job Level",
+                    modifyTitle: "vslang:titles.Modify Job Level",
                     targetProp: "job_levels",
                     api: {
                         endpoint: [

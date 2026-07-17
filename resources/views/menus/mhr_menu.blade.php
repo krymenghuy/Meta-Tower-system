@@ -230,6 +230,14 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Benefit Disbursements">Benefit Disbursements</span>
                     </a>
                 </li>
+                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(280); ?>>
+                    <a href="BenefitDisbursePolicyComponent" modid="280" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/journal-check.svg') }}" />
+                        </span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Disburse Policies"></span>
+                    </a>
+                </li>
                 <li class="mb-2 kt-menu__section">
                     <h4 class="kt-menu__section-text" vslang="menus.HR Setup">HR Setup</h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>

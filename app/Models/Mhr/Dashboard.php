@@ -82,8 +82,8 @@ class Dashboard
         $warning_rows = DB::table('emp_warnings AS ew')
             ->join('employees AS emp', 'ew.emp_id', '=', 'emp.id')
             ->whereBetween('ew.warning_date', [$from_date, $to_date])
-            ->select('ew.warning_type', DB::raw('COUNT(ew.emp_id) as total_warnings'))
-            ->groupBy('ew.warning_type')
+            ->select('ew.warning_type_id', DB::raw('COUNT(ew.emp_id) as total_warnings'))
+            ->groupBy('ew.warning_type_id')
             ->orderByRaw("MIN(ew.warning_date) ASC")
             ->get();
 
