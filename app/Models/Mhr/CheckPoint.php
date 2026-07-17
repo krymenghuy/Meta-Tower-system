@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Uhr;
+namespace App\Models\Mhr;
 
 use DV;
 use DBX;
@@ -46,34 +46,23 @@ class CheckPoint
 
         $inputs = $validationResult->values;
 
-        $existingItem = DB::table('check_points')
+        $exists = DB::table('check_points')
             ->where('category_id', $inputs['category_id'])
             ->where('name', $inputs['name'])
-            ->first();
+            ->when($id, function ($q) use ($id) {
+                $q->where('id', '<>', $id);
+            })
+            ->exists();
 
-        if ($id) {
-            if ($existingItem && $existingItem->id !== $id) {
-                return DV::error('Update failed: item name already exists.');
-            }
-
-            $updated = DB::table('check_points')
-                ->where('id', $id)
-                ->update($inputs);
-
-            return $updated
-                ? DV::depends($id, ['id' => $id], 'Update successful')
-                : DV::error('Update failed.');
-        } else {
-            if ($existingItem) {
-                return DV::error('Create failed: item name already exists.');
-            }
-
-            $newId = DB::table('check_points')->insertGetId($inputs);
-
-            return $newId
-                ? DV::depends($newId, ['id' => $newId], 'Create successful')
-                : DV::error('Create failed.');
+        if ($exists) {
+            return DV::error('Checkpoint name already exists.');
         }
+
+        $id = DBX::saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['check_points' => $inputs, 'id' => $id]);
+        }
+        return DV::error('Error saving Checkpoint');
     }
 
     public function getList($arr, $ss = null)
@@ -86,7 +75,7 @@ class CheckPoint
 
         $query = DB::table('check_points as cp')
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
-            ->selectRaw('cp.id, cp.name, cpc.name as category_name');
+            ->selectRaw('cp.id, cp.name, cpc.name as category_name, cp.updated_at, cp.update_user');
 
         if (!empty($params->category_id)) {
             $query->where('cp.category_id', $params->category_id);
@@ -102,6 +91,9 @@ class CheckPoint
 
         $total = $query->count();
         $items = $query->skip($offset)->take($perPage)->get();
+        foreach ($items as $item) {
+            $item = setOfficialDates($item, [''], ['updated_at'], ['']);
+        }
 
         return new LengthAwarePaginator($items, $total, $perPage, $currentPage);
     }

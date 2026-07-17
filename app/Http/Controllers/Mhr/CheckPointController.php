@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Uhr;
+namespace App\Http\Controllers\Mhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Uhr\CheckPoint;
+use App\Models\Mhr\CheckPoint;
 use JDV;
 use XAuthService;
 use Illuminate\Http\Request;

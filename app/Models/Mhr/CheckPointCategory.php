@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Models\Uhr;
+namespace App\Models\Mhr;
 
 use DBX;
 use DV;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Vsd\Vsloquent\VSModel;
 
-class CheckPointCategory //extends Model
+class CheckPointCategory extends VSModel
 {
-    protected $id = null;
-    protected $userInfo = null;
+   protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -18,123 +18,109 @@ class CheckPointCategory //extends Model
         $this->userInfo = $userInfo;
     }
 
-    public function getProps($id, $props = [])
+    public function upsert($arr = [], $id = null, $ss = null)
     {
-        $columns = is_array($props) ? implode(',', $props) : $props;
-        return DB::table('check_point_categories')
-            ->where('id', $id)
-            ->selectRaw($columns)
-            ->first();
-    }
-
-    public function save($id, $ss, $arr)
-    {
-        $id = $this->id ?? ($arr['id'] ?? null);
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
-        $validationRules = [
-            'id' => '0|identity=1',
-            'name' => '1|string|0-250'
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'name' => '1|string|0-250|text=name_required::@key;@max;@value',
         ];
-        $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-
-        $res = DBX::validateObject($arr, $validationRules, true, ['name' => $name], $ss->lang, false);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-
-        $existingForm = DB::table('check_point_categories')
+        $exists = DB::table('check_point_categories')
             ->where('name', $inputs['name'])
-            ->first();
+            ->when($id, function ($q) use ($id) {
+                $q->where('id', '<>', $id);
+            })
+            ->exists();
 
-        if ($id) {
-            if ($existingForm && $existingForm->id !== $id) {
-                return DV::error('Update failed: Category name already exists.');
-            }
-            $updated = DB::table('check_point_categories')
-                ->where('id', $id)
-                ->update($inputs);
-
-            return $updated
-                ? DV::depends($id, ['id' => $id], 'Update successful')
-                : DV::error('Update failed.');
-        } else {
-            if ($existingForm) {
-                return DV::error('Create failed: form name already exists.');
-            }
-
-            $newId = DB::table('check_point_categories')->insertGetId($inputs);
-
-            return $newId
-                ? DV::depends($newId, ['id' => $newId], 'Create successful')
-                : DV::error('Create failed.');
+        if ($exists) {
+            return DV::error('Category name already exists.');
         }
+        $id = DBX::saveData($ss, 'check_point_categories', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['check_point_categories' => $inputs, 'id' => $id]);
+        }
+        return DV::error('Error saving Category');
     }
 
-    public function getListPaginate($arr, $ss = null)
+    public function getListPaginate($arr, $ss)
     {
-        $data = (object) $arr;
-        $currentPage = $data->current_page ?? 1;
-        $perPage = $data->per_page ?? 10;
-        $skipRows = ($currentPage - 1) * $perPage;
-        $col_update_date = DBX::formatDate('cpc.update_date', 'update_date');
+        $d = (object) $arr;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value = $d->search_value ?? null;
+        $str_search = "1=1";
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(cpc.name LIKE '%" . $search_value . "%')";
+        }
         $query = DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name, ' . $col_update_date . '');
-            // ->orderBy('cpc.id', 'desc');
+            ->whereRaw($str_search)
+            ->selectRaw('cpc.id, cpc.name,cpc.updated_at,cpc.update_user');
 
-        if (!empty($data->search_value)) {
-            $searchValue = $data->search_value;
-            $query->where('cpc.name', 'LIKE', "%{$searchValue}%");
+        $clone_query = clone $query;
+        $count = $clone_query->count('cpc.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+
+            $row = setOfficialDates($row,[''],['updated_at'],['']);
         }
-
-        $total = $query->count();
-        $rows = $query->skip($skipRows)->take($perPage)->get();
-
-        return new LengthAwarePaginator($rows, $total, $perPage, $currentPage);
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public static function getDetails($id, $ss)
+    public function getDetails($id)
     {
-        return DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name, cpc.update_date')
+        $row = DB::table('check_point_categories as cpc')
             ->where('cpc.id', $id)
+            ->selectRaw('cpc.id,cpc.name,updated_at')
             ->first();
+        if($row){
+            setOfficialDates($row,[''],['updated_at'],['']);
+        }
+        return $row;
     }
 
-    public function delete($id = null)
+    function deleteCheckPointCategory($id = null,$ss = null)
     {
         $id = $id ?? $this->id;
-        $deleted = DB::table('check_point_categories')->where('id', $id)->delete();
+        $ss = $ss ?? $this->userInfo;
 
-        return $deleted
-            ? DV::depends(true, ['action' => 'deleted'], 'Delete successful')
-            : DV::error('Delete failed.');
+        $delete = DB::table('check_point_categories')->where('id', $id)->delete();
+        return $delete ? DV::depends($delete,['action'=>'deleted']): DV::error('Deleted failed.');
     }
 
-    public static function getFormOptions($id, $ss)
+    public function getFormOptions($id, $ss = null)
     {
-        $formDetails = $id ? self::getDetails($id, $ss) : null;
-
+        $ss = $ss ?? $this->userInfo;
+        $check_point_categories = $id ? self::getDetails($id) : null;
         return (object) [
-            'check_point_categories' => $formDetails,
+            'check_point_categories' => $check_point_categories,
         ];
     }
 
     public function getList($arr, $ss = null)
     {
-        $data = (object) $arr;
-        $branchId = $ss->branch_id;
-
-        $query = DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name')
-            ->where('cpc.branch_id', $branchId);
-
-        if (!empty($data->search_value)) {
-            $query->where('cpc.name', 'LIKE', "%{$data->search_value}%");
+        $d = (object) $arr;
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+        $search_value = $d->search_value ?? null;
+        $str_search = "1=1";
+        if($search_value){
+            $search_value = escape_like_str($search_value);
+            $str_search = "(cpc.name LIKE '%" . $search_value . "%')";
         }
-
-        return $query->get();
+        return DB::table('check_point_categories as cpc')
+            ->where('cpc.branch_id', $branch_id)
+            ->whereRaw($str_search)
+            ->selectRaw('cpc.id, cpc.name')
+            ->get();
     }
+
 }
