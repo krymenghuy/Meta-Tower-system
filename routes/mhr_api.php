@@ -270,3 +270,36 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp/benefit-d
     Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
     Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point')->group(function(){
+    Route::post('/save', [CheckPointController::class, 'save']);
+    Route::post('/list-paginate', [CheckPointController::class, 'getList']);
+    Route::post('/details', [CheckPointController::class, 'getDetails']);
+    Route::post('/delete', [CheckPointController::class, 'delete']);
+    Route::post('/form-options', [CheckPointController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item')->group(function(){
+    Route::post('/save', [ExitFormItemController::class, 'saveExitFormItem']);
+    Route::post('/list-paginate', [ExitFormItemController::class, 'getList']);
+    Route::post('/list-all', [ExitFormItemController::class, 'getAllList']);
+    Route::post('/details', [ExitFormItemController::class, 'getDetails']);
+    Route::post('/delete', [ExitFormItemController::class, 'deleteExitFormItem']);
+    Route::post('/form-options', [ExitFormItemController::class, 'getExitFormItemOptions']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->group(function(){
+    Route::post('/save', [ExitFormController::class, 'saveExitForm']);
+    Route::post('/save-item', [ExitFormController::class, 'saveExitItem']);
+    Route::post('/update-checkbox', [ExitFormController::class, 'updateCheckboxItem']);
+    Route::post('/list-paginate', [ExitFormController::class, 'getList']);
+    Route::post('/details', [ExitFormController::class, 'getDetails']);
+    Route::post('/delete', [ExitFormController::class, 'delete']);
+    Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
+    Route::post('/checkpoints', [ExitFormController::class, 'getCheckpoints']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-category')->group(function(){
+    Route::post('/save', [CheckPointCategoryController::class, 'save']);
+    Route::post('/list-paginate', [CheckPointCategoryController::class, 'getListPaginate']);
+    Route::post('/details', [CheckPointCategoryController::class, 'getDetails']);
+    Route::post('/delete', [CheckPointCategoryController::class, 'delete']);
+    Route::post('/form-options', [CheckPointCategoryController::class, 'getFormOptions']);
+    Route::post('/list-all', [CheckPointCategoryController::class, 'getAllList']);
+});
