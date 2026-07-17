@@ -114,4 +114,121 @@
         background: #3f58d4;
         color: #fff;
     }
+
+    /* Movement history timeline (body only — dialog chrome = vs-modal like Leave) */
+    .mv-history-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mv-history-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #cfe2ff;
+        color: #1e3a8a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .mv-history-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .mv-history-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .mv-history-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #111827;
+        line-height: 1.25;
+    }
+
+    .mv-history-timeline {
+        position: relative;
+        padding-left: 4px;
+        max-height: 360px;
+        overflow-y: auto;
+    }
+
+    .mv-history-item {
+        position: relative;
+        display: flex;
+        gap: 14px;
+        padding: 0 0 22px 8px;
+    }
+
+    .mv-history-item:last-child {
+        padding-bottom: 4px;
+    }
+
+    .mv-history-item:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 14px;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+    }
+
+    .mv-history-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #22c55e;
+        margin-top: 4px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 0 0 3px #fff;
+    }
+
+    .mv-history-item-body {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .mv-history-event {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #111827;
+        line-height: 1.3;
+    }
+
+    .mv-history-change {
+        font-size: 0.82rem;
+        color: #9ca3af;
+        margin-top: 2px;
+        word-break: break-word;
+    }
+
+    .mv-history-date {
+        font-size: 0.82rem;
+        color: #9ca3af;
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding-top: 2px;
+    }
+
+    .mv-history-empty {
+        padding: 1rem 0.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+    }
 </style>
