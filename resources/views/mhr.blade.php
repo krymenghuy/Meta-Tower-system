@@ -341,7 +341,8 @@
                             @include('layouts.mhr.departmentComponent')
                             @include('layouts.mhr.jobsLevelComponent')
                             @include('layouts.mhr.benefitDisbursePolicyComponent')
-
+                            @include('layouts.mhr.checkPointComponent')
+                            @include('layouts.mhr.checkPointCategoryComponent')
 
 
 
