@@ -258,15 +258,9 @@ return [
                 '/js/components/mhr/PositionComponent.js',
                 '/js/components/mhr/DepartmentComponent.js',
                 '/js/components/mhr/JobsLevelComponent.js',
-<<<<<<< HEAD
                 '/js/components/mhr/BenefitDisbursePolicyComponent.js',
                 '/js/components/mhr/CheckPointComponent.js',
                 '/js/components/mhr/CheckPointCategoryComponent.js',
-=======
-                '/js/components/mhr/CheckPointComponent.js',
-                '/js/components/mhr/CheckPointCategoryComponent.js',
-
->>>>>>> 4e5113136286eb3097db4840935279e11c543d7e
 
 
 
