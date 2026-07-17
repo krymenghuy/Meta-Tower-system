@@ -27,6 +27,8 @@ use App\Http\Controllers\Mhr\WorkShiftController;
 use App\Http\Controllers\Mhr\WarningController;
 use App\Http\Controllers\Mhr\TaxBracketController;
 use App\Http\Controllers\Mhr\SkillController;
+use App\Http\Controllers\Mhr\CheckPointController;
+use App\Http\Controllers\Mhr\CheckPointCategoryController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
