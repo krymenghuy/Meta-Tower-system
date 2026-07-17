@@ -18,6 +18,8 @@ var CheckPointCategoryComponent = (function () {
             transTitle: "titles.Name",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
+                console.log(123456,data);
+
                 return `
                     <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
@@ -81,7 +83,7 @@ var CheckPointCategoryComponent = (function () {
             CheckPointCategoryDialog.show(op);
         };
         mThis.pr_tbl = mThis.CheckPointCategoryListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
+        const sh_parent = mThis.pr_tbl;
         sh_parent.style.height = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
