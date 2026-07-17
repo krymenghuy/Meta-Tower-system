@@ -22,7 +22,7 @@ var PositionComponent = (function () {
             transTitle: "titles.Position",
             className: "align-middle text-capitalize",
             data: (data) =>
-                `<span class="text-primary-custom">${data.title}</span>`,
+                `<span class="text-primary-custom">${data.name}</span>`,
         },
         {
             title: "Staff Group",
@@ -61,15 +61,18 @@ var PositionComponent = (function () {
             </div>`,
         },
         {
-            className: "col_action align-end",
-            data: (data) => `
-            <div class="d-flex justify-content-end align-items-end">
-                <div class="text-end gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_position_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>
-            </div>`,
+            className: "col_action align-middle",
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_position_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            },
         },
     ];
 
@@ -139,7 +142,7 @@ var PositionComponent = (function () {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_position_action",
             cssClass: "bg-white shadow",
@@ -176,7 +179,7 @@ var PositionComponent = (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editPosition = (id, menuLink) => {
@@ -196,7 +199,7 @@ var PositionComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PositionListView.showPage();
+                mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
         if (!AuthManager.allowed(221)) return;
@@ -241,22 +244,23 @@ var PositionComponent = (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elDepartment,
-                    d.departments,
+                    d.departments || [],
                     "id",
                     "name",
-                    true,
-                    "All Department",
-                    null,
+                    "",
+                    LocaleManager.trans("All Department", "titles"),
+                    "",
                 );
             });
     };
 
     mThis.show = function () {
         mThis.init();
-
-        mThis.PositionListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
-        main_view.setContentView(mThis.self, mThis.title_prop);
+        
+        mThis.PositionListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
     };
     return mThis;
 })();
@@ -272,37 +276,32 @@ const PositionDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3">
-                <div class="col-6">
-                    <select data-style="material" name="department" class="form-control data-input" placeholder="Department"  data-field="department_id"></select>
-                </div>
-                <div class="col-6">
-                    <select data-style="material" name="job_level" class="form-control data-input" placeholder="Job Level"  data-field="job_level_id"></select>
-                </div>
-                <div class="col-6">
-                    <div class="vs-material-field">
-                        <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                        <label vslang="labels.Position"></label>
-                    </div>
-                </div>
-                  <div class="form-group col-md-4">
-                        <label for="staff_group" class="form-label" vslang="titles.Staff Group">Staff Group</label>
-                        <span class="text-danger">*</span>
-                        <select class="data-input" name="staff_group" data-field="staff_group_id">
-                        </select>
-                    </div>
-                 <div class="form-group col-md-4">
-                        <label for="salary" class="form-label" vslang="titles.Salary"></label>
-                        <span class="text-danger" >*</span>
-                        <input  type="number" class="form-control data-input" data-field="salary">
-                 </div>
-                <div class="form-group col-4">
-                    <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                    <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
-                    </select>
-                </div>
+                        <div class="col-6">
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="Department"  data-field="department_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="Job Level"  data-field="job_level_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                                <label vslang="labels.Position"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="Staff Group"  data-field="staff_group_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" data-type="text" name="salary" class="data-input form-control form_input" data-field="salary" placeholder=" " />
+                                <label vslang="labels.Salary"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="Currency Code"  data-field="currency_code"></select>
+                        </div>
 
-
-              </div>`,
+                    </div>`,
                 ].join("");
             },
 
@@ -334,21 +333,19 @@ const PositionDialog = (() => {
             ],
             buttons: [
                 {
-                    label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
-                    cssClass: "btn btn-sm-outline rounded-3",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
                     click: (me, btn) => {
-                        //Close with Cancel button
                         me.hide(false);
                     },
                 },
                 {
-                    label: '<span><i class="fa-solid text-success fa-check"></i></span>',
-                    cssClass: "btn btn-sm-outline rounded-3",
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
-                        p.staff_group = Number(p.staff_group);
-                        p.id = me.dataOptions.id; //get "id" from op
-                        console.log(123, p);
+
+                        p.id = me.dataOptions.id;
 
                         vsapi
                             .call(
@@ -362,6 +359,15 @@ const PositionDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Updated position successfully",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "Added position successfully",
+                                        );
+                                    }
                                 } else cv_interact.error(res.error_message);
                             });
                     },
