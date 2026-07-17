@@ -26,20 +26,20 @@ var BenefitDisbursePolicyComponent =  (function () {
     ];
     mThis.cols = [
         {
-            title: "No",
+            transTitle: "titles.No",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data, index, i) => {
                 return index + 1;
             },
         },
         {
-            title: "Benefit",
+            transTitle: "titles.Benefit",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "benefit_name",
         },
 
         {
-            title: "Target Month",
+            transTitle: "titles.Target Month",
             className: "align-middle",
             data: (data) => {
                 const month = monthNames[data.target_month ] ?? "";
@@ -49,12 +49,12 @@ var BenefitDisbursePolicyComponent =  (function () {
         },
 
         {
-            title: "Target Year",
+            transTitle: "titles.Target Year",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "target_year",
         },
         {
-            title: "Withdraw Rate",
+            transTitle: "titles.Withdraw Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.withdraw_rate ?? 0} %</p>`;
@@ -62,7 +62,6 @@ var BenefitDisbursePolicyComponent =  (function () {
         },
 
         {
-            title: "Action",
             className: "col_action align-middle",
             data: (data) => {
                 return `
