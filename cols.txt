@@ -1,1 +1,0 @@
-["code","created_at","currency_code","department_id","description","id","inactive","job_level_id","name","name_kh","salary","updated_at"]
