@@ -259,6 +259,7 @@ return [
                 '/js/components/mhr/DepartmentComponent.js',
                 '/js/components/mhr/JobsLevelComponent.js',
                 '/js/components/mhr/CheckPointComponent.js',
+                '/js/components/mhr/CheckPointCategoryComponent.js',
 
 
 

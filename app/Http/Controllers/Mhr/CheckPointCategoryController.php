@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Mhr;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Mhr\CheckPointCategory;
+
 use JDV;
 use XAuthService;
-use Illuminate\Http\Request;
 
 class CheckPointCategoryController extends Controller
 {
-    protected $check_point_categories;
+   protected $check_point_categories;
     public function __construct()
     {
         $this->check_point_categories = new CheckPointCategory();
@@ -20,8 +21,11 @@ class CheckPointCategoryController extends Controller
         $id = $req->id ?? null;
         $prn_code = $id ? 298 : 299;
         $ss = XAuthService::verifyAuth($req, $prn_code);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->check_point_categories->save($id, $ss, $req->all());
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $check_point_category = new CheckPointCategory($id, $ss);
+        $res = $check_point_category->upsert($req->all());
         return JDV::raw($res);
     }
     public function getListPaginate(Request $req)
@@ -41,7 +45,7 @@ class CheckPointCategoryController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->check_point_categories->getDetails($req->id, $ss));
+        return JDV::result($this->check_point_categories->getDetails($req->id));
     }
     public function getFormOptions(Request $req)
     {
@@ -58,10 +62,11 @@ class CheckPointCategoryController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
+
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->check_point_categories->delete($req->id);
+        $res = $this->check_point_categories->deleteCheckPointCategory($req->id);
         return JDV::raw($res);
     }
     public function getAllList(Request $req)
