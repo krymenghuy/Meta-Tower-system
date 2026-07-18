@@ -31,6 +31,8 @@
 <script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>
 <script src="{{ asset('js/components/prm/InvoiceNoTaxDialog.js') }}"></script>
 <script src="{{ asset('js/components/prm/InvoiceCommercialDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InternalInvoiceNoTaxDialog.js') }}"></script>
+
 <style>
 .status-overdue {
     color: #990000 !important;
