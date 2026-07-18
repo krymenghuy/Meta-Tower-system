@@ -4,9 +4,9 @@ var BenefitDisbursePolicyComponent =  (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector( "#_main_benefit_disbursement_policy_component");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_benefit_disbursement_policy_component");
     mThis.title_prop = "Benefit Disbursement Policy";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
@@ -61,22 +61,23 @@ var BenefitDisbursePolicyComponent =  (function () {
             },
         },
 
-        {
+         {
             className: "col_action align-middle",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn_edit_bdp" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn_delete_bdp" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
-        },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_bdp_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
     ];
 
     mThis.init = () => {
@@ -96,20 +97,22 @@ var BenefitDisbursePolicyComponent =  (function () {
             e.preventDefault();
             mThis.BdpListView.showPage(mThis.getDataFormFilter());
         });
+
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             let op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.BdpListView.showPage();
+                    mThis.BdpListView.showPage(mThis.getDataFormFilter());
                 },
             };
             if (!AuthManager.allowed(279)) return;
             BdpDialog.show(op);
         };
-        const pr_tbl = mThis.BdpListView.getListContainer();
-        const sh_parent = pr_tbl;
+
+        mThis.pr_tbl = mThis.BdpListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement || mThis.pr_tbl;
         sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
@@ -117,28 +120,52 @@ var BenefitDisbursePolicyComponent =  (function () {
             sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
         }
 
-
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
                 mThis.BdpListView.showPage(mThis.getDataFormFilter());
         });
-        mThis.setActionListeners();
+
+        mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis.initAlready = true;
     };
 
-    mThis.setActionListeners = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_bdp");
-            if (btn) {
-                mThis.deleteBdp(btn.dataset.id, btn);
+    mThis.initDropdownMenus = table => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_bdp_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify Policy</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_bdp"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Delete">Delete Policy</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_bdp"
+                }
+            ],
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_bdp": {
+                        mThis.editBfp(id, menuLink);
+                        break;
+                    }
+                    case "delete_bdp": {
+                        mThis.deleteBdp(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
-
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_bdp");
-            if (btn) {
-                mThis.editBfp(btn.dataset.id, btn);
-            }
-        });
+        };
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editBfp = (id, btn) => {
@@ -155,7 +182,7 @@ var BenefitDisbursePolicyComponent =  (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.BdpListView.showPage(mThis.getFilterData());
+                mThis.BdpListView.showPage(mThis.getDataFormFilter());
             },
         };
         if (!AuthManager.allowed(281)) return;
@@ -179,7 +206,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
-                                mThis.BdpListView.showPage();
+                                mThis.BdpListView.showPage(mThis.getDataFormFilter());
                             }
                             else {
                                 cv_interact.error(res.error_message);
@@ -199,6 +226,7 @@ var BenefitDisbursePolicyComponent =  (function () {
         });
         return filters;
     };
+
     mThis.prepareFormOptions = () => {
         vsapi
             .call(`${main_view.base_url}/mhr/disburse-policy/form-options`, null, null, null)
@@ -210,12 +238,13 @@ var BenefitDisbursePolicyComponent =  (function () {
                     d.benefits,
                     "id",
                     "name",
-                    true,
+                    "",
                     "All Benefits",
-                    null
+                    ""
                 );
             });
     };
+
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions();
@@ -234,7 +263,7 @@ const BdpDialog = (() => {
         dialogAdd =
             dialogAdd ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -261,39 +290,38 @@ const BdpDialog = (() => {
                     );
 
                     return [
-                        `<div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
-                            <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
-                        </div>
-                        <div class="form-group col-6">
-                            <label for="withdraw_rate" class="form-label" vslang="titles.Withdraw Rate"></label>
-                            <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
-                        </div>
-                        <div class="form-group col-6">
-                            <label for="month" class="form-label" vslang="titles.Month"></label>
-                            <select name="month" class="form-control data-input" data-field="target_month">
+                        `<div class="row g-3">
+
+                            <div class="col-6">
+                                <select data-style="material" placeholder="${LocaleManager.trans('Benefit', 'labels')}" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id"> </select>
+                            </div> 
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
+                                    <label vslang="titles.Withdraw Rate"></label>
+                                </div>
+                            </div>
+
+                        <div class=" col-6">
+                            <select data-style="material" placeholder="${LocaleManager.trans('Month', 'labels')}" name="month" class="form-control data-input" data-field="target_month">
                                 ${months
-                                    .map(
-                                        (month) =>
-                                            `<option value="${month.value}">${month.name}</option>`
-                                    )
-                                    .join("")}
-                            </select>
+                                        .map(
+                                            (month) =>
+                                                `<option value="${month.value}">${month.name}</option>`
+                                        )
+                                        .join("")}
+                             </select>
                         </div>
-                        <div class="form-group col-6">
-                            <label for="year" class="form-label" vslang="titles.Year"></label>
-                            <select name="year" class="form-control data-input" data-field="target_year">
-                                ${years
+                        <div class=" col-6">
+                            <select data-style="material" placeholder="${LocaleManager.trans('Year', 'labels')}" name="year" class="form-control data-input" data-field="target_year">
+                                 ${years
                                     .map(
                                         (year) =>
                                             `<option value="${year}">${year}</option>`
                                     )
                                     .join("")}
-                            </select>
+                             </select>
                         </div>
-
-
                     </div>`,
                     ].join("");
                 },
@@ -309,14 +337,14 @@ const BdpDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -362,12 +390,9 @@ const BdpDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    // onResponse: (me, res) => {
-                    //     console.log('result from api "/form-options": ', res);
-                    // },
                 },
 
-                onPrepareForm: (me, data) => {
+                onPrepareForm: (me, data) => {            
                     LocaleManager.translateZone(me.divModal);
                 },
             });
