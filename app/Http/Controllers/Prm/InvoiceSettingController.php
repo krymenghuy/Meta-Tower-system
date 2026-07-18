@@ -36,9 +36,23 @@ class InvoiceSettingController extends Controller
 
         
         $invoiceSetting = new InvoiceSetting();
-        $res = $invoiceSetting->getExchangeRate(null, $ss);
-        return JDV::result($res);
+        $res = $invoiceSetting->getExchangeRate(1, $ss);
+        // return JDV::result($res);
+        // return JDV::result('2345678');
+        return JDV::raw($res);
     }
+    //    public function getExchangeRate(Request $req)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+
+        
+    //     $invoiceSetting = new InvoiceSetting();
+    //     $res = $invoiceSetting->getExchangeRate(null, $ss);
+    //     return JDV::result($res);
+    // }
     public function getInvoiceSetting(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
