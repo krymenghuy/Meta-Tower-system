@@ -6,7 +6,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
-use App\Http\Controllers\Mhr\JobLevelController;
 use App\Http\Controllers\Mhr\BenefitDisbursePolicyController;
 use App\Http\Controllers\Mhr\EmployeeController;
 use App\Http\Controllers\Mhr\MovementController;
@@ -30,6 +29,10 @@ use App\Http\Controllers\Mhr\TaxBracketController;
 use App\Http\Controllers\Mhr\SkillController;
 use App\Http\Controllers\Mhr\CheckPointController;
 use App\Http\Controllers\Mhr\CheckPointCategoryController;
+use App\Http\Controllers\Mhr\JobLevelController;
+use App\Http\Controllers\Mhr\PositionController;
+use App\Http\Controllers\Mhr\DepartmentController;
+use App\Http\Controllers\Mhr\TaxAllowanceController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);

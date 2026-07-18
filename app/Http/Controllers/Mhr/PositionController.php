@@ -10,10 +10,10 @@ use Illuminate\Http\Request;
  
 class PositionController extends Controller
 {
-    protected $positionModel;
+    protected $position;
     public function __construct()
     {
-        $this->positionModel = new Position();
+        $this->position = new Position();
     }
 
     public function savePosition(Request $req)
@@ -25,7 +25,7 @@ class PositionController extends Controller
             return JDV::raw($ss);
         }
         $department = new Position($id, $ss);
-        $res = $department->save($req->all());
+        $res = $department->upsert($req->all());
         return JDV::raw($res);
     }
 
@@ -35,7 +35,7 @@ class PositionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->positionModel->getList($req->all(), $ss));
+        return JDV::result($this->position->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -47,7 +47,7 @@ class PositionController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->positionModel->getDetails($req->id, $ss));
+        return JDV::result($this->position->getDetails($req->id, $ss));
     }
 
     public function deletePosition(Request $req)
@@ -59,7 +59,7 @@ class PositionController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->positionModel->deletePosition($req->id);
+        $res = $this->position->deletePosition($req->id);
         return JDV::raw($res);
         //return JDV::result($this->positionModel->deletePosition($req->id, $ss)); THIS IS WRONG for Delete or Update. DO NOT USE ::result()
     }
@@ -70,6 +70,6 @@ class PositionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->positionModel->getFormOptions($req->id, $ss));
+        return JDV::result($this->position->getFormOptions($req->id, $ss));
     }
 }
