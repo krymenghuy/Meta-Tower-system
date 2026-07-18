@@ -445,6 +445,9 @@ var EmployeeManagementComponent = (function () {
                             <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_resign" title="Set Resign" aria-label="Set Resign">
                                 <i class="fa-solid fa-user-xmark"></i>
                             </button>
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-delete d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_delete" title="Delete" aria-label="Delete">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                             <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
                                 <i class="fa-regular fa-pen-to-square"></i>
                             </button>
@@ -493,10 +496,13 @@ var EmployeeManagementComponent = (function () {
             thirdCol.className = cardColClass;
             const docCol = document.createElement("div");
             docCol.className = cardColClass;
+            const taxAllowanceCol = document.createElement("div");
+            taxAllowanceCol.className = cardColClass;
             mThis.profileCardsEmployee.appendChild(skillCol);
             mThis.profileCardsEmployee.appendChild(eduCol);
             mThis.profileCardsEmployee.appendChild(thirdCol);
             mThis.profileCardsEmployee.appendChild(docCol);
+            mThis.profileCardsEmployee.appendChild(taxAllowanceCol);
             const refreshProfile = (empId) =>
                 mThis.showPage("profile_view", { id: empId });
             EmployeeSkillComponent.render(
@@ -520,6 +526,12 @@ var EmployeeManagementComponent = (function () {
             EmployeeDocumentComponent.render(
                 docCol,
                 data.documents || [],
+                data.id,
+                refreshProfile,
+            );
+            TaxAllowanceComponent.render(
+                taxAllowanceCol,
+                data.tax_allowances || [],
                 data.id,
                 refreshProfile,
             );
@@ -601,6 +613,14 @@ var EmployeeManagementComponent = (function () {
             };
         }
 
+        const inlineDeleteBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_delete");
+        if (inlineDeleteBtn) {
+            inlineDeleteBtn.onclick = (e) => {
+                e.preventDefault();
+                mThis.deleteEmployee(mThis.currentEmployeeId, e.currentTarget);
+            };
+        }
+
         if (mThis.btnPrintCv) {
             mThis.btnPrintCv.onclick = (e) => {
                 e.preventDefault();
@@ -609,6 +629,55 @@ var EmployeeManagementComponent = (function () {
                 );
             };
         }
+    };
+
+    mThis.deleteEmployee = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.showPage("employee_list", mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(...)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/employee/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success_employee");
+                                mThis.showPage("employee_list", mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        })
+                        .finally(() => {
+                            menulink.disabled = false;
+                        });
+                } else {
+                    menulink.disabled = false;
+                }
+            }
+        );
     };
 
     mThis.prepareFormOptions = (onFinish) => {

@@ -408,6 +408,7 @@ class Employee extends VSModel
             $row->educations = EmployeeEducation::getListByEmployee($id, $ss);
             $row->experiences = EmployeeExperience::getListByEmployee($id, $ss);
             $row->documents = EmployeeDocument::getListByEmployee($id, $ss);
+            $row->tax_allowances = TaxAllowance::getListByEmployee($id, $ss);
         } else {
             $row = null;
         }
@@ -455,18 +456,24 @@ class Employee extends VSModel
         ];
     }
 
-    public function deleteEmployee($id = null , $ss = null){
+    public function deleteEmployee($id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $employee = DB::table('employees')->where('id',$id)->first();
-        if(!$employee){
-             return DV::error('Employee not found');
-        }
-        $deleted = DB::table('tenants')->where('id', $id)->delete();
 
-        return $deleted
-            ? DV::depends($deleted, ['action' => 'deleted'])
-            : DV::error('Delete failed.');
+        $employeeExist = DB::table('employees')
+            ->where('id', $id)
+            ->exists();
+
+        if (!$employeeExist) {
+            return DV::error('Employee not found');
+        }
+
+        $deleted = DB::table('employees')
+            ->where('id', $id)
+            ->delete();
+
+        return DV::depends($deleted, null, 'Error deleting employee');
     }
 
     static function savePayrollListBenefit($payroll_id, $emp_id ,$ss)
