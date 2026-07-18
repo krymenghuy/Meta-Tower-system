@@ -5,7 +5,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector( "#_main_benefit_disbursement_policy_component");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_benefit_disbursement_policy_component");
-    mThis.title_prop = "Benefit Disbursement Policy";
+    mThis.title_prop = "Disbursement Policy";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
@@ -239,7 +239,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                     "id",
                     "name",
                     "",
-                    "All Benefits",
+                    LocaleManager.trans("All Benefits","titles"),
                     ""
                 );
             });
@@ -378,8 +378,8 @@ const BdpDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Add Benefit Disburse Policy",
-                    modifyTitle: "Edit Benefit Disburse Policy",
+                    createTitle: "vslang:titles.Add Benefit Disburse Policy",
+                    modifyTitle: "vslang:titles.Edit Benefit Disburse Policy",
                     targetProp: "disburse_policy",
                     api: {
                         endpoint: [
