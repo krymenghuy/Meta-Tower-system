@@ -20,6 +20,7 @@ var InvoiceComponent = (() => {
     mThis.globalSetting = null;
     mThis.invoiceSetting = null;
     let InvoiceItemDialog = null;
+    mThis.internalInvoice = null;
 
     mThis.cols = [
         { transTitle: "", className: "align-middle text-capitalize" },
@@ -517,6 +518,13 @@ var InvoiceComponent = (() => {
                 },
                 {
                     html:
+                        '<span class="ps-2" vslang="titles.Print Invoice Internal"></span>',
+                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "print_invoice_internal"
+                },
+                {
+                    html:
                         '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -555,6 +563,9 @@ var InvoiceComponent = (() => {
                 if (name === "delete_invoice") {
                     mThis.deleteInvoice(id);
                 } else if (name === "print_invoice") {
+                    mThis.printInvoice(id);
+                } else if (name === "print_invoice_internal") {
+                    mThis.internalInvoice = true;
                     mThis.printInvoice(id);
                 } else if (name === "receive_invoice") {
                     mThis.receiveInvoice(id);
@@ -681,7 +692,6 @@ var InvoiceComponent = (() => {
                     const companyProfile = res.data?.company_info || {};
                     const invoiceSetting = invoiceDetails.settings;
 
-
                     const invType = invoiceDetails?.invoice_type;
 
                     // Initialize params object
@@ -699,9 +709,10 @@ var InvoiceComponent = (() => {
                     } else {
                         params.setting = globalSetting;
                     }
-
                     if (invType === 1) {
                         InvoiceTaxDialog.show(params);
+                    } else if (invType === 2 && mThis.internalInvoice) {
+                        InternalInvoiceNoTaxDialog.show(params);
                     } else if (invType === 2) {
                         InvoiceNoTaxDialog.show(params);
                     } else if (invType === 3) {
@@ -2905,21 +2916,33 @@ const InvoiceDialog = (() => {
                     showColumnHeader: true,
                     placeholder: "Search Tenant",
                     onSelect: tenant => {
-                        vsapi.post(
+                        vsapi
+                            .post(
                                 `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
-                                { tenant_id: tenant.id },{})
+                                { tenant_id: tenant.id },
+                                {}
+                            )
                             .then(res => {
                                 const d = res.data || {};
-                                me.controls.phone_number.value =d.tenant?.phone_number || "";
+                                me.controls.phone_number.value =
+                                    d.tenant?.phone_number || "";
                                 me.controls.email.value = d.tenant?.email || "";
                                 me._selectedTenantId = tenant.id;
                                 me._tenantData = d;
                                 me._tenantSpaces = d.spaces || [];
                                 me._tenantMonths = d.months || [];
-                                me._requestedServices =d.service_requests || [];
+                                me._requestedServices =
+                                    d.service_requests || [];
 
-                                VSUtil.setComboItems(me.controls.space,d.spaces || [],"space_id","space_code",
-                                    "","Select Space","");
+                                VSUtil.setComboItems(
+                                    me.controls.space,
+                                    d.spaces || [],
+                                    "space_id",
+                                    "space_code",
+                                    "",
+                                    "Select Space",
+                                    ""
+                                );
                             });
                     }
                     //     api: {
