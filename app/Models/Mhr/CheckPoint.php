@@ -67,35 +67,40 @@ class CheckPoint
 
     public function getList($arr, $ss = null)
     {
-        $params = (object) $arr;
-        $branch_id = $ss->branch_id;
-        $currentPage = $params->current_page ?? 1;
-        $perPage = $params->per_page ?? 10;
-        $offset = ($currentPage - 1) * $perPage;
+        //$branch_id = $ss->branch_id;
+        $d = (object) $arr;
 
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value = $d->search_value ?? null;
+        $category_id = $d->category_id ?? null;
+        $str_search = "1=1";
+        $str_moreWhere = '2=2';
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(cp.name LIKE '%" . $search_value . "%' OR cpc.name LIKE '%" . $search_value . "%')";
+        }
+        if($category_id){
+            $str_moreWhere .= ' AND cp.category_id ='.$category_id;
+        }
         $query = DB::table('check_points as cp')
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
-            ->selectRaw('cp.id, cp.name, cpc.name as category_name, cp.updated_at, cp.update_user');
-
-        if (!empty($params->category_id)) {
-            $query->where('cp.category_id', $params->category_id);
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw('cp.id, cp.name, cpc.name as category_name, cp.updated_at, cp.update_user')
+            ->orderBy('cp.id','DESC');
+        $clone_query = clone $query;
+        $count = $clone_query->count('cp.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $row = setOfficialDates($row,[''],['updated_at'],[]);
         }
-
-        if (!empty($params->search_value)) {
-            $searchValue = $params->search_value;
-            $query->where(function ($q) use ($searchValue) {
-                $q->where('cp.name', 'LIKE', "%{$searchValue}%")
-                    ->orWhere('cpc.name', 'LIKE', "%{$searchValue}%");
-            });
-        }
-
-        $total = $query->count();
-        $items = $query->skip($offset)->take($perPage)->get();
-        foreach ($items as $item) {
-            $item = setOfficialDates($item, [''], ['updated_at'], ['']);
-        }
-
-        return new LengthAwarePaginator($items, $total, $perPage, $currentPage);
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     public static function getDetails($id)
