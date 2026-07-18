@@ -701,7 +701,7 @@ return [
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
 
-        
+
 
 
 
@@ -731,6 +731,13 @@ return [
         'Job Level'=> 'កម្រិតការងារ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Modify Job Level' => 'កែប្រែeកម្រិតការងារ',
+
+        'Positions' => 'មុខតំណែង',
+        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Modify Position' => 'កែប្រែមុខតំណែង',
+        'Delete Position' => 'លុបមុខតំណែង',
+        ''
+        
 
 
 
@@ -1003,6 +1010,9 @@ return [
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
+
+        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Modify Position' => 'កែប្រែមុខតំណែង',
 
 
     ],
@@ -1290,7 +1300,7 @@ return [
 
 
 
-
+        'Department' => 'នាយកដ្ឋាន',
 
 
 

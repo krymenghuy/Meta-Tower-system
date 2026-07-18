@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Vsd\Money\Models\VSMoney;
 use Vsd\Vsloquent\VSModel;
+use Illuminate\Support\Facades\Schema;
 
 class Position extends VSModel
 {
+    protected $table = 'positions';
     protected $userInfo = null;
     protected static $fk_tables = [
         'employees' => 'position_id'
@@ -23,27 +25,31 @@ class Position extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    function upsert($arr = [], $id = null, $ss = null)
+    public function upsert($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100',
-            'job_level_id' => '1|number',
-            'staff_group_id' => '1|number',
-            'department_id' => '1|number',
-            'salary' => '1|number',
-            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
+            'department_id' => '1|number|exists=departments.id|text=select_department',
+            'job_level_id' => '1|number|exists=job_levels.id|text=select_job_level',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'code' => '1|string|0-50|text=enter_code',
+            'staff_group_id' => '1|number|exists=staff_groups.id|text=select_staff_group',
+            'salary' => '1|number|text=enter_salary',
+            'currency_code' => '1|choice|KHR,USD|text=select_currency_code|default=' . VSMoney::$base_currency,
+            'description' => '0|string|0-1000',
         ];
-        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
-
-        $res = DBX::validateObject($arr, $v_rule, true, ['Name' => $pos_char], $ss->lang);
+        $chars = ['&', '$', '#', '@', '!', '.', '-', '(', ')', ' ', ','];
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $chars, 'name_kh' => $chars, 'code' => $chars, 'description' => $chars], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $err = self::checkDuplicate($inputs['name'], $inputs['job_level_id'], $id, $ss->branch_id);
+
+        $err = self::checkDuplicate($inputs['name'], $inputs['job_level_id'], $id, $branch_id);
         if ($err) {
             return DV::error($err);
         }
@@ -97,12 +103,13 @@ class Position extends VSModel
 
         $updated_at = DBX::formatTime('p.updated_at', 'updated_at');
         $query = DB::table('positions as p')
-            ->join('departments as d', 'd.id', '=', 'p.department_id')
-            ->join('job_levels as job', 'job.id', '=', 'p.job_level_id')
-            ->join('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
+            ->leftJoin('departments as d', 'd.id', '=', 'p.department_id')
+            ->leftJoin('job_levels as job', 'job.id', '=', 'p.job_level_id')
+            ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
             ->where('p.inactive', 0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.name,p.staff_group_id,sg.name as staff_group,p.department_id,p.job_level_id,job.name as level,p.salary,p.currency_code, d.name as department,' . $updated_at . ',p.update_user')->orderByRaw('job.rank ASC, d.name ASC');
+            ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.staff_group_id, sg.name as staff_group, p.department_id, p.job_level_id, job.name as level, p.salary, p.currency_code, d.name as department, ' . $updated_at . ', p.update_user')
+            ->orderByRaw('job.rank ASC, d.name ASC');
         if ($search_department) {
             $query->where('p.department_id', $search_department);
         }
@@ -116,10 +123,10 @@ class Position extends VSModel
     {
         $branch_id = $ss->branch_id;
         $rows = DB::table('positions as p')
-            ->join('departments as d', 'd.id', '=', 'p.department_id')
-            ->join('job_levels as job', 'job.id', '=', 'p.job_level_id')
-            ->join('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
-            ->selectRaw('p.id, p.name,p.job_level_id,p.staff_group_id, p.department_id,p.salary,p.currency_code, d.name as department,job.name as level,sg.name as staff_group')
+            ->leftJoin('departments as d', 'd.id', '=', 'p.department_id')
+            ->leftJoin('job_levels as job', 'job.id', '=', 'p.job_level_id')
+            ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
+            ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.job_level_id, p.staff_group_id, p.department_id, p.salary, p.currency_code, d.name as department, job.name as level, sg.name as staff_group')
             ->where('p.inactive', 0)
             ->where('p.id', $id)
             ->first();
