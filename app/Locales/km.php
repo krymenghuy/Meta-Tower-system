@@ -731,6 +731,13 @@ return [
         'Job Level'=> 'កម្រិតការងារ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Modify Job Level' => 'កែប្រែeកម្រិតការងារ',
+        "Add Benefit Disburse Policy" => "បង្កើតគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
+        "Edit Benefit Disburse Policy" => "កែប្រែគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
+        'Month'=> 'ខែ',
+        'Year'=> 'ឆ្នាំ',
+        'Withdraw Rate'=> 'អត្រាដកប្រាក់',
+        'Disbursement Policy' => 'គោលការណ៍បើកប្រាក់',
+    
 
 
 
@@ -1003,6 +1010,7 @@ return [
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
+        'Add Policy' => 'បន្ថែមគោលការណ៍',
 
 
     ],
@@ -1304,6 +1312,7 @@ return [
 
 
 
+
     ],
 
 
@@ -1510,6 +1519,11 @@ return [
 
         'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
         'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
+
+        'Benefit'=> 'អត្ថប្រយោជន៍',
+        'Policy'=> 'គោលនយោបាយ',
+        'Disbursed'=> 'បានបើកប្រាក់',
+
 
 
 
