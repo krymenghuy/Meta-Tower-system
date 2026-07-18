@@ -20,40 +20,58 @@ var PositionComponent = (function () {
         },
         {
             transTitle: "titles.Position",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom">${data.name}</span>`,
+                `<span class="d-block text-prm-custom text-capitalize">${data.name ?? "_"}</span>
+                <span class="d-block text-primary ">${data.name_kh ?? "_"}</span>`,
         },
         {
-            title: "Staff Group",
-            className: "align-middle text-capitalize",
+            transTitle: "titles.ShortCut",
+            className: "align-middle text-nowrap text-left",
             data: (data) =>
-                `<span class="text-primary-custom">${data.staff_group}</span>`,
+                `<span class="text-primary-custom ">${data.code}</span>`,
         },
         {
-            title: "Job Level",
-            className: "align-middle text-capitalize",
-            data: (data) =>
-                `<span class="text-capitalize text-primary-custom">${data.level}</span>`,
-        },
-
-        {
-            title: "Department",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            transTitle: "titles.Department",
+            className: "align-middle text-nowrap text-left",
             data: (data) =>
                 `<span class="text-primary-custom ">${data.department}</span>`,
         },
+         {
+            transTitle: "titles.Job Level",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="text-capitalize text-primary-custom">${data.level}</span>`,
+        },
         {
-            title: "Salary",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            transTitle: "titles.Staff Group",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="text-primary-custom">${data.staff_group}</span>`,
+        },
+
+        {
+            transTitle: "titles.Salary",
+            className: "align-middle text-nowrap text-left",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
             },
         },
+        {
+            transTitle: "titles.Description",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
 
         {
-            title: "Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
                 <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
@@ -270,7 +288,7 @@ const PositionDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-            cssClass: "modal-md vs-modal",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static", //User click outside form, do not close form
             keyboard: true, //prevent user from using ESC key
             createContent: () => {
@@ -285,7 +303,19 @@ const PositionDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label vslang="labels.Position"></label>
+                                <label vslang="labels.Position (English)"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="position_kh" class="data-input form-control form_input" data-field="name_kh" placeholder=" " />
+                                <label vslang="labels.Position (Khmer)"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="code" class="data-input form-control form_input" data-field="code" placeholder=" " />
+                                <label vslang="labels.Shortcut"></label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -300,6 +330,12 @@ const PositionDialog = (() => {
                         <div class="col-6">
                             <select data-style="material" name="currency_code" class="form-control data-input" placeholder="Currency Code"  data-field="currency_code"></select>
                         </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                <label vslang="labels.Description"></label>
+                            </div>
+                        </div> 
 
                     </div>`,
                 ].join("");
@@ -374,8 +410,8 @@ const PositionDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Add Position",
-                modifyTitle: "Edit Position",
+                createTitle: "vslang:titles.Add Position",
+                modifyTitle: "vslang:titles.Modify Position",
                 targetProp: "positions",
                 api: {
                     endpoint: [
