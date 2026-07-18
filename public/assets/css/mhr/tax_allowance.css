@@ -1,0 +1,166 @@
+/* Tax Allowance card — aligned with employee profile skill card */
+.emp-tax-allowance-card {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(37, 66, 120, 0.1);
+    box-shadow: 0 10px 28px rgba(15, 35, 80, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 360px;
+}
+
+.emp-tax-allowance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(165deg, #254278 0%, #1f386b 42%, #1a3058 100%);
+    color: #fff;
+}
+
+.emp-tax-allowance-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.emp-tax-allowance-header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #f2cb5c;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.emp-tax-allowance-header-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.emp-tax-allowance-body {
+    padding: 14px 14px 16px;
+    background: linear-gradient(180deg, #f8fafd 0%, #f3f6fb 100%);
+    flex: 1 1 auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.emp-tax-allowance-cols,
+.emp-tax-allowance-row {
+    display: grid;
+    grid-template-columns: minmax(48px, 0.7fr) minmax(90px, 1fr) minmax(90px, 1.1fr) auto;
+    gap: 10px 14px;
+    align-items: center;
+}
+
+.emp-tax-allowance-cols {
+    padding: 0 12px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1f386b;
+    border-bottom: 1px solid rgba(37, 66, 120, 0.12);
+    margin-bottom: 8px;
+}
+
+.emp-tax-allowance-cols span:last-child {
+    text-align: right;
+}
+
+.emp-tax-allowance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-height: 220px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(37, 66, 120, 0.25) transparent;
+}
+
+.emp-tax-allowance-row {
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #1a3058;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+
+.emp-tax-allowance-row:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.emp-tax-allowance-col-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.emp-tax-allowance-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1 1 auto;
+    min-height: 220px;
+    padding: 24px 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(37, 66, 120, 0.16);
+    background: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.emp-tax-allowance-empty-icon {
+    font-size: 1.6rem;
+    color: #a8bdd9;
+}
+
+.emp-tax-allowance-empty-text {
+    color: #7a90b0;
+    font-size: 0.84rem;
+    font-style: italic;
+}
+
+@media (max-width: 575.98px) {
+    .emp-tax-allowance-cols {
+        display: none;
+    }
+
+    .emp-tax-allowance-row {
+        grid-template-columns: 1fr 1fr auto;
+        grid-template-areas:
+            "qty action"
+            "amount allowance";
+        gap: 8px 10px;
+    }
+
+    .emp-tax-allowance-col-qty {
+        grid-area: qty;
+    }
+
+    .emp-tax-allowance-col-amount {
+        grid-area: amount;
+    }
+
+    .emp-tax-allowance-col-allowance {
+        grid-area: allowance;
+    }
+
+    .emp-tax-allowance-col-action {
+        grid-area: action;
+    }
+}
