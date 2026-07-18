@@ -238,6 +238,7 @@ return [
                 '/js/components/mhr/EmployeeEducationComponent.js',
                 '/js/components/mhr/EmployeeExperienceComponent.js',
                 '/js/components/mhr/EmployeeDocumentComponent.js',
+                '/js/components/mhr/TaxAllowanceComponent.js',
                 '/js/components/mhr/EmployeeManagementComponent.js',
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/WorkShiftListComponent.js',

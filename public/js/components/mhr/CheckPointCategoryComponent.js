@@ -29,10 +29,10 @@ var CheckPointCategoryComponent = (function () {
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
+            className: "align-middle text-nowrap text-center",
             data: (data, index, tr) => {
                 const [date, time] = (data.updated_at ?? "").split(" ");
-                return `<div class="d-flex flex-column align-items-center text-center" style="width:180px;">
+                return `<div class="d-flex flex-column align-items-center justify-content-center text-center mx-auto">
                     ${data.update_user ? `<span class="text-capitalize text-prm-custom">${data.update_user}</span>` : ""}
                     <small class="text-muted">${date || "-"}</small>
                     <small class="text-muted">${time ?? ""}</small>
@@ -41,7 +41,7 @@ var CheckPointCategoryComponent = (function () {
         },
         {
             title: "",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-center",
             data: (data) => {
                 return `
                 <div class="d-flex justify-content-center align-items-middle">
