@@ -414,6 +414,9 @@ return [
         'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
         'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
 
+        'update_success_employee' => 'Updated employee successfully.',
+        'create_success_employee' => 'Created employee successfully.',
+        'delete_success_employee' => 'Employee deleted successfully.',
         '' => '',
         '' => '',
 

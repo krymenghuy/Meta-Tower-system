@@ -984,6 +984,8 @@ const EmployeeDialog = (() => {
                                 op.branch_id = main_view.branch_id;
                                 op.status_id = op.status_id || 10;
                             }
+                            console.log(44,op);
+                            
 
                             vsapi
                                 .call(
@@ -997,23 +999,11 @@ const EmployeeDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, op);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
-                                            me.dataOptions.onClose();
+                                        if(me.dataOptions.id > 0){
+                                            cv_interact.success('update_success_employee');
+                                        }else {
+                                            cv_interact.success('create_success_employee');
                                         }
-                                        cv_interact.success(
-                                            me.dataOptions.id
-                                                ? LocaleManager.trans(
-                                                      "update_success",
-                                                      "message_box_default",
-                                                  )
-                                                : LocaleManager.trans(
-                                                      "create_success",
-                                                      "message_box_default",
-                                                  ),
-                                        );
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
