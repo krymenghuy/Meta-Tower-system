@@ -1588,6 +1588,11 @@ return [
         'create_success_benefit_disbursement' => 'បានបន្ថែមការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
         'delete_success_benefit_disbursement' => 'បានលុបការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
 
+
+        'create_success_employee' => 'បានបង្កើតព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
