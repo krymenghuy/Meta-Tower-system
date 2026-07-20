@@ -24,17 +24,17 @@ var HolidayComponent = (function () {
             className: "align-middle",
             data: (data) => {
                 return ` <div class="d-flex flex-column">
-                                <div class="d-flex justify-content-start align-items-center">
-                                    <span class="text-nowrap" style="font-size: 90%;">${data.start_date}</span>
-                                    <span class="text-primary px-1">~</span>
-                                    <span class="text-nowrap" style="font-size: 90%;">${data.end_date}</span>
-                                </div>
-                            </div>`;
+                            <div class="d-flex justify-content-start align-items-center">
+                                <span class="text-nowrap" style="font-size: 90%;">${data.start_date}</span>
+                                <span class="text-primary px-1">~</span>
+                                <span class="text-nowrap" style="font-size: 90%;">${data.end_date}</span>
+                            </div>
+                        </div>`;
             },
         },
 
         {
-            transTitle: "titles.Holiday",
+            transTitle: "titles.Holiday Name",
             className: "align-middle fw-bold",
             data: (data) => {
                 return `<span class="text-danger text-capitalize">${data.name}</span>`;
@@ -207,7 +207,7 @@ var HolidayComponent = (function () {
         };
         if (!AuthManager.allowed(263)) return;
         cv_interact.confirm(
-            "Delete this holiday?",
+            "delete_holiday",
             {
                 title: "Delete Holiday",
                 context: "delete",
@@ -225,7 +225,7 @@ var HolidayComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_holiday");
                                 mThis.HolidayListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -296,11 +296,11 @@ const HolidayDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="holiday" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label vslang="labels.Holiday"></label>
+                                <label vslang="labels.Holiday Name"></label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="Holiday Type" data-field="holiday_type_id"></select>
+                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans('Holiday Type', 'labels')}" data-field="holiday_type_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -365,11 +365,11 @@ const HolidayDialog = (() => {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Updated holiday successfully",
+                                            "update_success_holiday",
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "Added holiday successfully",
+                                            "create_success_holiday",
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);
@@ -378,8 +378,8 @@ const HolidayDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Create Holiday",
-                modifyTitle: "Modify Holiday",
+                createTitle: "vslang:titles.Create Holiday",
+                modifyTitle: "vslang:titles.Modify Holiday",
                 targetProp: "holidays",
                 api: {
                     endpoint: [

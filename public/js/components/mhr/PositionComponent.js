@@ -222,7 +222,7 @@ var PositionComponent = (function () {
         };
         if (!AuthManager.allowed(221)) return;
         cv_interact.confirm(
-            "Delete this position?",
+            "delete_position",
             {
                 title: "Delete Position",
                 context: "delete",
@@ -241,7 +241,7 @@ var PositionComponent = (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "The position was deleted!",
+                                    "delete_success_position",
                                 );
                                 mThis.PositionListView.showPage();
                             } else cv_interact.error(res.error_message);
@@ -295,21 +295,21 @@ const PositionDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="department" class="form-control data-input" placeholder="Department"  data-field="department_id"></select>
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="Job Level"  data-field="job_level_id"></select>
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label vslang="labels.Position (English)"></label>
+                                <label vslang="labels.Position (EN)"></label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position_kh" class="data-input form-control form_input" data-field="name_kh" placeholder=" " />
-                                <label vslang="labels.Position (Khmer)"></label>
+                                <label vslang="labels.Position (KH)"></label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -319,7 +319,7 @@ const PositionDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="Staff Group"  data-field="staff_group_id"></select>
+                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -328,7 +328,7 @@ const PositionDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="Currency Code"  data-field="currency_code"></select>
+                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans('Currency Code', 'labels')}"  data-field="currency_code"></select>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
@@ -397,11 +397,11 @@ const PositionDialog = (() => {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Updated position successfully",
+                                            "update_success_position",
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "Added position successfully",
+                                            "create_success_position",
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);
