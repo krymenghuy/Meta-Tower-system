@@ -24,10 +24,10 @@ class Warning extends VSModel
         $id = $id ?? $this->id;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id',
-            'warning_type_id' => '1|number',
-            'warning_date' => '1|date',
-            'issues' => '1|string|250|required',
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
+            'warning_type_id' => '1|number|text=warning_type',
+            'warning_date' => '1|date|text=warning_date',
+            'issues' => '1|string|250|text=issues',
             'remarks' => '0|string|1000',
         ];
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
@@ -68,7 +68,7 @@ class Warning extends VSModel
         ];
 
         $id = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $saveData, [], 1, false);
-        return DV::depends($id, ['action', 'warning saved'], 'Failed to save Warning Information');
+        return DV::depends($id, ['action', 'warning saved'], 'failed_to_save');
     }
 
     public function getWarningListPaginate($arr, $ss)

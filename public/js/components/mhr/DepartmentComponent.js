@@ -35,7 +35,7 @@ var DepartmentComponent = new (function () {
                 <span class="text-primary-custom">${data.name}</span>`,
         },
         {
-            transTitle: "titles.Short Name",
+            transTitle: "titles.Shortcut",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) =>
                 `<span class="text-warning ">${data.shortcut}</span>`,
@@ -219,7 +219,7 @@ var DepartmentComponent = new (function () {
         };
         if (!AuthManager.allowed(218)) return;
         cv_interact.confirm(
-            "Delete this department?",
+            "delete_department?",
             {
                 title: "Delete Department",
                 context: "delete",
@@ -237,7 +237,7 @@ var DepartmentComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_department_success");
                                 mThis.DepartmentListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
@@ -290,7 +290,7 @@ const DepartmentDialog = (() => {
                         <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input id="dep_shortcut" type="text" data-type="text" name="shortcut" class="data-input form-control form_input" data-field="shortcut" placeholder=" " />
-                                <label for="dep_shortcut" vslang="titles.Short Name"></label>
+                                <label for="dep_shortcut" vslang="titles.Shortcut"></label>
                             </div>
                         </div>
 
@@ -315,7 +315,7 @@ const DepartmentDialog = (() => {
             // ],
             buttons: [
                 {
-                    label: '<span class="text-warning">Cancel</span>',
+                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-default",
                     click: (me, btn) => {
                         //Close with Cancel button
@@ -323,7 +323,7 @@ const DepartmentDialog = (() => {
                     },
                 },
                 {
-                    label: "<span>Save</span>",
+                    label: "<span vslang='buttons.Save'></span>",
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
@@ -345,11 +345,11 @@ const DepartmentDialog = (() => {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Updated department successfully",
+                                            "update_department_success",
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "Added department successfully",
+                                            "create_success_department",
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);
@@ -358,8 +358,8 @@ const DepartmentDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Add Department",
-                modifyTitle: "Modify Department",
+                createTitle: "vslang:titles.Add Department",
+                modifyTitle: "vslang:titles.Modify Department",
                 targetProp: "departments",
                 api: {
                     endpoint: [

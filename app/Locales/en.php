@@ -177,6 +177,22 @@ return [
         'select_department' => 'Please select a department.',
         'select_job_level' => 'Please select a job level.',
         'enter_code' => 'Please enter code.',
+        'position_exist' => 'Position already exists.',
+
+        'select_holiday_type' => 'Please select a holiday type.',
+        'start_date' => 'Start date is required.',
+        'end_date' => 'End date is required.',
+        'holiday_exist' => 'Holiday already exists.',
+
+        'required_date' => 'Please select date.', 
+        'required_action' => 'Please select action.',
+        'required_time' => 'Please select time.',
+        'select_work_shift' => 'Please select work shift.',
+        
+
+        'issues' => 'Please enter issues.',
+        'warning_date' => 'Please select warning date.',
+        'warning_type' => 'Please select warning type.',
 
 
 
@@ -201,6 +217,8 @@ return [
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
+
+
 
     ],
     'labels' => [
@@ -414,8 +432,42 @@ return [
         'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
         'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
 
-        '' => '',
-        '' => '',
+
+        'create_success_position' => 'Create position successfully.',
+        'update_success_position' => 'Update position successfully.',
+        'delete_success_position' => 'Delete position successfully.',
+
+        'position_already_exists' => 'Position already exists.',
+        'position_not_found' => 'Position not found.',
+        'position_has_employees' => 'Cannot delete position with associated employees.',
+        'delete_position' => 'Delete this position?',
+
+        'create_success_holiday' => 'Create holiday successfully.',
+        'update_success_holiday' => 'Update holiday successfully.',
+        'delete_success_holiday' => 'Delete holiday successfully.',
+        'delete_holiday' => 'Delete this holiday?',
+
+        'delete_department?' => 'Delete this department?',
+        'delete_department_success' => 'Department deleted successfully.',
+        'update_department_success' => 'Department updated successfully',
+        'create_success_department' => 'Department created successfully.',
+
+        'attendance_create_successfully' => 'Attendance created successfully.',
+        'attendance_update_successfully' => 'Attendance updated successfully.',
+        'attendance_delete_successfully' => 'Attendance deleted successfully.',
+        'delete_attendance?' => 'Delete this Attendance Record?',
+
+        'warning_update_successfully' => 'Warning updated successfully.',
+        'warning_create_successfully' => 'Warning created successfully.',
+        'warning_delete_successfully' => 'Warning deleted successfully.',
+        'delete_warning?' => 'Delete this warning?',
+
+        'failed_to_save' => 'Failed to save Warning Information',
+
+        
+
+        
+
 
 
 
