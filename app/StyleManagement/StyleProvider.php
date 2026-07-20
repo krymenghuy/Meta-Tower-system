@@ -139,6 +139,43 @@ class StyleProvider
                 'assets/css/items_view.theme.css',
             ]
             ],
+        // 'mhr-style'=>[
+        //     'output_file'=>'/dist/css/mhr_style.css?v=18',
+        //     'files' => [
+        //         'assets/css/vsstyle.css',/** Must be set before bootstrap**/
+        //         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',
+        //         'assets/vendors/general/toastr/build/toastr.css',
+        //         'assets/vendors/general/morris.js/morris.css',
+        //         'assets/vendors/custom/vendors/line-awesome/css/line-awesome.css',
+        //         'assets/css/font-awesome/6.2.0/css/all.min.css',
+        //         'assets/css/demo1/style.bundle.css',
+        //         'assets/css/demo1/style.bundle.css',
+        //         // 'assets/dist/css/adminlte.min.css',
+        //         'assets/css/choices.min.css',
+
+        //          'assets/css/vs_select.base.css',
+        //          'assets/css/vs_select.material.css',
+        //            'assets/css/vs_input.material.css',
+        //         'assets/css/vs-page-title.wave.css',
+
+        //        'assets/css/dialog_style.purple.css',
+        //         'assets/css/vs_loader.css',
+
+        //         'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
+
+        //         'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
+        //         'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
+        //         'assets/css/sweetalert2.min.css',
+        //         'assets/plugins/chart.js/Chart.css',
+        //         'assets/css/mhr_style.css', /** Must be placed below all.min.css **/
+        //         'assets/css/vs_search_input.css',
+        //         'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/vs_search_input_example.css',
+        //         'assets/css/expandable-row.theme.css',
+
+        //         'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/style/items_view.css',
+        //         'assets/css/items_view.theme.css',
+        //     ]
+        //     ],
 
     ];
 

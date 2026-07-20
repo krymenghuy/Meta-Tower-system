@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 66);
+    StyleManager::render('mhr-style', 1, 65);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('mhr-components', 1, 284);
+    ScriptManager::render('mhr-components', 1, 283);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -148,9 +148,9 @@
                 <div id="kt_header" class="kt-header--fixed kt-header kt-grid__item">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap justify-content-between shadow" style="background-color:#e7e7e7;">
+                        <div class="d-flex flex-row flex-wrap justify-content-between shadow" style="background-color:#fff;">
                            <div id="_main_top_right_menus" class="mainview-top-right">
-                                <div class="d-flex flex-grow-1 mx-4 show--title">
+                                <div class="vs-page-title d-flex flex-grow-1 mx-3 show--title">
                                   <div class="screen-info" id="kt_header_menu_wrapper">
                                             <span class="mb-0 text-nowrap screen-title" vslang="titles.dashboard" style="text-transform:uppercase;" id="screen_title"></span>
                                         </div>
@@ -167,12 +167,12 @@
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2" style="color:#6b6f82;">
+                                                <span id="_main_lang_name" class="mx-2" style="color: #4d3572;">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="ps-2 fa-caret-down fa-solid fs-5" style="color:#6b6f82;"></i>
+                                                <i class="ps-2 fa-caret-down fa-solid fs-5" style="color: #4d3572;"></i>
                                             </button>
                                             <div class="dropdown-menu-right dropdown-menu">
                                                 <span class="lang-menu-header"></span>
@@ -195,7 +195,7 @@
                                     <div class="dropdown nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-regular fa-bell fs-4" style="color:#6b6f82;"></i>
+                                            <i class="fa-regular fa-bell fs-4" style="color: #4d3572;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -209,7 +209,7 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-solid fa-indent fs-4" style="color:#6b6f82;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-solid fa-indent fs-4" style="color: #4d3572;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -274,7 +274,7 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2" style="color:#6b6f82;">
+                                                <span class="mx-2" style="color: #4d3572;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';

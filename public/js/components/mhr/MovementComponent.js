@@ -12,65 +12,107 @@ var MovementComponent = (() => {
     mThis.elEvent = mThis.self.querySelector("#el_event");
     mThis.elEmployee = mThis.self.querySelector("#el_employee");
 
-    mThis.cols = [
-        {
-            title: "",
-            className: "align-middle",
-        },
-        {
-            title: "Employee",
-            className: "align-middle text-capitalize text-nowrap",
-            data: (data) => {
-                const photo =
-                    data.image_url ||
-                    `${main_view.base_url}/assets/images/default/default-staff.png`;
-                return `<div class="d-flex align-items-center">
-                    <img class="image-student-tbl" src="${photo}" alt=""
-                        style="width:40px;height:40px;border-radius:50%;margin-right:10px;object-fit:cover;background:#cfe2ff;" />
-                    <div>
-                        <span style="font-size:14px;font-weight:700;color:#1e293b;">${data.emp_name ?? ""}</span><br/>
-                        <span style="font-size:11px;color:#2b3991;">${data.position ?? ""}</span>
-                    </div>
-                </div>`;
-            },
-        },
-        {
-            title: "Event",
-            className: "align-middle",
-            data: (data) => `<span>${data.event ?? ""}</span>`,
-        },
-        {
-            title: "Date",
-            className: "align-middle text-nowrap",
-            data: (data) => `<span>${data.event_date ?? ""}</span>`,
-        },
-        {
-            title: "Last Updated",
-            className: "align-middle",
-            data: (data) => `
-                <div>
-                    <span style="font-size:14px;font-weight:700;color:#1e293b;">${data.update_user ?? ""}</span><br/>
-                    <span style="font-size:11px;color:#2b3991;">${data.updated_at ?? ""}</span>
-                </div>`,
-        },
-        {
-            title: "Impact",
-            className: "status text-nowrap align-middle",
-            data: (data) => {
-                const impact = (data.impact || "").trim();
-                const key = impact.toLowerCase();
-                let bg = "#6c757d";
-                if (key === "positive") bg = "#28a745";
-                else if (key === "neutral") bg = "#ffc107";
-                else if (key === "negative") bg = "#dc3545";
+   mThis.cols = [
+    {
+        title: "",
+        className: "align-middle text-center",
+    },
+    {
+        transTitle: "titles.Employee",
+        className: "align-middle text-nowrap",
+        data: (row) => {
 
-                return `<span class="d-inline-block text-center text-white text-capitalize"
-                    style="min-width:100px;padding:6px 14px;border-radius:999px;background:${bg};font-size:13px;font-weight:600;">
-                    ${impact || "_"}
-                </span>`;
-            },
-        },
-    ];
+            const photo = row.image_url ||
+                `${main_view.base_url}/assets/images/default/default-staff.png`;
+
+            return `
+                <div class="d-flex align-items-center">
+                    <img
+                        src="${photo}"
+                        class="rounded-circle border shadow-sm me-3"
+                        style="width:42px;height:42px;object-fit:cover;"
+                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'"
+                    >
+
+                    <div>
+                        <div class="fw-semibold text-dark">
+                            ${row.emp_name ?? "-"}
+                        </div>
+
+                        <small class="text-muted">
+                            ${row.position ?? "-"}
+                        </small>
+                    </div>
+                </div>
+            `;
+        }
+    },
+    {
+        transTitle: "titles.Event",
+        className: "align-middle",
+        data: row => `
+            <span class="fw-medium">
+                ${row.event ?? "-"}
+            </span>
+        `
+    },
+    {
+        transTitle: "titles.Date",
+        className: "align-middle text-nowrap",
+        data: row => `
+            <span class="text-muted">
+                <i class="fa fa-calendar-alt me-1"></i>
+                ${row.event_date ?? "-"}
+            </span>
+        `
+    },
+    {
+        transTitle: "titles.Last Updated",
+        className: "align-middle",
+        data: row => `
+            <div>
+                <div class="fw-semibold text-dark">
+                    ${row.update_user ?? "-"}
+                </div>
+
+                <small class="text-muted">
+                    ${row.updated_at ?? "-"}
+                </small>
+            </div>
+        `
+    },
+    {
+        transTitle: "titles.Impact",
+        className: "align-middle text-center",
+        data: (row) => {
+
+            const impact = (row.impact || "").toLowerCase();
+
+            let badge = "bg-secondary";
+
+            switch (impact) {
+
+                case "positive":
+                    badge = "bg-success";
+                    break;
+
+                case "neutral":
+                    badge = "bg-warning text-dark";
+                    break;
+
+                case "negative":
+                    badge = "bg-danger";
+                    break;
+            }
+
+            return `
+                <span class="badge rounded-pill ${badge} px-3 py-2">
+                    ${row.impact ?? "-"}
+                </span>
+            `;
+        }
+    }
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
