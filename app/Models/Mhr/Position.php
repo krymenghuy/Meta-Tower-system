@@ -35,7 +35,7 @@ class Position extends VSModel
             'job_level_id' => '1|number|exists=job_levels.id|text=select_job_level',
             'name' => '1|string|0-150|text=name_required::@key;@max;@value',
             'name_kh' => '1|string|0-150|text=name_required::@key;@max;@value',
-            'code' => '1|string|0-50|text=enter_code',
+            'code' => '1|string|0-50|text=enter_shortcut',
             'staff_group_id' => '1|number|exists=staff_groups.id|text=select_staff_group',
             'salary' => '1|number|text=enter_salary',
             'currency_code' => '1|choice|KHR,USD|text=select_currency_code|default=' . VSMoney::$base_currency,
@@ -75,7 +75,7 @@ class Position extends VSModel
 
         $test = $query->select('id')->first();
         if ($test) {
-            return 'Position already exists::' . $name;
+            return 'position_exist::' . $name;
         }
 
         return null;
@@ -142,11 +142,14 @@ class Position extends VSModel
     {
         $id = $id ?? $this->id;
         $d = self::getProps($id, 'name');
-        if (!$d) return DV::error('Position ID does not exist');
-        $cnt = DBX::count_fk_items($id, self::$fk_tables, 'employees');
-        if ($cnt > 0) return DV::error('Cannot delete this position because it is already in use');
+        if (!$d) return DV::error('position_not_found');
+        $cnt = 0;
+        foreach (self::$fk_tables as $table => $fk_col) {
+            $cnt += DB::table($table)->where($fk_col, $id)->count();
+        }
+        if ($cnt > 0) return DV::error('position_has_employees');
         $delete = DB::table('positions')->where('id', $id)->update(['inactive' => 1]);
-        return DV::depends($delete, null, 'Failed to delete position');
+        return DV::depends($delete, null, 'delete_failed');
     }
 
     public function getFormOptions($id, $ss)

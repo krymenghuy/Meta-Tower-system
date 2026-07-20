@@ -24,10 +24,10 @@ class Holiday extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-150',
-            'holiday_type_id' => '1|number',
-            'start_date' => '1|date',
-            'end_date' => '1|date',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'holiday_type_id' => '1|number|text=select_holiday_type',
+            'start_date' => '1|date|text=start_date',
+            'end_date' => '1|date|text=end_date',
             'description' => '0|string|0-300',
         ];
 
@@ -69,7 +69,7 @@ class Holiday extends VSModel
 
         $test = $query->select('id')->first();
         if ($test) {
-            return 'Holiday already exists::' . $name;
+            return 'holiday_exist::' . $name;
         }
 
         return null;

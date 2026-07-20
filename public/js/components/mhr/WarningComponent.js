@@ -265,7 +265,7 @@ var WarningComponent = (function () {
             },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm("Deleting this Warning?",
+        cv_interact.confirm("delete_warning?",
         {
             title: "Delete Warning.",
             context: "delete",
@@ -275,7 +275,7 @@ var WarningComponent = (function () {
                     vsapi.call(`${main_view.base_url}/mhr/emp-warning/delete`,op, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("warning_delete_successfully");
                                 mThis.WarningListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message || 'An error occurred while deleting.');
@@ -307,13 +307,13 @@ const WarningDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6"> 
-                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee" data-field="emp_id"></select>
+                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}" data-field="emp_id"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id" disabled></select>
+                            <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans('Position', 'labels')}" data-field="position_id" disabled></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="Warning Type" data-field="warning_type_id"></select>
+                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="${LocaleManager.trans('Warning Type', 'labels')}" data-field="warning_type_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -324,7 +324,7 @@ const WarningDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="issues" class="data-input form-control form_input" data-field="issues" placeholder=" " />
-                                <label vslang="labels.Reason"></label>
+                                <label vslang="labels.Issue"></label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -392,11 +392,11 @@ const WarningDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated warning successfully");
+                                            cv_interact.success("warning_update_successfully");
                                         }
                                         else
                                         {
-                                            cv_interact.success("Warning successfully saved");
+                                            cv_interact.success("warning_create_successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -404,8 +404,8 @@ const WarningDialog = (() => {
                     },
             ],
             prepareFormOptions: {
-                createTitle: "Add Warning",
-                modifyTitle: "Modify Warning",
+                createTitle: "vslang:titles.Add Warning",
+                modifyTitle: "vslang:titles.Modify Warning",
                 targetProp: "warning",
                 api: {
                     endpoint: [
