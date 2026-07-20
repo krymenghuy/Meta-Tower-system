@@ -114,62 +114,259 @@ Route::get('landingpoint', function () {
 //     return view('prm', $data);
 // });
 Route::get('mhr/{componentName?}', function ($componentName = null) {
-     $user = XAuthService::user();
+    $user = XAuthService::user();
+    $base_url = url('/');
+    $appName = 'Meta HR';
+    if ($user && isset($user->apps)) {
+        foreach ($user->apps as $app) {
+            if ($app->home_route == 'tenant_member') {
+                $appName = $app->app_name;
+                break;
+            }
+        }
+    }
     if (!$user) {
-        // return redirect('/')
-        $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>🔐</div>
+                <h2 style='margin:0;color:#dc3545;'>Session Expired</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your session has expired or we could not verify your identity.
+                    <br>
+                    Please sign in again to continue.
+                </p>
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#1A1647;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Login Again
+                </a>
+
+            </div>
+        </div>";
+
         return;
-    };
-    if($user->user_class != 'admin'){
-        $base_url = url('/');
-        echo "You are not admin staff !<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+    }
+
+
+    if (!in_array($user->user_class, ['tenant', 'tenant_member'])) {
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px+30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>⛔</div>
+                <h2 style='margin:0;color:#dc3545;'>Access Denied</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your account login does not have permission to access
+                    <strong>{$appName}</strong>.
+                    <br>
+                    Please sign in with an authorized tenant account
+                    or contact your system administrator.
+                </p>
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#1A1647;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Back to Login
+                </a>
+
+            </div>
+        </div>";
+
         return;
     }
     $data = ['defaultComponent' => 'HomeComponent'];
     return view('mhr', $data);
 });
 Route::get('prm/{componentName?}', function ($componentName = null) {
-     $user = XAuthService::user();
-    if (!$user) {
-        // return redirect('/')
-        $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-        return;
-    };
-    if($user->user_class != 'admin'){
-        $base_url = url('/');
-        echo "You are not admin staff !<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-        return;
-    }
-    $data = ['defaultComponent' => 'HomeComponent'];
-    return view('prm', $data);
-});
-Route::get('tenant/{componentName?}', function ($componentName = null) {
-    $user = XAuthService::user();
 
+    $user = XAuthService::user();
     if (!$user) {
         $base_url = url('/');
-        echo "There was a problem processing your user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>🔐</div>
+
+                <h2 style='margin:0;color:#dc3545;'>Session Expired</h2>
+
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    We couldn't verify your identity because your session has expired or is invalid.
+                    Please sign in again to continue.
+                </p>
+
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Login Again
+                </a>
+            </div>
+        </div>";
         return;
     }
-    if (!in_array($user->user_class, ['tenant', 'tenant_member'])) {
+
+    if ($user->user_class != 'admin') {
         $base_url = url('/');
-        echo "You are not authorized to access this page!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        $appName = 'this application';
+
+        foreach ($user->apps as $app) {
+            if ($app->home_route == 'prm') {
+                $appName = $app->app_name;
+                break;
+            }
+        }
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>⛔</div>
+                <h2 style='margin:0;color:#dc3545;'>Access Denied</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your account login does not have permission to access
+                    <strong>{$appName}</strong>.
+
+                    <br>
+                    If you believe this is an error, please contact your system administrator
+                    or sign in with an account that has the required permissions.
+                </p>
+
+                <a href='".url('/')."'
+                style='display:inline-block;padding:12px 28px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Back to Login
+                </a>
+            </div>
+        </div>";
         return;
     }
-    return view('tenant', [
+
+    return view('prm', [
         'defaultComponent' => 'HomeComponent'
     ]);
 });
+Route::get('tenant/{componentName?}', function ($componentName = null) {
 
-Route::get('umt/{componentName?}', function ($componentName = null) {
-    if (!XAuthService::user()) {
-        // return redirect('/')
-        $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+    $user = XAuthService::user();
+    $base_url = url('/');
+    $appName = 'Tenant Portal';
+    if ($user && isset($user->apps)) {
+        foreach ($user->apps as $app) {
+            if ($app->home_route == 'tenant') {
+                $appName = $app->app_name;
+                break;
+            }
+        }
+    }
+    if (!$user) {
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>🔐</div>
+                <h2 style='margin:0;color:#dc3545;'>Session Expired</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your session has expired or we could not verify your identity.
+                    <br>
+                    Please sign in again to continue.
+                </p>
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#1A1647;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Login Again
+                </a>
+
+            </div>
+        </div>";
+
         return;
-    };
+    }
+
+
+    if (!in_array($user->user_class, ['tenant', 'tenant_member'])) {
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px+30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>⛔</div>
+                <h2 style='margin:0;color:#dc3545;'>Access Denied</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your account login does not have permission to access
+                    <strong>{$appName}</strong>.
+                    <br>
+                    Please sign in with an authorized tenant account
+                    or contact your system administrator.
+                </p>
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#1A1647;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Back to Login
+                </a>
+
+            </div>
+        </div>";
+
+        return;
+    }
+
+
+    return view('tenant', [
+        'defaultComponent' => 'HomeComponent'
+    ]);
+
+});
+Route::get('umt/{componentName?}', function ($componentName = null) {
+     $user = XAuthService::user();
+    if (!$user) {
+        $base_url = url('/');
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>🔐</div>
+
+                <h2 style='margin:0;color:#dc3545;'>Session Expired</h2>
+
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    We couldn't verify your identity because your session has expired or is invalid.
+                    Please sign in again to continue.
+                </p>
+
+                <a href='$base_url'
+                   style='display:inline-block;padding:12px 28px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Login Again
+                </a>
+            </div>
+        </div>";
+        return;
+    }
+    if ($user->user_class != 'admin') {
+        $base_url = url('/');
+        $appName = 'this application';
+
+        foreach ($user->apps as $app) {
+            if ($app->home_route == 'umt') {
+                $appName = $app->app_name;
+                break;
+            }
+        }
+
+        echo "
+        <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>
+            <div style='max-width:420px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center;'>
+                <div style='font-size:60px;margin-bottom:15px;'>⛔</div>
+                <h2 style='margin:0;color:#dc3545;'>Access Denied</h2>
+                <p style='margin:20px 0;color:#6c757d;line-height:1.6;'>
+                    Your account login does not have permission to access
+                    <strong>{$appName}</strong>.
+
+                    <br>
+                    If you believe this is an error, please contact your system administrator
+                    or sign in with an account that has the required permissions.
+                </p>
+
+                <a href='".url('/')."'
+                style='display:inline-block;padding:12px 28px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>
+                    Back to Login
+                </a>
+            </div>
+        </div>";
+        return;
+    }
     $data = ['defaultComponent' => 'RoleManagementComponent'];
     return view('umt', $data);
 });

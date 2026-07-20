@@ -58,6 +58,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_education.css') }}?v=2">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_experience.css') }}?v=3">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_document.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/tax_allowance.css') }}?v=2">
 
 <style>
     /* List cards (same pattern as tenant) */
@@ -518,25 +519,66 @@
         border: 1px solid var(--emp-border);
         background: #f8fafc;
         color: var(--emp-primary2);
-        transition: background 0.15s ease, transform 0.15s ease;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
     }
 
     .emp-profile-action-btn:hover {
-        background: #eef2ff;
         transform: translateY(-1px);
     }
 
-    .emp-profile-action-btn-edit { color: var(--emp-primary2); }
-    .emp-profile-action-btn-movement { color: var(--emp-primary2); }
-    .emp-profile-action-btn-movement-detail { color: var(--emp-primary2); }
+    .emp-profile-action-btn-movement {
+        color: #2563eb;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+    .emp-profile-action-btn-movement:hover {
+        color: #1d4ed8;
+        border-color: #93c5fd;
+        background: #dbeafe;
+    }
+
+    .emp-profile-action-btn-movement-detail {
+        color: #0d9488;
+        border-color: #99f6e4;
+        background: #f0fdfa;
+    }
+    .emp-profile-action-btn-movement-detail:hover {
+        color: #0f766e;
+        border-color: #5eead4;
+        background: #ccfbf1;
+    }
+
     .emp-profile-action-btn-resign {
-        color: #b45309;
+        color: #d97706;
         border-color: #fcd34d;
         background: #fffbeb;
     }
     .emp-profile-action-btn-resign:hover {
+        color: #b45309;
+        border-color: #fbbf24;
         background: #fef3c7;
-        color: #92400e;
+    }
+
+    .emp-profile-action-btn-delete {
+        color: #dc2626;
+        border-color: #fca5a5;
+        background: #fef2f2;
+    }
+    .emp-profile-action-btn-delete:hover {
+        color: #b91c1c;
+        border-color: #f87171;
+        background: #fee2e2;
+    }
+
+    .emp-profile-action-btn-edit {
+        color: #4f46e5;
+        border-color: #c7d2fe;
+        background: #eef2ff;
+    }
+    .emp-profile-action-btn-edit:hover {
+        color: #4338ca;
+        border-color: #a5b4fc;
+        background: #e0e7ff;
     }
 
     .resign-dialog .modal-header {

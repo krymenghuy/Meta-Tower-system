@@ -701,7 +701,7 @@ return [
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
 
-        
+
 
 
 
@@ -738,6 +738,13 @@ return [
         'Withdraw Rate'=> 'អត្រាដកប្រាក់',
         'Disbursement Policy' => 'គោលការណ៍បើកប្រាក់',
     
+
+        'Positions' => 'មុខតំណែង',
+        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Modify Position' => 'កែប្រែមុខតំណែង',
+        'Delete Position' => 'លុបមុខតំណែង',
+        ''
+        
 
 
 
@@ -1011,6 +1018,9 @@ return [
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Add Policy' => 'បន្ថែមគោលការណ៍',
+
+        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Modify Position' => 'កែប្រែមុខតំណែង',
 
 
     ],
@@ -1298,7 +1308,7 @@ return [
 
 
 
-
+        'Department' => 'នាយកដ្ឋាន',
 
 
 
@@ -1497,6 +1507,11 @@ return [
         'update_success_benefit_disbursement' => 'បានកែប្រែការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
         'create_success_benefit_disbursement' => 'បានបន្ថែមការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
         'delete_success_benefit_disbursement' => 'បានលុបការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
+
+
+        'create_success_employee' => 'បានបង្កើតព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",

@@ -102,7 +102,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage(mThis.getFilterData());
             } else {
                 console.error("Work is not defined");
-            }
+                }
         }, 200);
     });
     mThis.getFilterData = () => {

@@ -171,6 +171,13 @@ return [
         'year_required' => 'Please select a valid year.',
         'payroll_number_required' => 'Please select a valid payroll number.',
 
+        'select_staff_group' => 'Please select a staff group.',
+        'enter_salary' => 'Please enter salary.',
+        'select_currency_code' => 'Please select a currency code.',
+        'select_department' => 'Please select a department.',
+        'select_job_level' => 'Please select a job level.',
+        'enter_code' => 'Please enter code.',
+
 
 
 
@@ -407,6 +414,9 @@ return [
         'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
         'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
 
+        'update_success_employee' => 'Updated employee successfully.',
+        'create_success_employee' => 'Created employee successfully.',
+        'delete_success_employee' => 'Employee deleted successfully.',
         '' => '',
         '' => '',
 
