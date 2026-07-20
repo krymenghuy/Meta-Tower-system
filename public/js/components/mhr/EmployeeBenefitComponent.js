@@ -116,7 +116,7 @@ var EmployeeBenefitComponent = new (function () {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
-                "table table--white overflow-hidden rounded-3 header-uppercase",
+                "table table--white overflow-hidden rounded-2 border-none header-uppercase",
         });
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
@@ -426,14 +426,14 @@ const EmployeeBenefitDialog = (() => {
             buttons: [
                 {
                     label: '<span  vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false)
                     }
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
                         p.id = me.dataOptions.id;
