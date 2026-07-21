@@ -167,7 +167,7 @@ return [
         'duration_hours_required'  => 'Duration hours is required when unit type is Hour.',
         'scheduled_date_required'  => 'Scheduled date is required.',
         'start_time_required'      => 'Start time is required.',
-       
+
         'month_required'      => 'Please select a valid month.',
         'year_required' => 'Please select a valid year.',
         'payroll_number_required' => 'Please select a valid payroll number.',
@@ -185,23 +185,24 @@ return [
         'end_date' => 'End date is required.',
         'holiday_exist' => 'Holiday already exists.',
 
-        'required_date' => 'Please select date.', 
+        'required_date' => 'Please select date.',
         'required_action' => 'Please select action.',
         'required_time' => 'Please select time.',
         'select_work_shift' => 'Please select work shift.',
-        
+
 
         'issues' => 'Please enter issues.',
         'warning_date' => 'Please select warning date.',
         'warning_type' => 'Please select warning type.',
 
 
-
+        'enter_rank' => 'Please enter rank.',
+        'department_exist' => 'Department name already exists.',
 
 
 
     ],
-    'api_body_keys' =>[
+    'api_body_keys' => [
         'name' => 'Name',
         'name_kh' => 'Name Khmer',
         'building_id' => 'Building',
@@ -466,19 +467,19 @@ return [
 
         'failed_to_save' => 'Failed to save Warning Information',
 
-        
 
-        
+
+
 
         'update_success_employee' => 'Updated employee successfully.',
         'create_success_employee' => 'Created employee successfully.',
         'delete_success_employee' => 'Employee deleted successfully.',
-        '' => '',
-        '' => '',
 
 
-
-
+        'update_job_level_successfully' => 'Updated job level successfully.',
+        'create_job_level_successfully' => 'Added job level successfully.',
+        'delete_job_level_successfully' => 'Deleted job level successfully.',
+        'delete_job_level?' => 'Delete this job level?',
 
 
 

@@ -423,15 +423,15 @@ const StaffAttendanceDialog = (() => {
             ],
             buttons: [
                 {
-                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-default",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
 

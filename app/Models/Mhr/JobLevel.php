@@ -27,9 +27,9 @@ class JobLevel //extends Model
         //$subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100',
+            'name' => '1|string|0-100|text=name_required::@key;@max;@value',
             'description' => '0|string|0-250',
-            'rank' => '1|number|0-100',
+            'rank' => '1|number|0-100|text=enter_rank',
         ];
         $job_char = ['$','#','@','!','/','.','-','_','=','?'];
 

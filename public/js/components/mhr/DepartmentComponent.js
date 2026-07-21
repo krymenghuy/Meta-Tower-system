@@ -349,7 +349,7 @@ const DepartmentDialog = (() => {
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "create_success_department",
+                                            "create_department_success",
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);
