@@ -1595,6 +1595,8 @@ return [
         'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
+        'update_success_team' => 'Team updated successfully.',
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
