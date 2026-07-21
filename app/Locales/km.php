@@ -221,23 +221,27 @@ return [
         'enter_salary' => 'សូមបញ្ចូលប្រាក់បៀវត្សរ៍',
         'select_currency_code' => 'សូមជ្រើសរើសរូបិយប័ណ្ណ',
         'select_staff_group' => 'សូមជ្រើសរើសក្រុមបុគ្គលិក។',
-        'position_exist'=> 'មុខតំណែងនេះមានរួចហើយ។',
+        'position_exist' => 'មុខតំណែងនេះមានរួចហើយ។',
+        'department_exist' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
 
 
         'select_holiday_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
         'start_date' => 'សូមជ្រើសរើសថ្ងៃចាប់ផ្ដើម។',
         'end_date' => 'សូមជ្រើសរើសថ្ងៃបញ្ចប់។',
-        'holiday_exist'=> 'ថ្ងៃឈប់សម្រាកនេះមានរួចហើយ។',
+        'holiday_exist' => 'ថ្ងៃឈប់សម្រាកនេះមានរួចហើយ។',
 
 
-        'required_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវ។', 
+        'required_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវ។',
         'required_action' => 'សូមជ្រើសរើសសកម្មភាពត្រឹមត្រូវ។',
         'required_time' => 'សូមជ្រើសរើសម៉ោងត្រឹមត្រូវ។',
         'select_work_shift' => 'សូមជ្រើសរើសម៉ោងធ្វើការ',
 
         'warning_type' => 'សូមជ្រើសរើសប្រភេទការព្រមាន។',
         'warning_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទព្រមាន។',
-        'issues' => 'សូមបញ្ចូលបញ្ហា។'
+        'issues' => 'សូមបញ្ចូលបញ្ហា។',
+
+        'enter_rank' => 'សូមបញ្ចូលចំណាត់ថ្នាក់។',
+
 
 
 
@@ -255,6 +259,7 @@ return [
         'tenant_id' => 'អ្នកជួល'
     ],
     'titles' => [
+        'Cannot Cancel Receipt' => 'មិនអាចលុបចោលបង្កាន់ដៃបានទេ',
         'Create Building' => 'បង្កើតអគារ',
         'Modify Building' => 'កែប្រែអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
@@ -310,7 +315,7 @@ return [
         'Receive Purchase Order' => 'ទទួលទំនិញ',
         'Reservation' => 'ការកក់',
         'Service Request' => 'សំណើសេវាកម្ម',
-         'Request Service' => 'សំណើសេវាកម្ម',
+        'Request Service' => 'សំណើសេវាកម្ម',
         'Vendors' => 'អ្នកផ្គត់ផ្គង់',
         'Create Vendor' => 'បង្កើតអ្នកផ្គត់ផ្គង់',
         'Modify Vendor' => 'កែប្រែអ្នកផ្គត់ផ្គង់',
@@ -603,7 +608,7 @@ return [
         'Delete Deposit' => 'លុបប្រាក់កក់',
 
         'Primary Contact' => 'អ្នកទំនាក់ទំនងទី១',
-        'Secondary Contact' =>'អ្នកទំនាក់ទំនងទី២',
+        'Secondary Contact' => 'អ្នកទំនាក់ទំនងទី២',
 
         'Secondary Contact' => 'អ្នកទំនាក់ទំនងទី២',
 
@@ -693,22 +698,22 @@ return [
         'Contract Status' => 'ស្ថានភាពកិច្ចសន្យា',
         'Schedule Time' => 'ម៉ោងដែលកំណត់',
         'Search by amenity' => 'ស្វែងរកតាមបរិក្ខារ',
-        'Remarks' =>'កំណត់សម្គាល់',
+        'Remarks' => 'កំណត់សម្គាល់',
         'Modify Team' => 'កែប្រែក្រុម',
         'Create New Team' => 'បង្កើតក្រុមថ្មី',
         'Create New Staff' => 'បង្កើតបុគ្គលិកថ្មី',
         'Edit Staff' => 'កែប្រែបុគ្គលិក',
         'Profile Overview' => 'ប្រវត្តិរូប',
-        'Search announcement' =>'ស្វែងរកសេចក្តីជូនដំណឹង',
-        'Sort By' =>'តម្រៀបតាម',
-        'Newest' =>'ថ្មីបំផុត',
-        'Oldest' =>'ចាស់បំផុត',
-        'Announcement Details' =>'ព័ត៌មានលម្អិតសេចក្តីជូនដំណឹង',
-        'Published' =>'បានផ្សព្វផ្សាយ',
-        'Priority' =>'កម្រិត',
-        'Expires' =>'កាលបរិច្ឆេទផុតកំណត់',
-        'Transaction'=> 'ប្រតិបត្តិការ',
-        'Reservation Now' =>'កក់ឥឡូវ',
+        'Search announcement' => 'ស្វែងរកសេចក្តីជូនដំណឹង',
+        'Sort By' => 'តម្រៀបតាម',
+        'Newest' => 'ថ្មីបំផុត',
+        'Oldest' => 'ចាស់បំផុត',
+        'Announcement Details' => 'ព័ត៌មានលម្អិតសេចក្តីជូនដំណឹង',
+        'Published' => 'បានផ្សព្វផ្សាយ',
+        'Priority' => 'កម្រិត',
+        'Expires' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Transaction' => 'ប្រតិបត្តិការ',
+        'Reservation Now' => 'កក់ឥឡូវ',
         'Target Month' => 'ខែគោលដៅ',
         'Target Year' => 'ឆ្នាំគោលដៅ',
         'Withdraw Percent' => 'ភាគរយដក',
@@ -718,32 +723,22 @@ return [
         'to' => 'ដល់',
         'and upwards' => 'ឡើងទៅ',
         'Salary Range' => 'ប្រាក់ខែចាប់ពី',
-        'Salary ranges from' =>"ប្រាក់ខែចាប់ពី",
-        'Rate' =>"អត្រា",
-        'Tax Bracket' =>'ប្រាក់ខែចាប់ពី',
-        'Bias' =>'ប្រាក់ខែចាប់ពី',
+        'Salary ranges from' => "ប្រាក់ខែចាប់ពី",
+        'Rate' => "អត្រា",
+        'Tax Bracket' => 'ប្រាក់ខែចាប់ពី',
+        'Bias' => 'ប្រាក់ខែចាប់ពី',
         'Lower Amount' => 'ទឹកប្រាក់អប្បបរមា',
         'Upper Amount' => 'ទឹកប្រាក់អតិបរមា',
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
 
         'Shortcut' => 'អក្សរកាត់',
-        'Update By'=> 'បានកែប្រែដោយ',
+        'Update By' => 'បានកែប្រែដោយ',
         'Modify Department' => 'កែប្រែនាយកដ្ឋាន',
         'Add Department' => 'បង្កើតនាយកដ្ឋាន',
         'Delete Department' => 'លុបនាយកដ្ឋាន',
         'Departments' => 'នាយកដ្ឋាន',
-
-
-
-
-
-
-
-
-
-
-
+        'Rank' => 'ចំណាត់ថ្នាក់',
 
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
@@ -759,18 +754,18 @@ return [
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
 
-        'Search by job level'=> 'ស្វែងរកតាមកម្រិតការងារ',
-        'Ranking'=> 'ចំណាត់ថ្នាក់',
-        'Job Level'=> 'កម្រិតការងារ',
+        'Search by job level' => 'ស្វែងរកតាមកម្រិតការងារ',
+        'Ranking' => 'ចំណាត់ថ្នាក់',
+        'Job Level' => 'កម្រិតការងារ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
-        'Modify Job Level' => 'កែប្រែeកម្រិតការងារ',
+        'Modify Job Level' => 'កែប្រែកម្រិតការងារ',
         "Add Benefit Disburse Policy" => "បង្កើតគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
         "Edit Benefit Disburse Policy" => "កែប្រែគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
-        'Month'=> 'ខែ',
-        'Year'=> 'ឆ្នាំ',
-        'Withdraw Rate'=> 'អត្រាដកប្រាក់',
+        'Month' => 'ខែ',
+        'Year' => 'ឆ្នាំ',
+        'Withdraw Rate' => 'អត្រាដកប្រាក់',
         'Disbursement Policy' => 'គោលការណ៍បើកប្រាក់',
-    
+
 
         'Positions' => 'មុខតំណែង',
         'Add Position' => 'បង្កើតមុខតំណែង',
@@ -794,17 +789,21 @@ return [
         'Delete Warning' => 'លុបការព្រមាន',
         'Warning Type' => 'ប្រភេទការព្រមាន',
         'Issue' => 'បញ្ហា',
-        'Employee Warning'=> 'ការព្រមានបុគ្គលិក',
-        'Add Warning'=> 'បង្កើតការព្រមាន',
-        
-        
+        'Employee Warning' => 'ការព្រមានបុគ្គលិក',
+        'Add Warning' => 'បង្កើតការព្រមាន',
 
-        
+        'Create Skill' => 'បង្កើតជំនាញ',
+        'Edit Skill' => 'កែប្រែជំនាញ',
+        'Delete Skill' => 'លុបជំនាញ',
+        'Skills' => 'ជំនាញ',
 
-       
-        
-        
-        
+
+
+
+
+
+
+
 
 
 
@@ -939,10 +938,10 @@ return [
         'Book Amenity' => 'កក់បរិក្ខារសេវាកម្ម',
         'My Invoices' => 'វិក្កយបត្រ',
         'Request Service' => 'ស្នើសុំសេវាកម្ម',
-        'Announcements' =>'សេចក្ដីជូនដំណឹង',
-        'Team' =>'ក្រុមការងារ',
-        'My Profile' =>'ព័ត៌មានផ្ទាល់ខ្លួន',
-        'Contract' =>'កិច្ចសន្យារ',
+        'Announcements' => 'សេចក្ដីជូនដំណឹង',
+        'Team' => 'ក្រុមការងារ',
+        'My Profile' => 'ព័ត៌មានផ្ទាល់ខ្លួន',
+        'Contract' => 'កិច្ចសន្យារ',
         'Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
         'Employee Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
         'Leave' => 'ការឈប់សម្រាក',
@@ -1088,7 +1087,7 @@ return [
         'Add Department' => 'បន្ថែមនាយកដ្ឋាន',
         'Create Warning' => 'បង្កើតការព្រមាន',
 
-
+        'Create Skill' => 'បង្កើតជំនាញ',
 
     ],
     'filters' => [
@@ -1374,10 +1373,10 @@ return [
         'Department' => 'នាយកដ្ឋាន',
         'Staff Group' => 'ក្រុមបុគ្គលិក',
         'Salary' => 'ប្រាក់បៀវត្សរ៍',
-        'Job Level'=> 'កំរិតការងារ',
+        'Job Level' => 'កំរិតការងារ',
         'ShortCut' => 'អក្សរកាត់',
-        'Position (KH)'=> 'មុខតំណែង (ខ្មែរ)',
-        'Position (EN)'=> 'មុខតំណែង (អង់គ្លេស)',
+        'Position (KH)' => 'មុខតំណែង (ខ្មែរ)',
+        'Position (EN)' => 'មុខតំណែង (អង់គ្លេស)',
 
         'Create Holiday' => 'បង្កើតថ្ងៃឈប់សម្រាក',
         'Holiday Name' => 'ឈ្មោះថ្ងៃឈប់សម្រាក',
@@ -1615,22 +1614,23 @@ return [
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
 
-        'create_success_position'=> 'បង្កើតមុខតំណែងដោយជោគជ័យ។',
-        'update_success_position'=> 'កែប្រែមុខតំណែងដោយជោគជ័យ។',
-        'delete_success_position'=> 'លុបមុខតំណែងដោយជោគជ័យ។',
-        'delete_position'=> 'តើអ្នកប្រាកដទេថាចង់លុបមុខតំណែងនេះ?',
-        'position_not_found'=> 'រកមិនឃើញមុខតំណែង។',
-        'position_has_employees'=> 'មិនអាចលុបមុខតំណែងនេះបានទេ ព្រោះវាត្រូវបានប្រើប្រាស់ដោយបុគ្គលិក។',
+        'create_success_position' => 'បង្កើតមុខតំណែងដោយជោគជ័យ។',
+        'update_success_position' => 'កែប្រែមុខតំណែងដោយជោគជ័យ។',
+        'delete_success_position' => 'លុបមុខតំណែងដោយជោគជ័យ។',
+        'delete_position' => 'តើអ្នកប្រាកដទេថាចង់លុបមុខតំណែងនេះ?',
+        'position_not_found' => 'រកមិនឃើញមុខតំណែង។',
+        'position_has_employees' => 'មិនអាចលុបមុខតំណែងនេះបានទេ ព្រោះវាត្រូវបានប្រើប្រាស់ដោយបុគ្គលិក។',
 
-        'delete_success_holiday'=> 'លុបថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
-        'update_success_holiday'=> 'កែប្រែថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
-        'create_success_holiday'=> 'បង្កើតថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'delete_success_holiday' => 'លុបថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'update_success_holiday' => 'កែប្រែថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'create_success_holiday' => 'បង្កើតថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
         'delete_holiday' => 'តើអ្នកប្រាកដទេថាចង់លុបថ្ងៃឈប់សម្រាកនេះ?',
-        
+
         'update_department_success' => 'កែប្រែនាយកដ្ឋានដោយជោគជ័យ។',
         'create_department_success' => 'បង្កើតនាយកដ្ឋានដោយជោគជ័យ។',
         'delete_department_success' => 'លុបនាយកដ្ឋានដោយជោគជ័យ។',
         'delete_department?' => 'តើអ្នកប្រាកដទេថាចង់លុបនាយកដ្ឋាននេះ?',
+        'department_already_exists' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
 
         'attendance_create_successfully' => 'បង្កើតវត្តមានបានជោគជ័យ។',
         'attendance_update_successfully' => 'កែប្រែវត្តមានបានជោគជ័យ។',
@@ -1641,16 +1641,25 @@ return [
         'warning_create_successfully' => 'បង្កើតការព្រមានដោយជោគជ័យ។',
         'warning_delete_successfully' => 'លុបការព្រមានដោយជោគជ័យ។',
         'delete_warning?' => 'តើអ្នកប្រាកដទេថាចង់លុបការព្រមាននេះ?',
- 
-        
-        
-        
+
+        'update_job_level_successfully' => 'កែប្រែកម្រិតការងារដោយជោគជ័យ។',
+        'create_job_level_successfully' => 'បង្កើតកម្រិតការងារដោយជោគជ័យ។',
+        'delete_job_level_successfully' => 'លុបកម្រិតការងារដោយជោគជ័យ។',
+        'delete_job_level?' => 'តើអ្នកប្រាកដទេថាចង់លុបកម្រិតការងារនេះ?',
+
+        'department_exist' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
+
+
+
+
+
+
         'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
         'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
 
-        'Benefit'=> 'អត្ថប្រយោជន៍',
-        'Policy'=> 'គោលនយោបាយ',
-        'Disbursed'=> 'បានបើកប្រាក់',
+        'Benefit' => 'អត្ថប្រយោជន៍',
+        'Policy' => 'គោលនយោបាយ',
+        'Disbursed' => 'បានបើកប្រាក់',
 
 
 
