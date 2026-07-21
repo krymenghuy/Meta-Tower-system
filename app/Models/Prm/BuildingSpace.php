@@ -385,7 +385,7 @@ class BuildingSpace
         try {
             // Delete related maintenances
             DB::table('maintenances')
-                ->where('building_space_id', $id)
+                ->where('space_id', $id)
                 ->delete();
 
             // Delete building space
