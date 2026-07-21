@@ -384,13 +384,13 @@
 
 .btn-vs-save{
 
-    min-width:180px;
+    min-width:100px;
 
     width:auto;
 
     padding:0 20px;
 
-    height:50px;
+    height:45px;
 
     border:none;
 
@@ -426,13 +426,13 @@
 
 .btn-vs-cancel{
 
-    min-width:180px;
+    min-width:100px;
 
     width:auto;
 
     padding:0 20px;
 
-    height:50px;
+    height:45px;
 
     border-radius:14px;
 

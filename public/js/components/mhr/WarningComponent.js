@@ -367,7 +367,7 @@ const WarningDialog = (() => {
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => me.hide(false),
                 },
                 {

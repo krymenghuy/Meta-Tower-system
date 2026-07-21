@@ -112,37 +112,42 @@ class Employee extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
+        // Required (1) fields are checked top → bottom to match the form
         $v_rule = [
-            // 'branch_id'=>'0|branch_id|exists='.DBX::branchTable().'.id',
-            'name'            => '1|string|0-150|text=name_required::@key;@max;@value',
-            'name_kh'         => '1|string|0-150|text=name_required::@key;@max;@value',
-            'sex'             => '1|choice|F,M|text=select_gender',
-            'phone_number'    => '1|string|1-30|text=phone_number_required',
-            'email'           => '0|email|1-30',
-            'nationality_id'  => '1|number|text=nationality_required',
+            // Basic info
+            'name'            => '1|string|0-150|text=full_name_required',
+            'name_kh'         => '1|string|0-150|text=khmer_name_required',
             'date_of_birth'   => '1|date|text=date_of_birth_required',
-            'birth_city_id'=>'0|number',
-            'position_id' => '1|number',
-            'emp_type_id' => '1|number',
-            'salary' => '0|number',
-            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
-            'work_shift_id' => '0|number|exists=work_shifts.id',
-            'joining_date' => '1|date',
-            'nssf_id' => '0|string|0-30',
-            'nid' => '1|string|1-30|text=national_id_required',
-            'nid_expiry_date' => '0|date|text=issue_date',
-            'apply_payroll_tax' => '1|number|default = 1',
-            'status_id' => '1|number|default = 10',
-            'photo' => '0|image',
-            'marital_status' => '1|string|0-30',
-            'spouse_name' => '0|string|0-30',
-            'spouse_emp_id' => '0|number',
-            'spouse_occ_code' => '0|string|0-30',
-            'passport_number' => '0|string|0-30',
-            'passport_expiry_date' => '0|date',
+            'sex'             => '1|choice|F,M|text=select_gender',
+            'marital_status'  => '1|string|0-30|text=marital_status_required',
+            // Identification
+            'nationality_id'  => '1|number|text=nationality_required',
+            'nid'             => '1|string|1-30|text=identity_card_required',
+            'nid_expiry_date' => '1|date|text=identity_card_expiry_required',
+            'nssf_id'         => '1|string|1-30|text=nssf_id_required',
+            'passport_number' => '1|string|1-30|text=passport_number_required',
+            'passport_expiry_date' => '1|date|text=passport_expiry_required',
+            // Employment & Contact
+            'birth_city_id'   => '1|number|text=place_of_birth_required',
+            'emp_type_id'     => '1|number|text=employee_type_required',
+            'position_id'     => '1|number|text=position_required',
+            'phone_number'    => '1|string|1-30|text=phone_number_required',
+            // Use string (not email): DBX isEmail() always returns true, so empty email would pass
+            'email'           => '1|string|1-100|text=email_required',
+            'salary'          => '1|number|text=salary_required',
+            'joining_date'    => '1|date|text=joining_date_required',
             'address'         => '1|string|text=enter_address',
-            'branch_id' => '1|number|default = 1',
-
+            // Family & Payroll
+            'spouse_name'     => '1|string|1-30|text=spouse_name_required',
+            'spouse_occ_code' => '1|string|1-30|text=spouse_occupation_required',
+            'spouse_emp_id'   => '1|number|text=spouse_employee_required',
+            'apply_payroll_tax' => '1|number|default = 1|text=apply_payroll_tax_required',
+            // System defaults
+            'currency_code'   => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
+            'work_shift_id'   => '0|number|exists=work_shifts.id',
+            'status_id'       => '1|number|default = 10',
+            'photo'           => '0|image',
+            'branch_id'       => '1|number|default = 1',
         ];
         $checkUnique = null;
         $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
@@ -150,6 +155,9 @@ class Employee extends VSModel
 
         $inputs = $res->values;
         $d = (object) $inputs;
+        if (!empty($d->email) && !filter_var($d->email, FILTER_VALIDATE_EMAIL)) {
+            return DV::error('Please enter a valid Email.');
+        }
         if (empty($inputs['work_shift_id'])) {
             $inputs['work_shift_id'] = self::resolveWorkShiftId($ss);
         }
@@ -158,14 +166,14 @@ class Employee extends VSModel
         $nid = $d->nid ?? null;
         if($nid){
             $expire_date = $d->nid_expiry_date ?? null;
-            if (!$expire_date) return DV::error('Expiry Date for National ID Card is required');
+            if (!$expire_date) return DV::error('Please enter Identity Card Expiry.');
             else $inputs['nid_expiry_date'] = convertDate($expire_date);
         } else $inputs['nid_expiry_date'] = null;
 
         $passport_number = $d->passport_number;
         if($passport_number){
             $expire_date = $d->passport_expiry_date ?? null;
-            if (!$expire_date) return DV::error('Expiry Date for passport is required');
+            if (!$expire_date) return DV::error('Please enter Passport Expiry.');
             else $inputs['passport_expiry_date'] = convertDate($expire_date);
         } else $inputs['passport_expiry_date'] = null;
 
@@ -269,16 +277,16 @@ class Employee extends VSModel
             $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%' OR emp.phone_number LIKE '%" . $search_value . "%' OR emp.nid LIKE '%" . $search_value . "%')";
         }
         if ($status_id) {
-            $str_moreWhere .= ' AND emp.status_id =' . (int) $status_id;
+            $str_moreWhere .= ' AND emp.status_id =' .  $status_id;
         } else {
             // Hide resigned/inactive from default employee cards
             $str_moreWhere .= ' AND emp.status_id = 10';
         }
         if ($branch_id_filter) {
-            $str_moreWhere .= ' AND emp.branch_id =' . (int) $branch_id_filter;
+            $str_moreWhere .= ' AND emp.branch_id =' . $branch_id_filter;
         }
         if ($emp_type_id) {
-            $str_moreWhere .= ' AND emp.emp_type_id =' . (int) $emp_type_id;
+            $str_moreWhere .= ' AND emp.emp_type_id =' . $emp_type_id;
         }
         $countries = Country::listAll($ss);
 
@@ -361,7 +369,7 @@ class Employee extends VSModel
                 emp.code,
                 emp.id,
                 emp.branch_id,
-              
+
                 emp.name,
                 emp.name_kh,
                 emp.email,
