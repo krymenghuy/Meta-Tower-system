@@ -367,12 +367,12 @@ const WarningDialog = (() => {
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => me.hide(false),
                 },
                 {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 

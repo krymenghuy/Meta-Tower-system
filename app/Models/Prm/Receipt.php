@@ -112,6 +112,9 @@ class Receipt extends Model
             ->leftJoin('building_spaces as receipt_bs', 'receipt_bs.id', '=', 'r.space_id')
             ->leftJoin('building_spaces as invoice_bs', 'invoice_bs.id', '=', 'i.space_id')
             ->leftJoin('receipt_statuses as rs', 'rs.id', '=', 'r.receipt_status_id')
+            ->leftJoin('deposits as d', 'd.id', '=', 'r.deposit_id')
+            ->leftJoin('contracts as c', 'c.id', '=', 'd.contract_id')
+            ->leftJoin('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
             ->select([
                 'r.id',
                 'r.code',
@@ -130,6 +133,7 @@ class Receipt extends Model
                 'i.issue_date',
                 DB::raw('COALESCE(receipt_bs.code, invoice_bs.code) as space_code'),
                 'rs.name as receipt_status_name',
+                'cs.status_code as contract_status_code',
             ]);
         $applyFilters($query, true);
 
@@ -138,11 +142,7 @@ class Receipt extends Model
             ->forPage($currentPage, $perPage)
             ->get();
 
-        /*
-    |--------------------------------------------------------------------------
-    | Receipt breakdown enrichment
-    |--------------------------------------------------------------------------
-    */
+
         if ($rows->isNotEmpty()) {
             $receiptIds = $rows->pluck('id')->all();
 
@@ -357,6 +357,17 @@ class Receipt extends Model
                 return DV::error('Receipt is already canceled');
             }
             if($receipt->deposit_id){
+                $deposit = DB::table('deposits')->where('id', $receipt->deposit_id)->first();
+                if ($deposit) {
+                    $contract = DB::table('contracts')->where('id', $deposit->contract_id)->first();
+                    if ($contract) {
+                        $terminatedStatusId = \App\Models\Prm\Contract::getTerminatedStatusId();
+                        if ((int)$contract->status_id === (int)$terminatedStatusId) {
+                            return DV::error(\Vsd\Locales\Localization::trans('cannot_cancel_deposit_terminated_contract', 'validation'));
+                        }
+                    }
+                }
+
                 $updated = DB::table('receipts')
                 ->where('id', $id)
                 ->update([
@@ -377,7 +388,7 @@ class Receipt extends Model
                     'updated_at'        => now(),
                 ]);
 
-                return DV::success(['message' => 'Receipt canceled and invoice balance restored successfully']);
+                return DV::success(['message' => 'This will restore to the due balance on the deposit']);
                 
             }
             $updated = DB::table('receipts')

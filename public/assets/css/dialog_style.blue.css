@@ -384,9 +384,13 @@
 
 .btn-vs-save{
 
-    width:180px;
+    min-width:100px;
 
-    height:50px;
+    width:auto;
+
+    padding:0 20px;
+
+    height:45px;
 
     border:none;
 
@@ -422,9 +426,13 @@
 
 .btn-vs-cancel{
 
-    width:180px;
+    min-width:100px;
 
-    height:50px;
+    width:auto;
+
+    padding:0 20px;
+
+    height:45px;
 
     border-radius:14px;
 

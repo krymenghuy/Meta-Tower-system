@@ -43,6 +43,11 @@ class Department extends VSModel
 
         $inputs = $res->values;
 
+        $err = self::checkDuplicateName($inputs['name'], $id, $branch_id);
+        if ($err) {
+            return DV::error($err);
+        }
+
         $id = DBX::saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
         if ($id > 0) {
             return DV::depends($id, ['departments' => $inputs, 'id' => $id]);
@@ -50,6 +55,24 @@ class Department extends VSModel
 
         return DV::error('Error saving department');
 
+    }
+
+    static function checkDuplicateName($name, $id, $branch_id)
+    {
+        $query = DB::table('departments as d')
+            ->where('d.branch_id', $branch_id)
+            ->where('d.name', $name);
+
+        if ($id) {
+            $query->where('d.id', '<>', $id);
+        }
+
+        $test = $query->select('id')->first();
+        if ($test) {
+            return 'department_exist';
+        }
+
+        return null;
     }
 
     function getList($arr, $ss) {
@@ -81,6 +104,7 @@ class Department extends VSModel
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     public function getDetails($id) {
         $row  = DB::table('departments as d')
             ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.id',$id)->first();
@@ -90,11 +114,11 @@ class Department extends VSModel
        return DB::table('departments')->where('id',$id)->selectRaw($cols)->first();
      }
 
-    public function deleteDepartment($id = null) {
+    public function deleteDepartment($id, $ss = null) {
         $id = $id ?? $this->id;
-        $d = self::getProps($id,'name');
-        if(!$d) return DV::error('Department ID is not valid');
-        $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
+        $ss = $ss ?? $this->userInfo;
+        if(!$id) return DV::error('Department ID is not valid');
+        $delete = DB::table('departments')->where('id', $id)->delete();
         return DV::depends($delete,null,'Failed to delete department');
     }
 

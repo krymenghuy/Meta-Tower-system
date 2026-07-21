@@ -119,7 +119,7 @@ Route::get('mhr/{componentName?}', function ($componentName = null) {
     $appName = 'Meta HR';
     if ($user && isset($user->apps)) {
         foreach ($user->apps as $app) {
-            if ($app->home_route == 'tenant_member') {
+            if ($app->home_route == 'mhr') {
                 $appName = $app->app_name;
                 break;
             }
@@ -149,7 +149,7 @@ Route::get('mhr/{componentName?}', function ($componentName = null) {
     }
 
 
-    if (!in_array($user->user_class, ['tenant', 'tenant_member'])) {
+    if ($user->user_class != 'admin') {
 
         echo "
         <div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;font-family:Arial,sans-serif;'>

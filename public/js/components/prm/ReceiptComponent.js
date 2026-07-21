@@ -164,7 +164,7 @@ var ReceiptComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => `
-                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}" style="padding: 0 10px;">
+                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}" data-depositid="${data.deposit_id ?? ''}" data-contractstatuscode="${data.contract_status_code ?? ''}" style="padding: 0 10px;">
                     <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                 </a>`
         }
@@ -255,7 +255,9 @@ var ReceiptComponent = (() => {
             },
             onClick: (menuLink, id, name) => {
                 if (name === "cancel_receipt") {
-                    mThis.cancelReceipt(id);
+                    const depositId = menuLink.dataset.depositid;
+                    const contractStatusCode = menuLink.dataset.contractstatuscode;
+                    mThis.cancelReceipt(id, depositId, contractStatusCode);
                 } else if (name === "print_receipt") {
                     mThis.printReceipt(id);
                 }
@@ -271,11 +273,23 @@ var ReceiptComponent = (() => {
         });
     };
 
-    mThis.cancelReceipt = id => {
+    mThis.cancelReceipt = (id, depositId, contractStatusCode) => {
         if (!AuthManager.allowed(242)) return;
+        const isDeposit = depositId && depositId !== "null" && depositId !== "undefined" && depositId !== "";
+        if (isDeposit && contractStatusCode === "terminated") {
+            Swal.fire({
+                title: `${LocaleManager.trans('Cannot cancel receipt', "messages")}`,
+                text: LocaleManager.trans('cannot_cancel_deposit_terminated_contract', "validation"),
+                icon: "error",
+                confirmButtonText: `${LocaleManager.trans("OK", "buttons")}`,
+                confirmButtonColor: "#355cff"
+            });
+            return;
+        }
+        const textKey = isDeposit ? "restore_to_deposit" : "restore_to_invoice";
         Swal.fire({
             title: `${LocaleManager.trans('Cancel Receipt?', "titles")}`,
-            text: LocaleManager.trans('restore_to_invoice', "message_box_default"),
+            text: LocaleManager.trans(textKey, "message_box_default"),
             icon: "warning",
             input: "textarea",
             inputPlaceholder: LocaleManager.trans('reason_for_cancellation', "message_box_default"),

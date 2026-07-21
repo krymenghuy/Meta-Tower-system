@@ -40,7 +40,7 @@ var JobsLevelComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 14px;">${data.update_user ?? ""}</span><br/>
                 <span style="font-size: 12px; color: #2b3991;">${data.update_date ?? ""}</span>
             </div>`,
         },
@@ -186,7 +186,7 @@ var JobsLevelComponent = new (function () {
         };
         if (!AuthManager.allowed(206)) return;
         cv_interact.confirm(
-            "Delete this job level?",
+            "delete_job_level?",
             {
                 title: "Delete Job level",
                 context: "delete",
@@ -205,7 +205,7 @@ var JobsLevelComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Job level deleted successfully"
+                                    "delete_job_level_successfully"
                                 );
                                 mThis.JobLevelListView.showPage();
                             }
@@ -262,7 +262,7 @@ const JobLevelDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number"  name="rank" class="form-control data-input" data-field="rank" />
+                                    <input type="number" name="rank" class="form-control data-input" data-field="rank" />
                                     <label vslang="titles.Rank"></label>
                                 </div>  
                             </div>
@@ -306,11 +306,11 @@ const JobLevelDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated job level successfully');
+                                            cv_interact.success( 'update_job_level_successfully');
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added job level successfully');
+                                            cv_interact.success('create_job_level_successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });

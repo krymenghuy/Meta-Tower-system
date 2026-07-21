@@ -37,14 +37,14 @@ var ContractComponent = (() => {
             data: (data, index, tr) => {
                 // const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
                 const displayDate = data.start_date ?? "";
-                return `<small class="px-2 py-2 bg-body-secondary text-nowrap text-muted rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
+                return `<small class="px-2 py-2 bg-body-secondary text-nowrap text-prm-custom rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             },
         },
         {
             transTitle: "titles.End Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-2 bg-body-secondary text-muted text-nowrap rounded-2"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ""}</smaLL>`;
+                return `<small class="px-2 py-2 bg-body-secondary text-prm-custom text-nowrap rounded-2"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ""}</smaLL>`;
             },
         },
         {
@@ -86,9 +86,9 @@ var ContractComponent = (() => {
                 }
 
                 return `
-                    <span class="text-nowrap text-primary-custom">
+                    <span class="text-nowrap text-prm-custom">
                             ${price}
-                        <small class="text-nowrap text-muted"> /m²</small>
+                        <small class="text-nowrap"> /m²</small>
                     </span>
                     <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? "-"} m²</span>
                 `;
@@ -774,7 +774,7 @@ var ContractComponent = (() => {
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
-                    console.log("Auto-refreshing contracts...");
+                    // console.log("Auto-refreshing contracts...");
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh
@@ -1484,7 +1484,7 @@ const RenewDialog = (() => {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                     const det = data.contract_details || {};
-                    console.log(33,det);
+                    // console.log(33,det);
 
                     // const oldStartIso = normalizeContractDateToIso(det.start_date);
                     // const oldEndIso = normalizeContractDateToIso(det.end_date);

@@ -85,7 +85,7 @@ return [
         'please_select_a_valid_unit' => 'Please select a valid unit.',
         'please_select_a_valid_vendor' => 'Please select a valid vendor.',
         'please_select_a_valid_building' => 'Please select a valid building.',
-        'reference_no_is_required' => 'Reference no is required.',
+        'reference_no_is_required' => 'Reference number is required.',
         'total_amount_is_required' => 'Total amount is required.',
         'issue_date_is_required' => 'Issue date is required.',
         'due_date_is_required' => 'Due date is required.',
@@ -96,6 +96,7 @@ return [
         'error_saving_bill' => 'Error saving bill.',
         'bill_not_found' => 'Bill not found.',
         'cannot_delete_paid_invoice' => 'Cannot delete paid invoice.',
+        'cannot_cancel_deposit_terminated_contract' => 'Cannot cancel deposit receipt because the contract is already terminated.',
         'delete_failed' => 'Delete failed.',
         'same_current_status' => 'It is the same current status.',
         'file_is_required' => 'File is required.',
@@ -186,7 +187,7 @@ return [
         'duration_hours_required'  => 'Duration hours is required when unit type is Hour.',
         'scheduled_date_required'  => 'Scheduled date is required.',
         'start_time_required'      => 'Start time is required.',
-       
+
         'month_required'      => 'Please select a valid month.',
         'year_required' => 'Please select a valid year.',
         'payroll_number_required' => 'Please select a valid payroll number.',
@@ -204,23 +205,24 @@ return [
         'end_date' => 'End date is required.',
         'holiday_exist' => 'Holiday already exists.',
 
-        'required_date' => 'Please select date.', 
+        'required_date' => 'Please select date.',
         'required_action' => 'Please select action.',
         'required_time' => 'Please select time.',
         'select_work_shift' => 'Please select work shift.',
-        
+
 
         'issues' => 'Please enter issues.',
         'warning_date' => 'Please select warning date.',
         'warning_type' => 'Please select warning type.',
 
 
-
+        'enter_rank' => 'Please enter rank.',
+        'department_exist' => 'Department name already exists.',
 
 
 
     ],
-    'api_body_keys' =>[
+    'api_body_keys' => [
         'name' => 'Name',
         'name_kh' => 'Name Khmer',
         'building_id' => 'Building',
@@ -426,6 +428,7 @@ return [
         'delete_success_item' => 'Item deleted successfully.',
 
         'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
+        'restore_to_deposit' => 'This will restore to the due balance on the deposit.',
         'reason_for_cancellation' => 'Reason for cancellation (required)...',
         'reason_required' => 'You must provide a reason!',
 
@@ -484,14 +487,19 @@ return [
 
         'failed_to_save' => 'Failed to save Warning Information',
 
-        
-
-        
 
 
 
 
+        'update_success_employee' => 'Updated employee successfully.',
+        'create_success_employee' => 'Created employee successfully.',
+        'delete_success_employee' => 'Employee deleted successfully.',
 
+
+        'update_job_level_successfully' => 'Updated job level successfully.',
+        'create_job_level_successfully' => 'Added job level successfully.',
+        'delete_job_level_successfully' => 'Deleted job level successfully.',
+        'delete_job_level?' => 'Delete this job level?',
 
 
 
