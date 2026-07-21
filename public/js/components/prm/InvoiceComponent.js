@@ -516,13 +516,13 @@ var InvoiceComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
-                {
-                    html:
-                        '<span class="ps-2" vslang="titles.Print Invoice Internal"></span>',
-                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "print_invoice_internal"
-                },
+                // {
+                //     html:
+                //         '<span class="ps-2" vslang="titles.Print Invoice Internal"></span>',
+                //     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "print_invoice_internal"
+                // },
                 {
                     html:
                         '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
@@ -711,9 +711,13 @@ var InvoiceComponent = (() => {
                     }
                     if (invType === 1) {
                         InvoiceTaxDialog.show(params);
-                    } else if (invType === 2 && mThis.internalInvoice) {
-                        InternalInvoiceNoTaxDialog.show(params);
-                    } else if (invType === 2) {
+                    }
+                    
+                    // else if (invType === 2 && mThis.internalInvoice) {
+                    //     InternalInvoiceNoTaxDialog.show(params);
+                    // }
+                    
+                    else if (invType === 2) {
                         InvoiceNoTaxDialog.show(params);
                     } else if (invType === 3) {
                         InvoiceCommercialDialog.show(params);

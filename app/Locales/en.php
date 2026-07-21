@@ -432,6 +432,7 @@ return [
         'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
         'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
 
+<<<<<<< HEAD
 
         'create_success_position' => 'Create position successfully.',
         'update_success_position' => 'Update position successfully.',
@@ -468,6 +469,13 @@ return [
 
         
 
+=======
+        'update_success_employee' => 'Updated employee successfully.',
+        'create_success_employee' => 'Created employee successfully.',
+        'delete_success_employee' => 'Employee deleted successfully.',
+        '' => '',
+        '' => '',
+>>>>>>> cc928b6dbcd30f3d37cf8e833247a8ee4b0c29ea
 
 
 

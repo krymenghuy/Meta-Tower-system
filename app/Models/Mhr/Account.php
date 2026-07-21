@@ -129,77 +129,97 @@ class Account extends VSModel
         return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');
     }
 
-    function getList($arr, $ss)
-    {
-        $d = (object) $arr;
-        $is_master_account = $d->is_master_account ?? 0;
-        $branch_id = $d->branch_id ?? null;
-        $account_type = $d->account_type ?? 'Standard';
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page))  $current_page = 1;
-        $skip_rows = ($current_page - 1) * $per_page;
-        $search_value = $d->search_value ?? null;
-        $department_id = $d->department_id ?? null;
-        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-        $query = null;
+public function getList($arr, $ss)
+{
+    $d = (object) $arr;
 
-        if ($is_master_account) {
-            $query = DB::table('accounts as a')
-                ->selectRaw('
-               a.id,
-               a.emp_id,
-               \'Master Account\' as emp_name,
-               null AS \'NA\',
-               \'Payroll\' as account_type,
-               a.account_number,
-               a.balance,
-               a.currency_code,
-               ' . $balance_date . '
-           ')->where('id', 1);
+    $isMasterAccount = (int) ($d->is_master_account ?? 0);
+    $branchId       = $d->branch_id ?? null;
+    $departmentId   = $d->department_id ?? null;
+    $accountType    = $d->account_type ?? 'Standard';
+    $searchValue    = trim($d->search_value ?? '');
+
+    $currentPage = max((int) ($d->current_page ?? 1), 1);
+    $perPage     = max((int) ($d->per_page ?? 10), 1);
+    $skipRows    = ($currentPage - 1) * $perPage;
+
+    $balanceDate = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+
+    if ($isMasterAccount) {
+
+        $query = DB::table('accounts as a')
+            ->selectRaw("
+                a.id,
+                a.emp_id,
+                'Master Account' AS emp_name,
+                NULL AS position,
+                'Payroll' AS account_type,
+                a.account_number,
+                a.balance,
+                a.currency_code,
+                {$balanceDate},
+                NULL AS emp_photo
+            ")
+            ->where('a.id', 1);
+
+    } else {
+
+        $query = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->leftJoin('positions as p', 'p.id', '=', 'e.position_id')
+            ->selectRaw("
+                a.id,
+                a.emp_id,
+                e.name AS emp_name,
+                p.name AS position,
+                a.account_type,
+                a.account_number,
+                a.balance,
+                a.currency_code,
+                {$balanceDate},
+                e.photo_file_name AS emp_photo
+            ")
+            ->where('a.account_type', $accountType);
+
+        // Search
+        if ($searchValue !== '') {
+
+            $searchValue = escape_like_str($searchValue);
+
+            $query->where(function ($q) use ($searchValue) {
+                $q->where('e.name', 'LIKE', "%{$searchValue}%")
+                  ->orWhere('a.account_number', 'LIKE', "%{$searchValue}%");
+            });
+
         } else {
-            $query = DB::table('accounts as a')
-                ->join('employees as e', 'e.id', '=', 'a.emp_id')
-                ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-                ->selectRaw('
-               a.id,
-               a.emp_id,
-               e.name as emp_name,
-               pos.name as position,
-               a.account_type,
-               a.account_number,
-               a.balance,
-               a.currency_code,
-               ' . $balance_date . ',
-               e.photo_file_name as emp_photo
-           ')
-                ->where('a.account_type', $account_type);
-            if ($search_value) {
-                $search_value = escape_like_str($search_value);
-                $query->where('e.name', 'LIKE', "%{$search_value}%");
-            }else {
-                if ($branch_id) $query->where('e.branch_id', $branch_id);
-                if ($department_id) $query->where('pos.department_id', $department_id);
+
+            if (!empty($branchId)) {
+                $query->where('e.branch_id', $branchId);
+            }
+
+            if (!empty($departmentId)) {
+                $query->where('p.department_id', $departmentId);
             }
         }
-
-        $count = $query->count('a.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        // foreach ($rows as $row) {
-        //     if ($is_master_account == 1) {
-        //         //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
-        //         $c_id = getCurrentSubs(true)->subscriber_id;
-        //         $subs_id = $ss->subs_id;
-        //         $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
-        //         unset($row->emp_photo);
-        //     } else {
-        //         $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-        //         unset($row->emp_photo);
-        //     }
-        // }
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+    // Clone query before count (important for hosting compatibility)
+    $countQuery = clone $query;
+    $count = $countQuery->count();
+
+    // Get paginated rows
+    $rows = $query
+        ->offset($skipRows)
+        ->limit($perPage)
+        ->get();
+
+    return new LengthAwarePaginator(
+        $rows,
+        $count,
+        $perPage,
+        $currentPage
+    );
+}
 
     function getDetails($id)
     {

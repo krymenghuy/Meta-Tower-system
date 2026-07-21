@@ -309,7 +309,6 @@ Route::get('tenant/{componentName?}', function ($componentName = null) {
     ]);
 
 });
-
 Route::get('umt/{componentName?}', function ($componentName = null) {
      $user = XAuthService::user();
     if (!$user) {
