@@ -25,8 +25,8 @@ class Department extends VSModel
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100',
-            'shortcut' => '1|string|0-10',
+            'name' => '1|string|0-100|text=name_required::@key;@max;@value',
+            'shortcut' => '1|string|0-10|text=shortcut_required::@key;@max;@value',
             'description' => '0|string|255',
             'inactive' => '0|number|default = 0',
         ];

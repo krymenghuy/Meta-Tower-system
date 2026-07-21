@@ -54,23 +54,81 @@ class InvoiceSetting extends VSModel
         ]);
     }
 
+    // public function getExchangeRate($id = null, $ss = null)
+    // {
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+
+    //     $setting = DB::table($this->table)->where('id', 1)->first();
+
+    //     if (!$setting) {
+    //         return DV::error('Invoice settings not found!');
+    //     }
+
+    //     return [
+    //         'exchange_rate' => $setting->exchange_rate ?? '0.00',
+    //     ];
+    // }
+
     public function getExchangeRate($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $setting = DB::table($this->table)->where('id', 1)->first();
+        $setting = DB::table($this->table)
+            ->find(1);
 
-        if (!$setting) {
-            return DV::error('Invoice settings not found!');
-        }
-
-        return [
-            'exchange_rate' => $setting->exchange_rate ?? '0.00',
-        ];
+        return DV::depends(1, [
+            'exchange_rate'   => $setting?->exchange_rate ?? 0,
+            'warning_message' => $setting ? null : 'Exchange rate not found!',
+        ]);
     }
 
-    public function  getInvoiceSetting($id = null, $ss = null)
+
+
+
+
+    // public function  getInvoiceSetting($id = null, $ss = null)
+    // {
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+
+    //     $mimeTypes = [
+    //         'pdf'  => 'application/pdf',
+    //         'png'  => 'image/png',
+    //         'jpg'  => 'image/jpeg',
+    //         'jpeg' => 'image/jpeg',
+    //         'gif'  => 'image/gif',
+    //         'webp' => 'image/webp',
+    //     ];
+
+    //     $setting = DB::table($this->table)->where('id', 1)->first();
+
+    //     if (!$setting) {
+    //         return DV::error('Invoice settings not found!');
+    //     }
+
+    //     $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->qr_file_name;
+    //     $cleanPath = str_replace('\\', '/', $file);
+
+    //     $extension = strtolower(pathinfo($setting->qr_file_name, PATHINFO_EXTENSION));
+    //     $file_type = $mimeTypes[$extension] ?? null;
+
+    //     return [
+    //         'show_balance' => $setting->show_balance,
+    //         'show_comm_tax' => $setting->show_comm_tax,
+    //         'show_pmt_status' => $setting->show_pmt_status,
+    //         'show_amount_paid' => $setting->show_amount_paid,
+    //         'exchange_rate' => $setting->exchange_rate ?? '0.00',
+    //         'qr_file_name'           => $setting->qr_file_name,
+    //         'QR_file_type'              => $file_type,
+    //         'QR_file'              => $cleanPath,
+    //         'show_sign'        => (int) $setting->show_sign,
+    //     ];
+    // }
+
+
+    public function getInvoiceSetting($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -86,28 +144,37 @@ class InvoiceSetting extends VSModel
 
         $setting = DB::table($this->table)->where('id', 1)->first();
 
-        if (!$setting) {
-            return DV::error('Invoice settings not found!');
-        }
+        // if (!$setting) {
+        //     return DV::error('Invoice settings not found!');
+        // }
 
-        $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->qr_file_name;
-        $cleanPath = str_replace('\\', '/', $file);
+        $qr_filename = $setting->qr_file_name ?? null;
+        $file_type = null;
+        if($qr_filename){
+            $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->qr_file_name;
+            $cleanPath = str_replace('\\', '/', $file);
 
-        $extension = strtolower(pathinfo($setting->qr_file_name, PATHINFO_EXTENSION));
-        $file_type = $mimeTypes[$extension] ?? null;
+            $extension = strtolower(pathinfo($setting->qr_file_name, PATHINFO_EXTENSION));
+            $file_type = $mimeTypes[$extension] ?? null;
+        }  
+      
 
         return [
-            'show_balance' => $setting->show_balance,
-            'show_comm_tax' => $setting->show_comm_tax,
-            'show_pmt_status' => $setting->show_pmt_status,
-            'show_amount_paid' => $setting->show_amount_paid,
-            'exchange_rate' => $setting->exchange_rate ?? '0.00',
-            'qr_file_name'           => $setting->qr_file_name,
+            'show_balance' => $setting->show_balance ?? 1,
+            'show_comm_tax' => $setting->show_comm_tax ?? 0,
+            'show_pmt_status' => $setting->show_pmt_status ?? 1,
+            'show_amount_paid' => $setting->show_amount_paid ?? 1,
+            'exchange_rate' => $setting->exchange_rate ?? 0,
+            'build_representative' => $setting->build_representative ?? '',
+            'representative_phone' => $setting->representative_phone ?? '',
+            'representative_address' => $setting->representative_address ?? '',
+            'qr_file_name'           => $setting->qr_file_name ?? '',
             'QR_file_type'              => $file_type,
-            'QR_file'              => $cleanPath,
-            'show_sign'        => (int) $setting->show_sign,
+            'QR_file'              => $cleanPath ?? '',
+            'show_sign'        => (int) ($setting? $setting->show_sign : 0), //show be show_logo 
         ];
     }
+
 
     public function updateToglleButton($arr = [], $ss = null)
     {

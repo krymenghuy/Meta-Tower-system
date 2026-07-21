@@ -214,6 +214,31 @@ return [
         'year_required' => 'សូមជ្រើសរើសឆ្នាំដែលត្រឹមត្រូវ.',
         'payroll_number_required' => 'សូមជ្រើសរើសលេខបៀវត្សរ៍ដែលត្រឹមត្រូវ.',
 
+        'select_department' => 'សូមជ្រើសរើសនាយកដ្ឋាន។',
+        'select_job_level' => 'សូមជ្រើសរើសកម្រិតការងារ។',
+        'enter_shortcut' => 'សូមបញ្ចូលអក្សរកាត់',
+        'enter_salary' => 'សូមបញ្ចូលប្រាក់បៀវត្សរ៍',
+        'select_currency_code' => 'សូមជ្រើសរើសរូបិយប័ណ្ណ',
+        'select_staff_group' => 'សូមជ្រើសរើសក្រុមបុគ្គលិក។',
+        'position_exist'=> 'មុខតំណែងនេះមានរួចហើយ។',
+
+
+        'select_holiday_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
+        'start_date' => 'សូមជ្រើសរើសថ្ងៃចាប់ផ្ដើម។',
+        'end_date' => 'សូមជ្រើសរើសថ្ងៃបញ្ចប់។',
+        'holiday_exist'=> 'ថ្ងៃឈប់សម្រាកនេះមានរួចហើយ។',
+
+
+        'required_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវ។', 
+        'required_action' => 'សូមជ្រើសរើសសកម្មភាពត្រឹមត្រូវ។',
+        'required_time' => 'សូមជ្រើសរើសម៉ោងត្រឹមត្រូវ។',
+        'select_work_shift' => 'សូមជ្រើសរើសម៉ោងធ្វើការ',
+
+        'warning_type' => 'សូមជ្រើសរើសប្រភេទការព្រមាន។',
+        'warning_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទព្រមាន។',
+        'issues' => 'សូមបញ្ចូលបញ្ហា។'
+
+
 
 
 
@@ -701,6 +726,13 @@ return [
         'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
         'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
 
+        'Shortcut' => 'អក្សរកាត់',
+        'Update By'=> 'បានកែប្រែដោយ',
+        'Modify Department' => 'កែប្រែនាយកដ្ឋាន',
+        'Add Department' => 'បង្កើតនាយកដ្ឋាន',
+        'Delete Department' => 'លុបនាយកដ្ឋាន',
+        'Departments' => 'នាយកដ្ឋាន',
+
 
 
 
@@ -743,7 +775,34 @@ return [
         'Add Position' => 'បង្កើតមុខតំណែង',
         'Modify Position' => 'កែប្រែមុខតំណែង',
         'Delete Position' => 'លុបមុខតំណែង',
-        ''
+        'Department' => 'នាយកដ្ឋាន',
+        'Staff Group' => 'ក្រុមបុគ្គលិក',
+        'Salary' => 'ប្រាក់បៀវត្សរ៍',
+
+
+        'Manage Holiday' => 'ថ្ងៃឈប់សម្រាក',
+        'Holiday Date' => 'ថ្ងៃឈប់សម្រាក',
+        'Holiday Name' => 'ឈ្មោះថ្ងៃឈប់សម្រាក',
+        'Holiday Type' => 'ប្រភេទថ្ងៃឈប់សម្រាក',
+        'Create Holiday' => 'បង្កើតថ្ងៃឈប់សម្រាក',
+        'Modify Holiday' => 'កែប្រែថ្ងៃឈប់សម្រាក',
+        'Delete Holiday' => 'លុបថ្ងៃឈប់សម្រាក',
+
+        'Create Warning' => 'បង្កើតការព្រមាន',
+        'Modify Warning' => 'កែប្រែការព្រមាន',
+        'Delete Warning' => 'លុបការព្រមាន',
+        'Warning Type' => 'ប្រភេទការព្រមាន',
+        'Issue' => 'បញ្ហា',
+        'Employee Warning'=> 'ការព្រមានបុគ្គលិក',
+        'Add Warning'=> 'បង្កើតការព្រមាន',
+        
+        
+
+        
+
+       
+        
+        
         
 
 
@@ -1022,6 +1081,13 @@ return [
         'Add Position' => 'បង្កើតមុខតំណែង',
         'Modify Position' => 'កែប្រែមុខតំណែង',
 
+        'Create Holiday' => 'បង្កើតថ្ងៃឈប់សម្រាក',
+        'Modify Holiday' => 'កែប្រែថ្ងៃឈប់សម្រាក',
+
+        'Add Department' => 'បន្ថែមនាយកដ្ឋាន',
+        'Create Warning' => 'បង្កើតការព្រមាន',
+
+
 
     ],
     'filters' => [
@@ -1203,7 +1269,7 @@ return [
         'Address (English)' => 'អាស័យដ្ឋាន (អង់គ្លេស)',
         'phone_number' => 'លេខទូរស័ព្ទ',
         'email' => 'អ៊ីមែល',
-        'Position' => 'តំណែង',
+        'Position' => 'មុខតំណែង',
 
         'Booking Name' => 'ឈ្មោះអ្នកកក់',
         'Booking Phone' => 'លេខទូរសព្ទអ្នកកក់',
@@ -1288,15 +1354,11 @@ return [
         'Flat Tax' => 'ពន្ធថេរ',
         'Account Type' => 'ប្រភេទគណនី',
         'Collapse/Expand Details' => 'បិទ/បើកព័ត៌មានលម្អិត',
-         'Square footage' => 'ទំហំផ្ទះ',
-         'Contract Status' => 'ស្ថានភាពកិច្ចសន្យា',
-         'Team Name' => "ឈ្មោះក្រុម",
-         'Select Space' => "សូមជ្រើសរើសបន្ទប់",
-         'Tenant ID' => "លេខសម្គាល់អ្នកជួល",
-
-
-
-
+        'Square footage' => 'ទំហំផ្ទះ',
+        'Contract Status' => 'ស្ថានភាពកិច្ចសន្យា',
+        'Team Name' => "ឈ្មោះក្រុម",
+        'Select Space' => "សូមជ្រើសរើសបន្ទប់",
+        'Tenant ID' => "លេខសម្គាល់អ្នកជួល",
 
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Attendance Date' => 'កាលបរិច្ឆេទវត្តមាន',
@@ -1309,6 +1371,24 @@ return [
 
 
         'Department' => 'នាយកដ្ឋាន',
+        'Staff Group' => 'ក្រុមបុគ្គលិក',
+        'Salary' => 'ប្រាក់បៀវត្សរ៍',
+        'Job Level'=> 'កំរិតការងារ',
+        'ShortCut' => 'អក្សរកាត់',
+        'Position (KH)'=> 'មុខតំណែង (ខ្មែរ)',
+        'Position (EN)'=> 'មុខតំណែង (អង់គ្លេស)',
+
+        'Create Holiday' => 'បង្កើតថ្ងៃឈប់សម្រាក',
+        'Holiday Name' => 'ឈ្មោះថ្ងៃឈប់សម្រាក',
+        'Holiday Date' => 'ថ្ងៃឈប់សម្រាក',
+        'Holiday Type' => 'ប្រភេទថ្ងៃឈប់សម្រាក',
+
+        'Warning Type' => 'ប្រភេទការព្រមាន',
+        'Warning Date' => 'ថ្ងៃប្រកាសព្រមាន',
+        'Issue' => 'បញ្ហា',
+        'failed_to_save' => 'មិនអាចរក្សាទុកព័ត៌មានព្រមានបានទេ',
+
+
 
 
 
@@ -1508,6 +1588,11 @@ return [
         'create_success_benefit_disbursement' => 'បានបន្ថែមការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
         'delete_success_benefit_disbursement' => 'បានលុបការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
 
+
+        'create_success_employee' => 'បានបង្កើតព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
@@ -1526,13 +1611,43 @@ return [
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
 
+        'create_success_position'=> 'បង្កើតមុខតំណែងដោយជោគជ័យ។',
+        'update_success_position'=> 'កែប្រែមុខតំណែងដោយជោគជ័យ។',
+        'delete_success_position'=> 'លុបមុខតំណែងដោយជោគជ័យ។',
+        'delete_position'=> 'តើអ្នកប្រាកដទេថាចង់លុបមុខតំណែងនេះ?',
+        'position_not_found'=> 'រកមិនឃើញមុខតំណែង។',
+        'position_has_employees'=> 'មិនអាចលុបមុខតំណែងនេះបានទេ ព្រោះវាត្រូវបានប្រើប្រាស់ដោយបុគ្គលិក។',
 
+        'delete_success_holiday'=> 'លុបថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'update_success_holiday'=> 'កែប្រែថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'create_success_holiday'=> 'បង្កើតថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'delete_holiday' => 'តើអ្នកប្រាកដទេថាចង់លុបថ្ងៃឈប់សម្រាកនេះ?',
+        
+        'update_department_success' => 'កែប្រែនាយកដ្ឋានដោយជោគជ័យ។',
+        'create_department_success' => 'បង្កើតនាយកដ្ឋានដោយជោគជ័យ។',
+        'delete_department_success' => 'លុបនាយកដ្ឋានដោយជោគជ័យ។',
+        'delete_department?' => 'តើអ្នកប្រាកដទេថាចង់លុបនាយកដ្ឋាននេះ?',
+
+        'attendance_create_successfully' => 'បង្កើតវត្តមានបានជោគជ័យ។',
+        'attendance_update_successfully' => 'កែប្រែវត្តមានបានជោគជ័យ។',
+        'attendance_delete_successfully' => 'លុបវត្តមានបានជោគជ័យ។',
+        'delete_attendance?' => 'តើអ្នកប្រាកដទេថាចង់លុបវត្តមាននេះ?',
+
+        'warning_update_successfully' => 'កែប្រែការព្រមានដោយជោគជ័យ។',
+        'warning_create_successfully' => 'បង្កើតការព្រមានដោយជោគជ័យ។',
+        'warning_delete_successfully' => 'លុបការព្រមានដោយជោគជ័យ។',
+        'delete_warning?' => 'តើអ្នកប្រាកដទេថាចង់លុបការព្រមាននេះ?',
+ 
+        
+        
+        
         'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
         'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
 
         'Benefit'=> 'អត្ថប្រយោជន៍',
         'Policy'=> 'គោលនយោបាយ',
         'Disbursed'=> 'បានបើកប្រាក់',
+
 
 
 

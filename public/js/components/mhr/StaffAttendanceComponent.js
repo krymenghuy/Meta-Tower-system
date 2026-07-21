@@ -309,7 +309,7 @@ var StaffAttendanceComponent = (function () {
             }
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Attendance Record?',{
+        cv_interact.confirm('delete_attendance?',{
             title: 'Delete Attendance Record.',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -317,7 +317,7 @@ var StaffAttendanceComponent = (function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/mhr/attendances/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
+                        cv_interact.success('attendance_delete_successfully');
                         mThis.StaffAttendanceListView.showPage();
                     } else {
                         cv_interact.error(res.error_message || 'An error occurred while deleting');
@@ -450,9 +450,15 @@ const StaffAttendanceDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
-                                    cv_interact.success(
-                                        "Attendance save successfully",
-                                    );
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "attendance_update_successfully",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "attendance_create_successfully",
+                                        );
+                                    }
                                 } else cv_interact.error(res.error_message);
                             });
                     },
