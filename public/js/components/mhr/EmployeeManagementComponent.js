@@ -767,9 +767,6 @@ const EmployeeDialog = (() => {
             </div>`;
     };
 
-    const sectionTitle = (text) =>
-        `<div class="col-12"><div class="fw-semibold mb-1">${text}</div></div>`;
-
     self.show = (op) => {
         dialog =
             dialog ||
@@ -779,29 +776,48 @@ const EmployeeDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row g-3">
-                            <div class="col-md-3">
-                                <div id="_emp_dialog_photo" class="emp-dialog-photo-wrap d-flex align-items-center justify-content-center"></div>
+                        `<div class="tenant-form row g-3">
+                            <div class="col-12 col-md-3">
+                                <div class="emp-photo-container">
+                                    <div id="emp-upload-zone" class="emp-image-card">
+                                        <input id="emp-photo-input" type="file" accept=".png,.jpg,.jpeg" class="d-none" />
+                                        <button type="button" id="emp-choose-photo" class="emp-upload-trigger" aria-label="Choose employee photo">
+                                            <svg class="emp-photo-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div id="emp-preview-zone" class="emp-image-card d-none">
+                                        <button type="button" id="emp-remove-photo" class="emp-photo-remove" aria-label="Remove employee photo">
+                                            <span>&times;</span>
+                                        </button>
+                                        <div class="emp-photo-preview">
+                                            <img id="emp-preview-image" src="" alt="Employee profile" title="Click to change photo" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-9">
+                            <div class="col-12 col-md-9">
                                 <div class="row g-3">
-                                    <div class="col-12">
+                                    <div class="col-12 col-md-6">
                                         ${materialField("name", "name", "Full Name", { required: true })}
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
                                         ${materialField("name_kh", "name_kh", "Khmer Name", { required: true })}
                                     </div>
-                                    <div class="col-md-6">
-                                        ${materialField("date_of_birth", "date_of_birth", "Date of Birth", { date: true, required: true })}
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
                                         <select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="Sex" required>
                                             <option value="">Select</option>
                                             <option value="M">Male</option>
                                             <option value="F">Female</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
+                                        ${materialField("date_of_birth", "date_of_birth", "Date of Birth", { date: true, required: true })}
+                                    </div>
+                                    <div class="col-12 col-md-6">
                                         <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="Marital Status" required>
                                             <option value="single">Single</option>
                                             <option value="married">Married</option>
@@ -809,80 +825,111 @@ const EmployeeDialog = (() => {
                                             <option value="widowed">Widowed</option>
                                         </select>
                                     </div>
+                                    <div class="col-12 col-md-6">
+                                        <select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="Nationality" required></select>
+                                    </div>
                                 </div>
                             </div>
 
-                            ${sectionTitle("Identification")}
-                            <div class="col-md-4">
-                                <select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="Nationality" required></select>
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("nid", "nid", "Identity Card", { required: true })}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("nid_expiry_date", "nid_expiry_date", "Identity Card Expiry", { date: true, required: true })}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("nssf_id", "nssf_id", "NSSF ID")}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("passport_number", "passport_number", "Passport Number")}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("passport_expiry_date", "passport_expiry_date", "Passport Expiry", { date: true })}
-                            </div>
-
-                            ${sectionTitle("Employment & Contact")}
-                            <div class="col-md-4">
-                                <select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="Place of Birth"></select>
-                            </div>
-                            <div class="col-md-4">
-                                <select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="Employee Type" required></select>
-                            </div>
-                            <div class="col-md-4">
-                                <select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="Position" required></select>
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("phone_number", "phone_number", "Phone", { required: true })}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("email", "email", "Email", { type: "email", required: true })}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("salary", "salary", "Salary", { type: "number" })}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("joining_date", "joining_date", "Joining Date", { date: true, required: true })}
-                            </div>
-                            <div class="col-md-8">
-                                ${materialField("address", "address", "Address", { required: true })}
-                            </div>
-
-                            ${sectionTitle("Family & Payroll")}
-                            <div class="col-md-4">
-                                ${materialField("spouse_name", "spouse_name", "Spouse Name")}
-                            </div>
-                            <div class="col-md-4">
-                                ${materialField("spouse_occ_code", "spouse_occ_code", "Spouse Occupation")}
-                            </div>
-                            <div class="col-md-4">
-                                <select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="Spouse Employee"></select>
-                            </div>
-                            <div class="col-md-4">
-                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="Apply Payroll Tax" required></select>
+                            <div class="col-12 row g-3">
+                                <div class="col-12 col-md-6">
+                                    ${materialField("nid", "nid", "Identity Card", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("nid_expiry_date", "nid_expiry_date", "Identity Card Expiry", { date: true, required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("nssf_id", "nssf_id", "NSSF ID", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("passport_number", "passport_number", "Passport Number", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("passport_expiry_date", "passport_expiry_date", "Passport Expiry", { date: true, required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="Place of Birth" required></select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="Employee Type" required></select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="Position" required></select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("phone_number", "phone_number", "Phone", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("email", "email", "Email", { type: "email", required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("salary", "salary", "Salary", { type: "number", required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("joining_date", "joining_date", "Joining Date", { date: true, required: true })}
+                                </div>
+                                <div class="col-12">
+                                    ${materialField("address", "address", "Address", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("spouse_name", "spouse_name", "Spouse Name", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    ${materialField("spouse_occ_code", "spouse_occ_code", "Spouse Occupation", { required: true })}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="Spouse Employee" required></select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="Apply Payroll Tax" required></select>
+                                </div>
                             </div>
                         </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    const photoEl = me.self.querySelector("#_emp_dialog_photo");
-                    if (photoEl && !me.controls._empPhotoBox) {
-                        me.controls._empPhotoBox = new ImageBox(photoEl, {
-                            dataset: { field: "photo" },
-                            cssClass: "data-input",
-                            defaultPhotoName: "default-staff",
-                        });
-                    }
+                    me.photoInput = me.divModal.querySelector("#emp-photo-input");
+                    me.photoUploadZone = me.divModal.querySelector("#emp-upload-zone");
+                    me.photoPreviewZone = me.divModal.querySelector("#emp-preview-zone");
+                    me.photoPreviewImage = me.divModal.querySelector("#emp-preview-image");
+                    me.employeePhoto = null;
+
+                    me.renderEmployeePhoto = () => {
+                        const hasPhoto = Boolean(me.employeePhoto);
+                        me.photoUploadZone.classList.toggle("d-none", hasPhoto);
+                        me.photoPreviewZone.classList.toggle("d-none", !hasPhoto);
+                        me.photoPreviewImage.src = hasPhoto ? me.employeePhoto : "";
+                        if (!hasPhoto) me.photoInput.value = "";
+                    };
+
+                    me.divModal.querySelector("#emp-choose-photo").onclick = () => {
+                        me.photoInput.click();
+                    };
+                    me.photoPreviewImage.onclick = () => me.photoInput.click();
+                    me.divModal.querySelector("#emp-remove-photo").onclick = (event) => {
+                        event.stopPropagation();
+                        me.employeePhoto = null;
+                        me.renderEmployeePhoto();
+                    };
+
+                    me.photoInput.addEventListener("change", (event) => {
+                        const file = event.target.files[0];
+                        if (!file) return;
+
+                        const extension = file.name.split(".").pop().toLowerCase();
+                        if (!["jpg", "jpeg", "png"].includes(extension)) {
+                            cv_interact.error("Please select a valid image file (.jpg, .jpeg, .png)");
+                            me.photoInput.value = "";
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = (readerEvent) => {
+                            me.employeePhoto = readerEvent.target.result;
+                            me.renderEmployeePhoto();
+                        };
+                        reader.readAsDataURL(file);
+                    });
                 },
                 configSelect: [
                     {
@@ -942,13 +989,9 @@ const EmployeeDialog = (() => {
                     const emp = data?.employee;
                     const isEdit = Number(me.dataOptions.id) > 0;
 
-                    if (me.controls._empPhotoBox) {
-                        if (emp?.image_url) {
-                            me.controls._empPhotoBox.setImage(emp.image_url);
-                        } else if (!isEdit) {
-                            me.controls._empPhotoBox.setImage(null);
-                        }
-                    }
+                    me.employeePhoto = emp?.image_url || null;
+                    me.photoInput.value = "";
+                    me.renderEmployeePhoto();
 
                     if (isEdit) {
                         me.setReadOnly(true, [
@@ -972,20 +1015,14 @@ const EmployeeDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-
-                            if (me.controls._empPhotoBox) {
-                                const photo =
-                                    me.controls._empPhotoBox.getImage?.() ||
-                                    me.controls._empPhotoBox.getValue?.();
-                                if (photo) op.photo = photo;
-                            }
+                            op.photo = me.employeePhoto || "";
 
                             if (!op.id) {
                                 op.branch_id = main_view.branch_id;
                                 op.status_id = op.status_id || 10;
                             }
                             console.log(44,op);
-                            
+
 
                             vsapi
                                 .call(
