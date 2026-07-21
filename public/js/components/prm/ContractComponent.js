@@ -774,7 +774,7 @@ var ContractComponent = (() => {
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
-                    console.log("Auto-refreshing contracts...");
+                    // console.log("Auto-refreshing contracts...");
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh
@@ -1484,7 +1484,7 @@ const RenewDialog = (() => {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                     const det = data.contract_details || {};
-                    console.log(33,det);
+                    // console.log(33,det);
 
                     // const oldStartIso = normalizeContractDateToIso(det.start_date);
                     // const oldEndIso = normalizeContractDateToIso(det.end_date);
