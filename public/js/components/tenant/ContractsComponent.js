@@ -272,7 +272,7 @@ var ContractsComponent = new (function () {
                                             <span>${duration}</span>
                                         </div>
                                         <div class="contract-card__renewal-date">
-                                            <span vslang="titles.Renewal Date"></span> <span>${keyRenewalDate}</span>
+                                            <span vslang="titles.Expiry Date"></span> <span>${keyRenewalDate}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -574,7 +574,6 @@ var ContractsComponent = new (function () {
             <div class="contract2-renewal__item${isLast ? " is-original" : ""}">
                 <span class="contract2-renewal__dot"></span>
                 <div class="contract2-renewal__item-head">
-                    <span class="contract2-renewal__item-label" vslang="titles.Current term"></span>
                     <span class="contract2-renewal__item-date">${mThis.escapeHtml(dateLabel)}</span>
                 </div>
                 ${renderItemBox(
