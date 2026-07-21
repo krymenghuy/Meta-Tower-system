@@ -266,7 +266,7 @@ class Reservation extends VSModel
         return (object) [
             'reservation_details' => $reservation_details,
             'amenities'      => GeneralSettings::options_amenity($ss),
-            'tenants'        => GeneralSettings::options_tenant($ss),
+            'tenants'        => GeneralSettings::options_tenant_with_active_contract($ss),
             'reservation_statuses' => GeneralSettings::options_reservation_status($ss),
             'amenity_categories' => GeneralSettings::options_amenity_category($ss),
 

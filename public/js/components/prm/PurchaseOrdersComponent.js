@@ -761,7 +761,6 @@ var PurchaseOrdersComponent = (() => {
                             },
 
                             itemRendered: async (item, ctx) => {
-                                console.log(item, ctx);
                             }
                         },
                     );

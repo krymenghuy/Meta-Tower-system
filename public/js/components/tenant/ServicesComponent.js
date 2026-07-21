@@ -193,8 +193,6 @@ var ServicesComponent = (() => {
             // showExpandSignal: false,
             onOpen: (container, detail_tr, parent_tr) => {
                 const qtr = parent_tr;
-                console.log(2222, qtr.dataset);
-
                 let op = {
                     service_id: qtr.dataset.id,
                     description: qtr.__serviceDescription,
@@ -556,8 +554,6 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
-
                     const updateChargeAs = () => {
                         const isSubscription =
                             me.controls.service_type.value == 2;
@@ -605,7 +601,6 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(123,data.service_details);
                     // me.controls.charge_as.value = data.service_details.charge_as;
                     // me.controls.type.value = data.service_details.type;
                 },
@@ -624,7 +619,6 @@ const CreateServicePriceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(666, op);
 
                             vsapi
                                 .call(
