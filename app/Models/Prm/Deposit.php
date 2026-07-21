@@ -44,6 +44,10 @@ class Deposit
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
+        if (in_array($inputs['payment_method'] ?? '', ['Bank Transfer', 'Cheque']) && empty(trim($inputs['ref_no'] ?? ''))) {
+            return DV::error(\Vsd\Locales\Localization::trans('reference_no_is_required', 'validation'));
+        }
+
         $statusInput = $inputs['status_id'] ?? $inputs['status'] ?? null;
         $status_id = null;
         if ($statusInput !== null && $statusInput !== '') {

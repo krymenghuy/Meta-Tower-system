@@ -372,7 +372,7 @@ const WarningDialog = (() => {
                 },
                 {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
