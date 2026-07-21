@@ -772,6 +772,11 @@ const DepositDialog = (() => {
                             op.contract_id = me.controls.contract_id.value;
                             op.paid_amount = me.controls.paid_amount.value;
 
+                            if ((op.payment_method === "Bank Transfer" || op.payment_method === "Cheque") && (!op.ref_no || !op.ref_no.trim())) {
+                                cv_interact.warning(LocaleManager.trans("reference_no_is_required", "validation"));
+                                return;
+                            }
+
                             vsapi
                                 .call(
                                     `${main_view.base_url}/prm/deposit/save`,

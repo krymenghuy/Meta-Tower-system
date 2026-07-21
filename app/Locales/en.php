@@ -67,7 +67,7 @@ return [
         'please_select_a_valid_unit' => 'Please select a valid unit.',
         'please_select_a_valid_vendor' => 'Please select a valid vendor.',
         'please_select_a_valid_building' => 'Please select a valid building.',
-        'reference_no_is_required' => 'Reference no is required.',
+        'reference_no_is_required' => 'Reference number is required.',
         'total_amount_is_required' => 'Total amount is required.',
         'issue_date_is_required' => 'Issue date is required.',
         'due_date_is_required' => 'Due date is required.',
@@ -78,6 +78,7 @@ return [
         'error_saving_bill' => 'Error saving bill.',
         'bill_not_found' => 'Bill not found.',
         'cannot_delete_paid_invoice' => 'Cannot delete paid invoice.',
+        'cannot_cancel_deposit_terminated_contract' => 'Cannot cancel deposit receipt because the contract is already terminated.',
         'delete_failed' => 'Delete failed.',
         'same_current_status' => 'It is the same current status.',
         'file_is_required' => 'File is required.',
@@ -406,6 +407,7 @@ return [
         'delete_success_item' => 'Item deleted successfully.',
 
         'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
+        'restore_to_deposit' => 'This will restore to the due balance on the deposit.',
         'reason_for_cancellation' => 'Reason for cancellation (required)...',
         'reason_required' => 'You must provide a reason!',
 
@@ -468,6 +470,11 @@ return [
 
         
 
+        'update_success_employee' => 'Updated employee successfully.',
+        'create_success_employee' => 'Created employee successfully.',
+        'delete_success_employee' => 'Employee deleted successfully.',
+        '' => '',
+        '' => '',
 
 
 
