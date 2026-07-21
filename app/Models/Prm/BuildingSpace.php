@@ -373,17 +373,39 @@ class BuildingSpace
         if (!$space) {
             return DV::error('Building space not found.');
         }
+
         $building_id = $space->building_id;
-        if ($space->status_id > 1)
+
+        if ($space->status_id > 1) {
             return DV::error('This space cannot be deleted because it is not available.');
-        $deleted = DB::table('building_spaces')->where('id', $id)->delete();
-        if ($deleted) {
-            self::updateTotalSpace($building_id);
         }
 
-        return $deleted
-            ? DV::depends($deleted, ['action' => 'deleted'])
-            : DV::error('Delete failed.');
+        DB::beginTransaction();
+
+        try {
+            // Delete related maintenances
+            DB::table('maintenances')
+                ->where('building_space_id', $id)
+                ->delete();
+
+            // Delete building space
+            $deleted = DB::table('building_spaces')
+                ->where('id', $id)
+                ->delete();
+
+            if ($deleted) {
+                self::updateTotalSpace($building_id);
+            }
+
+            DB::commit();
+
+            return $deleted
+                ? DV::depends($deleted, ['action' => 'deleted'])
+                : DV::error('Delete failed.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return DV::error($e->getMessage());
+        }
     }
 
 
