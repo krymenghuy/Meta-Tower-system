@@ -377,18 +377,18 @@ return [
             ]
         ],
 
-        // 'attendance-script' => [
-        //     'attr' => 'defer',
-        //     'single_file' => 1,
-        //     'output_file' => '/dist/js/attendance.js',
-        //     'files' => [
-        //         '/assets/material-js/jquery.min.js',
-        //         '/assets/js/sweetalert2.all.min.js',
-        //        '/assets/js/datehelper.js',
-        //         '/assets/js/date.js',
-        //         '/assets/js/jquery.datepicker2.js',
-        //         'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
-        //         '/js/components/prm/ScanAttendanceComponent.js'
-        //     ]
-        // ]
+        'attendance-script' => [
+            'attr' => 'defer',
+            'single_file' => 1,
+            'output_file' => '/dist/js/attendance.js',
+            'files' => [
+                '/assets/material-js/jquery.min.js',
+                '/assets/js/sweetalert2.all.min.js',
+               '/assets/js/datehelper.js',
+                '/assets/js/date.js',
+                '/assets/js/jquery.datepicker2.js',
+                'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
+                '/js/components/mhr/ScanAttendanceComponent.js'
+            ]
+        ]
     ];
