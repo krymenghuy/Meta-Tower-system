@@ -357,6 +357,17 @@ class Receipt extends Model
                 return DV::error('Receipt is already canceled');
             }
             if($receipt->deposit_id){
+                $deposit = DB::table('deposits')->where('id', $receipt->deposit_id)->first();
+                if ($deposit) {
+                    $contract = DB::table('contracts')->where('id', $deposit->contract_id)->first();
+                    if ($contract) {
+                        $terminatedStatusId = \App\Models\Prm\Contract::getTerminatedStatusId();
+                        if ((int)$contract->status_id === (int)$terminatedStatusId) {
+                            return DV::error(\Vsd\Locales\Localization::trans('cannot_cancel_deposit_terminated_contract', 'validation'));
+                        }
+                    }
+                }
+
                 $updated = DB::table('receipts')
                 ->where('id', $id)
                 ->update([
@@ -377,7 +388,7 @@ class Receipt extends Model
                     'updated_at'        => now(),
                 ]);
 
-                return DV::success(['message' => 'Receipt canceled and invoice balance restored successfully']);
+                return DV::success(['message' => 'This will restore to the due balance on the deposit']);
                 
             }
             $updated = DB::table('receipts')

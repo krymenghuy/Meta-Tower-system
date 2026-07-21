@@ -60,7 +60,7 @@
 
     border:none;
     padding:18px 28px;
-    background: linear-gradient(135deg, #1d258a 0%, #151f5c 55%, #355cff 100%)
+    background: linear-gradient(177deg, #261a39 0%, #5c4383 55%, #261a39 100%)
 }
 .vs-modal .modal-header::after{
 
@@ -384,13 +384,9 @@
 
 .btn-vs-save{
 
-    min-width:180px;
+    width:100px;
 
-    width:auto;
-
-    padding:0 20px;
-
-    height:50px;
+    height:40px;
 
     border:none;
 
@@ -406,7 +402,7 @@
 
             #11175d,
 
-            #355cff
+            #4d3572
 
         );
 
@@ -426,21 +422,17 @@
 
 .btn-vs-cancel{
 
-    min-width:180px;
+    width:100px;
 
-    width:auto;
-
-    padding:0 20px;
-
-    height:50px;
+    height:40px;
 
     border-radius:14px;
 
-    background:#fff;
+    background:#f7f9ff;
 
-    color:#18296d;
+    color:#4d3572;
 
-    border:2px solid #b5c8ff;
+    border:2px solid #4d3572;
 }
 .btn-vs-cancel:hover{
 
