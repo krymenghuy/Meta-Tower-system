@@ -243,6 +243,7 @@ return [
         'select_staff_group' => 'សូមជ្រើសរើសក្រុមបុគ្គលិក។',
         'position_exist' => 'មុខតំណែងនេះមានរួចហើយ។',
         'department_exist' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
+        'work_shift_exist' => 'វេនការងារនេះមានរួចហើយ។',
         'exit_form_name_already_exists' => 'ឈ្មោះមានរួចហើយ។',
 
 
@@ -264,6 +265,7 @@ return [
         'enter_rank' => 'សូមបញ្ចូលចំណាត់ថ្នាក់។',
 
 
+        'work_shift_is_assigned_to_employee' => 'វេនការងារនេះត្រូវបានកំណត់ឱ្យបុគ្គលិករួចហើយ។',
 
 
 
@@ -818,7 +820,7 @@ return [
         'Delete Skill' => 'លុបជំនាញ',
         'Skills' => 'ជំនាញ',
 
-
+        'Work Shifts' => 'វេនការងារ',
 
 
 
