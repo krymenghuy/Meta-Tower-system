@@ -655,6 +655,29 @@ const EmployeeMovementHistoryDialog = (() => {
         "change work shift",
     ];
 
+    const EVENT_META = {
+        "change branch": {
+            icon: "fa-solid fa-building",
+            type: "branch",
+            label: "Branch",
+        },
+        "change position": {
+            icon: "fa-solid fa-briefcase",
+            type: "position",
+            label: "Position",
+        },
+        "change salary": {
+            icon: "fa-solid fa-coins",
+            type: "salary",
+            label: "Salary",
+        },
+        "change work shift": {
+            icon: "fa-solid fa-clock",
+            type: "shift",
+            label: "Work Shift",
+        },
+    };
+
     const esc = (s) =>
         String(s ?? "")
             .replace(/&/g, "&amp;")
@@ -686,20 +709,33 @@ const EmployeeMovementHistoryDialog = (() => {
         return n.toFixed(2);
     };
 
-    const changeText = (remarks, event) => {
+    const parseChangeParts = (remarks, event) => {
         const raw = String(remarks || "").trim();
-        if (!raw) return "—";
+        if (!raw) return { from: "—", to: "—" };
         const arrowPart = raw.split("|")[0].trim();
-        if (!arrowPart) return raw;
+        if (!arrowPart) return { from: raw, to: "—" };
 
+        const parts = arrowPart.split("→").map((p) => p.trim());
+        if (parts.length < 2) return { from: arrowPart, to: "—" };
+
+        let from = parts[0] || "—";
+        let to = parts[1] || "—";
         if (String(event || "").trim().toLowerCase() === "change salary") {
-            const parts = arrowPart.split("→");
-            if (parts.length === 2) {
-                return `${formatSalaryValue(parts[0])} → ${formatSalaryValue(parts[1])}`;
-            }
+            from = formatSalaryValue(from);
+            to = formatSalaryValue(to);
         }
+        return { from, to };
+    };
 
-        return arrowPart;
+    const eventMeta = (event) => {
+        const key = String(event || "").trim().toLowerCase();
+        return (
+            EVENT_META[key] || {
+                icon: "fa-solid fa-right-left",
+                type: "default",
+                label: event || "Event",
+            }
+        );
     };
 
     /** Newest-first list → keep one row per movement type (max 4) */
@@ -727,6 +763,7 @@ const EmployeeMovementHistoryDialog = (() => {
         const first = rows[0] || allRows[0] || {};
         const name = emp.name || first.emp_name || "Employee";
         const photo = emp.image_url || first.image_url || "";
+        const position = emp.position || first.position || "";
         const count = rows.length;
         const titleText = "Detail Movement";
 
@@ -749,26 +786,48 @@ const EmployeeMovementHistoryDialog = (() => {
         header.innerHTML = `
             <div class="mv-history-avatar">${avatarHtml}</div>
             <div class="mv-history-header-text">
-                <div class="mv-history-title">${esc(titleText)}</div>
-                <div class="mv-history-subtitle">${count} event${count === 1 ? "" : "s"}</div>
+                <div class="mv-history-title">${esc(name)}</div>
+                <div class="mv-history-subtitle">
+                    ${position ? `<span class="mv-history-role">${esc(position)}</span>` : ""}
+                    <span class="mv-history-count">${count} event${count === 1 ? "" : "s"}</span>
+                </div>
             </div>`;
 
         if (!rows.length) {
-            list.innerHTML = `<div class="mv-history-empty text-muted">No movements found</div>`;
+            list.innerHTML = `
+                <div class="mv-history-empty">
+                    <div class="mv-history-empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+                    <div class="mv-history-empty-title">No movements found</div>
+                    <div class="mv-history-empty-text">This employee has no recorded movement yet.</div>
+                </div>`;
             return;
         }
 
         list.innerHTML = rows
-            .map((row) => {
+            .map((row, index) => {
+                const meta = eventMeta(row.event);
+                const change = parseChangeParts(row.remarks, row.event);
+                const isLatest = index === 0;
                 return `
-                    <div class="mv-history-item">
-                        <div class="mv-history-dot"></div>
-                        <div class="mv-history-item-body">
-                            <div class="mv-history-item-main">
-                                <div class="mv-history-event">${esc(row.event || "Event")}</div>
-                                <div class="mv-history-change">${esc(changeText(row.remarks, row.event))}</div>
+                    <div class="mv-history-item mv-history-item--${esc(meta.type)}${isLatest ? " is-latest" : ""}">
+                        <div class="mv-history-rail">
+                            <div class="mv-history-dot" title="${esc(meta.label)}">
+                                <i class="${esc(meta.icon)}"></i>
                             </div>
-                            <div class="mv-history-date">${esc(row.event_date || "")}</div>
+                        </div>
+                        <div class="mv-history-card">
+                            <div class="mv-history-card-top">
+                                <div class="mv-history-event-wrap">
+                                    <span class="mv-history-event">${esc(row.event || "Event")}</span>
+                                    ${isLatest ? `<span class="mv-history-badge">Latest</span>` : ""}
+                                </div>
+                                <time class="mv-history-date">${esc(row.event_date || "")}</time>
+                            </div>
+                            <div class="mv-history-change">
+                                <span class="mv-history-pill mv-history-pill--from" title="From">${esc(change.from)}</span>
+                                <span class="mv-history-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                                <span class="mv-history-pill mv-history-pill--to" title="To">${esc(change.to)}</span>
+                            </div>
                         </div>
                     </div>`;
             })
@@ -787,18 +846,14 @@ const EmployeeMovementHistoryDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-lg vs-modal mv-history-dialog",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row g-3">
-                            <div class="col-12">
-                                <div id="_mv_history_header" class="mv-history-header"></div>
-                            </div>
-                            <div class="col-12">
-                                <div id="_mv_history_list" class="mv-history-timeline"></div>
-                            </div>
+                        `<div class="mv-history-body">
+                            <div id="_mv_history_header" class="mv-history-header"></div>
+                            <div id="_mv_history_list" class="mv-history-timeline"></div>
                         </div>`,
                     ].join("");
                 },
@@ -806,7 +861,7 @@ const EmployeeMovementHistoryDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Close"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn btn-secondary mv-history-btn-close",
                         click: (me, btn) => me.hide(false),
                     },
                 ],
