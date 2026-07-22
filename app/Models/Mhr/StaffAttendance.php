@@ -67,7 +67,7 @@ class StaffAttendance extends VSModel
             'emp_id' => $emp_id,
             'scan_time' => $scan_time,
             'scan_action' => $scan_action,
-            'attendance_status' => $inputs['attendance_status'] ?? $arr['attendance_status'] ?? 'Present',
+            // 'attendance_status' => $inputs['attendance_status'] ?? $arr['attendance_status'] ?? 'Present',
             'attendance_date' => $attendance_date ?? '',
             'work_shift_id' => $work_shift_id ?? null,
             'remarks' => $remarks,
@@ -99,7 +99,7 @@ class StaffAttendance extends VSModel
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
             ->selectRaw('a.id, a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code as emp_code,'
                 . $dob . ', ws.name as work_shift,'
-                . $scan_date . ', a.scan_time, a.scan_action, a.attendance_status, a.remarks, p.name as position')
+                . $scan_date . ', a.scan_time, a.scan_action, a.remarks, p.name as position')
             ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
         if ($search_value) {
             $query->where(function ($subQuery) use ($search_value) {
@@ -157,7 +157,7 @@ class StaffAttendance extends VSModel
         }
         $row = DB::table('emp_attendances as a')
             ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
-            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.attendance_status, a.work_shift_id, a.remarks')
+            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.work_shift_id, a.remarks')
             ->where('a.id', $id)
             ->first();
         if (!$row) {
