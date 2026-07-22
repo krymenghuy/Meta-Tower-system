@@ -34,6 +34,7 @@ use App\Http\Controllers\Mhr\PositionController;
 use App\Http\Controllers\Mhr\DepartmentController;
 use App\Http\Controllers\Mhr\TaxAllowanceController;
 use App\Http\Controllers\Mhr\AttendanceController;
+use App\Http\Controllers\Mhr\ShiftDetailsController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -318,4 +319,13 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-polic
     Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
     Route::post('/delete', [BenefitDisbursePolicyController::class, 'delete']);
     Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details')->group(function () {
+
+    Route::post('/save', [ShiftDetailsController::class, 'saveShiftDetails']);
+    Route::post('/list-paginate', [ShiftDetailsController::class, 'getShiftDetailsListPaginate']);
+    Route::post('/details', [ShiftDetailsController::class, 'getDetails']);
+    Route::post('/delete', [ShiftDetailsController::class, 'deleteShiftDetails']);
+    Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
+    Route::post('/list', [ShiftDetailsController::class, 'getShiftDetail']);
 });
