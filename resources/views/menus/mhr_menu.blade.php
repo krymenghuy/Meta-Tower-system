@@ -164,7 +164,7 @@ function v_display($mod_id, $module_ids = null)
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                                     </span>
-                                    <span class="font-color kt-menu__link-text" vslang="menus.Track Shifts">Track Shifts</span>
+                                    <span class="font-color kt-menu__link-text" vslang="menus.Attendance Track">Attendance Track</span>
                                 </a>
                             </li>
                         </ul>
