@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Mhr;
+
 use App\Models\Prm\GeneralSettings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 
 use XPublicStorage;
 use Vsd\Vsloquent\VSModel;
+
 class Leave extends VSModel
 {
     protected $userInfo = null;
@@ -23,7 +25,8 @@ class Leave extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    public function upsert($arr = [], $id = null, $ss = null) {
+    public function upsert($arr = [], $id = null, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
@@ -43,9 +46,9 @@ class Leave extends VSModel
         $emp_id = $inputs['emp_id'];
         if (!$d->emp_id) return DV::error('Employee ID is missing');
         $employee_info = DB::table('employees as emp')
-                            ->where('emp.id', $emp_id)
-                            ->selectRaw('id, status_id, name, code')
-                            ->first();
+            ->where('emp.id', $emp_id)
+            ->selectRaw('id, status_id, name, code')
+            ->first();
         if (!$employee_info) return DV::error('It seems the employee information does not exist');
         if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
         $today = date('Y-m-d');
@@ -115,7 +118,7 @@ class Leave extends VSModel
     //     return null;
     // }
 
-    
+
     function getLeaveListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
@@ -151,11 +154,11 @@ class Leave extends VSModel
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
 
         $query = DB::table('leaves as l')
-        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
-        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
-        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-        ->whereRaw($str_search)
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+            ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee_name, emp.sex, p.name as position,l.start_date, l.end_date, l.leave_type_id, lt.name as leave_type, ls.name as status, l.remarks, l.update_user, l.updated_at, l.status_id, emp.photo_file_name as emp_photo,'
@@ -175,7 +178,7 @@ class Leave extends VSModel
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
-            $row = setOfficialDates($row, ['start_date', 'end_date'],['updated_at'],['']);
+            $row = setOfficialDates($row, ['start_date', 'end_date'], ['updated_at'], ['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -217,7 +220,7 @@ class Leave extends VSModel
             $str_work_shift = 'ws.id = \'' . $work_shift_id . '\'';
         }
         if ($leave_type_id) {
-           $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
+            $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
         }
         $count = 0;
 
@@ -230,7 +233,7 @@ class Leave extends VSModel
 
         if ($start_date && $end_date) {
 
-            $work_shifts = null;// self::getWorkShift($current_date);
+            $work_shifts = null; // self::getWorkShift($current_date);
             $rows = DB::table('shift_details as sd')
                 ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
                 ->whereRaw($str_work_shift)
@@ -243,14 +246,14 @@ class Leave extends VSModel
             $work_shifts = $ds;
 
 
-            $filterDays = self::getDatesWithDays($start_date,$end_date);
+            $filterDays = self::getDatesWithDays($start_date, $end_date);
             // $arrDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             foreach ($filterDays as $filterDay) {
                 $day = $filterDay['day'];
                 $ds = WorkShift::getScanTimes($rows, $day);
-                $leav_uninform['day'] = $filterDay['date']. ' ('.$day.')';
+                $leav_uninform['day'] = $filterDay['date'] . ' (' . $day . ')';
 
-                foreach($ds as $scenTime){
+                foreach ($ds as $scenTime) {
                     $leav_uninform['shifts'][] = $scenTime;
                     $q_start_date = DBX::convertToDate('l.start_date');
                     $q_end_date = DBX::convertToDate('l.end_date');
@@ -260,7 +263,7 @@ class Leave extends VSModel
                         ($q_start_date <= '$start_date' AND $q_end_date >= '$end_date')
                     )";
 
-                    $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+                    $employees = DB::table('employees as emp')->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')->where('emp.status_id', 10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
 
                     $date = new DateTime($filterDay['date']);
                     $date = $date->format('Y-m-d');
@@ -268,9 +271,9 @@ class Leave extends VSModel
                     $strsearch_date = "$q_session_date = '$date'";
                     // return $work_shifts[0];
                     $leav_uninform['employees'] =  [];
-                    foreach($employees as $emp){
-                        $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
-                        if(!$has_checked_in_m){
+                    foreach ($employees as $emp) {
+                        $has_checked_in_m = DB::table('emp_attendances')->where('session')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
+                        if (!$has_checked_in_m) {
                             $emp->leave_date = $today;
                             $emp->leave_type = 'Uninformed';
                             $emp->image_url = Employee::profilePicture($emp->id);
@@ -301,23 +304,22 @@ class Leave extends VSModel
 
             // $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
 
-            $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+            $employees = DB::table('employees as emp')->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')->where('emp.status_id', 10)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
 
             $q_session_date = DBX::convertToDate('attendance_date');
             $strsearch_date = "$q_session_date = '$today'";
             // return $work_shifts[0];
 
-            foreach($employees as $emp){
-                $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
-                if(!$has_checked_in_m){
+            foreach ($employees as $emp) {
+                $has_checked_in_m = DB::table('emp_attendances')->whereNull('session')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
+                if (!$has_checked_in_m) {
                     $emp->leave_date = $today;
                     $emp->leave_type = 'Uninformed';
                     $emp->image_url = Employee::profilePicture($emp->id);
-                    $emp_leav_uninform [] = $emp;
+                    $emp_leav_uninform[] = $emp;
                     $count += 1;
                 }
             }
-
         }
 
         // return $emp_leav_uninform;
@@ -412,7 +414,7 @@ class Leave extends VSModel
         ]);
     }
 
- function rejectLeave($arr = [], $ss = null)
+    function rejectLeave($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
@@ -444,7 +446,8 @@ class Leave extends VSModel
     }
 
 
-    function getDatesWithDays($start_date, $end_date) {
+    function getDatesWithDays($start_date, $end_date)
+    {
         $start = Carbon::createFromFormat('d-M-Y', $start_date);
         $end = Carbon::createFromFormat('d-M-Y', $end_date);
 
@@ -461,21 +464,21 @@ class Leave extends VSModel
     }
 
 
-    function getDetails($id ,$ss =null)
+    function getDetails($id, $ss = null)
     {
 
-        $leave_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
-        $col_update_date = DBX::formatDate('l.updated_at','update_date');
+        $leave_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+        $col_update_date = DBX::formatDate('l.updated_at', 'update_date');
 
         $leave = DB::table('leaves as l')
-        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
-        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
-        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-        ->where('l.id', $id)
-        //->where('l.status_id',2
-        ->selectRaw('l.id ,l.emp_id,emp.code as emp_code, emp.name as employee, p.name, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
-        ->first();
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+            ->where('l.id', $id)
+            //->where('l.status_id',2
+            ->selectRaw('l.id ,l.emp_id,emp.code as emp_code, emp.name as employee, p.name, l.leave_type_id, lt.name as leave_type,' . $leave_dates . ', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,' . $col_update_date)
+            ->first();
         return $leave;
     }
 
@@ -484,7 +487,7 @@ class Leave extends VSModel
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $delete = DB::table('leaves')->where('id',$id)->delete();
+        $delete = DB::table('leaves')->where('id', $id)->delete();
         return DV::depends($delete, null, 'Error deleting leave');
     }
 
@@ -493,14 +496,13 @@ class Leave extends VSModel
         $leave = null;
         if ($id) $leave = self::getDetails($id, $ss);
         return (object) [
-            'employees' => GeneralSettings::options_employee(10,$ss),
-            'leave_types' =>GeneralSettings::options_leave_type($ss),
-            'work_shifts' =>DB::table('work_shifts')->selectRaw('id,name')->get(),
-            'sessions' =>GeneralSettings::options_session($ss),
-            'status' =>GeneralSettings::options_leave_status($ss),
+            'employees' => GeneralSettings::options_employee(10, $ss),
+            'leave_types' => GeneralSettings::options_leave_type($ss),
+            'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
+            // 'sessions' =>GeneralSettings::options_session($ss),
+            'status' => GeneralSettings::options_leave_status($ss),
             'leave_request' => $leave,
         ];
-
     }
     function updateStatus($status_id, $id = null, $ss = null)
     {
@@ -512,9 +514,9 @@ class Leave extends VSModel
         }
         $x = DB::table('leaves')->where('id', $id)->update([
             'status_id' => $status_id,
-            'update_user'=>$ss->full_name,
-            'updated_at'=>getNowTime(),
-            'update_uid'=>$ss->user_id ?? $ss->id ?? null
+            'update_user' => $ss->full_name,
+            'updated_at' => getNowTime(),
+            'update_uid' => $ss->user_id ?? $ss->id ?? null
         ]);
         return DV::depends($x, ['Leave  status', 'updated']);
     }
@@ -528,9 +530,9 @@ class Leave extends VSModel
 
         // Query to fetch attendance records
         $query = DB::table('leaves as l')
-        ->join('employees as e', 'e.id', '=', 'l.emp_id')
-        ->selectRaw('l.id, l.emp_id,l.leave_type_id,l.start_date, l.end_date, l.remarks,l.status_id')
-        ->where('l.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+            ->join('employees as e', 'e.id', '=', 'l.emp_id')
+            ->selectRaw('l.id, l.emp_id,l.leave_type_id,l.start_date, l.end_date, l.remarks,l.status_id')
+            ->where('l.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
 
         // Aply search filters if a search value is provided
         if ($search_value) {
@@ -542,5 +544,4 @@ class Leave extends VSModel
         // Return the rows as a result
         return $rows;
     }
-
 }
