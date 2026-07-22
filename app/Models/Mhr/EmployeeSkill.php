@@ -31,7 +31,7 @@ class EmployeeSkill extends VSModel
         }
 
         return self::baseQuery()
-            ->where('es.emp_id', (int) $emp_id)
+            ->where('es.emp_id',  $emp_id)
             ->orderBy('es.id')
             ->selectRaw('es.id, es.emp_id, es.skill_id, es.rate, s.title AS skill_name, s.description')
             ->get()
@@ -67,10 +67,10 @@ class EmployeeSkill extends VSModel
         }
 
         $duplicateQuery = DB::table('emp_skills')
-            ->where('emp_id', (int) $inputs['emp_id'])
-            ->where('skill_id', (int) $inputs['skill_id']);
+            ->where('emp_id',  $inputs['emp_id'])
+            ->where('skill_id',  $inputs['skill_id']);
         if ($id) {
-            $duplicateQuery->where('id', '!=', (int) $id);
+            $duplicateQuery->where('id', '!=',  $id);
         }
         if ($duplicateQuery->exists()) {
             return DV::error('This skill is already assigned to the employee');
@@ -85,8 +85,8 @@ class EmployeeSkill extends VSModel
         }
 
         $saveInputs = [
-            'emp_id' => (int) $inputs['emp_id'],
-            'skill_id' => (int) $inputs['skill_id'],
+            'emp_id' =>  $inputs['emp_id'],
+            'skill_id' =>  $inputs['skill_id'],
             'rate' => $rate,
             'branch_id' => $employee->branch_id ?? ($ss->branch_id ?? null),
         ];
@@ -154,7 +154,7 @@ class EmployeeSkill extends VSModel
                 ->where(function ($q) use ($currentSkillId) {
                     $q->whereNull('es.id');
                     if ($currentSkillId) {
-                        $q->orWhere('s.id', (int) $currentSkillId);
+                        $q->orWhere('s.id', $currentSkillId);
                     }
                 });
             $skills = $query->get();

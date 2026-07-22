@@ -115,18 +115,34 @@
         color: #fff;
     }
 
-    /* Movement history timeline (body only — dialog chrome = vs-modal like Leave) */
+    /* Movement history timeline (Detail Movement dialog) */
+    .mv-history-dialog .modal-body {
+        padding-top: 1rem;
+        padding-bottom: 0.75rem;
+        background: #f7f9fc;
+    }
+
+    .mv-history-body {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
     .mv-history-header {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
+        padding: 14px 16px;
+        background: #fff;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
     }
 
     .mv-history-avatar {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        background: #cfe2ff;
+        background: linear-gradient(145deg, #dbe7ff, #c5d6ff);
         color: #1e3a8a;
         display: flex;
         align-items: center;
@@ -134,7 +150,9 @@
         overflow: hidden;
         flex-shrink: 0;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1.15rem;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px #d7e0ef;
     }
 
     .mv-history-avatar-img {
@@ -143,92 +161,284 @@
         object-fit: cover;
     }
 
-    .mv-history-subtitle {
-        font-size: 0.9rem;
-        color: #6b7280;
+    .mv-history-header-text {
+        min-width: 0;
+        flex: 1;
     }
 
     .mv-history-title {
         font-weight: 700;
         font-size: 1.05rem;
         color: #111827;
-        line-height: 1.25;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mv-history-subtitle {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        font-size: 0.82rem;
+        color: #6b7280;
+    }
+
+    .mv-history-role {
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mv-history-count {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #355cff;
+        font-weight: 600;
+        font-size: 0.75rem;
+        line-height: 1.4;
     }
 
     .mv-history-timeline {
         position: relative;
-        padding-left: 4px;
-        max-height: 360px;
+        max-height: 420px;
         overflow-y: auto;
+        padding: 2px 2px 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .mv-history-item {
         position: relative;
         display: flex;
-        gap: 14px;
-        padding: 0 0 22px 8px;
+        gap: 12px;
+        align-items: stretch;
     }
 
-    .mv-history-item:last-child {
-        padding-bottom: 4px;
+    .mv-history-rail {
+        position: relative;
+        width: 36px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
     }
 
-    .mv-history-item:not(:last-child)::before {
+    .mv-history-item:not(:last-child) .mv-history-rail::after {
         content: "";
         position: absolute;
-        left: 15px;
-        top: 14px;
-        bottom: 0;
+        top: 36px;
+        bottom: -14px;
+        left: 50%;
         width: 2px;
-        background: #e5e7eb;
+        transform: translateX(-50%);
+        background: #e5eaf2;
     }
 
     .mv-history-dot {
-        width: 12px;
-        height: 12px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background: #22c55e;
-        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
         position: relative;
         z-index: 1;
-        box-shadow: 0 0 0 3px #fff;
+        font-size: 0.78rem;
+        color: #fff;
+        background: #64748b;
+        box-shadow: 0 0 0 4px #f7f9fc;
     }
 
-    .mv-history-item-body {
+    .mv-history-item--branch .mv-history-dot {
+        background: #3b82f6;
+    }
+
+    .mv-history-item--position .mv-history-dot {
+        background: #6366f1;
+    }
+
+    .mv-history-item--salary .mv-history-dot {
+        background: #f59e0b;
+    }
+
+    .mv-history-item--shift .mv-history-dot {
+        background: #14b8a6;
+    }
+
+    .mv-history-item--default .mv-history-dot {
+        background: #64748b;
+    }
+
+    .mv-history-card {
         flex: 1;
+        min-width: 0;
+        background: #fff;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
+        padding: 12px 14px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .mv-history-item.is-latest .mv-history-card {
+        border-color: #c7d7ff;
+        box-shadow: 0 4px 14px rgba(53, 92, 255, 0.08);
+    }
+
+    .mv-history-card-top {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 12px;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .mv-history-event-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
         min-width: 0;
     }
 
     .mv-history-event {
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #111827;
         line-height: 1.3;
     }
 
-    .mv-history-change {
-        font-size: 0.82rem;
-        color: #9ca3af;
-        margin-top: 2px;
-        word-break: break-word;
+    .mv-history-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #355cff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
     }
 
     .mv-history-date {
-        font-size: 0.82rem;
-        color: #9ca3af;
+        font-size: 0.78rem;
+        color: #94a3b8;
         white-space: nowrap;
         flex-shrink: 0;
         padding-top: 2px;
     }
 
+    .mv-history-change {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .mv-history-pill {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.35;
+        word-break: break-word;
+    }
+
+    .mv-history-pill--from {
+        background: #f1f5f9;
+        color: #64748b;
+        text-decoration: line-through;
+        text-decoration-color: #cbd5e1;
+    }
+
+    .mv-history-pill--to {
+        background: #ecfdf5;
+        color: #047857;
+        font-weight: 600;
+    }
+
+    .mv-history-arrow {
+        color: #94a3b8;
+        font-size: 0.7rem;
+        flex-shrink: 0;
+    }
+
     .mv-history-empty {
-        padding: 1rem 0.5rem;
+        padding: 2rem 1rem;
         text-align: center;
-        font-size: 0.9rem;
+        background: #fff;
+        border: 1px dashed #d7dce5;
+        border-radius: 12px;
+    }
+
+    .mv-history-empty-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 10px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    .mv-history-empty-title {
+        font-weight: 700;
+        color: #334155;
+        font-size: 0.95rem;
+    }
+
+    .mv-history-empty-text {
+        margin-top: 4px;
+        font-size: 0.82rem;
+        color: #94a3b8;
+    }
+
+    .mv-history-dialog .mv-history-btn-close {
+        min-width: 96px;
+        border-radius: 10px;
+        border-color: #d7dce5;
+        color: #334155;
+        background: #fff;
+        font-weight: 600;
+    }
+
+    .mv-history-dialog .mv-history-btn-close:hover {
+        background: #f8fafc;
+        border-color: #c5ccd8;
+        color: #111827;
+    }
+
+    @media (max-width: 576px) {
+        .mv-history-card-top {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mv-history-date {
+            padding-top: 0;
+        }
+
+        .mv-history-change {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mv-history-arrow {
+            transform: rotate(90deg);
+            margin-left: 6px;
+        }
     }
 </style>

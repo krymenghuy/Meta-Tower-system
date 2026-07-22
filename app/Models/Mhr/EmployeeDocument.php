@@ -42,7 +42,7 @@ class EmployeeDocument extends VSModel
         }
 
         return self::baseQuery()
-            ->where('ed.emp_id', (int) $emp_id)
+            ->where('ed.emp_id',  $emp_id)
             ->orderByDesc('ed.id')
             ->selectRaw(
                 'ed.id, ed.emp_id, ed.document_type_id, ed.description,
