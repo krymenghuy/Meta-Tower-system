@@ -218,7 +218,8 @@ return [
 
         'enter_rank' => 'Please enter rank.',
         'department_exist' => 'Department name already exists.',
-
+        'work_shift_exist' => 'Work Shift already exists.',
+        'work_shift_is_assigned_to_employee' => 'Work shift is assigned to employees.',
 
 
     ],
