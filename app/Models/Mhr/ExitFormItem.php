@@ -244,7 +244,7 @@ class ExitFormItem
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, category_id')->get();
         $form_item = DB::table('exit_form_items')->selectRaw('id, check_point_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
+        $forms = DB::table('exit_forms')->selectRaw('id, status_id as is_finished, emp_id')->where('emp_id', $emp_id)->first();
 
         $groupedData = [];
         $number_cat = [];
