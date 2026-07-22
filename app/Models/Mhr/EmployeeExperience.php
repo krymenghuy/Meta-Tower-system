@@ -36,7 +36,7 @@ class EmployeeExperience extends VSModel
         $colEnd = DBX::formatDate('ex.end_date', 'end_date');
 
         return self::baseQuery()
-            ->where('ex.emp_id', (int) $emp_id)
+            ->where('ex.emp_id',  $emp_id)
             ->orderByDesc('ex.start_date')
             ->orderByDesc('ex.id')
             ->selectRaw(
@@ -120,10 +120,10 @@ class EmployeeExperience extends VSModel
         }
 
         $saveInputs = [
-            'emp_id' => (int) $inputs['emp_id'],
-            'organization_id' => (int) $inputs['organization_id'],
+            'emp_id' =>  $inputs['emp_id'],
+            'organization_id' =>  $inputs['organization_id'],
             'position_id' => isset($inputs['position_id']) && $inputs['position_id'] !== ''
-                ? (int) $inputs['position_id']
+                ?  $inputs['position_id']
                 : null,
             'start_date' => $hasDates ? $startDate : null,
             'end_date' => $hasDates ? $endDate : null,
