@@ -1,7 +1,7 @@
 "use strict";
-var WorkshiftComponent = (function () {
+var AttendanceTracksComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Attendance Tracks";
+    mThis.title_prop = "Track Shifts";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_workshiftComponent");
     
@@ -17,7 +17,7 @@ var WorkshiftComponent = (function () {
         mThis.WorkshiftListView = () => {
             vsapi
                 .call(
-                    `${mThis.base_url}/hr/shift-details/list-paginate`,mThis.getFilterData(),null,null).then((res) => {
+                    `${mThis.base_url}/mhr/shift-details/list-paginate`,mThis.getFilterData(),null,null).then((res) => {
                     if (res.status_code === 200) {
                         mThis.renderWorkShift(list_container, res.data);
                     }
@@ -220,7 +220,7 @@ var WorkshiftComponent = (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/shift-details/delete`,
+                            `${main_view.base_url}/mhr/shift-details/delete`,
                             op,
                             false,
                             false,
@@ -242,7 +242,7 @@ var WorkshiftComponent = (function () {
     };
 
     mThis.prepareFormOptions = () => {
-        vsapi.call(`${main_view.base_url}/hr/shift-details/form-options`,null,null,null).then((res) => {
+        vsapi.call(`${main_view.base_url}/mhr/shift-details/form-options`,null,null,null).then((res) => {
                 if (res.status_code === 200){
                     const d = res.data;
                     VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",false,null,1);
@@ -375,7 +375,7 @@ const ShiftDetailDialog = (() => {
                         });
                         p.days = selectedDays.join("|");
    
-                        vsapi.call([ main_view.base_url,"/hr/shift-details/save"].join(""),p,btn,null).then((res) => {
+                        vsapi.call([ main_view.base_url,"/mhr/shift-details/save"].join(""),p,btn,null).then((res) => {
                             if (res.status_code == 200) {
                                 me.hide(true, p);
                             } else cv_interact.error(res.error_message);
@@ -393,7 +393,7 @@ const ShiftDetailDialog = (() => {
                 api: {
                     endpoint: [
                         main_view.base_url,
-                        "/hr/shift-details/form-options",
+                        "/mhr/shift-details/form-options",
                     ].join(""),
                     params: (op) => {
                         return { id: op.id };
