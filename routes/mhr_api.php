@@ -33,13 +33,15 @@ use App\Http\Controllers\Mhr\JobLevelController;
 use App\Http\Controllers\Mhr\PositionController;
 use App\Http\Controllers\Mhr\DepartmentController;
 use App\Http\Controllers\Mhr\TaxAllowanceController;
+use App\Http\Controllers\Mhr\AttendanceController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
 
-
+Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
+Route::post('/employee/attendance/last-scan',[AttendanceController::class,'getLastEmployeesScan']);
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
