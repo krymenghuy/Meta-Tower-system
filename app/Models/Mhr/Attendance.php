@@ -299,6 +299,7 @@ class Attendance
         if (!$work_shift_detail) {
             return DV::error("No work shift found at this time ($present_time)!");
         }
+        // return (strtolower($action));
         if (strtolower($action) == 'check in') {
             // $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
             $has_checked_in = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
