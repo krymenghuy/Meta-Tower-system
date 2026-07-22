@@ -204,7 +204,8 @@
     }
 
     .days {
-        padding: 10px 15px;
+        flex: 1;
+        padding: 10px 0;
         border: 2px solid #ccc;
         border-radius: 5px;
         cursor: pointer;
@@ -330,18 +331,19 @@
     }
 </style>
 
-<div id="_main_workshiftComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex justify-content-between w-100 p-3 rounded-3 shadow" id="_divFilter">
-        <div class="d-flex align-items-center justify-content-start  w-50">
-            <div class="d-flex align-items-center w-50">
-                <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
+<div id="_main_work_shiftComponent" class="px-3 mobile-padding" style="display:none;">
+    <div class="bg-white shadow p-3 rounded-2" id="_divFilter">
+        <div class="d-flex align-items-center row g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <select id="el_work_shift" name="shifts" class="filter-field data-input" data-field="shifts"></select>
             </div>
-        </div>
-        <div class="d-flex justify-content-end gap-3 w-100">
-            <button type="button" class="btn_add" id="_btnAddShiftDetail">
-                <i class="fas fa-calendar-check mr-2"></i>
-                <span>Add Scan</span>
-            </button>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddShiftDetail" title="Create new shift">
+                    <i class="fa-solid fa-qrcode" style="color: rgb(255, 255, 255);"></i>
+                    
+                    <span vslang="buttons.Add Shift Detail"></span>
+                </button>
+            </div>
         </div>
     </div>
 
