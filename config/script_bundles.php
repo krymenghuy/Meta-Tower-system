@@ -262,6 +262,7 @@ return [
                 '/js/components/mhr/BenefitDisbursePolicyComponent.js',
                 '/js/components/mhr/CheckPointComponent.js',
                 '/js/components/mhr/CheckPointCategoryComponent.js',
+                '/js/components/mhr/AttendanceTracksComponent.js',
 
 
 

@@ -343,6 +343,7 @@
                             @include('layouts.mhr.benefitDisbursePolicyComponent')
                             @include('layouts.mhr.checkPointComponent')
                             @include('layouts.mhr.checkPointCategoryComponent')
+                            @include('layouts.mhr.attendanceTracksComponent')
 
 
 
