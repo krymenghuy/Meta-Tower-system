@@ -642,11 +642,11 @@ var DashboardComponent =  (function () {
 
     mThis.setDashboardScroll = () => {
         const parent = mThis.self;
-        parent.style.height = window.innerHeight - 100 + "px";
+        parent.style.height = window.innerHeight - 190 + "px";
         parent.classList.add("overflow-y-auto");
         parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            parent.style.height = window.innerHeight - 100 + "px";
+            parent.style.height = window.innerHeight - 190 + "px";
         };
     };
 
@@ -673,7 +673,7 @@ var DashboardComponent =  (function () {
             </div>
             <style>
                 .user_home_page img{
-                    height: 88.6vh;
+                    height: 88.8vh;
                     width: 99.2%;
                     margin:5px;
                     background-size: cover;

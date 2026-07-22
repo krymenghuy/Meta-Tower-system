@@ -1,4 +1,4 @@
-<div id="_main_dashboardComponent" class="px-3 mobile-padding" style="display:none;">
+<div id="_main_dashboardComponent" class="px-2 mobile-padding" style="display:none;">
     <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
     </div>
     <div class="db_cards">
@@ -148,7 +148,7 @@
     #_main_dashboardComponent {
         display: flex;
         flex-direction: column;
-        height: 630px;
+        height: 680px;
         /* background-color: #fff; */
         overflow-y: auto;
         overflow-x: hidden;
