@@ -243,6 +243,7 @@ return [
         'select_staff_group' => 'សូមជ្រើសរើសក្រុមបុគ្គលិក។',
         'position_exist' => 'មុខតំណែងនេះមានរួចហើយ។',
         'department_exist' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
+        'exit_form_name_already_exists' => 'ឈ្មោះមានរួចហើយ។',
 
 
         'select_holiday_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
@@ -1603,6 +1604,9 @@ return [
         'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
+        'create_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានលុបដោយជោគជ័យ។',
 
 
         'update_success_benefit_disbursement' => 'បានកែប្រែការបើកប្រាក់អត្ថប្រយោជន៍ដោយជោគជ័យ។',
@@ -1668,6 +1672,7 @@ return [
         'delete_job_level?' => 'តើអ្នកប្រាកដទេថាចង់លុបកម្រិតការងារនេះ?',
 
         'department_exist' => 'នាយកដ្ឋាននេះមានរួចហើយ។',
+        'exit_form_name_already_exists' => 'ឈ្មោះមានរួចហើយ។',
 
 
 

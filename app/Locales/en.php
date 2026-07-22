@@ -218,6 +218,7 @@ return [
 
         'enter_rank' => 'Please enter rank.',
         'department_exist' => 'Department name already exists.',
+        'exit_form_name_already_exists' => 'Name already exists.',
 
 
 
@@ -445,6 +446,9 @@ return [
         'create_success_work_shift' => 'Work shift has been created successfully.',
         'update_success_work_shift' => 'Work shift has been updated successfully.',
         'delete_success_work_shift' => 'Work shift has been deleted successfully.',
+        'create_success_exit_form' => 'Exit form has been created successfully.',
+        'update_success_exit_form' => 'Exit form has been updated successfully.',
+        'delete_success_exit_form' => 'Exit form has been deleted successfully.',
         '' => '',
 
         'create_success_payroll' => 'Payroll has been created successfully.',

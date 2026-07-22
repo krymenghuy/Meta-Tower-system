@@ -301,10 +301,10 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->g
     Route::post('/save', [ExitFormController::class, 'saveExitForm']);
     Route::post('/save-item', [ExitFormController::class, 'saveExitItem']);
     Route::post('/update-checkbox', [ExitFormController::class, 'updateCheckboxItem']);
-    Route::post('/list-paginate', [ExitFormController::class, 'getList']);
+    Route::post('/list-paginate', [ExitFormController::class, 'getExitFormListPaginate']);
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
-    Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
+    Route::post('/form-options', [ExitFormController::class, 'getFormOptions']);
     Route::post('/checkpoints', [ExitFormController::class, 'getCheckpoints']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-category')->group(function(){
