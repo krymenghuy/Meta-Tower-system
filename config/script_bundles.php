@@ -253,7 +253,7 @@ return [
                 '/js/components/mhr/EmployeeBenefitComponent.js',
                 '/js/components/mhr/PayrollAccountComponent.js',
                 '/js/components/mhr/WalletAccountComponent.js',
-                '/js/components/mhr/StaffAttendanceComponent.js',
+                '/js/components/mhr/EmployeeAttendanceComponent.js',
                 '/js/components/mhr/WarningComponent.js',
                 '/js/components/mhr/TaxBracketComponent.js',
                 '/js/components/mhr/PositionComponent.js',
@@ -263,6 +263,7 @@ return [
                 '/js/components/mhr/CheckPointComponent.js',
                 '/js/components/mhr/CheckPointCategoryComponent.js',
                 '/js/components/mhr/AttendanceTracksComponent.js',
+                '/js/components/mhr/ExitFormComponent.js',
 
 
 

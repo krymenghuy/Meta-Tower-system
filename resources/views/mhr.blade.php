@@ -332,7 +332,7 @@
                             @include('layouts.mhr.skillsComponent')
                             @include('layouts.mhr.benefitComponent')
                             @include('layouts.mhr.employeeBenefitComponent')
-                            @include('layouts.mhr.staffAttendanceComponent')
+                            @include('layouts.mhr.employeeAttendanceComponent')
                             @include('layouts.mhr.warningComponent')
                             @include('layouts.mhr.walletAccountComponent')
                             @include('layouts.mhr.workShiftListComponent')
@@ -344,6 +344,7 @@
                             @include('layouts.mhr.checkPointComponent')
                             @include('layouts.mhr.checkPointCategoryComponent')
                             @include('layouts.mhr.attendanceTracksComponent')
+                            @include('layouts.mhr.exitFormComponent')
 
 
 

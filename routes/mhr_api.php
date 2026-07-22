@@ -35,6 +35,8 @@ use App\Http\Controllers\Mhr\DepartmentController;
 use App\Http\Controllers\Mhr\TaxAllowanceController;
 use App\Http\Controllers\Mhr\AttendanceController;
 use App\Http\Controllers\Mhr\ShiftDetailsController;
+use App\Http\Controllers\Mhr\ExitFormItemController;
+use App\Http\Controllers\Mhr\ExitFormController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);

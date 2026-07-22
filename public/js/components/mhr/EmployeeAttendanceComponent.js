@@ -1,12 +1,12 @@
 "use strict";
-var StaffAttendanceComponent = (function () {
+var EmployeeAttendanceComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_staffAttendanceComponent",
     );
 
-    mThis.title_prop = "Staff Attendances";
+    mThis.title_prop = "Employee Attendance";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_attendance_search");
     mThis.elWorkShift = mThis.self.querySelector("#work_shift");
