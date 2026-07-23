@@ -1627,7 +1627,7 @@ var DashboardComponent = new (function () {
 
 					<div class="md-hero-stat">
                         <div class="md-hero-stat-value">
-                        ${data.unit_code}
+                        ${data.unit_code ?? '_'}
                         </div>
                         <div class="md-hero-stat-label">
                             Unit
@@ -1636,7 +1636,7 @@ var DashboardComponent = new (function () {
 
                     <div class="md-hero-stat">
                         <div class="md-hero-stat-value">
-                           ${data.monthly_rent}
+                           ${data.monthly_rent ?? '_'}
                         </div>
                         <div class="md-hero-stat-label">
                             Monthly Rent
@@ -1645,7 +1645,7 @@ var DashboardComponent = new (function () {
 
                     <div class="md-hero-stat">
                         <div class="md-hero-stat-value">
-                           ${data.deposit}
+                           ${data.deposit ?? '_'}
                         </div>
                         <div class="md-hero-stat-label">
                             Deposit
