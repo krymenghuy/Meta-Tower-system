@@ -27,7 +27,7 @@ class ShiftDetails
 
         $v_rule = [
             'work_shift_id' => '1|number',
-            'day' => '0|string|0-250', // Allows comma-separated days
+            'day' => '1|string|0-250', // Allows comma-separated days
             'time' => '1|string|0-100',
             'action' => '1|string|0-100',
             'start_time' => '1|string|0-100',
@@ -78,9 +78,9 @@ class ShiftDetails
         $per_page = $d->per_page ?? 100;
         $skip_rows = ($current_page - 1) * $per_page;
 
-        $work_shift_id = $d->work_shift_id ?? 1;
+        $work_shift_id = $d->work_shift_id ?? null;
         $str_where = '1=1';
-        if($work_shift_id) {
+        if($work_shift_id && $work_shift_id !== '') {
             $str_where = 'sd.work_shift_id=\'' .$work_shift_id. '\'';
         }
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

@@ -272,7 +272,7 @@ class Leave extends VSModel
                     // return $work_shifts[0];
                     $leav_uninform['employees'] =  [];
                     foreach ($employees as $emp) {
-                        $has_checked_in_m = DB::table('emp_attendances')->where('session')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
+                        $has_checked_in_m = DB::table('emp_attendances')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
                         if (!$has_checked_in_m) {
                             $emp->leave_date = $today;
                             $emp->leave_type = 'Uninformed';
