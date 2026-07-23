@@ -316,8 +316,8 @@ class ExitForm extends VSModel
 
     public function getCheckpoints($form_id)
     {
-        $header_list = ['អ្នកទទួល ខុសត្រូវ', 'បរិយាយព័ត៌មានលំអិត', 'កាលបរិច្ឆេទត្រូវបានជម្រះ', 'ទឹកប្រាក់ទូទាត់', 'ចំណាំ'];
-        $key_list = ['name', 'item', 'description', 'effective_date', 'amount', 'remarks'];
+        $header_list = ['អ្នកទទួល ខុសត្រូវ', 'បរិយាយព័ត៌មានលំអិត', 'កាលបរិច្ឆេទត្រូវបានជម្រះ'];
+        $key_list = ['name', 'item', 'cleared_date'];
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
@@ -326,17 +326,16 @@ class ExitForm extends VSModel
 
         $exitForm = DB::table('exit_forms as ef')
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-            ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
-            ->whereIn('emp.status_id', self::resignedStatusIds())
+            ->leftJoin('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->leftJoin('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->leftJoin('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
             ->where('ef.id', $form_id)
             ->selectRaw("
                 ef.id,
                 ef.name,
                 ef.emp_id,
                 ef.status_id as is_finished,
-                ef.update_date,
+                ef.updated_at,
                 emp.id as emp_id,
                 emp.name as emp_name,
                 emp.code,
@@ -368,6 +367,9 @@ class ExitForm extends VSModel
                 if ($item->category_id === $category->id) {
                     $filtered_items[] = $item;
                 }
+            }
+            if (count($filtered_items) === 0) {
+                continue;
             }
             $category->item_count = count($filtered_items);
             $category->items = $filtered_items;

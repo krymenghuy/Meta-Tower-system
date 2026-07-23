@@ -154,7 +154,7 @@ class Tenant
             return DV::error('create_failed');
         }
         if ($created) {
-            setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], 'T-', 4, null);
+            setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], 'T', 4, null);
         }
         if ($delete_prev_image) {
             $file_name = DB::table('tenants')

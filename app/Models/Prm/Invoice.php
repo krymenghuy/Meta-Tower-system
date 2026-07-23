@@ -126,7 +126,7 @@ class Invoice extends VSModel
 
             $codeRes = null;
             if ($created && $id) {
-                $prefix = 'I-';
+                $prefix = 'I';
                 $codeRes = setOfficialCode(
                     $branch_id,
                     'invoice_code_control',
@@ -294,7 +294,7 @@ class Invoice extends VSModel
                 'receipt_code_control',
                 'receipts',
                 ['id' => $receipt_id],
-                'R-',
+                'R',
                 5,
                 null
             );
