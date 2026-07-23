@@ -286,6 +286,7 @@ return [
         'updated' => 'Data has been updated successfully.',
         'deleted' => 'Data has been deleted successfully.',
         'confirm_cancel' => 'Are you sure you want to cancel this?',
+        'confirm_accept' => 'Are you sure you want to accept this request?',
         'cancelled' => 'Cancelled successfully.',
         'confirm_finish' => 'Are you sure you want to mark this as finished?',
         'finished' => 'Marked as finished successfully.',
@@ -297,6 +298,8 @@ return [
         'update_success_status' => 'Status updated successfully.',
         'update_failed_status' => 'Unable to update status',
         'upload_failed_photo' => 'Upload failed. Please try again.',
+
+        
 
         'delete_maintenance' => 'Delete Maintenance',
         'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
@@ -382,6 +385,8 @@ return [
         'payment_amount' => 'Please enter a payment amount',
 
         'cancel_receipt' => 'Receipt has been canceled.',
+
+        'service_request_accepted' => 'Service request has been accepted successfully!',
         'complete_success_request' => 'Service Request has been completed!',
         'delete_success_request' => 'Service request deleted successfully.',
         'update_success_request' => 'Service request updated successfully!',
