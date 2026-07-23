@@ -1,10 +1,12 @@
 "use strict";
 var AttendanceTracksComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Track Shifts";
+    mThis.title_prop = "Attendance Track";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_workshiftComponent");
-    
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_work_shiftComponent",
+    );
+
     mThis.btnAddShiftDetail = mThis.self.querySelector("#_btnAddShiftDetail");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.work_shift_header = mThis.self.querySelector("#_work_shift_header");
@@ -17,7 +19,12 @@ var AttendanceTracksComponent = (function () {
         mThis.WorkshiftListView = () => {
             vsapi
                 .call(
-                    `${mThis.base_url}/mhr/shift-details/list-paginate`,mThis.getFilterData(),null,null).then((res) => {
+                    `${mThis.base_url}/mhr/shift-details/list-paginate`,
+                    mThis.getFilterData(),
+                    null,
+                    null,
+                )
+                .then((res) => {
                     if (res.status_code === 200) {
                         mThis.renderWorkShift(list_container, res.data);
                     }
@@ -25,15 +32,15 @@ var AttendanceTracksComponent = (function () {
         };
 
         let html = `
-        <div class="_work_shift_header" id="_work_shift_header">
-            <div id="work_shift_type" class="col-12 p-3 border d-flex">
-                <div class="shift_date col-1-5">Monday</div>
-                <div class="shift_date col-1-5">Tuesday</div>
-                <div class="shift_date col-1-5">Wednesday</div>
-                <div class="shift_date col-1-5">Thursday</div>
-                <div class="shift_date col-1-5">Friday</div>
-                <div class="shift_date col-1-5">Saturday</div>
-                <div class="shift_date col-1-5">Sunday</div>
+        <div class="_work_shift_header">
+            <div id="work_shift_type" class="col-12 p-3 border d-flex justify-content-between text-center align-items-center mb-3 gap-2">
+                <div class="shift_date col p-2 text-center">Monday</div>
+                <div class="shift_date col p-2 text-center">Tuesday</div>
+                <div class="shift_date col p-2 text-center">Wednesday</div>
+                <div class="shift_date col p-2 text-center">Thursday</div>
+                <div class="shift_date col p-2 text-center">Friday</div>
+                <div class="shift_date col p-2 text-center">Saturday</div>
+                <div class="shift_date col p-2 text-center">Sunday</div>
             </div>
         </div>`;
         header_container.innerHTML = html;
@@ -44,7 +51,9 @@ var AttendanceTracksComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Scanpoint has been saved successfully!");
+                    cv_interact.success(
+                        "Scanpoint has been saved successfully!",
+                    );
                     mThis.WorkshiftListView();
                 },
             };
@@ -58,19 +67,15 @@ var AttendanceTracksComponent = (function () {
             };
         });
 
-
         mThis.initDropdownMenus(list_container);
         mThis.initAlready = true;
     };
-
-
-
 
     mThis.renderWorkShift = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
             console.error(
-                "Authentication Management does not seem to work properly. You may need to refresh the page"
+                "Authentication Management does not seem to work properly. You may need to refresh the page",
             );
             return;
         }
@@ -82,13 +87,13 @@ var AttendanceTracksComponent = (function () {
     mThis.beginRenderWorkShift = (div, data) => {
         let html = `
         <div class="_work_shift_body col-12">
-            <div class="row">
+            <div class="row g-2">
     `;
 
         for (const [day, shifts] of Object.entries(data)) {
             html += `
-            <div class="time_cards col-2">
-                <div class="day_card">
+            <div class="time_cards col p-1">
+                <div class="day_card w-100">
         `;
 
             if (shifts.length === 0) {
@@ -100,9 +105,9 @@ var AttendanceTracksComponent = (function () {
                         shift.action === "CheckIn"
                             ? "bg-green"
                             : shift.action === "Check Out" ||
-                              shift.action === "CheckOut"
-                            ? "bg-gold"
-                            : "";
+                                shift.action === "CheckOut"
+                              ? "bg-gold"
+                              : "";
 
                     html += `
                     <div class="shift_card ${actionClass}">
@@ -110,16 +115,10 @@ var AttendanceTracksComponent = (function () {
                             <div class="shift_time">${shift.time}</div>
                             <div class="shift_action">${shift.action}</div>
                         </div>
-                        <div class="d-flex justify-content-start align-items-start">
-                            <div class="text-end gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="${
-                                    shift.action_id > 1
-                                        ? "d-none"
-                                        : "btn_shift-details_action"
-                                }" data-id="${shift.id}" data-statusid="${
-                        shift.status_id
-                    }" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5 "></i>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_shift-details_action" data-id="${shift.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                                 </a>
                             </div>
                         </div>
@@ -224,35 +223,48 @@ var AttendanceTracksComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Deleted successfully!");
                                 mThis.WorkshiftListView();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
-
                 }
-            }
+            },
         );
     };
 
     mThis.prepareFormOptions = () => {
-        vsapi.call(`${main_view.base_url}/mhr/shift-details/form-options`,null,null,null).then((res) => {
-                if (res.status_code === 200){
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/shift-details/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                if (res.status_code === 200) {
                     const d = res.data;
-                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",false,null,1);
+                    VSUtil.setComboItems(
+                        mThis.elFilter_status,
+                        d.shifts,
+                        "id",
+                        "name",
+                        false,
+                        null,
+                        1,
+                    );
                 }
-        });
+            });
     };
 
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.prepareFormOptions();
         mThis.WorkshiftListView();
         main_view.setContentView(mThis.self, mThis.title_prop);
@@ -264,65 +276,66 @@ const ShiftDetailDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-
         dialog = new GeneralDialog({
-            cssClass: "modal-md",
+            cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row">
-                            <div class="form-group col-md-12">
-                                <label for="shifts" class="form-label" vslang="titles.Work Shift"></label>
-                                <span class="text-danger">*</span>
-                                <select class="form-control data-input" name="shifts" data-field="work_shift_id"></select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <div name="day" class="d-flex week data-input" data-field="day">
-                                    <div class="days" data-value="Mon">Mon</div>
-                                    <div class="days" data-value="Tue">Tue</div>
-                                    <div class="days" data-value="Wed">Wed</div>
-                                    <div class="days" data-value="Thu">Thu</div>
-                                    <div class="days" data-value="Fri">Fri</div>
-                                    <div class="days" data-value="Sat">Sat</div>
-                                    <div class="days" data-value="Sun">Sun</div>
-                                </div>
-
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="time" class="form-label" vslang="titles.Time">Time</label>
-                                <input type="time" class="form-control data-input" data-field="time" />
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="time" class="form-label" vslang="titles.Sesion">Session</label>
-                                <input class="form-control data-input" data-field="session" placeholder="m, a or e"/>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="action" class="form-label" vslang="titles.Action">Action</label>
-                                <select class="modal-select data-input form_input" data-field="action">
-                                    <option value="0">select action</option>
-                                    <option value="Check In">Check In</option>
-                                    <option value="Check Out">Check Out</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-6">
-                            <label for="action" class="form-label" vslang="titles.Scan Order Number">Scan Order Number</label>
-                            <input type="number" class="form-control data-input" placeholder="1, 2, 3 or 4" data-field="shift_order_number" />
-
+                    `<div class="row g-3">
+                        <div class="col-12">
+                            <select data-style="material" name="shifts" class="form-control data-input" placeholder="${LocaleManager.trans("Work Shift", "labels")}" data-field="work_shift_id"></select>
                         </div>
-                            <div class="form-group col-12">
-                                <label for="time" class="form-label" vslang="titles.Allow Scan">Allow Scan</label>
+                        <div class="col-12">
+                            <label class="form-label text-muted fs-7 mb-1" vslang="titles.Days">Days</label>
+                            <div name="day" class="d-flex week gap-1 w-100">
+                                <div class="days flex-fill text-center" data-value="Mon">Mon</div>
+                                <div class="days flex-fill text-center" data-value="Tue">Tue</div>
+                                <div class="days flex-fill text-center" data-value="Wed">Wed</div>
+                                <div class="days flex-fill text-center" data-value="Thu">Thu</div>
+                                <div class="days flex-fill text-center" data-value="Fri">Fri</div>
+                                <div class="days flex-fill text-center" data-value="Sat">Sat</div>
+                                <div class="days flex-fill text-center" data-value="Sun">Sun</div>
                             </div>
-                            <div class="form-group col-6 d-flex">
-                                <label for="time" class="form-label w-25 my-auto" vslang="titles.From">From</label>
-                                <input type="time" class="form-control w-75 data-input" data-field="start_time" />
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="time" name="time" class="data-input form-control form_input" data-field="time" placeholder=" " />
+                                <label vslang="labels.Time"></label>
                             </div>
-                            <div class="form-group col-6 d-flex ">
-                                <label for="time" class="form-label w-25 my-auto" vslang="titles.To">To</label>
-                                <input type="time" class="form-control w-75 data-input" data-field="end_time" />
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="session" class="form-control data-input" placeholder="${LocaleManager.trans("Session", "labels")}" data-field="session">
+                                <option value="m">Morning</option>
+                                <option value="a">Afternoon</option>
+                                <option value="e">Evening</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="action" class="form-control data-input" placeholder="${LocaleManager.trans("Action", "labels")}" data-field="action">
+                                <option value="Check In">Check In</option>
+                                <option value="Check Out">Check Out</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" name="shift_order_number" class="data-input form-control form_input" data-field="shift_order_number" placeholder=" " />
+                                <label vslang="labels.Scan Order Number"></label>
                             </div>
-
-                         </div>`,
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="time" name="start_time" class="data-input form-control form_input" data-field="start_time" placeholder=" " />
+                                <label vslang="labels.Allow Scan From"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="time" name="end_time" class="data-input form-control form_input" data-field="end_time" placeholder=" " />
+                                <label vslang="labels.Allow Scan To"></label>
+                            </div>
+                        </div>
+                    </div>`,
                 ].join("");
             },
             contentCreated: (me) => {
@@ -349,24 +362,25 @@ const ShiftDetailDialog = (() => {
                     data: "shifts",
                     textField: "name",
                     valueField: "id",
+                    emptyText: LocaleManager.trans("Work Shift", "titles"),
                 },
             ],
             buttons: [
                 {
-                    label: '<span class="text-shift-details">Cancel</span>',
-                    cssClass: "btn btn-default",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: "<span>Save</span>",
-                    cssClass: "btn btn-primary",
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
 
                         p.id = me.dataOptions.id;
-                       
+
                         const selectedDays = [];
                         const days =
                             me.divModal.querySelectorAll(".days.active");
@@ -374,21 +388,29 @@ const ShiftDetailDialog = (() => {
                             selectedDays.push(day.dataset.value);
                         });
                         p.days = selectedDays.join("|");
-   
-                        vsapi.call([ main_view.base_url,"/mhr/shift-details/save"].join(""),p,btn,null).then((res) => {
-                            if (res.status_code == 200) {
-                                me.hide(true, p);
-                            } else cv_interact.error(res.error_message);
-                        });
 
-
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/shift-details/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
                     },
                 },
             ],
 
             prepareFormOptions: {
-                createTitle: "Add Scan",
-                modifyTitle: "Edit Scan",
+                createTitle: "Add Shift Detail",
+                modifyTitle: "Edit Shift Detail",
                 targetProp: "shift_details",
                 api: {
                     endpoint: [
@@ -405,20 +427,29 @@ const ShiftDetailDialog = (() => {
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+                let id = op.id;
+                const days = me.divModal.querySelectorAll(".days");
+                if (id && data?.shift_details) {
+                    const currentDay = (
+                        data.shift_details.day || ""
+                    ).toLowerCase();
+                    days.forEach((day) => {
+                        const val = (day.dataset.value || "").toLowerCase();
+                        if (currentDay === val || currentDay.startsWith(val)) {
+                            day.classList.add("active");
+                        } else {
+                            day.classList.remove("active");
+                        }
+                    });
+                } else {
+                    days.forEach((day) => {
+                        day.classList.remove("active");
+                    });
+                }
+
                 me.divModal.querySelectorAll(".data-input").forEach((el) => {
                     const data_member = el.dataset.field;
-                    let id = op.id;
                     if (id) {
-                        const days = me.divModal.querySelectorAll(".days");
-
-                        days.forEach((day) => {
-                            if (data.shift_details.day == day.dataset.value) {
-                                day.classList.add("active");
-                            } else day.classList.remove("active");
-
-                            day.classList.add("disabled");
-                        });
-
                         if (el.tagName.toLowerCase() === "select") {
                             if (
                                 data_member == "shifts" ||
@@ -428,17 +459,14 @@ const ShiftDetailDialog = (() => {
                                 el.setAttribute("disabled", true);
                             }
                         }
-                    } else {
-                        const days = me.divModal.querySelectorAll(".days");
-                        days.forEach((day) => {
-                            day.classList.remove("disabled");
-                        });
-                    }
-                    const shift = WorkshiftComponent.getFilterData().work_shift_id;
-                    if(shift) {
-                        me.controls.shifts.value = shift;
                     }
                 });
+
+                const shift =
+                    AttendanceTracksComponent.getFilterData()?.work_shift_id;
+                if (shift && me.controls.shifts && !me.controls.shifts.value) {
+                    me.controls.shifts.value = shift;
+                }
             },
         });
 
