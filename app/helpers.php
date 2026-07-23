@@ -271,15 +271,7 @@ function processOfficialColumn(&$row, string $definition, string $format): void
 //   return null;
 // }
 
-function setOfficialCode(
-    $branch_id,
-    $code_control_table,
-    $target_table,
-    $key_field = [],
-    $def_prefix = "",
-    $len = 3,
-    Closure $onSuccess = null
-) {
+function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field = [],$def_prefix = "",$len = 4,Closure $onSuccess = null) {
     if (!$key_field) {
         return null;
     }

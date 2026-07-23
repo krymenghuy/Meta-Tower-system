@@ -1446,7 +1446,9 @@ return [
         'update_success_status' => 'ស្ថានភាពត្រូវបានកែប្រែដោយជោគជ័យ។',
         'update_failed_status' => 'មិនអាចកែប្រែស្ថានភាពបានទេ។',
         'upload_failed_photo' => 'ការផ្ទុករូបភាពឡើងបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។',
+        
         'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
+        'service_request_accepted' => 'សំណើសេវាកម្មត្រូវបានទទួលយកដោយជោគជ័យ!',
 
         'delete_maintenance' => 'លុបការថែទាំ',
         'confirm_delete_maintenance' => 'តើអ្នកប្រាកដថាចង់លុបការថែទាំនេះមែនទេ?',

@@ -397,9 +397,9 @@ var ServiceRequestComponent = (function () {
                 .then(res => {
                     if (res.status_code === 200) {
                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                        cv_interact.success(LocaleManager.trans('complete_success_request', 'message_box_default'));
+                        cv_interact.success(LocaleManager.trans('service_request_accepted', 'message_box_default'));
                     } else {
-                        cv_interact.error(res.error_message || 'Something went wrong');
+                        cv_interact.error(res.error_message);
                     }
                 })
                 .catch(() => {

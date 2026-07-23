@@ -76,7 +76,7 @@ var MaintenanceComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-prm-custom text-capitalize" style="width:220px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
                     </div>
                 `;
             }
