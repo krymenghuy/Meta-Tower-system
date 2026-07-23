@@ -16879,50 +16879,54 @@ const ExitFormDialog = (() => {
 const ViewExitFormDialog = (() => {
     const self = {};
     let dialog = null;
+
+    const signatureCell = () => {
+        return [
+            '<td class="align-top p-3">',
+            '<div class="text-center mb-2">ហត្ថលេខា</div>',
+            '<div style="min-height:90px;"></div>',
+            "<div>ឈ្មោះ ........................................</div>",
+            '<div class="mt-2">តំណែង .....................................</div>',
+            '<div class="mt-3 text-center">កាលបរិច្ឆេទ<br>............................</div>',
+            "</td>",
+        ].join("");
+    };
+
     self.show = (op) => {
         let htmlString = [
             '<div class="d-block position-relative min-height-top form_header">',
-            '<h4 class="text-center text-uppercase form_title">',
+            '<h4 class="text-end form_title mb-3">',
             "</h4>",
             '<div class="employee-info-section">',
-            '<table class="table table-bordered ">',
+            '<table class="table table-bordered mb-0">',
             "<tbody>",
-            '<tr colspan="6">',
-            '<td colspan="1">ឈ្មោះបុគ្គលិក៖</td>',
-            '<td colspan="1" class="employee_name">',
-            "</td>",
-            '<td colspan="1">អត្ថលេខ៖</td>',
-            '<td colspan="1" class="employee_code">',
-            "</td>",
-            '<td colspan="1">កាលបរិច្ឆេទចូលធ្វើការ៖</td>',
-            '<td colspan="1" class="employee_joining_date">',
-            "</td>",
-            "</tr>",
-            '<tr colspan="6">',
-            '<td colspan="1">កាលបរិច្ឆេទបិទការងារ៖</td>',
-            '<td colspan="1" class="employee_effective_date">',
-            "</td>",
-            '<td colspan="1">នាយកដ្ឋាន ឬសាខា៖</td>',
-            '<td colspan="3" class="employee_branch">',
-            "</td>",
+            "<tr>",
+            "<td>ឈ្មោះបុគ្គលិក៖</td>",
+            '<td class="employee_name"></td>',
+            "<td>អត្តលេខ៖</td>",
+            '<td class="employee_code"></td>',
             "</tr>",
             "<tr>",
-            '<td colspan="6" style="text-align:left;">',
-            '<div class="d-flex text-center gap-4">',
+            "<td>កាលបរិច្ឆេទបិទការងារ៖</td>",
+            '<td class="employee_effective_date"></td>',
+            "<td>នាយកដ្ឋាន ឬសាខា៖</td>",
+            '<td class="employee_branch"></td>',
+            "</tr>",
+            "<tr>",
+            '<td colspan="4">',
+            '<div class="d-flex flex-wrap align-items-center gap-3">',
             "<span>គោលបំណង៖</span>",
-            '<div class="d-flex disabled">',
-            '<div class="form-check me-3">',
-            '<input type="checkbox" value="action" checked >',
-            '<label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>',
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" checked disabled>',
+            '<label class="form-check-label">ការលាលែងពីតំណែង</label>',
             "</div>",
-            '<div class="form-check me-3">',
-            '<input type="checkbox" value="action">',
-            '<label class="form-check-label" for="terminate">ការបញ្ចប់</label>',
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" disabled>',
+            '<label class="form-check-label">ការបញ្ឈប់</label>',
             "</div>",
-            '<div class="form-check">',
-            '<input type="checkbox" value="action">',
-            '<label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>',
-            "</div>",
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" disabled>',
+            '<label class="form-check-label">ផ្សេងៗ (សូមបញ្ជាក់)៖</label>',
             "</div>",
             "</div>",
             "</td>",
@@ -16931,71 +16935,31 @@ const ViewExitFormDialog = (() => {
             "</table>",
             "</div>",
             "</div>",
-            '<div class="pb-3 bg-white">',
-            '<table class="table table-bordered tbl_exit_check_item">',
+            '<div class="pb-3 bg-white mt-3">',
+            '<table class="table table-bordered tbl_exit_check_item mb-0">',
             "<thead>",
             "</thead>",
             "<tbody>",
             "</tbody>",
             "</table>",
-            '<table class="table table-bordered mt-3">',
-            '<thead class="bg bg-secondary">',
+            '<table class="table table-bordered mt-3 mb-0">',
+            "<thead>",
             "<tr>",
-            '<th class="align-middle text-center ">បុគ្គលិក</th>',
-            '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
-            '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
-            '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
-            '<th class="align-middle text-center ">អនុម័តដោយ</th>',
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បុគ្គលិក</th>',
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បញ្ជាក់ដោយ</th>',
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បញ្ជាក់ដោយ</th>',
             "</tr>",
             "</thead>",
             "<tbody>",
             "<tr>",
-            '<td class="p-5"></td>',
-            '<td class="p-5"></td>',
-            '<td class="p-5"></td>',
-            '<td class="p-5"></td>',
-            '<td class="p-5"></td>',
-            "</tr>",
-            "<tr>",
-            '<td class="align-middle text-center">ហត្ថលេខា</td>',
-            '<td class="align-middle text-center">ហត្ថលេខា</td>',
-            '<td class="align-middle text-center">ហត្ថលេខា</td>',
-            '<td class="align-middle text-center">ហត្ថលេខា</td>',
-            '<td class="align-middle text-center">ហត្ថលេខា</td>',
-            "</tr>",
-            "<tr>",
-            '<td class="align-left text-start"><br>',
-            "ឈ្មោះ ........................................<br><br>",
-            "តំណែង .....................................",
-            "</td>",
-            '<td class="align-left text-start"><br>',
-            "ឈ្មោះ ........................................<br><br>",
-            "តំណែង .....................................",
-            "</td>",
-            '<td class="align-left text-start"><br>',
-            "ឈ្មោះ ........................................<br><br>",
-            "តំណែង .....................................",
-            "</td>",
-            '<td class="align-left text-start"><br>',
-            "ឈ្មោះ ........................................<br><br>",
-            "តំណែង .....................................",
-            "</td>",
-            '<td class="align-left text-start"><br>',
-            "ឈ្មោះ ........................................<br><br>",
-            "តំណែង .....................................",
-            "</td>",
-            "</tr>",
-            "<tr>",
-            '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
-            '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
-            '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
-            '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
-            '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+            signatureCell(),
+            signatureCell(),
+            signatureCell(),
             "</tr>",
             "</tbody>",
             "</table>",
             "</div>",
-            '<div class="d-flex flex-column">',
+            '<div class="d-flex flex-column mt-3">',
             "<span><strong>ចំណាំ៖</strong></span>",
             "<span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>",
             "</div>",
@@ -17012,62 +16976,45 @@ const ViewExitFormDialog = (() => {
                     return htmlString;
                 },
                 contentCreated: (me) => {
-                    me.generateTableHeaders = (headers) => {
-                        let html = "";
-                        (headers || []).map((h) => {
-                            html = [
-                                html,
-                                `<th>${h.name ?? ""}</th>`,
-                            ].join("");
-                        });
-                        return ["<tr>", html, "</tr>"].join("");
+                    me.generateTableHeaders = () => {
+                        return [
+                            "<tr>",
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">អ្នកទទួល ខុសត្រូវ</th>',
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">បរិយាយព័ត៌មានលម្អិត</th>',
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">កាលបរិច្ឆេទត្រូវបានជម្រះ</th>',
+                            "</tr>",
+                        ].join("");
                     };
 
                     me.generateTableBody = (list) => {
                         let row_group = "";
 
-                        (list || []).map((c) => {
-                            c.items.map((item, index) => {
-                                let row_html = "";
-                                let checkbox_html = `<input type="checkbox" ${
-                                    item.status_id == 1 ? "checked" : ""
-                                } class="exit_form_check_box" data-id="${
-                                    item.id
-                                }" style="cursor:pointer; margin-right:10px"></input>`;
+                        (list || []).forEach((c) => {
+                            if (!c.items || !c.items.length) return;
 
-                                if (index === 0) {
-                                    row_html = [
-                                        "<tr>",
-                                        '<td rowspan="',
-                                        c.items.length,
-                                        '" class="text-capitalize align-middle">',
-                                        c.name,
-                                        "</td>",
-                                        "<td>",
-                                        checkbox_html,
-                                        item.name,
-                                        "</td>",
-                                        "<td></td>",
-                                        "<td></td>",
-                                        "<td></td>",
-                                        "</tr>",
-                                    ].join("");
-                                } else {
-                                    row_html = [
-                                        "<tr>",
-                                        "<td>",
-                                        checkbox_html,
-                                        item.name,
-                                        "</td>",
-                                        "<td></td>",
-                                        "<td></td>",
-                                        "<td></td>",
-                                        "</tr>",
-                                    ].join("");
-                                }
-
-                                row_group = [row_group, row_html].join("");
+                            let items_html = "";
+                            c.items.forEach((item) => {
+                                items_html = [
+                                    items_html,
+                                    '<div class="d-flex align-items-center mb-1">',
+                                    `<input type="checkbox" ${
+                                        item.status_id == 1 ? "checked" : ""
+                                    } class="exit_form_check_box" data-id="${
+                                        item.id
+                                    }" style="cursor:pointer; margin-right:10px">`,
+                                    `<span>${item.name ?? ""}</span>`,
+                                    "</div>",
+                                ].join("");
                             });
+
+                            row_group = [
+                                row_group,
+                                "<tr>",
+                                `<td class="text-capitalize align-middle">${c.name ?? ""}</td>`,
+                                `<td>${items_html}</td>`,
+                                "<td></td>",
+                                "</tr>",
+                            ].join("");
                         });
 
                         return row_group;
@@ -17143,7 +17090,7 @@ const ViewExitFormDialog = (() => {
                     const thead = tbl.querySelector("thead");
                     const tbody = tbl.querySelector("tbody");
 
-                    thead.innerHTML = me.generateTableHeaders(d.headers);
+                    thead.innerHTML = me.generateTableHeaders();
                     tbody.innerHTML = me.generateTableBody(d.list);
 
                     const form_header = me.divModal.querySelector(".form_header");
@@ -17151,16 +17098,14 @@ const ViewExitFormDialog = (() => {
                     const emp_info = form_header.querySelector(".employee-info-section");
                     const emp_name = emp_info.querySelector(".employee_name");
                     const emp_code = emp_info.querySelector(".employee_code");
-                    const emp_join_date = emp_info.querySelector(".employee_joining_date");
                     const emp_effective_date = emp_info.querySelector(".employee_effective_date");
                     const emp_branch = emp_info.querySelector(".employee_branch");
 
-                    form_title.innerHTML = d.title;
-                    emp_name.innerHTML = d.employee.emp_name;
-                    emp_code.innerHTML = d.employee.code;
-                    emp_join_date.innerHTML = d.employee.joining_date;
-                    emp_effective_date.innerHTML = d.employee.efective_date;
-                    emp_branch.innerHTML = d.employee.branch_name;
+                    form_title.innerHTML = d.title ?? "";
+                    emp_name.innerHTML = d.employee?.emp_name ?? "";
+                    emp_code.innerHTML = d.employee?.code ?? "";
+                    emp_effective_date.innerHTML = d.employee?.efective_date ?? "";
+                    emp_branch.innerHTML = d.employee?.branch_name ?? "";
 
                     tbl.querySelectorAll(".exit_form_check_box").forEach((cb) => {
                         cb.onchange = (event) => {
