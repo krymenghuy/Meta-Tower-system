@@ -51,7 +51,7 @@ class Item //extends Model
         $created = !$id;
         $id = DBX::saveData($ss, 'items', ['id' => $id], $inputs, [], 1);
         if ($id && $created) {
-            $prefix = 'ITM-';
+            $prefix = 'ITM';
             $res = setOfficialCode($branch_id, 'item_code_control', 'items', ['id' => $id], $prefix, 4, null);
 
         }

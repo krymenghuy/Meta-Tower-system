@@ -7,7 +7,7 @@
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_reservation_status" class="data-input filter-field" data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-4">
                 <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
                     <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="booking_date" />
