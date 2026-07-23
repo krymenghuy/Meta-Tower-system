@@ -18,26 +18,7 @@ class TenantProfileController extends Controller
 
  
 
-    public function getDetails(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $id = $req->id ?? $ss->official_id ?? null;
-        if (!isset($id) || !is_numeric($id)) {
-            return JDV::error('Invalid ID');
-        }
-        return JDV::result($this->tenants->getDetails($id, $ss));
-    }
-    public function getFormOptions(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->tenants->getFormOptions($req->id, $ss));
-    }
+ 
 
    
 }
