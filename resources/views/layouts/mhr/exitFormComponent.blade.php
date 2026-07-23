@@ -1,12 +1,13 @@
-<div id="_main_exit_form_component" class="mobile-padding px-3" style="display:none;">
-    <div class="bg-white p-3 rounded-2 shadow" id="_divFilter">
+<div id="_main_exit_form_component" class="px-3 mobile-padding" style="display:none;">
+    <div id="_divFilter_exit_form" class="bg-white rounded-2 shadow p-3">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_exit_form_search"
-                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_exit_form"
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name or code', 'titles') }}">
             </div>
-            <div class="ms-md-auto col-12 col-md-auto">
-                <button type="button" class="w-100 btnAddNewPrm" id="_btnAddExitForm">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddExitForm">
+                    <i class="fa-solid fa-file-export" style="color: rgb(249, 251, 255);"></i>
                     <span vslang="buttons.Create Exit Form"></span>
                 </button>
             </div>
