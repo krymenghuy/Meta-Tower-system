@@ -3,16 +3,11 @@
 namespace App\Models\Tenant;
 
 use App\Models\Prm\GeneralSettings;
-use App\Models\Prm\Tenant;
 use DBX;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Tenant-portal profile model.
- * Reuses App\Models\Prm\Tenant for shared tenant CRUD / photo / lease helpers.
- * Overrides details/form-options for the tenant portal profile view.
- */
-class TenantProfile extends Tenant
+
+class TenantProfile //extends Tenant
 {
     public static function getDetails($id, $ss = null)
     {
