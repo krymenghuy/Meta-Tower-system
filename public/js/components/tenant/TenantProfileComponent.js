@@ -278,7 +278,7 @@ var TenantProfileComponent = (() => {
 
         vsapi
             .call(
-                `${mThis.base_url}/tenant/tenantProfile/profile/photo/create`,
+                `${mThis.base_url}/tenant/tenant/tenantProfile/profile/photo/create`,
                 { photo: photo, id: id },
                 false,
             )
@@ -293,7 +293,7 @@ var TenantProfileComponent = (() => {
                     } else {
                         vsapi
                             .call(
-                                `${mThis.base_url}/tenant/tenantProfile/profile/photo`,
+                                `${mThis.base_url}/tenant/tenant/tenantProfile/profile/photo`,
                                 { id: id },
                                 false,
                             )
@@ -328,7 +328,7 @@ var TenantProfileComponent = (() => {
 
         vsapi
             .call(
-                `${mThis.base_url}/tenant/tenantProfile/details`,
+                `${mThis.base_url}/tenant/tenant/tenantProfile/details`,
                 {},
                 false,
             )
