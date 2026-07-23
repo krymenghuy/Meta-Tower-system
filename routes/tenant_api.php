@@ -57,7 +57,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group
     Route::post('/delete', [ZoneController::class, 'deleteZone']);
     // Route::post('/update-status', [ZoneController::class, 'updateAccountStaffStatus']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenantProfile')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenantProfile')->group(function () {
     Route::post('/create', [TenantProfileController::class, 'createTenant']);
     Route::post('/profile/photo',[TenantProfileController::class,'getProfilePhoto']);
     Route::post('/profile/photo/delete',[TenantProfileController::class,'deleteProfilePhoto']);
