@@ -1,12 +1,9 @@
 <div id="_main_team_component" class="p-3 mobile-padding" style="display:none;">
     <div id="_team_list_container">
-
-        <!-- Two Column Layout -->
      <div class="row g-3">
-
         <div class="col-lg-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+            <div class="card h-100 shadow-sm" style="border-radius:12px; border:2px solid #e2e5ec;">
+                <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between" style="border-radius:12px;border-top:3px solid #2d4acb;">
                     <h6 class="mb-0 text-muted" vslang="titles.Teams">Teams</h6>
                     <button type="button" class="btn btn-primary btn-sm vs-icon-btn" id="_btnAddTeam" aria-label="Create Team">
                         <i class="fa fa-user-plus p-0" aria-hidden="true"></i>
@@ -19,9 +16,9 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <h6 class="mb-0 text-muted" vslang="titles.Team Members">Team Members</h6>
+            <div class="bg-white shadow-sm p-3" style="border-radius:12px; border:2px solid #e2e5ec;">
+                <div class="bg-light rounded-2 shadow-sm py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <h6 class="mb-0 px-3 text-prm-custom" vslang="titles.Team Members">Team Members</h6>
                     <div class="d-flex align-items-center gap-2" style="width: 450px; max-width: 100%;">
                         <div class="position-relative flex-grow-1">
                             <input type="text" class="filter-field form-control rounded-2 ps-5"
@@ -32,7 +29,7 @@
                                 data-field="status_id"></select>
                     </div>
                 </div>
-                <div class="card-body p-0" style="height: calc(100vh - 240px); overflow-y: auto;">
+                <div class="mt-3" style="height: calc(100vh - 240px); overflow-y: auto;">
                     <div id="_team_list_view"></div>
                 </div>
             </div>
