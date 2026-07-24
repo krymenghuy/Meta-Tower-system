@@ -254,9 +254,9 @@ var AttendanceTracksComponent = (function () {
                         d.shifts,
                         "id",
                         "name",
-                        false,
-                        null,
-                        1,
+                        "",
+                        LocaleManager.trans("All Shifts", "titles"),
+                        "",
                     );
                 }
             });
