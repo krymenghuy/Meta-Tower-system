@@ -7,7 +7,7 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_book_amenity_status" class="filter-field data-input" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-4">
                 <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" " data-field="booking_date" />
