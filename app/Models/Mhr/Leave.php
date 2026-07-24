@@ -200,144 +200,281 @@ class Leave extends VSModel
         $status_id = $d->status_id ?? null;
         $leave_type_id = $d->leave_type_id ?? null;
         $work_shift_id = $d->work_shift_id ?? null;
-        // $start_date = $d->start_date ?? date('d-M-Y');
-        // $end_date = $d->end_date ?? date('d-M-Y');
-        $start_date = $d->date ?? date('d-M-Y');
-        $end_date = $d->date ?? date('d-M-Y');
+        $start_date = $d->start_date ?? $d->date ?? date('d-M-Y');
+        $end_date = $d->end_date ?? $d->date ?? date('d-M-Y');
 
-        $str_search = '1=1';
-        $str_work_shift = '5=5';
+        $start_date_parsed = DateTime::createFromFormat('d-M-Y', $start_date);
+        $end_date_parsed = DateTime::createFromFormat('d-M-Y', $end_date);
+        if (!$start_date_parsed || !$end_date_parsed) {
+            $start_date_parsed = new DateTime();
+            $end_date_parsed = new DateTime();
+        }
+        $start_db = $start_date_parsed->format('Y-m-d');
+        $end_db = $end_date_parsed->format('Y-m-d');
+
+        // Generate date list in range
+        $dates = [];
+        $current = clone $start_date_parsed;
+        while ($current <= $end_date_parsed) {
+            $dates[] = [
+                'date' => $current->format('Y-m-d'),
+                'day_name' => $current->format('D'),
+                'display_date' => $current->format('d M Y')
+            ];
+            $current->modify('+1 day');
+        }
+
+        // Get shift details to map work days
+        $shift_details = DB::table('shift_details')
+            ->select('work_shift_id', 'day', 'start_time', 'end_time')
+            ->get();
+
+        $shifts_map = [];
+        foreach ($shift_details as $sd) {
+            $ws_id = $sd->work_shift_id;
+            $day_name = strtolower($sd->day);
+            if (!isset($shifts_map[$ws_id])) {
+                $shifts_map[$ws_id] = [];
+            }
+            if (!isset($shifts_map[$ws_id][$day_name])) {
+                $shifts_map[$ws_id][$day_name] = [
+                    'start_time' => $sd->start_time,
+                    'end_time' => $sd->end_time
+                ];
+            }
+        }
+
+        // Query active employees
+        $emp_query = DB::table('employees as emp')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->leftJoin('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->leftJoin('departments as dept', 'dept.id', '=', 'pos.department_id')
+            ->where('emp.status_id', 10); // Active
 
         if ($search_value) {
-            $skip_rows = 0;
-            $search_value = escape_like_str($search_value);
-            $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
+            $search_val_escaped = escape_like_str($search_value);
+            $emp_query->where(function($q) use ($search_val_escaped) {
+                $q->where('emp.name', 'LIKE', '%' . $search_val_escaped . '%')
+                  ->orWhere('emp.code', 'LIKE', '%' . $search_val_escaped . '%');
+            });
         }
-        if ($status_id) {
-            $str_status = 'l.status_id = \'' . $status_id . '\'';
-        }
+
         if ($work_shift_id) {
-            $str_work_shift = 'ws.id = \'' . $work_shift_id . '\'';
+            $emp_query->where('emp.work_shift_id', $work_shift_id);
         }
-        if ($leave_type_id) {
-            $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
-        }
-        $count = 0;
 
-        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
-        $today = date('Y-m-d');
-        $emp_leav_uninform_list = [
-            'day' => null,
-        ];
-        $emp_leav_uninform = [];
+        $employees = $emp_query->selectRaw('
+            emp.id as emp_id,
+            emp.name as employee,
+            emp.code as emp_code,
+            emp.work_shift_id,
+            ws.name as work_shift,
+            dept.name as department,
+            pos.name as position
+        ')->get();
 
-        if ($start_date && $end_date) {
+        // Get uninformed leave type ID dynamically
+        $uninformed_leave_type_id = DB::table('leave_types')
+            ->where('name', 'LIKE', '%uninformed%')
+            ->value('id');
 
-            $work_shifts = null; // self::getWorkShift($current_date);
-            $rows = DB::table('shift_details as sd')
-                ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-                ->whereRaw($str_work_shift)
-                ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
-                // ->where('ws.id', $work_shift_id)
-                ->get();
-            $date = new DateTime($today);
-            $day = $date->format('D');
-            $ds = WorkShift::getScanTimes($rows, $day);
-            $work_shifts = $ds;
-
-
-            $filterDays = self::getDatesWithDays($start_date, $end_date);
-            // $arrDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            foreach ($filterDays as $filterDay) {
-                $day = $filterDay['day'];
-                $ds = WorkShift::getScanTimes($rows, $day);
-                $leav_uninform['day'] = $filterDay['date'] . ' (' . $day . ')';
-
-                foreach ($ds as $scenTime) {
-                    $leav_uninform['shifts'][] = $scenTime;
-                    $q_start_date = DBX::convertToDate('l.start_date');
-                    $q_end_date = DBX::convertToDate('l.end_date');
-                    $str_time = "(
-                        ($q_start_date BETWEEN '$start_date' AND '$end_date') OR
-                        ($q_end_date BETWEEN '$start_date' AND '$end_date') OR
-                        ($q_start_date <= '$start_date' AND $q_end_date >= '$end_date')
-                    )";
-
-                    $employees = DB::table('employees as emp')->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')->where('emp.status_id', 10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
-
-                    $date = new DateTime($filterDay['date']);
-                    $date = $date->format('Y-m-d');
-                    $q_session_date = DBX::convertToDate('attendance_date');
-                    $strsearch_date = "$q_session_date = '$date'";
-                    // return $work_shifts[0];
-                    $leav_uninform['employees'] =  [];
-                    foreach ($employees as $emp) {
-                        $has_checked_in_m = DB::table('emp_attendances')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
-                        if (!$has_checked_in_m) {
-                            $emp->leave_date = $today;
-                            $emp->leave_type = 'Uninformed';
-                            $emp->image_url = Employee::profilePicture($emp->id);
-                            $leav_uninform['employees'][] = $emp;
-                        }
-                    }
-                }
-                $count += 1;
-                $emp_leav_uninform[] = $leav_uninform;
-            }
-
-            // $end_date = convertDate($end_date);
-            // $start_date = convertDate($start_date);
-            // if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
-            //     // Check if there is any overlap between the leave period and the given date range
-            //     $str_dates = "(
-            //         (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-            //         (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-            //         (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
-            //     )";
-            // }
-
-        } else {
-            // Default to today's date if no start_date and end_date are provided
-            // $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
-
-            // $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
-
-            // $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-
-            $employees = DB::table('employees as emp')->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')->where('emp.status_id', 10)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
-
-            $q_session_date = DBX::convertToDate('attendance_date');
-            $strsearch_date = "$q_session_date = '$today'";
-            // return $work_shifts[0];
+        $absences = [];
+        foreach ($dates as $d_info) {
+            $date = $d_info['date'];
+            $day_name = strtolower($d_info['day_name']);
 
             foreach ($employees as $emp) {
-                $has_checked_in_m = DB::table('emp_attendances')->whereNull('session')->where('emp_id', $emp->id)->whereRaw($strsearch_date)->value('id');
-                if (!$has_checked_in_m) {
-                    $emp->leave_date = $today;
-                    $emp->leave_type = 'Uninformed';
-                    $emp->image_url = Employee::profilePicture($emp->id);
-                    $emp_leav_uninform[] = $emp;
-                    $count += 1;
+                $ws_id = $emp->work_shift_id;
+                if (!isset($shifts_map[$ws_id][$day_name])) {
+                    continue; // Not scheduled to work
+                }
+
+                // Check attendance
+                $has_attendance = DB::table('emp_attendances')
+                    ->where('emp_id', $emp->emp_id)
+                    ->whereDate('attendance_date', $date)
+                    ->exists();
+
+                if ($has_attendance) {
+                    continue; // Present
+                }
+
+                // Check leave record
+                $leave = DB::table('leaves as l')
+                    ->leftJoin('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+                    ->where('l.emp_id', $emp->emp_id)
+                    ->whereDate('l.start_date', '<=', $date)
+                    ->whereDate('l.end_date', '>=', $date)
+                    ->select('l.id', 'l.status_id', 'ls.name as status_name', 'l.remarks', 'l.leave_type_id')
+                    ->first();
+
+                if ($leave) {
+                    // Skip if approved normal leave
+                    if ($leave->status_id == 2 && $leave->leave_type_id != $uninformed_leave_type_id) {
+                        continue;
+                    }
+
+                    $absences[] = [
+                        'emp_id' => $emp->emp_id,
+                        'employee' => $emp->employee,
+                        'emp_code' => $emp->emp_code,
+                        'image_url' => Employee::profilePicture($emp->emp_id),
+                        'department' => $emp->department ?? '',
+                        'position' => $emp->position ?? '',
+                        'work_shift' => $emp->work_shift,
+                        'work_shift_time' => $shifts_map[$ws_id][$day_name]['start_time'] . ' - ' . $shifts_map[$ws_id][$day_name]['end_time'],
+                        'date' => $date,
+                        'leave_id' => $leave->id,
+                        'status_id' => $leave->status_id,
+                        'status' => $leave->status_name ?? 'Pending',
+                        'resolution' => $leave->remarks ?? '-'
+                    ];
+                } else {
+                    $absences[] = [
+                        'emp_id' => $emp->emp_id,
+                        'employee' => $emp->employee,
+                        'emp_code' => $emp->emp_code,
+                        'image_url' => Employee::profilePicture($emp->emp_id),
+                        'department' => $emp->department ?? '',
+                        'position' => $emp->position ?? '',
+                        'work_shift' => $emp->work_shift,
+                        'work_shift_time' => $shifts_map[$ws_id][$day_name]['start_time'] . ' - ' . $shifts_map[$ws_id][$day_name]['end_time'],
+                        'date' => $date,
+                        'leave_id' => null,
+                        'status_id' => 1, // Pending
+                        'status' => 'Pending',
+                        'resolution' => '-'
+                    ];
                 }
             }
         }
 
-        // return $emp_leav_uninform;
-        // return$emp_leav_uninform;
-        // $clone_query = clone $query;
-        // $count = $clone_query->count('l.id');
+        // Group absences by employee to identify consecutive days
+        $grouped_absences = [];
+        foreach ($absences as $abs) {
+            $emp_id = $abs['emp_id'];
+            if (!isset($grouped_absences[$emp_id])) {
+                $grouped_absences[$emp_id] = [];
+            }
+            $grouped_absences[$emp_id][] = $abs;
+        }
 
-        // $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $final_records = [];
+        foreach ($grouped_absences as $emp_id => $emp_absences) {
+            usort($emp_absences, function($a, $b) {
+                return strcmp($a['date'], $b['date']);
+            });
 
-        // foreach ($rows as $row) {
-        //     $row->image_url = '';
-        //     if (isset($row->emp_id) && $row->emp_photo) {
-        //         $row->image_url = Employee::profilePicture($row->emp_id);
-        //     }
-        //     unset($row->emp_photo);
-        // }
+            $current_group = [];
+            foreach ($emp_absences as $abs) {
+                if (empty($current_group)) {
+                    $current_group[] = $abs;
+                } else {
+                    $last = end($current_group);
+                    $gap_days = (strtotime($abs['date']) - strtotime($last['date'])) / 86400;
 
-        return new LengthAwarePaginator($emp_leav_uninform, $count, $per_page, $current_page);
+                    $is_consecutive = true;
+                    if ($gap_days > 1) {
+                        $ws_id = $abs['ws_id'] ?? $employees->where('emp_id', $emp_id)->first()->work_shift_id ?? null;
+                        for ($g = 1; $g < $gap_days; $g++) {
+                            $check_date = date('Y-m-d', strtotime($last['date'] . " +$g day"));
+                            $check_day = strtolower(date('D', strtotime($check_date)));
+                            if (isset($shifts_map[$ws_id][$check_day])) {
+                                $is_consecutive = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($is_consecutive) {
+                        $current_group[] = $abs;
+                    } else {
+                        $final_records[] = self::buildGroupedRecord($current_group);
+                        $current_group = [$abs];
+                    }
+                }
+            }
+            if (!empty($current_group)) {
+                $final_records[] = self::buildGroupedRecord($current_group);
+            }
+        }
+
+        // Apply status filter if set
+        if ($status_id) {
+            $final_records = array_filter($final_records, function($rec) use ($status_id) {
+                return $rec->status_id == $status_id;
+            });
+        }
+
+        // Sort records chronologically (recent start date first)
+        usort($final_records, function($a, $b) {
+            return strcmp($b->start_date, $a->start_date);
+        });
+
+        $total = count($final_records);
+        $paginated_records = array_slice($final_records, $skip_rows, $per_page);
+
+        return new LengthAwarePaginator($paginated_records, $total, $per_page, $current_page);
+    }
+
+    private static function formatDatePeriod($start, $end, $count) {
+        if ($start === $end) {
+            return date('d M Y', strtotime($start)) . " (1 day)";
+        }
+        $s_time = strtotime($start);
+        $e_time = strtotime($end);
+        $s_year = date('Y', $s_time);
+        $e_year = date('Y', $e_time);
+        $s_month = date('M', $s_time);
+        $e_month = date('M', $e_time);
+
+        if ($s_year !== $e_year) {
+            return date('d M Y', $s_time) . ' - ' . date('d M Y', $e_time) . " ($count days)";
+        }
+        if ($s_month !== $e_month) {
+            return date('d M', $s_time) . ' - ' . date('d M Y', $e_time) . " ($count days)";
+        }
+        return date('d', $s_time) . ' - ' . date('d M Y', $e_time) . " ($count days)";
+    }
+
+    private static function buildGroupedRecord($group) {
+        $first = $group[0];
+        $last = end($group);
+        $count = count($group);
+
+        $leave_id = null;
+        $status_id = 1; // Pending
+        $status = 'Pending';
+        $resolution = '-';
+
+        foreach ($group as $item) {
+            if ($item['leave_id'] !== null) {
+                $leave_id = $item['leave_id'];
+                $status_id = $item['status_id'];
+                $status = $item['status'];
+                $resolution = $item['resolution'];
+                break;
+            }
+        }
+
+        return (object) [
+            'id' => $leave_id,
+            'emp_id' => $first['emp_id'],
+            'employee' => $first['employee'],
+            'emp_code' => $first['emp_code'],
+            'image_url' => $first['image_url'],
+            'department' => $first['department'],
+            'position' => $first['position'],
+            'work_shift' => $first['work_shift'],
+            'work_shift_time' => $first['work_shift_time'],
+            'start_date' => $first['date'],
+            'end_date' => $last['date'],
+            'days' => $count,
+            'date_period' => self::formatDatePeriod($first['date'], $last['date'], $count),
+            'status_id' => $status_id,
+            'status' => $status,
+            'resolution' => $resolution
+        ];
     }
 
 
@@ -504,10 +641,36 @@ class Leave extends VSModel
             'leave_request' => $leave,
         ];
     }
-    function updateStatus($status_id, $id = null, $ss = null)
+    function updateStatus($status_id, $id = null, $ss = null, $extra = [])
     {
-
         $ss = $ss ? $ss : $this->userInfo;
+
+        if (empty($id) && !empty($extra['emp_id'])) {
+            $uninformed_leave_type_id = DB::table('leave_types')
+                ->where('name', 'LIKE', '%uninformed%')
+                ->value('id') ?? 1;
+
+            $insert_id = DB::table('leaves')->insertGetId([
+                'emp_id' => $extra['emp_id'],
+                'start_date' => date('Y-m-d', strtotime($extra['start_date'])),
+                'end_date' => date('Y-m-d', strtotime($extra['end_date'])),
+                'leave_type_id' => $uninformed_leave_type_id,
+                'status_id' => $status_id,
+                'remarks' => '-',
+                'branch_id' => $ss->branch_id,
+                'subs_id' => hex2bin($ss->subs_id),
+                'created_at' => getNowTime(),
+                'updated_at' => getNowTime(),
+                'update_user' => $ss->full_name,
+                'update_uid' => $ss->user_id ?? $ss->id ?? null
+            ]);
+
+            return DV::success([
+                'message' => 'Leave status updated successfully',
+                'id' => $insert_id
+            ]);
+        }
+
         $currentStatus = DB::table('leaves')->where('id', $id)->value('status_id');
         if ($currentStatus == $status_id) {
             return DV::error('It is the same current status.');

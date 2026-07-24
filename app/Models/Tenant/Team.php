@@ -27,7 +27,7 @@ class Team
         if (!$nid) return null;
         $str_id = '1=1';
         if ($id > 0) $str_id = "s.id <> $id";
-        
+
         $x = DB::table('team_member as s')
             ->where('s.national_id', $nid)
             ->whereRaw($str_id)
@@ -61,7 +61,7 @@ class Team
         if (empty($phone_number)) {
             return 'Phone number cannot be empty.';
         }
-        
+
         $query = DB::table('team_member')->where('phone_number', $phone_number);
         if ($id) {
             $query->where('id', '<>', $id);
@@ -105,14 +105,14 @@ class Team
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id ?? null;
-        
+
         $v_rule = [
             'space_id'     => '1|number|text=space_required',
             'member_count' => '0|number|text=member_count_required',
             'team_name'    => '1|string|0-30|text=name_required',
             'code'         => '0|string|0-100',
         ];
-        
+
         $res = DBX::validateObject($arr, $v_rule, 0, $ss->lang);
         if ($res->error) return DV::error($res->error);
 
@@ -145,39 +145,40 @@ class Team
             ->where('s.tenant_id', $ss->official_id)
             ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
             ->orderBy('s.created_at', 'desc');
-        
+
         return $query->get();
     }
 
-    public static function getTeamDetails($id){
+    public static function getTeamDetails($id)
+    {
 
-        \Log::info($id);
         $query = DB::table('tenant_team as s')
             ->where('s.id', $id)
             ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
             ->orderBy('s.created_at', 'desc');
-        
+
         return $query->first();
     }
 
-    public function deleteTeam($id, $ss = null){
+    public function deleteTeam($id, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $team = DB::table('tenant_team')->where('id', $id)->first();
-        if(!$team){
+        if (!$team) {
             return DV::error('Team not found');
         }
         // if($team->tenant_id != $ss->official_id){
         //     return DV::error('You are not authorized to delete this team');
         // }
         $deleted = DB::table('tenant_team')->where('id', $id)->delete();
-         
+
         return $deleted
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
-     
+
 
     public function saveTeamMember($arr = [], $id = null, $ss = null)
     {
@@ -186,8 +187,9 @@ class Team
         $branch_id = $ss->branch_id ?? null;
         $created = !$id;
         $old_team_id = null;
-        if ($id>0) {
-            $old_team_id = DB::table('team_member')->where('id', $id)->value('team_id');        }
+        if ($id > 0) {
+            $old_team_id = DB::table('team_member')->where('id', $id)->value('team_id');
+        }
 
         $v_rule = [
             'code'            => '0|string|0-20',
@@ -197,7 +199,7 @@ class Team
             'phone_number'    => '1|string|0-20|text=phone_required',
             'email'           => '1|email|1-100|text=email_required',
             'position'        => '0|string|0-50',
-            'password'        => '0|string|0-255', 
+            'password'        => '0|string|0-255',
             'address'         => '0|string|0-350',
             'nationality_id'  => '1|number|text=nationality_required',
             'nid_issue_date'  => '0|date|text=nid_issue_date',
@@ -213,11 +215,11 @@ class Team
         $address_char = ['@', ',', '.', '#', '-', '/', ' '];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [
-            'photo'   => GeneralSettings::$image_chars, 
-            'email'   => $email_char, 
+            'photo'   => GeneralSettings::$image_chars,
+            'email'   => $email_char,
             'address' => $address_char
         ], $ss->lang, 0, null);
-        
+
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -230,6 +232,8 @@ class Team
             }
             $email_check = $this->checkUniqueStaffByEmail($email, $id);
             if ($email_check) return DV::error($email_check);
+        } else {
+            $inputs['email'] = '';
         }
 
         // 2. Age Limit Checking
@@ -264,7 +268,7 @@ class Team
         $national_id = $d->national_id ?? null;
         $passport = $d->passport_number ?? null;
 
-       if ($nationality_id === 14) {
+        if ($nationality_id === 14) {
             if (empty($national_id)) return DV::error('national_id_required');
             if (empty($d->nid_issue_date)) return DV::error('nid_issue_date');
         } else {
@@ -353,22 +357,22 @@ class Team
         }
 
         // Photo Storage
-        if ($delete_prev_image) {
-            $file_name = DB::table('team_member')
-                ->where('id', $saved_id)
-                ->value('photo_file_name');
-            if ($file_name) {
-                XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
-            }
-            DB::table('team_member')->where('id', $saved_id)->update(['photo_file_name' => null]);
-        }
+        // if ($delete_prev_image) {
+        //     $file_name = DB::table('team_member')
+        //         ->where('id', $saved_id)
+        //         ->value('photo_file_name');
+        //     if ($file_name) {
+        //         XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+        //     }
+        //     DB::table('team_member')->where('id', $saved_id)->update(['photo_file_name' => null]);
+        // }
 
-        XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $saved_id, 'store' => 'team_member.photo_file_name']);
+        // XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $saved_id, 'store' => 'team_member.photo_file_name']);
 
         $count_munber = DB::table('team_member as tm')
-                        ->where('team_id', $inputs['team_id'])
-                        ->count();
-        
+            ->where('team_id', $inputs['team_id'])
+            ->count();
+
 
         return DV::depends(1, ['team_member' => $inputs, 'id' => $saved_id, 'count_number' => $count_munber]);
     }
@@ -461,7 +465,7 @@ class Team
             ->first();
 
         $def_image = self::defaultPhoto($row ? $row->subs_id : null);
-        
+
         if ($row && $row->photo_file_name) {
             $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->photo_file_name;
             return validateUrl($url, $def_image);
@@ -474,13 +478,13 @@ class Team
         return url('') . '/assets/images/default/placeholder.svg';
     }
 
-    public static function getFormOptions($id, $ss)  
+    public static function getFormOptions($id, $ss)
     {
         $teamDetails = $id ? self::getTeamDetails($id) : null;
         return (object) [
             'team'         => $teamDetails,
             'spaces'       => GeneralSettings::create_team_space_options($ss),
-            'nationalities'=> GeneralSettings::options_nationality($ss),
+            'nationalities' => GeneralSettings::options_nationality($ss),
         ];
     }
 
@@ -495,14 +499,14 @@ class Team
         ];
     }
 
-    
 
 
-   public static function getMemberDetails($id, $ss = null)
+
+    public static function getMemberDetails($id, $ss = null)
     {
         $date_of_birth  = DBX::formatDate("s.date_of_birth", 'date_of_birth');
         $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
-        $start_date     = DBX::formatDate("s.start_date", 'start_date');   
+        $start_date     = DBX::formatDate("s.start_date", 'start_date');
 
         $row = DB::table('team_member as s')
             ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
@@ -519,21 +523,21 @@ class Team
     }
 
     public function deleteTeamMember($id)  // rename if needed
-        {
-            $member = DB::table('team_member')->where('id', $id)->first();
-            $team_id = $member->team_id ?? null;
+    {
+        $member = DB::table('team_member')->where('id', $id)->first();
+        $team_id = $member->team_id ?? null;
 
-            $deleted = DB::table('team_member')->where('id', $id)->delete();
+        $deleted = DB::table('team_member')->where('id', $id)->delete();
 
-            $new_count = null;
-            if ($deleted && $team_id) {
-                $this->updateTeamMemberCount($team_id);
-                $new_count = DB::table('team_member')->where('team_id', $team_id)->count();
-            }
-
-
-            return DV::depends(1, ['id' => $id, 'team_id' => $team_id, 'member_count' => $new_count]);
+        $new_count = null;
+        if ($deleted && $team_id) {
+            $this->updateTeamMemberCount($team_id);
+            $new_count = DB::table('team_member')->where('team_id', $team_id)->count();
         }
+
+
+        return DV::depends(1, ['id' => $id, 'team_id' => $team_id, 'member_count' => $new_count]);
+    }
 
     public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
     {
