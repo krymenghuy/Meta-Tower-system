@@ -17,7 +17,7 @@
      <div id="_contract_list" class="contract-list-wrap mt-3"></div>
  </div>
 
-<style>
+<!-- <style>
 .contract-filter-bar {
     background-color: #fff;
     border: 1px solid #e8ecf2;
@@ -614,4 +614,4 @@
         align-items: flex-start;
     }
 }
-</style>
+</style> -->

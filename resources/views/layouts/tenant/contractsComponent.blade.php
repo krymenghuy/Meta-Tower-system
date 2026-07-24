@@ -83,12 +83,12 @@
 }
 
 .contract-card__icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: var(--c2-surface);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #1a1647;
     border: 1px solid var(--c2-border);
-    color: #475569;
+    color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -108,18 +108,7 @@
     margin-bottom: 2px;
 }
 
-.contract-card__title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--c2-text);
-    line-height: 1.25;
-}
 
-.contract-card__subtitle {
-    font-size: 0.8rem;
-    color: var(--c2-muted);
-    line-height: 1.35;
-}
 
 .contract-card__header-right {
     display: flex;
@@ -326,20 +315,9 @@
     margin-bottom: 10px;
 }
 
-.contract-card__address-head {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--c2-text);
-    margin-bottom: 4px;
-}
 
-.contract-card__address-head i {
-    color: #64748b;
-    font-size: 0.72rem;
-}
+
+
 
 .contract-card__address p {
     margin: 0;
@@ -375,21 +353,15 @@
 
 .contract-card__sqft-label {
     display: block;
-    font-size: 0.68rem;
+    font-size: 0.70rem;
     color: var(--c2-muted);
     margin-bottom: 3px;
 }
 
-.contract-card__sqft-value {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--c2-text);
-}
 
 .contract-card__section-title {
     font-size: 1rem;
-    font-weight: 700;
-    color: var(--c2-text);
+    color: #1a1647;
     margin-bottom: 8px;
 }
 
@@ -797,24 +769,7 @@
     line-height: 1.2;
 }
 
-.contract2-detail__status-wrap .contract2-status--active {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
 
-.contract2-detail__status-wrap .contract2-status--pending {
-    background: #fef9c3;
-    color: #a16207;
-    border: 1px solid #fde68a;
-}
-
-.contract2-detail__status-wrap .contract2-status--expired,
-.contract2-detail__status-wrap .contract2-status--terminated {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-}
 
 .contract2-detail__mini-grid {
     display: grid;
@@ -1218,7 +1173,6 @@
 
 .contract2-renewal__title {
     font-size: 0.98rem;
-    font-weight: 700;
     color: #0f172a;
     margin-bottom: 3px;
     line-height: 1.3;
@@ -1341,8 +1295,7 @@
 .contract2-renewal__field-value {
     display: block;
     font-size: 0.82rem;
-    font-weight: 700;
-    color: #0f172a;
+    color: #1a1647;
     word-break: break-word;
     line-height: 1.3;
 }
