@@ -153,7 +153,7 @@ var AttendanceTracksComponent = (function () {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_shift-details_action",
             cssClass: "bg-white shadow",
@@ -187,7 +187,7 @@ var AttendanceTracksComponent = (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editWorkShift = (id, menuLink) => {
@@ -282,7 +282,7 @@ const ShiftDetailDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row g-3">
+                    `<div class="row g-3 vs-form">
                         <div class="col-12">
                             <select data-style="material" name="shifts" class="form-control data-input" placeholder="${LocaleManager.trans("Work Shift", "labels")}" data-field="work_shift_id"></select>
                         </div>
@@ -409,8 +409,8 @@ const ShiftDetailDialog = (() => {
             ],
 
             prepareFormOptions: {
-                createTitle: "Add Shift Detail",
-                modifyTitle: "Edit Shift Detail",
+                createTitle: "Add Scan",
+                modifyTitle: "Edit Scan",
                 targetProp: "shift_details",
                 api: {
                     endpoint: [

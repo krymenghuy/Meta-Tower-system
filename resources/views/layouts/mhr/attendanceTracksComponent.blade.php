@@ -341,7 +341,7 @@
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddShiftDetail" title="Create new shift">
                     <i class="fa-solid fa-qrcode" style="color: rgb(255, 255, 255);"></i>
                     
-                    <span vslang="buttons.Add Shift Detail"></span>
+                    <span vslang="buttons.Add Scan"></span>
                 </button>
             </div>
         </div>
