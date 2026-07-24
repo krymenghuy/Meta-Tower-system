@@ -10,15 +10,17 @@ use Illuminate\Http\Request;
 
 class TenantProfileController extends Controller
 {
-    protected $tenants;
-    public function __construct()
+    function getDetails(Request $req)
     {
-        $this->tenants = new TenantProfile();
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        return JDV::result(TenantProfile::details($ss));
     }
 
- 
-
- 
-
-   
+    function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        return JDV::result(TenantProfile::getFormOptions($ss));
+    }
 }
