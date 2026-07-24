@@ -61,9 +61,11 @@ class TenantProfile
 
         if (!$row) return null;
 
+        $hasPhoto = !empty($row->photo_file_name);
         $img = self::photoUrl($ss, $row->id);
         $row->image_url = $img;
         $row->photo = $img;
+        $row->has_photo = $hasPhoto;
         unset($row->photo_file_name);
 
         if ($row->price !== null) {

@@ -60,6 +60,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenantProfile')->group(function () {
     Route::post('/details', [TenantProfileController::class, 'getDetails']);
     Route::post('/form-options', [TenantProfileController::class, 'getFormOptions']);
+    Route::post('/profile/photo/save', [TenantProfileController::class, 'saveProfilePhoto']);
+    Route::post('/profile/photo/delete', [TenantProfileController::class, 'deleteProfilePhoto']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {
     Route::post('/save', [BookAmenityController::class, 'saveReservation']);
