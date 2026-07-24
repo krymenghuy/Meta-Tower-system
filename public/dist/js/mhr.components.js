@@ -119,11 +119,11 @@ mThis.init_vsapi = async () => {
       VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,{debug:true});
 
       // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
-      if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
-          window.ContractComponent = ContractsComponent;
-      } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
-          window.ContractsComponent = ContractComponent;
-      }
+    //   if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
+    //       window.ContractComponent = ContractsComponent;
+    //   } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
+    //       window.ContractsComponent = ContractComponent;
+    //   }
 
       if (typeof ReceiptsComponent !== 'undefined') {
           window.ReceiptsComponent = ReceiptsComponent;

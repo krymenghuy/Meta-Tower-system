@@ -64,6 +64,13 @@ var EmployeeAttendanceComponent = (function () {
             data: "work_shift",
         },
         {
+            transTitle: "titles.Session",
+            className: "text-capitalize align-middle",
+            data: (data) => {
+                return data.session ?? "-";
+            },
+        },
+        {
             transTitle: "titles.Scan Info",
             className: "align-middle",
             data: (data) => {
@@ -110,7 +117,7 @@ var EmployeeAttendanceComponent = (function () {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const status = data.attendance_status ?? "Present";
+                const status = data.action_type ?? "Present";
                 let badgeClass = "bg-success-subtle text-success border border-success";
                 if (status === "Late") {
                     badgeClass = "bg-warning-subtle text-warning border border-warning";
@@ -387,9 +394,12 @@ const StaffAttendanceDialog = (() => {
                             <div class="col-6">
                                 <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
                             </div>
-                             <div class="col-6">
-                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans('Status', 'titles')}"></select>
-                             </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="session" class="data-input form-control form_input" data-field="session" placeholder=" " />
+                                    <label vslang="labels.Session"></label>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
@@ -411,12 +421,6 @@ const StaffAttendanceDialog = (() => {
                 {
                     name: "position_id",
                     data: "positions",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "attendance_status",
-                    data: "attendance_statuses",
                     textField: "name",
                     valueField: "id",
                 },
