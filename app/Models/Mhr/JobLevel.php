@@ -34,7 +34,7 @@ class JobLevel //extends Model
         $job_char = ['$','#','@','!','/','.','-','_','=','?'];
 
 
-        $checkUnque = ["$branch_id|job_levels|name|id=id|text=Job Level already exists."];
+        $checkUnque = null;
         $res = DBX::validateObject($arr, $v_rule, true, ['name'=>$job_char,'description'=>$job_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
@@ -47,22 +47,9 @@ class JobLevel //extends Model
         }
         return DV::error('error save job level');
     }
-
-    // public function getList($arr,$ss)
-    // {
-    //     $ss = $ss ?? $this->userInfo;
-    //     $d = (object)$arr;
-    //     $query = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->orderBy('j.rank','ASC');
-
-    //     $rows = $query->get();
-    //     return $rows;
-
-    // }
-
     public static function getDetails($id, $ss = null)
     {
-        $branch_id = $ss->branch_id;
-        $row = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->where('j.id',$id)->first();
+        $row = DB::table('job_levels as l')->selectRaw('l.id,l.name,l.description,l.rank')->where('l.id',$id)->first();
         return $row;
 
 
@@ -78,13 +65,24 @@ class JobLevel //extends Model
             'job_levels' => $job_level
         ];
     }
+    
     public function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
-        $delete = DB::table('job_levels')->where('id', $id)->delete();
-        return DV::depends($delete, null, 'Error deleting job level');
+        if (!$id) {
+            return DV::error('Level ID is not valid.');
+        }
+        $exists = DB::table('positions')
+            ->where('level_id', $id)
+            ->exists();
+        if ($exists) {
+            return DV::error('Level is assigned to positions.');
+        }
+        $deleted = DB::table('job_levels')
+            ->where('id', $id)
+            ->delete();
+        return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete level.');
     }
 
     function getList($arr, $ss)
@@ -100,32 +98,29 @@ class JobLevel //extends Model
         $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
-        $update_date = DBX::updatedAt();
-        //$create_date = DBX::createdAt();
-        $col_update_date = DBX::formatTime($update_date,'update_date');
-        //$col_create_date = DBX::formatTime($create_date,'create_date');
-        $query = DB::table('job_levels as j')
+        $query = DB::table('job_levels as l')
         ->whereRaw($str_search)
-        ->selectRaw('j.id, j.name, j.description, j.rank,'.$col_update_date.', j.update_user')
-        ->orderBy('j.rank', 'ASC'); // Sort by rank in ascending order
-            // ->orderBy('sr.id', 'DESC');
+        ->selectRaw('l.id, l.name, l.description, l.rank,l.updated_at, l.update_user')
+        ->orderBy('l.rank', 'ASC'); 
 
         if ($search_id) {
-            $query->where('j.id', $search_id);
+            $query->where('l.id', $search_id);
         }
         if ($search_status_id) {
-            $query->where('j.description', $search_status_id);
+            $query->where('l.description', $search_status_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "j.name LIKE '%{$search_value}%' OR j.description LIKE '%{$search_value}%'";
+            $str_search = "l.name LIKE '%{$search_value}%' OR l.description LIKE '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
 
         $clone_query = clone $query;
-        $count = $clone_query->count('j.id');
+        $count = $clone_query->count('l.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        foreach ($rows as $row) {
+            setOfficialDates($row, [''],['updated_at'],['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

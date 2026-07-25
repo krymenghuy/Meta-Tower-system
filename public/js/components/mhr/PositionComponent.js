@@ -15,44 +15,37 @@ var PositionComponent = (function () {
     mThis.cols = [
         {
             title: "",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: "",
         },
         {
             transTitle: "titles.Position",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-capitalize">${data.name ?? "_"}</span>
-                <span class="d-block text-primary ">${data.name_kh ?? "_"}</span>`,
-        },
-        {
-            transTitle: "titles.ShortCut",
-            className: "align-middle text-nowrap text-left",
-            data: (data) =>
-                `<span class="text-primary-custom ">${data.code}</span>`,
+                `<span class="d-block text-prm-custom text-capitalize">${data.name ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Department",
-            className: "align-middle text-nowrap text-left",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom ">${data.department}</span>`,
+                `<span class="text-primary-custom ">${data.department ?? '_'}</span>`,
         },
          {
             transTitle: "titles.Job Level",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-capitalize text-primary-custom">${data.level}</span>`,
+                `<span class="text-capitalize text-primary-custom">${data.level ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Staff Group",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom">${data.staff_group}</span>`,
+                `<span class="text-primary-custom">${data.staff_group ?? '_'}</span>`,
         },
 
         {
             transTitle: "titles.Salary",
-            className: "align-middle text-nowrap text-left",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
             },
@@ -63,7 +56,7 @@ var PositionComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "-"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '_'}</span>
                     </div>
                 `;
             },
@@ -71,10 +64,10 @@ var PositionComponent = (function () {
 
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap text-left",
+            className: "align-middle text-nowrap",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
+                <span class='text-primary-custom' >${data.update_user ?? '_'}</span><br/>
                 <small >${data.updated_at ?? ""}</small>
             </div>`,
         },
@@ -120,7 +113,7 @@ var PositionComponent = (function () {
                     mThis.PositionListView.showPage();
                 },
             };
-            if (!AuthManager.allowed(219)) return;
+            // if (!AuthManager.allowed(219)) return;
             PositionDialog.show(op);
         };
         mThis.listContainer = mThis.PositionListView.getListContainer();
@@ -208,7 +201,7 @@ var PositionComponent = (function () {
                 mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(220)) return;
+        // if (!AuthManager.allowed(220)) return;
         PositionDialog.show(op);
     };
 
@@ -220,7 +213,7 @@ var PositionComponent = (function () {
                 mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(221)) return;
+        // if (!AuthManager.allowed(221)) return;
         cv_interact.confirm(
             "delete_position",
             {
@@ -295,12 +288,6 @@ const PositionDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
-                        </div>
-                        <div class="col-6">
-                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
-                        </div>
-                        <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
                                 <label vslang="labels.Position (EN)"></label>
@@ -312,6 +299,13 @@ const PositionDialog = (() => {
                                 <label vslang="labels.Position (KH)"></label>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
+                        </div>
+                        
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="code" class="data-input form-control form_input" data-field="code" placeholder=" " />
@@ -370,14 +364,14 @@ const PositionDialog = (() => {
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
 
@@ -427,7 +421,6 @@ const PositionDialog = (() => {
                 //    }
             },
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
                 me.controls.currency_code.value = VSMoney.getCurrency().code;
             },
         });
@@ -436,4 +429,5 @@ const PositionDialog = (() => {
     };
 
     return self;
+
 })();
