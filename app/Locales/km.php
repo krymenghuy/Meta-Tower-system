@@ -758,7 +758,7 @@ return [
         'Shortcut' => 'អក្សរកាត់',
         'Update By' => 'បានកែប្រែដោយ',
         'Modify Department' => 'កែប្រែនាយកដ្ឋាន',
-        'Add Department' => 'បង្កើតនាយកដ្ឋាន',
+        'Create Department' => 'បង្កើតនាយកដ្ឋាន',
         'Delete Department' => 'លុបនាយកដ្ឋាន',
         'Departments' => 'នាយកដ្ឋាន',
         'Rank' => 'ចំណាត់ថ្នាក់',
@@ -777,9 +777,10 @@ return [
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
 
-        'Search by job level' => 'ស្វែងរកតាមកម្រិតការងារ',
+        'Search by level' => 'ស្វែងរកតាមកម្រិតការងារ',
         'Ranking' => 'ចំណាត់ថ្នាក់',
         'Job Level' => 'កម្រិតការងារ',
+        'Level' => 'កម្រិតការងារ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Modify Job Level' => 'កែប្រែកម្រិតការងារ',
         "Add Benefit Disburse Policy" => "បង្កើតគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
@@ -791,7 +792,7 @@ return [
 
 
         'Positions' => 'មុខតំណែង',
-        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Create Position' => 'បង្កើតមុខតំណែង',
         'Modify Position' => 'កែប្រែមុខតំណែង',
         'Delete Position' => 'លុបមុខតំណែង',
         'Department' => 'នាយកដ្ឋាន',
@@ -1101,13 +1102,13 @@ return [
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Add Policy' => 'បន្ថែមគោលការណ៍',
 
-        'Add Position' => 'បង្កើតមុខតំណែង',
+        'Create Position' => 'បង្កើតមុខតំណែង',
         'Modify Position' => 'កែប្រែមុខតំណែង',
 
         'Create Holiday' => 'បង្កើតថ្ងៃឈប់សម្រាក',
         'Modify Holiday' => 'កែប្រែថ្ងៃឈប់សម្រាក',
 
-        'Add Department' => 'បន្ថែមនាយកដ្ឋាន',
+        'Create Department' => 'បង្កើតនាយកដ្ឋាន',
         'Create Warning' => 'បង្កើតការព្រមាន',
 
         'Create Skill' => 'បង្កើតជំនាញ',

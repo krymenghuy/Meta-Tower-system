@@ -3,12 +3,12 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_department"
-                    placeholder="Search by department name">
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddDepartment">
                     <i class="fa-solid fa-cubes-stacked" style="color: rgb(255, 255, 255);"></i>
-                    <span vslang="buttons.Add Department"></span>
+                    <span vslang="buttons.Create Department"></span>
                 </button>
             </div>
         </div>
