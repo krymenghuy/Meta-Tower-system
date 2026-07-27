@@ -710,7 +710,7 @@ var InvoiceComponent = (() => {
     //                     params.setting = globalSetting;
     //                 }
     //                 if (invType === 1) {
-    //                     InvoiceTaxDialog.show(params);
+    //                     InvoiceTaxDialogHorizontal.show(params);
     //                 }
                     
     //                 // else if (invType === 2 && mThis.internalInvoice) {
@@ -718,9 +718,9 @@ var InvoiceComponent = (() => {
     //                 // }
                     
     //                 else if (invType === 2) {
-    //                     InvoiceNoTaxDialog.show(params);
+    //                     InvoiceNoTaxDialogHorizontal.show(params);
     //                 } else if (invType === 3) {
-    //                     InvoiceCommercialDialog.show(params);
+    //                     InvoiceCommercialDialogHorizontal.show(params);
     //                 } else {
     //                     cv_interact.error("Unknown invoice type variant.");
     //                 }
@@ -731,6 +731,7 @@ var InvoiceComponent = (() => {
     //             }
     //         });
     // };
+
         mThis.printInvoice = (id, menulink) => {
         if (!AuthManager.allowed(238, false)) return;
 
@@ -761,7 +762,7 @@ var InvoiceComponent = (() => {
                         params.setting = globalSetting;
                     }
                     if (invType === 1) {
-                        InvoiceTaxDialogNew.show(params);
+                        InvoiceTaxDialogVertical.show(params);
                     }
                     
                     // else if (invType === 2 && mThis.internalInvoice) {
@@ -769,9 +770,9 @@ var InvoiceComponent = (() => {
                     // }
                     
                     else if (invType === 2) {
-                        InvoiceNoTaxDialogNew.show(params);
+                        InvoiceNoTaxDialogVertical.show(params);
                     } else if (invType === 3) {
-                        InvoiceCommercialDialogNew.show(params);
+                        InvoiceCommercialDialogVertical.show(params);
                     } else {
                         cv_interact.error("Unknown invoice type variant.");
                     }

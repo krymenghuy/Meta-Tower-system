@@ -1,4 +1,4 @@
-const InvoiceNoTaxDialogNew = (() => {
+const InvoiceNoTaxDialogVertical = (() => {
     const self = {};
 
     const currency = "$";
