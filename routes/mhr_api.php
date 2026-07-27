@@ -33,13 +33,18 @@ use App\Http\Controllers\Mhr\JobLevelController;
 use App\Http\Controllers\Mhr\PositionController;
 use App\Http\Controllers\Mhr\DepartmentController;
 use App\Http\Controllers\Mhr\TaxAllowanceController;
+use App\Http\Controllers\Mhr\AttendanceController;
+use App\Http\Controllers\Mhr\ShiftDetailsController;
+use App\Http\Controllers\Mhr\ExitFormItemController;
+use App\Http\Controllers\Mhr\ExitFormController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
 
-
+Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
+Route::post('/employee/attendance/last-scan',[AttendanceController::class,'getLastEmployeesScan']);
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -296,10 +301,10 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->g
     Route::post('/save', [ExitFormController::class, 'saveExitForm']);
     Route::post('/save-item', [ExitFormController::class, 'saveExitItem']);
     Route::post('/update-checkbox', [ExitFormController::class, 'updateCheckboxItem']);
-    Route::post('/list-paginate', [ExitFormController::class, 'getList']);
+    Route::post('/list-paginate', [ExitFormController::class, 'getExitFormListPaginate']);
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
-    Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
+    Route::post('/form-options', [ExitFormController::class, 'getFormOptions']);
     Route::post('/checkpoints', [ExitFormController::class, 'getCheckpoints']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-category')->group(function(){
@@ -316,4 +321,13 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-polic
     Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
     Route::post('/delete', [BenefitDisbursePolicyController::class, 'delete']);
     Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details')->group(function () {
+
+    Route::post('/save', [ShiftDetailsController::class, 'saveShiftDetails']);
+    Route::post('/list-paginate', [ShiftDetailsController::class, 'getShiftDetailsListPaginate']);
+    Route::post('/details', [ShiftDetailsController::class, 'getDetails']);
+    Route::post('/delete', [ShiftDetailsController::class, 'deleteShiftDetails']);
+    Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
+    Route::post('/list', [ShiftDetailsController::class, 'getShiftDetail']);
 });

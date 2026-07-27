@@ -1,12 +1,12 @@
 "use strict";
-var StaffAttendanceComponent = (function () {
+var EmployeeAttendanceComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_staffAttendanceComponent",
     );
 
-    mThis.title_prop = "Staff Attendances";
+    mThis.title_prop = "Employee Attendance";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_attendance_search");
     mThis.elWorkShift = mThis.self.querySelector("#work_shift");
@@ -64,6 +64,13 @@ var StaffAttendanceComponent = (function () {
             data: "work_shift",
         },
         {
+            transTitle: "titles.Session",
+            className: "text-capitalize align-middle",
+            data: (data) => {
+                return data.session ?? "-";
+            },
+        },
+        {
             transTitle: "titles.Scan Info",
             className: "align-middle",
             data: (data) => {
@@ -110,7 +117,7 @@ var StaffAttendanceComponent = (function () {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const status = data.attendance_status ?? "Present";
+                const status = data.action_type ?? "Present";
                 let badgeClass = "bg-success-subtle text-success border border-success";
                 if (status === "Late") {
                     badgeClass = "bg-warning-subtle text-warning border border-warning";
@@ -309,7 +316,7 @@ var StaffAttendanceComponent = (function () {
             }
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Attendance Record?',{
+        cv_interact.confirm('delete_attendance?',{
             title: 'Delete Attendance Record.',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -317,7 +324,7 @@ var StaffAttendanceComponent = (function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/mhr/attendances/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
+                        cv_interact.success('attendance_delete_successfully');
                         mThis.StaffAttendanceListView.showPage();
                     } else {
                         cv_interact.error(res.error_message || 'An error occurred while deleting');
@@ -387,9 +394,12 @@ const StaffAttendanceDialog = (() => {
                             <div class="col-6">
                                 <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
                             </div>
-                             <div class="col-6">
-                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans('Status', 'titles')}"></select>
-                             </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="session" class="data-input form-control form_input" data-field="session" placeholder=" " />
+                                    <label vslang="labels.Session"></label>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
@@ -414,24 +424,18 @@ const StaffAttendanceDialog = (() => {
                     textField: "name",
                     valueField: "id",
                 },
-                {
-                    name: "attendance_status",
-                    data: "attendance_statuses",
-                    textField: "name",
-                    valueField: "id",
-                },
             ],
             buttons: [
                 {
-                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-default",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
 
@@ -450,9 +454,15 @@ const StaffAttendanceDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
-                                    cv_interact.success(
-                                        "Attendance save successfully",
-                                    );
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "attendance_update_successfully",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "attendance_create_successfully",
+                                        );
+                                    }
                                 } else cv_interact.error(res.error_message);
                             });
                     },

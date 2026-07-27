@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 65);
+    StyleManager::render('tenant-style', 1, 69);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -72,7 +72,7 @@
             color: #fff;
             border-bottom: 1px solid #EDF3F7;
         }
-      .font-kh {
+        .font-kh {
             /* font-family: Arial, Helvetica, serif; */
             /* font-family: Verdana, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
@@ -95,8 +95,8 @@
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
         .svg-white {
-    filter: brightness(0) invert(1);
-}
+            filter: brightness(0) invert(1);
+        }
 
     </style>
     <?php
@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('tenant-components', 1, 275);
+    ScriptManager::render('tenant-components', 1, 279);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

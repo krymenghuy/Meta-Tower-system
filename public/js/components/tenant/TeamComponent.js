@@ -452,6 +452,7 @@ var TeamComponent = new (function() {
                 // ✅ FIX: persist the active team id so other actions
                 // (e.g. editMember) can reach it later.
                 mThis.currentTeamId = teamId;
+                localStorage.setItem("active_team_id", teamId);
 
                 console.log("Viewing members for team ID:", teamId);
 
@@ -562,9 +563,22 @@ var TeamComponent = new (function() {
                     mThis.renderTeamCards(mThis.teamCardView, teams);
                 }
 
-                // 🛑 CHANGE HERE: Only trigger list fetch if a team_id is actively part of the filters
-                if (mThis.staffListView && filter.team_id) {
-                    mThis.staffListView.showPage(filter);
+                let activeTeamId = localStorage.getItem("active_team_id");
+                const teamExists = teams.some(t => String(t.id) === String(activeTeamId));
+                if (!teamExists && teams.length > 0) {
+                    activeTeamId = teams[0].id;
+                }
+
+                if (activeTeamId) {
+                    mThis.currentTeamId = activeTeamId;
+                    localStorage.setItem("active_team_id", activeTeamId);
+                    
+                    setTimeout(() => {
+                        const card = mThis.teamCardView.querySelector(`.team-card[data-id="${activeTeamId}"]`);
+                        if (card) {
+                            card.click();
+                        }
+                    }, 50);
                 }
                 break;
             }

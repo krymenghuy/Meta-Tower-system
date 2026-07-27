@@ -38,11 +38,29 @@ return [
         'invalid_price' => 'Please enter a valid number for Price.',
         'select_price_type' => 'Please select the Charge As.',
 
-        'select_gender' => 'Please select a gender.',
-        'date_of_birth_required' => 'Please select a valid date of birth.',
+        'select_gender' => 'Please select Sex.',
+        'date_of_birth_required' => 'Please enter Date of Birth.',
         'legal_name_required' => 'Please enter the legal name.',
-        'nationality_required' => 'Please select a nationality.',
-        'phone_number_required' => 'Please enter the phone number.',
+        'nationality_required' => 'Please select Nationality.',
+        'phone_number_required' => 'Please enter Phone.',
+        'full_name_required' => 'Please enter Full Name.',
+        'khmer_name_required' => 'Please enter Khmer Name.',
+        'marital_status_required' => 'Please select Marital Status.',
+        'identity_card_required' => 'Please enter Identity Card.',
+        'identity_card_expiry_required' => 'Please enter Identity Card Expiry.',
+        'employee_type_required' => 'Please select Employee Type.',
+        'position_required' => 'Please select Position.',
+        'joining_date_required' => 'Please enter Joining Date.',
+        'email_required' => 'Please enter Email.',
+        'apply_payroll_tax_required' => 'Please select Apply Payroll Tax.',
+        'passport_expiry_required' => 'Please enter Passport Expiry.',
+        'nssf_id_required' => 'Please enter NSSF ID.',
+        'passport_number_required' => 'Please enter Passport Number.',
+        'place_of_birth_required' => 'Please select Place of Birth.',
+        'salary_required' => 'Please enter Salary.',
+        'spouse_name_required' => 'Please enter Spouse Name.',
+        'spouse_occupation_required' => 'Please enter Spouse Occupation.',
+        'spouse_employee_required' => 'Please select Spouse Employee.',
 
         'booker_name_required' => 'Booker name is required.',
         'booker_phone_required' => 'Booker phone is required.',
@@ -58,7 +76,7 @@ return [
         'required_start_time' => 'Start time is required.',
         'required_end_time' => 'End time is required.',
 
-        'enter_address' => 'Please enter address.',
+        'enter_address' => 'Please enter Address.',
 
         'select_tenant' => 'Please select a tenant.',
         'select_employee' => 'Please select a employee.',
@@ -67,7 +85,7 @@ return [
         'please_select_a_valid_unit' => 'Please select a valid unit.',
         'please_select_a_valid_vendor' => 'Please select a valid vendor.',
         'please_select_a_valid_building' => 'Please select a valid building.',
-        'reference_no_is_required' => 'Reference no is required.',
+        'reference_no_is_required' => 'Reference number is required.',
         'total_amount_is_required' => 'Total amount is required.',
         'issue_date_is_required' => 'Issue date is required.',
         'due_date_is_required' => 'Due date is required.',
@@ -78,6 +96,7 @@ return [
         'error_saving_bill' => 'Error saving bill.',
         'bill_not_found' => 'Bill not found.',
         'cannot_delete_paid_invoice' => 'Cannot delete paid invoice.',
+        'cannot_cancel_deposit_terminated_contract' => 'Cannot cancel deposit receipt because the contract is already terminated.',
         'delete_failed' => 'Delete failed.',
         'same_current_status' => 'It is the same current status.',
         'file_is_required' => 'File is required.',
@@ -132,7 +151,9 @@ return [
         'invalid_date_of_birth_age' => 'Invalid date of birth age.',
         'passport_number_required' => 'Passport number is required for foreign nationality.',
         'date_of_birth_cannot_be_in_the_future' => 'Date of birth cannot be in the future.',
-        'national_id_required' => 'National ID is required.',
+        'national_id_required' => 'Please enter Identity Card.',
+        'identity_card_required' => 'Please enter Identity Card.',
+        'identity_card_expiry_required' => 'Please enter Identity Card Expiry.',
         'select_document_type' => 'Please select a document type.',
         'select_file' => 'Please select a file.',
         'select_valid_file' => 'Please select a valid file.',
@@ -166,7 +187,7 @@ return [
         'duration_hours_required'  => 'Duration hours is required when unit type is Hour.',
         'scheduled_date_required'  => 'Scheduled date is required.',
         'start_time_required'      => 'Start time is required.',
-       
+
         'month_required'      => 'Please select a valid month.',
         'year_required' => 'Please select a valid year.',
         'payroll_number_required' => 'Please select a valid payroll number.',
@@ -177,16 +198,34 @@ return [
         'select_department' => 'Please select a department.',
         'select_job_level' => 'Please select a job level.',
         'enter_code' => 'Please enter code.',
-        'create_success_team' => 'Team created successfully !.',
-        'update_success_team' => 'Team updated successfully !.',
+        'position_exist' => 'Position already exists.',
+
+        'select_holiday_type' => 'Please select a holiday type.',
+        'start_date' => 'Start date is required.',
+        'end_date' => 'End date is required.',
+        'holiday_exist' => 'Holiday already exists.',
+
+        'required_date' => 'Please select date.',
+        'required_action' => 'Please select action.',
+        'required_time' => 'Please select time.',
+        'select_work_shift' => 'Please select work shift.',
 
 
+        'issues' => 'Please enter issues.',
+        'warning_date' => 'Please select warning date.',
+        'warning_type' => 'Please select warning type.',
 
+
+        'enter_rank' => 'Please enter rank.',
+        'department_exist' => 'Department name already exists.',
+        'work_shift_exist' => 'Work Shift already exists.',
+        'work_shift_is_assigned_to_employee' => 'Work shift is assigned to employees.',
+        'exit_form_name_already_exists' => 'Name already exists.',
 
 
 
     ],
-    'api_body_keys' =>[
+    'api_body_keys' => [
         'name' => 'Name',
         'name_kh' => 'Name Khmer',
         'building_id' => 'Building',
@@ -203,6 +242,8 @@ return [
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
+
+
 
     ],
     'labels' => [
@@ -245,6 +286,7 @@ return [
         'updated' => 'Data has been updated successfully.',
         'deleted' => 'Data has been deleted successfully.',
         'confirm_cancel' => 'Are you sure you want to cancel this?',
+        'confirm_accept' => 'Are you sure you want to accept this request?',
         'cancelled' => 'Cancelled successfully.',
         'confirm_finish' => 'Are you sure you want to mark this as finished?',
         'finished' => 'Marked as finished successfully.',
@@ -256,6 +298,8 @@ return [
         'update_success_status' => 'Status updated successfully.',
         'update_failed_status' => 'Unable to update status',
         'upload_failed_photo' => 'Upload failed. Please try again.',
+
+        
 
         'delete_maintenance' => 'Delete Maintenance',
         'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
@@ -341,6 +385,8 @@ return [
         'payment_amount' => 'Please enter a payment amount',
 
         'cancel_receipt' => 'Receipt has been canceled.',
+
+        'service_request_accepted' => 'Service request has been accepted successfully!',
         'complete_success_request' => 'Service Request has been completed!',
         'delete_success_request' => 'Service request deleted successfully.',
         'update_success_request' => 'Service request updated successfully!',
@@ -390,6 +436,7 @@ return [
         'delete_success_item' => 'Item deleted successfully.',
 
         'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
+        'restore_to_deposit' => 'This will restore to the due balance on the deposit.',
         'reason_for_cancellation' => 'Reason for cancellation (required)...',
         'reason_required' => 'You must provide a reason!',
 
@@ -406,6 +453,9 @@ return [
         'create_success_work_shift' => 'Work shift has been created successfully.',
         'update_success_work_shift' => 'Work shift has been updated successfully.',
         'delete_success_work_shift' => 'Work shift has been deleted successfully.',
+        'create_success_exit_form' => 'Exit form has been created successfully.',
+        'update_success_exit_form' => 'Exit form has been updated successfully.',
+        'delete_success_exit_form' => 'Exit form has been deleted successfully.',
         '' => '',
 
         'create_success_payroll' => 'Payroll has been created successfully.',
@@ -416,15 +466,51 @@ return [
         'update_success_benefit_disbursement' => 'Updated benefit disbursement successfully.',
         'delete_success_benefit_disbursement' => 'Benefit disbursement deleted successfully.',
 
+
+        'create_success_position' => 'Create position successfully.',
+        'update_success_position' => 'Update position successfully.',
+        'delete_success_position' => 'Delete position successfully.',
+
+        'position_already_exists' => 'Position already exists.',
+        'position_not_found' => 'Position not found.',
+        'position_has_employees' => 'Cannot delete position with associated employees.',
+        'delete_position' => 'Delete this position?',
+
+        'create_success_holiday' => 'Create holiday successfully.',
+        'update_success_holiday' => 'Update holiday successfully.',
+        'delete_success_holiday' => 'Delete holiday successfully.',
+        'delete_holiday' => 'Delete this holiday?',
+
+        'delete_department?' => 'Delete this department?',
+        'delete_department_success' => 'Department deleted successfully.',
+        'update_department_success' => 'Department updated successfully',
+        'create_department_success' => 'Department created successfully.',
+
+        'attendance_create_successfully' => 'Attendance created successfully.',
+        'attendance_update_successfully' => 'Attendance updated successfully.',
+        'attendance_delete_successfully' => 'Attendance deleted successfully.',
+        'delete_attendance?' => 'Delete this Attendance Record?',
+
+        'warning_update_successfully' => 'Warning updated successfully.',
+        'warning_create_successfully' => 'Warning created successfully.',
+        'warning_delete_successfully' => 'Warning deleted successfully.',
+        'delete_warning?' => 'Delete this warning?',
+
+        'failed_to_save' => 'Failed to save Warning Information',
+
+
+
+
+
         'update_success_employee' => 'Updated employee successfully.',
         'create_success_employee' => 'Created employee successfully.',
         'delete_success_employee' => 'Employee deleted successfully.',
-        '' => '',
-        '' => '',
 
 
-
-
+        'update_job_level_successfully' => 'Updated job level successfully.',
+        'create_job_level_successfully' => 'Added job level successfully.',
+        'delete_job_level_successfully' => 'Deleted job level successfully.',
+        'delete_job_level?' => 'Delete this job level?',
 
 
 

@@ -38,7 +38,14 @@ class LeaveController extends Controller
         }
         return JDV::result($this->leaves->getLeaveListPaginate($req->all(), $ss));
     }
+    public function getLeaveUninformList(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $data = $this->leaves->getLeaveUninformList($req->all(),$ss);
 
+        return JDV::result($data);
+    }
     public function getDetails(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !== 200){
@@ -77,7 +84,7 @@ class LeaveController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id;
-        $res = $this->leaves->updateStatus($req->status_id, $id,$ss);
+        $res = $this->leaves->updateStatus($req->status_id, $id, $ss, $req->all());
 
         return JDV::raw($res);
     }

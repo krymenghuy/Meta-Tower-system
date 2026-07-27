@@ -19,8 +19,7 @@ class DepartmentController extends Controller
     public function saveDepartment(Request $req)
     {
         $id = $req->id ?? null;
-        $prn_code = $id ? 216 : 217;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

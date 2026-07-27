@@ -30,12 +30,13 @@ class StaffAttendance extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id|text=required_select_employee',
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
             'attendance_date' => '1|date|text=required_date',
             'scan_action' => '1|string|text=required_action',
             'scan_time' => '1|string|text=required_time',
-            'work_shift_id' => '1|number|exists=work_shifts.id|text=required_select_work_shift',
-            'attendance_status' => '0|string',
+            'work_shift_id' => '1|number|exists=work_shifts.id|text=select_work_shift',
+            'action_type' => '0|string',
+            'session' => '0|string|text=required_session',
             'remarks' => '0|string',
         ];
 
@@ -67,10 +68,11 @@ class StaffAttendance extends VSModel
             'emp_id' => $emp_id,
             'scan_time' => $scan_time,
             'scan_action' => $scan_action,
-            'attendance_status' => $inputs['attendance_status'] ?? $arr['attendance_status'] ?? 'Present',
+            'action_type' => $inputs['action_type'] ?? $arr['action_type'] ?? 'Present',
             'attendance_date' => $attendance_date ?? '',
             'work_shift_id' => $work_shift_id ?? null,
             'remarks' => $remarks,
+            'session' => $arr['session'] ?? null,
         ];
 
 
@@ -99,7 +101,7 @@ class StaffAttendance extends VSModel
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
             ->selectRaw('a.id, a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code as emp_code,'
                 . $dob . ', ws.name as work_shift,'
-                . $scan_date . ', a.scan_time, a.scan_action, a.attendance_status, a.remarks, p.name as position')
+                . $scan_date . ', a.scan_time, a.scan_action, a.remarks, p.name as position, a.action_type, a.session')
             ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
         if ($search_value) {
             $query->where(function ($subQuery) use ($search_value) {
@@ -157,7 +159,7 @@ class StaffAttendance extends VSModel
         }
         $row = DB::table('emp_attendances as a')
             ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
-            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.attendance_status, a.work_shift_id, a.remarks')
+            ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.work_shift_id, a.remarks, a.action_type, a.session')
             ->where('a.id', $id)
             ->first();
         if (!$row) {
@@ -197,19 +199,7 @@ class StaffAttendance extends VSModel
             'employees' => GeneralSettings::options_employee(10, $ss),
             'positions' => DB::table('positions')->selectRaw('id, name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-            'work_shifts' => DB::table('work_shifts')->selectRaw('id, name')->get(),
-            'attendance_statuses' => [
-                (object) ['id' => 'Present', 'name' => 'Present'],
-                (object) ['id' => 'Late', 'name' => 'Late'],
-                (object) ['id' => 'Absent', 'name' => 'Absent'],
-                (object) ['id' => 'Leave', 'name' => 'Leave'],
-                (object) ['id' => 'Half Day', 'name' => 'Half Day'],
-                (object) ['id' => 'Holiday', 'name' => 'Holiday'],
-                (object) ['id' => 'Weekend', 'name' => 'Weekend'],
-                (object) ['id' => 'Permission', 'name' => 'Permission'],
-            ],
-
-
+            'work_shifts' => DB::table('work_shifts')->selectRaw('id, name')->get(), 
             'attendance' => $attendance,
         ];
     }

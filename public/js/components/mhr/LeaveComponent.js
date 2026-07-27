@@ -5,7 +5,7 @@ var LeaveComponent = (function () {
     mThis.title_prop = "Leave Request";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
-    
+
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
@@ -131,7 +131,7 @@ var LeaveComponent = (function () {
                 `;
             },
         },
-      
+
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
@@ -171,9 +171,9 @@ var LeaveComponent = (function () {
             rowCreated:(data,index,tr)=>{
               tr.dataset.statusid = data.status_id;
               tr.classList.add('leave');
-              tr.setAttribute('id',['leave_id',data.id].join('')); 
+              tr.setAttribute('id',['leave_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -283,9 +283,9 @@ var LeaveComponent = (function () {
                 menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
                 // menu.edit_request.style.display = (status_id = 2) ? 'none' : 'block';
                 // menu.delete_leave.style.display = (status_id >= 2) ? 'none' : 'block';
-                
+
             },
-  
+
 
             onClick:(menuLink, id, name)=>{
                 switch(name){
@@ -324,7 +324,7 @@ var LeaveComponent = (function () {
         let op = {
             id: id
         };
-        
+
         if (!AuthManager.allowed(259, false)) return;
 
         Swal.fire({
@@ -388,8 +388,8 @@ var LeaveComponent = (function () {
         );
     };
 
-   
-   
+
+
 
     mThis.editLeave = (id, menuLink) => {
 
@@ -430,7 +430,7 @@ var LeaveComponent = (function () {
             }
         });
     }
-   
+
      mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
@@ -485,7 +485,7 @@ var LeaveComponent = (function () {
 
     mThis.show = function () {
         mThis.init();
-        
+
         mThis.prepareFormOptions();
         mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
            main_view.setContentView(mThis.self, mThis.title_prop);

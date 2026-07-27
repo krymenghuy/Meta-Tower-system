@@ -119,11 +119,11 @@ mThis.init_vsapi = async () => {
       VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,{debug:true});
 
       // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
-      if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
-          window.ContractComponent = ContractsComponent;
-      } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
-          window.ContractsComponent = ContractComponent;
-      }
+    //   if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
+    //       window.ContractComponent = ContractsComponent;
+    //   } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
+    //       window.ContractsComponent = ContractComponent;
+    //   }
 
       if (typeof ReceiptsComponent !== 'undefined') {
           window.ReceiptsComponent = ReceiptsComponent;
@@ -9702,4 +9702,7462 @@ const StaffAttendanceDialog = (() => {
 
     return self;
 })();
+
+
+// --- appended missing mhr components ---
+
+"use strict";
+
+var TaxAllowanceComponent = (function () {
+    const mThis = {};
+
+    mThis._escapeHtml = (s) => {
+        if (s == null) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+
+    mThis._formatMoney = (value, currency) => {
+        if (typeof VSMoney !== "undefined" && VSMoney.formatAmount) {
+            return VSMoney.formatAmount(value, currency || "USD");
+        }
+        const num = Number(value) || 0;
+        return `$ ${num.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })}`;
+    };
+
+    mThis._bindActions = (container, empId, onRefresh) => {
+        const refresh = () => {
+            if (typeof onRefresh === "function") {
+                onRefresh(empId);
+            }
+        };
+
+        const addBtn = container.querySelector("#_emp_tax_allowance_btn_add");
+        if (addBtn) {
+            addBtn.onclick = function (e) {
+                e.preventDefault();
+                TaxAllowanceDialog.show({
+                    id: null,
+                    btn: e.target,
+                    emp_id: empId,
+                    onClose: refresh,
+                });
+            };
+        }
+
+        container.querySelectorAll(".btn_edit_tax_allowance").forEach((btn) => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                TaxAllowanceDialog.show({
+                    id: btn.dataset.id,
+                    btn: btn,
+                    emp_id: empId,
+                    onClose: refresh,
+                });
+            };
+        });
+
+        container.querySelectorAll(".btn_delete_tax_allowance").forEach((btn) => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                mThis.deleteTaxAllowance(btn.dataset.id, btn, refresh);
+            };
+        });
+    };
+
+    mThis.deleteTaxAllowance = (id, menulink, refresh) => {
+        let op = {
+            id: id,
+            btn: menulink,
+        };
+
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/tax-allowance/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success");
+                                if (typeof refresh === "function") {
+                                    refresh();
+                                }
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        })
+                        .finally(() => {
+                            menulink.disabled = false;
+                        });
+                } else {
+                    menulink.disabled = false;
+                }
+            }
+        );
+    };
+
+    mThis.render = (container, allowances, empId, onRefresh) => {
+        if (!container) return;
+
+        const allowanceList = Array.isArray(allowances) ? allowances : [];
+
+        const rowsHtml = allowanceList.length
+            ? allowanceList
+                  .map(
+                      (row) => `
+                <div class="emp-tax-allowance-row" data-allowance-id="${row.id}">
+                    <div class="emp-tax-allowance-col-qty">${mThis._escapeHtml(String(row.qty ?? 0))}</div>
+                    <div class="emp-tax-allowance-col-amount">${mThis._escapeHtml(mThis._formatMoney(row.amount, row.currency_code))}</div>
+                    <div class="emp-tax-allowance-col-allowance">${mThis._escapeHtml(mThis._formatMoney(row.allowance, row.currency_code))}</div>
+                    <div class="emp-tax-allowance-col-action">
+                        <div class="d-flex justify-content-center align-items-middle">
+                            <div class="text-middle gap-2 d-flex flex-wrap">
+                                <button class="btn rounded-3 p-1 btn-primary btn_edit_tax_allowance" data-id="${row.id}">
+                                    <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn rounded-3 p-1 btn-danger btn_delete_tax_allowance" data-id="${row.id}">
+                                    <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+                  )
+                  .join("")
+            : `<div class="emp-tax-allowance-empty">
+                    <i class="fa-solid fa-receipt emp-tax-allowance-empty-icon"></i>
+                    <span class="emp-tax-allowance-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
+               </div>`;
+
+        container.innerHTML = `
+                <div class="emp-tax-allowance-card h-100">
+                    <div class="emp-tax-allowance-header">
+                        <div class="emp-tax-allowance-header-title">
+                            <span class="emp-tax-allowance-header-icon">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </span>
+                            <span class="emp-tax-allowance-header-label" vslang="titles.Tax Allowance">Tax Allowance</span>
+                        </div>
+                        <button type="button" class="emp-skill-add-btn" id="_emp_tax_allowance_btn_add" title="Add" aria-label="Add tax allowance">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="emp-tax-allowance-body">
+                        <div class="emp-tax-allowance-cols">
+                            <span vslang="titles.Qty">Qty</span>
+                            <span vslang="titles.Unit Amt">Unit Amt</span>
+                            <span vslang="titles.Allowance">Allowance</span>
+                            <span vslang="titles.Action">Action</span>
+                        </div>
+                        <div class="emp-tax-allowance-list">
+                            ${rowsHtml}
+                        </div>
+                    </div>
+                </div>`;
+
+        LocaleManager.translateZone(container);
+        mThis._bindActions(container, empId, onRefresh);
+    };
+
+    return mThis;
+})();
+
+const TaxAllowanceDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="vs-material-field">
+                                    <input type="number" name="qty" required class="data-input form-control" data-field="qty" min="0" step="1" placeholder=" " />
+                                    <label vslang="titles.Qty"></label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="vs-material-field">
+                                    <input type="number" name="amount" required class="data-input form-control" data-field="amount" min="0" step="0.01" placeholder=" " />
+                                    <label vslang="labels.Amount"></label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="vs-material-field">
+                                    <select name="currency_code" class="modal-select data-input" data-field="currency_code"></select>
+                                    <label vslang="titles.Currency">Currency</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="4" placeholder=" "></textarea>
+                                    <label vslang="labels.Remarks"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+                            p.emp_id = me.dataOptions.emp_id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/tax-allowance/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
+                                            me.dataOptions.onClose(p);
+                                        }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success"
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success"
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Tax Allowance",
+                    modifyTitle: "vslang:titles.Edit Tax Allowance",
+                    targetProp: "tax_allowance",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/tax-allowance/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    },
+                ],
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    if (!me.dataOptions.id && me.controls.currency_code) {
+                        me.controls.currency_code.value =
+                            VSMoney.getCurrency().code;
+                    }
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var WorkShiftListComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftListComponent");
+
+    mThis.title_prop = "Work Shifts";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_work_shift_list_search");
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
+        },
+        {
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
+            data: (data) => {
+                return `<span class="text-pr-custom">${data.name}</span>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle",
+            data: (data) => {
+                return [
+                    `<span class="text-Capitalize d-block">${data.update_user ?? '-'}</span>`,
+                    `<span class="text-small">${data.updated_at ?? '-'}</span>`,
+                ].join("");
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_work_shift" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_work_shift" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+        mThis.WorkShiftListsView = new ListView("_work_shift_lists", {
+            fetchApi: `${mThis.base_url}/mhr/work-shifts/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+
+                mThis.WorkShiftListsView.showPage(mThis.getFilterData());
+            };
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.WorkShiftListsView.showPage();
+                },
+            };
+            // if (!AuthManager.allowed(267)) return;
+            WorkShiftListDialog.show(op);
+        };
+        mThis.listContainer = mThis.WorkShiftListsView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+
+        mThis.initDropdownMenus(mThis.listContainer);
+        mThis.initAlready = true;
+    };
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.WorkShiftListsView) {
+                mThis.WorkShiftListsView.showPage(mThis.getFilterData());
+            } else {
+                console.error("Work is not defined");
+                }
+        }, 200);
+    });
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+    mThis.initDropdownMenus = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_edit_work_shift");
+            if (btn) {
+                mThis.editWorkShift(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn_delete_work_shift");
+            if (btn) {
+                mThis.deleteWorkShift(btn.dataset.id, btn);
+            }
+        });
+    };
+    mThis.editWorkShift = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.WorkShiftListsView.showPage();
+            },
+        };
+        // if (!AuthManager.allowed(268)) return;
+        WorkShiftListDialog.show(op);
+    };
+    mThis.deleteWorkShift = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.WorkShiftListsView.showPage();
+            },
+        };
+        // if (!AuthManager.allowed(269)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/work-shifts/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success_work_shift");
+                                mThis.WorkShiftListsView.showPage();
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        })
+                        .finally(() => {
+                            menulink.disabled = false;
+                        });
+                } else {
+                    menulink.disabled = false;
+                }
+            }
+        );
+    };
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.WorkShiftListsView.showPage(
+            mThis.getFilterData(),
+            null,
+            () => {
+               main_view.setContentView(mThis.self, mThis.title_prop);
+            }
+        );
+    };
+    return mThis;
+})();
+const WorkShiftListDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/work-shifts/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_work_shift");
+                                        } else {
+                                            cv_interact.success("create_success_work_shift");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Shift",
+                    modifyTitle: "vslang:titles.Edit Shift",
+                    targetProp: "work_shifts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/work-shifts/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var SkillsComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_skillsComponent");
+
+    mThis.title_prop = "Skills";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddSkill");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_skills_list_search");
+
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>`,
+        },
+        {
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
+            data: (data) => {
+                return `<span class="text-pr-custom">${data.name ?? data.title ?? "-"}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Description",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-muted">${data.description ?? "-"}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle",
+            data: (data) => {
+                return [
+                    `<span class="text-Capitalize d-block">${data.update_user ?? "-"}</span>`,
+                    `<span class="text-small">${data.updated_at ?? "-"}</span>`,
+                ].join("");
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_skill" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_skill" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.SkillsListView = new ListView("_skills_lists", {
+            fetchApi: `${mThis.base_url}/mhr/skills/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () => {
+                mThis.SkillsListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            SkillListDialog.show({
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.SkillsListView.showPage(mThis.getFilterData());
+                },
+            });
+        };
+
+        mThis.listContainer = mThis.SkillsListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.setActionListeners();
+        mThis.initAlready = true;
+    };
+
+    mThis.elSearch.addEventListener("keyup", () => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.SkillsListView) {
+                mThis.SkillsListView.showPage(mThis.getFilterData());
+            }
+        }, 200);
+    });
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            if (f) {
+                p[f] = el.value;
+            }
+        });
+
+        return p;
+    };
+
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_edit_skill");
+            if (btn) {
+                mThis.editSkill(btn.dataset.id, btn);
+            }
+
+            btn = VSUtil.closestLimited(e.target, ".btn_delete_skill");
+            if (btn) {
+                mThis.deleteSkill(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.editSkill = (id, menulink) => {
+        SkillListDialog.show({
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.SkillsListView.showPage(mThis.getFilterData());
+            },
+        });
+    };
+
+    mThis.deleteSkill = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+        };
+
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/skills/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success_skill");
+                                mThis.SkillsListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error("An error occurred. Please try again.");
+                        })
+                        .finally(() => {
+                            menulink.disabled = false;
+                        });
+                } else {
+                    menulink.disabled = false;
+                }
+            }
+        );
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.SkillsListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    };
+
+    return mThis;
+})();
+
+const SkillListDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="title" required class="data-input form-control" data-field="title" placeholder=" " />
+                                    <label vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="data-input form-control" data-field="description" rows="3" placeholder=" "></textarea>
+                                    <label vslang="labels.Description"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/skills/save"].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (typeof me.dataOptions.onClose === "function") {
+                                            me.dataOptions.onClose(p);
+                                        }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_skill");
+                                        } else {
+                                            cv_interact.success("create_success_skill");
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Skill",
+                    modifyTitle: "vslang:titles.Edit Skill",
+                    targetProp: "skills",
+                    api: {
+                        endpoint: [main_view.base_url, "/mhr/skills/form-options"].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var BenefitDisbursementComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self= main_view.VSAppContent.querySelector("#_main_benefit_disbursement_component");
+    mThis.title_prop = "Benefits Disbursement";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefitDisburse");
+    mThis.elSearch = mThis.self.querySelector("#_benefit_disburse_search");
+    mThis.elCard = mThis.self.querySelector(".top_level_card");
+    mThis._searchBenefitDisburse = mThis.self.querySelector("#container_benefit_disburse");
+    mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+    const monthNames = [
+        "All",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle ",
+        },
+        {
+            transTitle: "titles.Name",
+            className: "align-middle text-start w-25",
+            data: (data) => {
+                return `
+                <div style="display: flex; align-items: center;">
+                    <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <div>
+                        <span style="font-size: 14px; font-weight: bold;">${
+                            data.name ?? ""
+                        }</span><br/>
+                        <span style="font-size: 12px; color: gray;">${
+                            data.email ?? ""
+                        }</span>
+                    </div>
+                </div>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Benefit",
+            className: "align-middle ",
+            data: (data) =>
+                `<span class="text-primary-custom">${
+                    data.benefit_name ?? "HD"
+                }</span>`,
+        },
+        {
+            transTitle: "titles.Target Month",
+            className: "align-middle",
+            data: (data) => {
+                const month = monthNames[data.target_month ] ?? "";
+
+                return `<p class="p-0 m-0">${month} </p>`;
+            },
+        },
+        {
+            transTitle: "titles.Target Year",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom">${data.target_year}</span>`,
+        },
+        {
+            transTitle: "titles.Withdraw Percent",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom">${data.withdraw_rate ?? "0"}%</span>`,
+        },
+        {
+            transTitle: "titles.Action",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="text-center align-center gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-benefit-disbursement-modify" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-warning btn-benefit-disbursement-delete" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.BenefitDisburseListView = new ListView("_benefit_disburse_list", {
+            fetchApi: `${mThis.base_url}/mhr/emp/benefit-disbursement/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-3 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+        });
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.BenefitDisburseListView.showPage();
+                },
+            };
+            // if (!AuthManager.allowed(276)) return;
+            BenefitDisburseDialog.show(op);
+        };
+        const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
+        }
+
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis._searchBenefitDisburse.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+        });
+        mThis.initAlready = true;
+    };
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.BenefitDisburseListView) {
+                mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+            } else {
+                console.error("Benefit Disburse is not defined");
+            }
+        }, 200);
+    });
+
+    mThis.setFilterPeriod = (p) => {
+        return p;
+    };
+
+    mThis.getFilterData = () => {
+        const filters = {
+            benefit_id: mThis.elBenefit.value,
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const field = el.dataset.field;
+            filters[field] = el.value;
+        });
+        return filters;
+    };
+    mThis.initDropdownMenus = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-benefit-disbursement-modify"
+            );
+            if (btn) {
+                mThis.editBenefitDisburse(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-benefit-disbursement-delete"
+            );
+            if (btn) {
+                mThis.deleteBenefitDisburse(btn.dataset.id, btn);
+            }
+        });
+    };
+    mThis.editBenefitDisburse = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.BenefitDisburseListView.showPage();
+            },
+        };
+        // if (!AuthManager.allowed(277)) return;
+        BenefitDisburseDialog.show(op);
+    };
+    mThis.deleteBenefitDisburse = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.BenefitDisburseListView.showPage();
+            },
+        };
+        // if (!AuthManager.allowed(278)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/emp/benefit-disbursement/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_success_benefit_disbursement");
+                                mThis.BenefitDisburseListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/emp/benefit-disbursement/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    true,
+                    "All Benefits",
+                    null
+                );
+            });
+    };
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+        mThis.BenefitDisburseListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+    return mThis;
+})();
+const BenefitDisburseDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static", //User click outside form, do not close form
+                keyboard: true, //prevent user from using ESC key
+                createContent: () => {
+                    const months = [
+                        { value: 0, name: "All" },
+                        { value: 1, name: "January" },
+                        { value: 2, name: "February" },
+                        { value: 3, name: "March" },
+                        { value: 4, name: "April" },
+                        { value: 5, name: "May" },
+                        { value: 6, name: "June" },
+                        { value: 7, name: "July" },
+                        { value: 8, name: "August" },
+                        { value: 9, name: "September" },
+                        { value: 10, name: "October" },
+                        { value: 11, name: "November" },
+                        { value: 12, name: "December" },
+                    ];
+
+                    const currentYear = new Date().getFullYear();
+                    const years = Array.from(
+                        { length: 10 },
+                        (_, i) => currentYear + i
+                    );
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="benefits" class="form-control data-input" data-field="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="withdraw_rate" required class="data-input form-control" data-field="withdraw_rate" placeholder=" " />
+                                    <label vslang="labels.Withdraw Percent"></label>
+                                </div>
+                            </div>
+
+                        <div class="col-6">
+                            <select data-style="material" name="target_month" class="form-control data-input" data-field="target_month" placeholder="${LocaleManager.trans('Month', 'labels')}">
+                                ${months
+                                    .map(
+                                        (month) =>
+                                            `<option value="${month.value}">${month.name}</option>`
+                                    )
+                                    .join("")}
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="year" class="form-control data-input" data-field="target_year" placeholder="${LocaleManager.trans('Year', 'labels')}">
+                                ${years
+                                    .map(
+                                        (year) =>
+                                            `<option value="${year}">${year}</option>`
+                                    )
+                                    .join("")}
+                            </select>
+                        </div>
+                        </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) =>
+                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
+                        valueField: "id",
+                    },
+                    {
+                        name: "benefits",
+                        data: "benefits",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const jl = me.getData();
+
+                            jl.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/emp/benefit-disbursement/save",
+                                    ].join(""),
+                                    jl,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("update_success_benefit_disbursement");
+                                        }
+                                        else{
+                                        cv_interact.success("create_success_benefit_disbursement");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                contentCreated: (me, divModal) => {
+                    me.saveBenefitDisburse = (bd) => {
+                        alert("It seems no action yet!");
+                    };
+                },
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Benefit Disburse",
+                    modifyTitle: "vslang:titles.Edit Benefit Disburse",
+                    targetProp: "benefit_disbursements",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/emp/benefit-disbursement/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    // onResponse: (me, res) => {
+
+                    //     if (res.target_month && res.target_year) {
+                    //         setTimeout(() => {
+                    //             const monthSelect = me.divModal.querySelector(
+                    //                 '[name="target_month"]'
+                    //             );
+                    //             const yearSelect = me.divModal.querySelector(
+                    //                 '[name="target_year"]'
+                    //             );
+                    //             if (monthSelect)
+                    //                 monthSelect.value = res.target_month;
+                    //             if (yearSelect)
+                    //                 yearSelect.value = res.target_year;
+                    //         }, 100);
+                    //     }
+                    // },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    setTimeout(() => {
+                        if (data.target_month) {
+                            const monthSelect = me.divModal.querySelector(
+                                '[name="target_month"]'
+                            );
+                            if (monthSelect)
+                                monthSelect.value = data.target_month;
+                        }
+                        if (data.target_year) {
+                            const yearSelect = me.divModal.querySelector(
+                                '[name="target_year"]'
+                            );
+                            if (yearSelect) yearSelect.value = data.target_year;
+                        }
+                    }, 100);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var UninformedLeaveComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Uninformed Leave";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_emp_Uninform_leave_component");
+
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
+    // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
+    mThis.elSearch = mThis.self.querySelector("#_search_leave");
+
+    mThis.cols = [
+        {
+            transTitle: "",
+            className: 'align-middle',
+        },
+        {
+            transTitle: "titles.Employee ID",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `<span>${data.emp_code ?? '-'}</span>`;
+             }
+        },
+
+        {
+            transTitle: "titles.Name",
+            className: "align-middle text-nowrap",
+            data: (data, index) => {
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.employee_name ?? "-"}
+                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
+                        </div>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Leave Type",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Start Date",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${data.start_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.End Date",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar-check me-1"></i>
+                        ${data.end_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Leave Duration",
+            className: "align-middle text-center text-nowrap",
+            data: (data) => {
+                const days = Number(data.leave_days ?? 0);
+                return `
+                    <span style="min-width: 100px;" class="badge bg-light text-danger-emphasis border px-2 py-2">
+                        <i class="fa-regular fa-clock me-1"></i>
+                        ${days} ${days === 1 ? "Day" : "Days"}
+                    </span>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:250px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle",
+            data: (data) => {
+                const statusId = data.status_id;
+                const statusKey = (data.status ?? "").toLowerCase();
+                const map = {
+                    1: {
+                        text: "Pending",
+                        cls: "bg-warning-subtle text-warning border border-warning",
+                    },
+                    2: {
+                        text: "Approved",
+                        cls: "bg-success-subtle text-success border border-success",
+                    },
+                    3: {
+                        text: "Rejected",
+                        cls: "bg-danger-subtle text-danger border border-danger",
+                    },
+                };
+                const byName = {
+                    pending:
+                        "bg-warning-subtle text-warning border border-warning",
+                    approved: "bg-success-subtle text-success border border-success",
+                    rejected:
+                        "bg-danger-subtle text-danger border border-danger",
+                };
+                const m = map[statusId] || null;
+                const label =
+                    m?.text ||
+                    (statusKey === "terminated"
+                        ? "Terminated"
+                        : (data.status ?? "—"));
+                const cls =
+                    m?.cls || byName[statusKey] || "bg-light text-muted";
+                return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                </div>`;
+            },
+        },
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.LeaveRequestListView = new ListView('_leave_request_list',{
+            fetchApi : `${main_view.base_url}/mhr/leave/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            rowCreated:(data,index,tr)=>{
+              tr.dataset.statusid = data.status_id;
+              tr.classList.add('leave');
+              tr.setAttribute('id',['leave_id',data.id].join(''));
+
+            },
+            listContainerClass: null
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+                }
+            };
+            // if (!AuthManager.allowed(240)) return;
+            LeaveRequestDialog.show(op);
+        };
+
+        mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
+
+        mThis.initDropdownMenus(mThis.tblLeaves);
+        mThis.pr_tbl = mThis.LeaveRequestListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
+        }
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+            el.onchange =  (e) => {
+           e.preventDefault();
+           mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            }
+       });
+
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            status_id: mThis.elFilter_status.value,
+            // leave_type_id: mThis.elFilter_leaveType.value,
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+                const f = el.dataset.field;
+                p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table)=>{
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass:"btn_leave_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_leave"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_leave"
+                },
+            ],
+        //     adjustPosition:{
+        //         top:-200 ,
+        //         left:-300
+        //    },
+
+            onClick:(menuLink, id, name)=>{
+                switch(name){
+                    case 'edit_leave':{
+                      mThis.editLeave(id, menuLink);
+                      break;
+                    }
+                    case 'delete_leave':{
+                        mThis.deleteLeave(id, menuLink);
+                        break;
+                      }
+
+                    default:{
+                      break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
+
+
+
+    mThis.editLeave = (id, menuLink) => {
+
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(241)) return;
+        LeaveRequestDialog.show(op);
+    }
+
+    mThis.deleteLeave = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this leave request?',{
+            title: 'Delete Leave Request',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/mhr/leave/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted successfully');
+                        mThis.LeaveRequestListView.showPage();
+                    }
+                })
+            }
+            else {
+                cv_interact.error(res.error_message);
+            }
+        });
+    }
+
+    mThis.prepareFormOptions = () => {
+        vsapi.call(`${main_view.base_url}/mhr/leave/form-options`, null, null, null)
+            .then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',"",LocaleManager.trans("All Statuses", "titles"),"");
+            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',"",LocaleManager.trans("All Types", "titles"),"");
+        })
+    }
+
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions();
+        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
+           main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    }
+    return mThis;
+})();
+
+
+
+"use strict";
+var HolidayComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_holidayComponent",
+    );
+
+    mThis.title_prop = "Manage Holiday";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_holiday");
+    mThis.elSearch = mThis.self.querySelector("#_search_holiday");
+    mThis.elHolidayType = mThis.self.querySelector("#holiday_type");
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+            // data: (data, index, i) => {
+
+            // },
+        },
+        {
+            transTitle: "titles.Holiday Date",
+            className: "align-middle",
+            data: (data) => {
+                return ` <div class="d-flex flex-column">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <span class="text-nowrap" style="font-size: 90%;">${data.start_date}</span>
+                                <span class="text-primary px-1">~</span>
+                                <span class="text-nowrap" style="font-size: 90%;">${data.end_date}</span>
+                            </div>
+                        </div>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Holiday Name",
+            className: "align-middle fw-bold",
+            data: (data) => {
+                return `<span class="text-danger text-capitalize">${data.name}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Holiday Type",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-nowrap text-prm-custom">${data.holiday_type ?? ""}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-primary fw-semibold text-capitalize">${data.update_user}</span>
+                    <span>
+                        <small class="text-nowrap">${data.updated_at}</small>
+                    </span>
+                </div>`;
+            },
+        },
+        {
+            className: "col_action align-middle",
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_holiday_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            },
+        },
+    ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.HolidayListView = new ListView("_holiday_list", {
+            fetchApi: `${main_view.base_url}/mhr/holiday/list-paginate`,
+            perPage: 15,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+
+                mThis.HolidayListView.showPage(mThis.getFilterData());
+            };
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.HolidayListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(260)) return;
+            HolidayDialog.show(op);
+        };
+        mThis.listContainer = mThis.HolidayListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.HolidayListView) {
+                    mThis.HolidayListView.showPage(mThis.getFilterData());
+                } else {
+                    console.error("Holiday is not defined");
+                }
+            }, 200);
+        });
+        mThis.initDropdownMenus(mThis.listContainer);
+
+        mThis.initAlready = true;
+    };
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_holiday_action",
+            cssClass: "bg-white shadow",
+
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify Holiday"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_holiday",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete Holiday"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_holiday",
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_holiday": {
+                        mThis.editHoliday(id, menuLink);
+                        break;
+                    }
+                    case "delete_holiday": {
+                        mThis.deleteHoliday(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.editHoliday = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.HolidayListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(262)) return;
+        HolidayDialog.show(op);
+    };
+
+    mThis.deleteHoliday = (id, menuLink) => {
+        // menuLink.disabled = true;
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.HolidayListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(263)) return;
+        cv_interact.confirm(
+            "delete_holiday",
+            {
+                title: "Delete Holiday",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/holiday/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success_holiday");
+                                mThis.HolidayListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
+                                cv_interact.error(
+                                    "Deletion failed. Try again.",
+                                );
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again.",
+                            );
+                        })
+                        .finally(() => {
+                            menuLink.disabled = false;
+                        });
+                } else {
+                    menuLink.disabled = false;
+                }
+            },
+        );
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/holiday/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code === 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elHolidayType,
+                    d.holiday_types || [],
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("Holiday Type", "titles"),
+                    "",
+                );
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+
+        mThis.HolidayListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    };
+    return mThis;
+})();
+const HolidayDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="holiday" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                                <label vslang="labels.Holiday Name"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans('Holiday Type', 'labels')}" data-field="holiday_type_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
+                                <label vslang="labels.Start Date"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
+                                <label vslang="labels.End Date"></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                <label vslang="labels.Description"></label>
+                            </div>
+                        </div>
+                    </div>`,
+                ].join("");
+            },
+            contentCreated: (me) => {
+                DateTimePicker.init(me.controls.start_date);
+                DateTimePicker.init(me.controls.end_date);
+            },
+            configSelect: [
+                {
+                    name: "holiday_type",
+                    data: "holiday_types",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/mhr/holiday/save"].join(
+                                    "",
+                                ),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "update_success_holiday",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "create_success_holiday",
+                                        );
+                                    }
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create Holiday",
+                modifyTitle: "vslang:titles.Modify Holiday",
+                targetProp: "holidays",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/holiday/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+var WalletAccountComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_walletAccountComponent");
+
+    mThis.title_prop = "Wallet Accounts";
+    mThis.btnAdd = mThis.self.querySelector("#_btnWalletAddAccount");
+    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnWalletAddAccountMissing");
+    mThis.divFilter = mThis.self.querySelector("#_wla_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_wla_search_wallet_account");
+    mThis.elFilter_department = mThis.self.querySelector("#_wla_filter_department");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_wallet_account");
+    mThis._wallet_transaction_info = mThis.self.querySelector("#_wallet_transaction_info");
+    mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
+
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle",
+            data: (data, index, i) => {
+                return index + 1;
+            },
+        },
+        {
+            transTitle: "titles.Employee",
+            className: "align-middle text-capitalize text-nowrap w-15",
+            data: (data, index, tr) => {
+                return `<div style="display: flex; align-items: center;">
+                            <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt=""style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">${
+                                    data.emp_name ?? ""
+                                }</span>
+                                <br/>
+                                <span style="font-size: 11px; color: gray;">${
+                                    data.position ?? ""
+                                }</span>
+                            </div>
+                        </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Account Type",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${
+                    data.account_type ?? ""
+                }</p>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Account Number",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Balance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Balance Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Currency",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
+            },
+        },
+        {
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1
+                            ? "d-none"
+                            : "btn_wallet_account_action"
+                    }" data-id="${data.id}" data-emp_id="${
+                data.emp_id
+            }" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.WalletAccountListView = new ListView("_wallet_account_list", {
+            fetchApi: `${main_view.base_url}/mhr/account/wallet-account/list`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--white rounded-2 overflow-hidden  header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+
+            let op = {
+                btn: e.target,
+                onClose: () => {
+                    mThis.WalletAccountListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(256)) return;
+            WalletAccountDialog.show(op);
+        };
+
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
+            sub_wallet_content.classList.remove("d-none");
+            const view_wallet_transaction = mThis.self.querySelector("#view_wallet_transaction");
+            view_wallet_transaction.classList.add("d-none");
+
+        };
+
+        const pr_tbl = mThis.WalletAccountListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
+        }
+
+        mThis.initDropdownMenus(pr_tbl);
+        const filter_fields = mThis.divFilter.querySelectorAll('.filter-field');
+        filter_fields.forEach(el =>{
+            el.onchange =  (e) => {
+               e.preventDefault();
+               mThis.WalletAccountListView.showPage(mThis.getFilterData());
+            }
+        });
+
+        mThis.btnAddAccountMissing.onclick = function (e) {
+            e.preventDefault();
+
+            const op = {
+                //account_id: mThis.divFilter.value,
+                account_type:"Wallet"
+            };
+            if (!AuthManager.allowed(471)) return;
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Create wallet accounts for all staff? </span><small>This process will create wallet account for staff who do not have a wallet account yet!</small>',
+                {
+                    title: "Create Wallet Accounts",
+                    context: "update",
+                    confirmButtonText: "Bulk Create",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/account/bulk-create",
+                                ].join(""),
+                                op,
+                                false,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    const d = res.data ?? {};
+                                    const success_count = d.success_count ?? 0;
+                                    if(success_count > 0) {
+                                        mThis.WalletAccountListView.showPage(
+                                            mThis.getFilterData()
+                                        );
+                                        cv_interact.success(`${success_count} wallet accounts have been creted!`);
+                                    }
+                                    else cv_interact.info('No wallet accounts were created. This is maybe because all staffs already have a wallet account!');
+
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
+                }
+            );
+        };
+
+        mThis.initAlready = true;
+    };
+
+    mThis.renderWalletTransaction = (data) => {
+        if (!data || !data[0] || !data[0].trx) {
+            console.error("Invalid data format");
+            return;
+        }
+
+        const employee = data[0];
+        const transactions = employee.trx;
+
+        let html = `
+            <style>
+                .transaction_card {
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    padding: 10px;
+                    width: 98%;
+                }
+                .transaction_header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    padding: 10px;
+                    padding-bottom: 20px;
+                }
+                .transaction_logo {
+                    position: absolute;
+                    left: 0;
+                }
+                .transaction_title {
+                    text-align: center;
+                    flex-grow: 1;
+                }
+                .transaction_profile {
+                    gap: 10px;
+                    justify-content: center;
+                    border: 1px solid #ccc;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .transaction_image {
+                    display: flex;
+                    justify-content: center;
+                    width: 80px;
+                    height: 80px;
+                    overflow: hidden;
+                    border-radius: 50%;
+                }
+                .transaction_table {
+                    display: flex;
+                    padding: 10px;
+                }
+            </style>
+            <div class="transaction_card overflow-y-auto overflow-x-hidden">
+                <div class="transaction_header">
+                    <div class="transaction_logo">
+                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                    </div>
+                    <div class="transaction_title">
+                        <h4>Transaction</h4>
+                    </div>
+                </div>
+                <div class="transaction_profile">
+                    <div class="row cols-2 mb-0">
+                        <div class="col-2">
+                            <div class="transaction_image">
+                                <img src="${employee.image_url}" alt="Profile Image">
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_left">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap text-capitalize">${employee.emp_name}</p>
+                            </div>
+
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Number</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap">${employee.account_number}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Balance</p>
+                                <p class="px-3">:</p>
+                                <p class="text-nowrap text-capitalize">${employee.balance}</p>
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_right">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Type</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap">${employee.account_type}</p>
+                            </div>
+                             <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Account Currency</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap text-capitalize">${employee.currency_code}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Last Balance Date</p>
+                                <p class="px-4">:</p>
+                                <p class="text-nowrap text-capitalize">${employee.last_balance_date}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="transaction_table row" style="display: flex !important;">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Trx Type</th>
+                                    <th>From Account</th>
+                                    <th>To Account</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${transactions.map(trx => `
+                                    <tr>
+                                        <td>${trx.trx_type === 1 ? 'Deposit' : trx.trx_type === 2 ? 'Withdrawal' : 'Transfer'}</td>
+                                        <td>${trx.from_account_number}</td>
+                                        <td>${trx.to_account_number}</td>
+                                        <td class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
+                                            ${Number(trx.amount).toLocaleString('en-US').replace(/,/g, ' ')}
+                                        </td>
+                                        <td>${trx.created_at}</td>
+                                        <td>
+                                            <span class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
+                                                ${trx.status}
+                                            </span>
+                                        </td>
+                                        <td>${trx.remarks ?? 'N/A'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        mThis._wallet_transaction_info.innerHTML = html;
+    };
+
+
+    mThis.btnPrintTransaction.addEventListener('click', () => {
+        windowPrintWalletTransaction(mThis._wallet_transaction_info.innerHTML);
+        // window.print();
+    })
+
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        e.preventDefault();
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.WalletAccountListView) {
+                mThis.WalletAccountListView.showPage(mThis.getFilterData());
+            } else {
+                console.error("Wallet account is not defined");
+            }
+        }, 200);
+    });
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_wallet_account_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2  " vslang="titles.View Transactions"></span>',
+                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_wallet_transaction",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Wallet Details"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_wallet_account",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Wallet"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_wallet_account",
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "view_wallet_transaction": {
+                        mThis.viewWalletTransaction(id, menuLink);
+                        break;
+                    }
+                    case "edit_wallet_account": {
+                        mThis.editWalletAccount(id, menuLink);
+                        break;
+                    }
+                    case "delete_wallet_account": {
+                        mThis.deleteWalletAccount(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
+
+
+    mThis.editWalletAccount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.WalletAccountListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(257)) return;
+        WalletAccountDialog.show(op);
+    };
+
+    mThis.deleteWalletAccount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                cv_interact.success("Deleted successfully");
+                mThis.WalletAccountListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(258)) return;
+        cv_interact.confirm(
+            "Delete this account?",
+            {
+                title: "Delete Account",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/account/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.WalletAccountListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+    mThis.viewWalletTransaction = (id, menuLink) => {
+
+        const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
+        sub_wallet_content.classList.add("d-none");
+        const view_wallet_transaction = mThis.self.querySelector("#view_wallet_transaction");
+        view_wallet_transaction.classList.remove("d-none");
+
+        let emp_id = menuLink.dataset.emp_id;
+        let op = {
+            emp_id: emp_id,
+            account_id: id,
+        }
+        if (!AuthManager.allowed(259)) return; // add comma (259, true) it show silent mode
+        vsapi.call(`${main_view.base_url}/mhr/account/print-transaction`,op,false,false,false).then(res => {
+
+            if(res.status_code == 200){
+                let d = res.data;
+                mThis.renderWalletTransaction(d)
+            }
+        })
+    }
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/account/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+               VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
+               onFinish();
+
+            });
+    };
+
+    mThis.setDefaultFilter = ()=>{
+        if(!mThis.rem_filter) return;
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+             const f = el.dataset.field;
+             el.value = mThis.rem_filter[f] ?? '';
+        });
+    };
+
+    mThis.getFilterData = ()=>{
+        const els = mThis.divFilter.querySelectorAll('.filter-field');
+        const p = {};
+        p.search_value = mThis.elSearch.value;
+        els.forEach(el =>{
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        mThis.rem_filter = p;
+        return p;
+    }
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions(()=>{
+            if(mThis.rem_filter){
+                 mThis.setDefaultFilter();
+            }
+            mThis.WalletAccountListView.showPage(mThis.getFilterData());
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+
+    };
+    return mThis;
+})();
+
+const WalletAccountDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                    `<div class="row g-3">
+                        <div class="col-12">
+                            <select data-style="material" name="employee" class="form-control data-input"  data-field="emp_id"
+                            placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                                <option value="Payroll">Payroll</option>
+                                <option value="Wallet">Wallet</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " />
+                                <label vslang="titles.Account Number"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="balance" class="form-control data-input" data-field="balance" placeholder=" " />
+                                <label vslang="titles.Balance"></label>
+                            </div>
+                        </div>
+                           <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder=" " />
+                                <label vslang="titles.Currency"></label>
+                            </div>
+                        </div>
+
+                </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    const currency_codeField = me.controls.currency_code;
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = VSMoney.getCurrency().code;
+                    }
+                    const accountField = me.controls.account_type;
+                    if (accountField && !accountField.value) {
+                        accountField.value = "Wallet";
+                    }
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                        },
+                        valueField: "id",
+                    },
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    }
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="titles.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+                            vsapi.call([main_view.base_url,"/mhr/account/save",].join(""),p,btn,null).then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated wallet account successfully");
+                                        }
+                                        else{
+                                        cv_interact.success("Added wallet account successfully");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Account",
+                    modifyTitle: "vslang:titles.Wallet Details",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/account/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me) => {
+                    LocaleManager.translateZone(me.divModal);
+                    me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
+                    const isReadOnly =me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly,['balance','employee'], isReadOnly? null : {"balance":"0.00"});
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+function windowPrintWalletTransaction(html=null)
+{
+    let HtmlString = null;
+    HtmlString = html ? html : HtmlString;
+    if(HtmlString)
+    {
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>Pay Slip</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/bhr_style.css"/>
+                <style>
+                     *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:11px;
+                    }
+                    table{
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                </style>
+
+            </head>
+            <body>${HtmlString}</body>
+        </html>`);
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },500);
+    }
+    else
+        cv_interact.warning('Select run report before print!');
+}
+
+"use strict";
+var EmployeeAttendanceComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_staffAttendanceComponent",
+    );
+
+    mThis.title_prop = "Employee Attendance";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
+    mThis.elSearch = mThis.self.querySelector("#_attendance_search");
+    mThis.elWorkShift = mThis.self.querySelector("#work_shift");
+    mThis.containerFilter = mThis.self.querySelector(
+        "#_divFilter_staff_attendance",
+    );
+    mThis.divListView = mThis.self.querySelector("#_staff_attendance_list");
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+            data: "",
+        },
+        {
+            transTitle: "titles.Employee Code",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.emp_code}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Full Name",
+            className: "name text-capitalize align-middle",
+            data: (data, index, tr) => {
+                const sex =
+                    data.sex === "M"
+                        ? "Male"
+                        : data.sex === "F"
+                          ? "Female"
+                          : "Other";
+                return `<p class="d-flex flex-column">
+                    <span class="text-Capitalize">${data.name}</span>
+                    <small class="text-muted">${sex}</small>
+                </p>`;
+            },
+        },
+        {
+            transTitle: "titles.Position",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.position}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Date",
+            className: "text-capitalize align-middle",
+            data: (data, index, tr) => {
+                return data.attendance_date ?? "";
+            },
+        },
+        {
+            transTitle: "titles.Work Shift",
+            className: "text-capitalize align-middle",
+            data: "work_shift",
+        },
+        {
+            transTitle: "titles.Scan Info",
+            className: "align-middle",
+            data: (data) => {
+                const time = data.scan_time;
+                if (!time) return "";
+                const timeParts = time.split(":");
+                let hours = parseInt(timeParts[0]);
+                const minutes = timeParts[1];
+                const ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12 || 12;
+                const formattedTime = `${hours}:${minutes} ${ampm}`;
+
+                const isCheckIn = (data.scan_action || "").toLowerCase().includes("in");
+                const iconClass = isCheckIn ? "fa-right-to-bracket" : "fa-right-from-bracket";
+                const colorClass = isCheckIn ? "success" : "warning";
+                const actionLabel = isCheckIn ? "IN" : "OUT";
+
+                return `
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-${colorClass}-subtle text-${colorClass}" style="width: 32px; height: 32px; flex-shrink: 0;">
+                            <i class="fa-solid ${iconClass}" style="font-size: 14px;"></i>
+                        </div>
+                        <span class="fw-semibold text-${colorClass}" style="font-size: 90%; letter-spacing: 0.5px;">${actionLabel}</span>
+                        <span class="text-${colorClass} fs-5 px-1">&bull;</span>
+                        <span class="text-dark fw-semibold" style="font-size: 90%;">${formattedTime}</span>
+                    </div>
+                `;
+            },
+        },
+
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+
+        {
+            transTitle: "titles.Status",
+            className: "align-middle",
+            data: (data) => {
+                const status = data.attendance_status ?? "Present";
+                let badgeClass = "bg-success-subtle text-success border border-success";
+                if (status === "Late") {
+                    badgeClass = "bg-warning-subtle text-warning border border-warning";
+                } else if (status === "Absent") {
+                    badgeClass = "bg-danger-subtle text-danger border border-danger";
+                } else if (status === "Leave" || status === "Permission" || status === "Half Day") {
+                    badgeClass = "bg-info-subtle text-info border border-info";
+                } else if (status === "Holiday" || status === "Weekend") {
+                    badgeClass = "bg-secondary-subtle text-secondary border border-secondary";
+                }
+                return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
+            }
+        },
+
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_attendance_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+
+
+
+    ];
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.StaffAttendanceListView = new ListView(mThis.divListView, {
+            fetchApi: `${mThis.base_url}/mhr/attendances/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table rounded-3 overflow-hidden table--white header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.StaffAttendanceListView.showPage(
+                        mThis.getFilterData(),
+                    );
+                },
+            };
+            // if (!AuthManager.allowed(247)) return;
+            StaffAttendanceDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.StaffAttendanceListView.getListContainer();
+        mThis.initDropdownMenus(mThis.pr_tbl);
+        const elDate = mThis.containerFilter.querySelector("[data-select='datepicker']");
+        if (elDate && typeof DateTimePicker !== "undefined") {
+            DateTimePicker.init(elDate);
+        }
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.StaffAttendanceListView.showPage(
+                        mThis.getFilterData(),
+                    );
+                };
+            });
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/attendances/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code === 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elWorkShift,
+                    d.work_shifts || [],
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Shifts", "titles"),
+                    "",
+                );
+            });
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                const f = el.dataset.field;
+                p[f] = el.value;
+            });
+        return p;
+    };
+
+     mThis.initDropdownMenus = (table)=>{
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass:"btn_attendance_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Attendance"></span>',
+                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_attendance"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Delete Attendance"></span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_attendance"
+                },
+            ],
+        //     adjustPosition:{
+        //         top:-200 ,
+        //         left:-300
+        //    },
+
+            onClick:(menuLink, id, name)=>{
+                switch(name){
+                    case 'edit_attendance':{
+                      mThis.editAttendance(id, menuLink);
+                      break;
+                    }
+                    case 'delete_attendance':{
+                        mThis.deleteAttendance(id, menuLink);
+                        break;
+                      }
+
+                    default:{
+                      break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptions);
+    }
+
+    mThis.editAttendance = (id, menuLink) => {
+
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(241)) return;
+        StaffAttendanceDialog.show(op);
+    }
+
+    mThis.deleteAttendance = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('delete_attendance?',{
+            title: 'Delete Attendance Record.',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/mhr/attendances/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('attendance_delete_successfully');
+                        mThis.StaffAttendanceListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message || 'An error occurred while deleting');
+                    }
+                })
+            }
+        });
+    }
+
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions();
+        mThis.StaffAttendanceListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+    return mThis;
+})();
+
+const StaffAttendanceDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                             <div class="col-6">
+                                 <div class="vs-material-field">
+                                     <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+                                     <input name="employee" class="data-input form-control" data-field="employee_name" placeholder=" " autocomplete="off" />
+                                     <label vslang="labels.Employee"></label>
+                                 </div>
+                             </div>
+                             <div class="col-6">
+                                 <div class="vs-material-field">
+                                     <input type="text" name="employee_code" class="data-input form-control" data-field="employee_code" placeholder=" " disabled />
+                                     <label vslang="labels.Employee Code">Employee Code</label>
+                                 </div>
+                             </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" data-type="date" name="attendance_date" class="data-input form-control form_input" data-field="attendance_date" placeholder=" " />
+                                    <label vslang="labels.Attendance Date">Attendance Date</label>
+                                </div>
+                            </div>
+                             <div class="col-6">
+                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans('Attendance Type', 'labels')}">
+                                     <option value="Check In">Check In</option>
+                                     <option value="Check Out">Check Out</option>
+                                 </select>
+                             </div>
+
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="time" name="scan_time" class="data-input form-control form_input" data-field="scan_time" placeholder=" " />
+                                    <label vslang="labels.Time">Time</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans('Work Shift', 'titles')}">
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
+                            </div>
+                             <div class="col-6">
+                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans('Status', 'titles')}"></select>
+                             </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                    <label for="remark" vslang="titles.Remark"></label>
+                                </div>
+                            </div>
+
+                         </div>`,
+                ].join("");
+            },
+
+            configSelect: [
+                {
+                    name: "work_shift_id",
+                    data: "work_shifts",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "position_id",
+                    data: "positions",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "attendance_status",
+                    data: "attendance_statuses",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn-vs-save",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/attendances/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "attendance_update_successfully",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "attendance_create_successfully",
+                                        );
+                                    }
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            contentCreated: (me, divModal) => {
+                DateTimePicker.init(me.controls.attendance_date);
+
+                me.searchEmployee = VSSearchInput.init(me.controls.employee, {
+                    type: "select",
+                    prefetch: true,
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/attendances/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const employees = res?.data?.employees || [];
+                        return (Array.isArray(employees) ? employees : []).map(
+                            (i) => ({
+                                ...i,
+                                code: i.code || "",
+                                name: i.name || "",
+                            }),
+                        );
+                    },
+                    showColumnHeader: true,
+                    columns: {
+                        code: "Code",
+                        name: "Name",
+                    },
+                    onSelect: (employee) => {
+                        if (me.controls.employee_code) {
+                            me.controls.employee_code.value = employee.code || "";
+                        }
+                        if (me.controls.emp_id) {
+                            me.controls.emp_id.value = employee.id || "";
+                        }
+                        if (employee.position_id && me.controls.position_id) {
+                            me.controls.position_id.value = employee.position_id;
+                            me.controls.position_id.dispatchEvent(new Event("change"));
+                            if (window.jQuery) {
+                                jQuery(me.controls.position_id).change();
+                            }
+                        }
+                    },
+                });
+                me.searchEmployee.reset("");
+
+                me.saveStaffAttendance = (p) => {
+                    alert("Data saved.");
+                };
+            },
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create Attendance",
+                modifyTitle: "vslang:titles.Modify Attendance",
+
+                targetProp: "attendance",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/attendances/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                // onResponse: (me, res) => {
+                //     console.log('result from api "/form-options": ', res);
+                // },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var WarningComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_warningComponent",
+    );
+
+    mThis.title_prop = "Employee Warning";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddWarning");
+    mThis.elSearch = mThis.self.querySelector("#_warning_search");
+    mThis.containerFilter = mThis.self.querySelector("#_divFilter_warning");
+    mThis.elWarningType = mThis.self.querySelector("#warning_type");
+
+    mThis.divListView = mThis.self.querySelector("#_warning_list");
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+            data: "",
+        },
+        {
+            transTitle: "titles.Employee Code",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-prm text-capitalize">${data.emp_code}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Full Name",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                const sex =
+                    data.sex === "M"
+                        ? "Male"
+                        : data.sex === "F"
+                          ? "Female"
+                          : "Other";
+                return `<p class="d-flex flex-column">
+                    <span class="text-Capitalize">${data.name}</span>
+                    <small class="text-muted">${sex}</small>
+                </p>`;
+            },
+        },
+        {
+            transTitle: "titles.Position",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.position}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Warning Type",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-nowrap text-prm-custom">${data.warning_type ?? ''}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Date",
+            className: "align-middle text-center text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${data.warning_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Issue",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.issues ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                </div>`;
+            },
+        },
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_warning_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+
+    ];
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.WarningListView = new ListView(mThis.divListView, {
+            fetchApi: `${mThis.base_url}/mhr/emp-warning/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table rounded-3 overflow-hidden table--white header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.WarningListView.showPage(mThis.getFilterData());
+                },
+            };
+            WarningDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.WarningListView.getListContainer();
+        mThis.initDropdownMenus(mThis.pr_tbl);
+        const elDate = mThis.containerFilter.querySelector(
+            "[data-select='datepicker']",
+        );
+        if (elDate && typeof DateTimePicker !== "undefined") {
+            DateTimePicker.init(elDate);
+        }
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.WarningListView.showPage(mThis.getFilterData());
+                };
+            });
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.WarningListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/emp-warning/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code === 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elWarningType,
+                    d.warning_types || [],
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("Warning Type", "titles"),
+                    "",
+                );
+            });
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+        mThis.containerFilter
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                const f = el.dataset.field;
+                p[f] = el.value;
+            });
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_warning_action",
+            cssClass: "bg-white shadow",
+
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify Warning"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_warning",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete Warning"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_warning",
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_warning": {
+                        mThis.editWarning(id, menuLink);
+                        break;
+                    }
+                    case "delete_warning": {
+                        mThis.deleteWarning(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.editWarning = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.WarningListView.showPage(mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(241)) return;
+        WarningDialog.show(op);
+    };
+
+    mThis.deleteWarning = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.WarningListView.showPage(mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm("delete_warning?",
+        {
+            title: "Delete Warning.",
+            context: "delete",
+            confirmButtonText: "Delete",
+        },function (e) {
+                if (e) {
+                    vsapi.call(`${main_view.base_url}/mhr/emp-warning/delete`,op, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("warning_delete_successfully");
+                                mThis.WarningListView.showPage();
+                            } else {
+                                cv_interact.error(res.error_message || 'An error occurred while deleting.');
+                            }
+                        })
+                    }
+        });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+        mThis.WarningListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+
+    return mThis;
+})();
+
+const WarningDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}" data-field="emp_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans('Position', 'labels')}" data-field="position_id" disabled></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="${LocaleManager.trans('Warning Type', 'labels')}" data-field="warning_type_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="warning_date" class="data-input form-control form_input" data-field="warning_date" placeholder=" " />
+                                <label vslang="labels.Warning Date"></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="issues" class="data-input form-control form_input" data-field="issues" placeholder=" " />
+                                <label vslang="labels.Issue"></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remarks" class="form-control data-input form_input" placeholder=" " data-field="remarks"></textarea>
+                                <label vslang="labels.Remarks"></label>
+                            </div>
+                        </div>
+                    </div>`,
+                ].join("");
+            },
+            contentCreate: (me) => {
+
+            },
+            configSelect: [
+                {
+                    name: "employee_id",
+                    data: "employees",
+                    textField: (me, d) => {
+                        return `${d.name ?? '-'} <small class="text-muted">(${d.code ?? '-'})</small>`;
+                    },
+                    valueField: "id",
+                    emptyText: LocaleManager.trans("Employee", "titles"),
+                },
+                {
+                    name: "position",
+                    data: "positions",
+                    textField: "name",
+                    valueField: "id",
+                    emptyText: LocaleManager.trans("Position", "titles"),
+                },
+                {
+                    name: "warning_type",
+                    data: "warning_types",
+                    textField: "name",
+                    valueField: "id",
+                    emptyText: LocaleManager.trans("Warning Type", "titles"),
+                }
+            ],
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
+                    click: (me, btn) => me.hide(false),
+                },
+                {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/emp-warning/save"].join(
+                                        ""
+                                    ),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("warning_update_successfully");
+                                        }
+                                        else
+                                        {
+                                            cv_interact.success("warning_create_successfully");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+            ],
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Add Warning",
+                modifyTitle: "vslang:titles.Modify Warning",
+                targetProp: "warning",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/emp-warning/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+
+                if (me.controls.employee_id && me.controls.position) {
+                    me.controls.position.setAttribute('disabled', 'true');
+
+                    const updatePosition = () => {
+                        const empId = me.controls.employee_id.value;
+                        const emp = (data.employees || []).find(e => e.id == empId);
+                        if (emp) {
+                            me.controls.position.value = emp.position_id || "";
+                        } else {
+                            me.controls.position.value = "";
+                        }
+                        me.controls.position.dispatchEvent(new Event("change"));
+                        if (window.jQuery) {
+                            jQuery(me.controls.position).change();
+                        }
+                    };
+
+                    me.controls.employee_id.addEventListener("change", updatePosition);
+
+                    if (me.controls.employee_id.value) {
+                        updatePosition();
+                    }
+                }
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var TaxBracketComponent = (function() {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_taxBracketComponent"
+    );
+
+    mThis.title_prop = "Tax Bracket";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTaxBracket");
+    mThis.divFilter =
+        mThis.self.querySelector("#_divFilter_taxBracketComponent") ||
+        mThis.self.querySelector("#_divFilter");
+
+    const formattedNumber = number => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString("en-US", {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
+            .replace(/,/g, " ");
+    };
+
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle  text-nowrap ",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color:#1f386b; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `
+        },
+        {
+            transTitle: "titles.Salary Range",
+            className: "align-middle  text-nowrap ",
+            data: (data, index, tr) => {
+                const currency = data.currency_code || '';
+                const lowerAmount = data.lower_amount;
+
+                // Handle open-ended ranges (e.g., "$5,000 and upwards")
+                // vs bounded ranges (e.g., "$1,000 to $5,000 USD")
+                const rangeText = data.upper_amount == -1
+                    ? `${lowerAmount} ${currency} ${LocaleManager.trans('and upwards', 'titles')}`
+                    : `${LocaleManager.trans('Salary ranges from', 'titles')}${lowerAmount} ${LocaleManager.trans('to', 'titles')} ${data.upper_amount} ${currency}`;
+
+                return `<p class="p-0 m-0">${rangeText}</p>`;
+            }
+        },
+
+        {
+            transTitle: "titles.Rate",
+            className: "align-middle  text-nowrap text-left",
+            data: (data, index, tr) => {
+                return `<p class="text-danger p-0 m-0">${data.rate} %</p>`;
+            }
+        },
+        {
+            transTitle: "titles.Bias",
+            className: "align-middle  text-nowrap ",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.bias,
+                    data.currency_code
+                )}</p>`;
+            }
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle  text-nowrap ",
+            data: data => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ??
+                    ""}</span><br/>
+                <small class="text-primary">${data.updated_at ?? ""}</small>
+            </div>`
+        },
+
+        {
+            className: "col_action align-middle",
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_taxBracket_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.TaxBracketListView = new ListView("_taxBracket_list", {
+            fetchApi: `${main_view.base_url}/mhr/tax-bracket/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null
+        });
+
+        if (mThis.divFilter) {
+            mThis.divFilter.addEventListener("change", e => {
+                e.preventDefault();
+                mThis.TaxBracketListView.showPage(mThis.getDataFormFilter());
+            });
+        }
+        mThis.btnAdd.onclick = function(e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.TaxBracketListView.showPage();
+                }
+            };
+            if (!AuthManager.allowed(253)) return;
+            TaxBracketDialog.show(op);
+        };
+        mThis.pr_tbl = mThis.TaxBracketListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.initDropdownMenus(mThis.pr_tbl);
+
+        mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_taxBracket_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Tax Bracket</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_taxBracket"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Tax Bracket</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_taxBracket"
+                }
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_taxBracket": {
+                        mThis.editTaxBracket(id, menuLink);
+                        break;
+                    }
+                    case "delete_taxBracket": {
+                        mThis.deleteTaxBracket(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
+
+    mThis.editTaxBracket = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.TaxBracketListView.showPage();
+            }
+        };
+        if (!AuthManager.allowed(254)) return;
+        TaxBracketDialog.show(op);
+    };
+
+    mThis.deleteTaxBracket = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.TaxBracketListView.showPage();
+            }
+        };
+        if (!AuthManager.allowed(255)) return;
+        cv_interact.confirm(
+            "Delete this tax bracket?",
+            {
+                title: "Delete Tax Bracket",
+                context: "delete",
+                confirmButtonText: "Delete"
+            },
+            function(e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/tax-bracket/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then(res => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.TaxBracketListView.showPage();
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.getDataFormFilter = () => {
+        let p = {};
+        if (mThis.divFilter) {
+            mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+                const f = el.dataset.field;
+                if (f) {
+                    p[f] = el.value;
+                }
+            });
+        }
+        return p;
+    };
+
+    mThis.show = function() {
+        mThis.init();
+
+        // mThis.prepareFormOptions();
+        mThis.TaxBracketListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+
+    return mThis;
+})();
+
+const TaxBracketDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = op => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text"  name="lower_amount" class="form-control data-input" data-field="lower_amount" />
+                                    <label vslang="titles.Lower Amount"></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                     <input type="text"  name="upper_amount" class="form-control data-input" data-field="upper_amount" />
+                                    <label vslang="titles.Upper Amount"></label>
+                                </div>
+                            </div>
+                             <div class="col-6">
+                                <div class="vs-material-field">
+                                     <input type="text"  name="rate" class="form-control data-input" data-field="rate" />
+                                    <label vslang="titles.Rate"></label>
+                                </div>
+                            </div>
+                             <div class="col-6">
+                                <div class="vs-material-field">
+                                     <input type="text"  name="bias" class="form-control data-input" data-field="bias" />
+                                    <label vslang="titles.Bias"></label>
+                                </div>
+                            </div>
+                             <div class="col-6">
+                                <div class="vs-material-field">
+                                     <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                                     </select>
+                                     <label vslang="titles.Currency">Currency</label>
+                                </div>
+                            </div>
+
+                        </div>`
+                    ].join("");
+                },
+
+                buttons: [
+                    {
+                        label: '<span class="text-white">Cancel</span>',
+                        cssClass: "btn btn-sm btn-warning",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        }
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-sm btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/tax-bracket/save"
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then(res => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        }
+                    }
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Tax Bracket",
+                    modifyTitle: "vslang:titles.Modify Tax Bracket",
+                    targetProp: "tax_bracket",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/tax-bracket/form-options"
+                        ].join(""),
+                        params: op => {
+                            return { id: op.id };
+                        }
+                    }
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code"
+                    }
+                ],
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                }
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
+
+"use strict";
+var PositionComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_positionComponent",
+    );
+
+    mThis.title_prop = "Positions";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_position");
+    mThis.elDepartment = mThis.self.querySelector("#el_department");
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "",
+        },
+        {
+            transTitle: "titles.Position",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-capitalize">${data.name ?? "_"}</span>
+                <span class="d-block text-primary ">${data.name_kh ?? "_"}</span>`,
+        },
+        {
+            transTitle: "titles.ShortCut",
+            className: "align-middle text-nowrap text-left",
+            data: (data) =>
+                `<span class="text-primary-custom ">${data.code}</span>`,
+        },
+        {
+            transTitle: "titles.Department",
+            className: "align-middle text-nowrap text-left",
+            data: (data) =>
+                `<span class="text-primary-custom ">${data.department}</span>`,
+        },
+         {
+            transTitle: "titles.Job Level",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="text-capitalize text-primary-custom">${data.level}</span>`,
+        },
+        {
+            transTitle: "titles.Staff Group",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="text-primary-custom">${data.staff_group}</span>`,
+        },
+
+        {
+            transTitle: "titles.Salary",
+            className: "align-middle text-nowrap text-left",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
+            },
+        },
+        {
+            transTitle: "titles.Description",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
+                <small >${data.updated_at ?? ""}</small>
+            </div>`,
+        },
+        {
+            className: "col_action align-middle",
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_position_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            },
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.PositionListView = new ListView("_position_list", {
+            fetchApi: `${main_view.base_url}/mhr/position/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.PositionListView.showPage(mThis.getFilterData());
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.PositionListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(219)) return;
+            PositionDialog.show(op);
+        };
+        mThis.listContainer = mThis.PositionListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.PositionListView) {
+                    mThis.PositionListView.showPage(mThis.getFilterData());
+                } else {
+                    console.error("PositionListView is not defined");
+                }
+            }, 200);
+        });
+
+        mThis.initDropdownMenus(mThis.listContainer);
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_position_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_position",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_position",
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_position": {
+                        mThis.editPosition(id, menuLink);
+                        break;
+                    }
+                    case "delete_position": {
+                        mThis.deletePosition(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.editPosition = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PositionListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(220)) return;
+        PositionDialog.show(op);
+    };
+
+    mThis.deletePosition = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PositionListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(221)) return;
+        cv_interact.confirm(
+            "delete_position",
+            {
+                title: "Delete Position",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/position/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(
+                                    "delete_success_position",
+                                );
+                                mThis.PositionListView.showPage();
+                            } else cv_interact.error(res.error_message);
+                        });
+                }
+            },
+        );
+    };
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/position/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elDepartment,
+                    d.departments || [],
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Department", "titles"),
+                    "",
+                );
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+
+        mThis.PositionListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    };
+    return mThis;
+})();
+
+const PositionDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static", //User click outside form, do not close form
+            keyboard: true, //prevent user from using ESC key
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                                <label vslang="labels.Position (EN)"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="position_kh" class="data-input form-control form_input" data-field="name_kh" placeholder=" " />
+                                <label vslang="labels.Position (KH)"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="code" class="data-input form-control form_input" data-field="code" placeholder=" " />
+                                <label vslang="labels.Shortcut"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="number" data-type="text" name="salary" class="data-input form-control form_input" data-field="salary" placeholder=" " />
+                                <label vslang="labels.Salary"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans('Currency Code', 'labels')}"  data-field="currency_code"></select>
+                        </div>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                <label vslang="labels.Description"></label>
+                            </div>
+                        </div>
+
+                    </div>`,
+                ].join("");
+            },
+
+            configSelect: [
+                {
+                    name: "department",
+                    data: "departments",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "job_level",
+                    data: "job_levels",
+                    textField: "level",
+                    valueField: "id",
+                },
+                {
+                    name: "staff_group",
+                    data: "staff_groups",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/mhr/position/save"].join(
+                                    "",
+                                ),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "update_success_position",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "create_success_position",
+                                        );
+                                    }
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Add Position",
+                modifyTitle: "vslang:titles.Modify Position",
+                targetProp: "positions",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/position/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                //    onResponse: (me, res)=>{
+                //      console.log('result from api "/form-options": ', res);
+                //    }
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.controls.currency_code.value = VSMoney.getCurrency().code;
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var DepartmentComponent = new (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_departmentComponent",
+    );
+
+    mThis.title_prop = "Departments";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddDepartment");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    // mThis.elStatus = mThis.self.querySelector("#el_status");
+    mThis.elSearch = mThis.self.querySelector("#_search_department");
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+            // data: (data, index, i) => {
+
+            // },
+        },
+        {
+            transTitle: "titles.No",
+            className: "align-middle text-capitalize text-left",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
+        },
+        {
+            transTitle: "titles.Department",
+            className: "align-middle text-capitalize p-3  text-left",
+            data: (data) => `
+                <span class="text-primary-custom">${data.name}</span>`,
+        },
+        {
+            transTitle: "titles.Shortcut",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) =>
+                `<span class="text-warning ">${data.shortcut}</span>`,
+        },
+        {
+            transTitle: "titles.Update By",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class="text-primary-custom" style="font-size: 12px;">${
+                    data.update_user ?? ""
+                }</span>
+            </div>`,
+        },
+
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class="text-primary-custom" style="font-size: 12px;">${
+                    data.updated_at ?? ""
+                }</span>
+            </div>`,
+        },
+
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_department_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.DepartmentListView = new ListView("_dep_list", {
+            fetchApi: `${main_view.base_url}/mhr/department/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+
+               mThis.DepartmentListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.DepartmentListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(217)) return;
+            DepartmentDialog.show(op);
+        };
+        mThis.listContainer = mThis.DepartmentListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.DepartmentListView) {
+                    mThis.DepartmentListView.showPage(mThis.getFilterData());
+                } else {
+                    console.error("Department List view is not defined");
+                }
+            }, 200);
+        });
+        mThis.initDropdownMenus(mThis.listContainer);
+        mThis.initAlready = true;
+    };
+
+       mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_department_action",
+            cssClass: "bg-white shadow",
+
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify Department"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_department",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete Department"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_department",
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_department": {
+                        mThis.editDepartment(id, menuLink);
+                        break;
+                    }
+                    case "delete_department": {
+                        mThis.deleteDepartment(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+    mThis.editDepartment = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.DepartmentListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(216)) return;
+        DepartmentDialog.show(op);
+    };
+
+    mThis.getFilterData = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        return p;
+    };
+
+    mThis.deleteDepartment = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.DepartmentListView.showPage(mThis.getFilterData());
+            },
+        };
+        if (!AuthManager.allowed(218)) return;
+        cv_interact.confirm(
+            "delete_department?",
+            {
+                title: "Delete Department",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/department/delete`,
+                            { id: id },
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_department_success");
+                                mThis.DepartmentListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            },
+        );
+    };
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/department/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+        mThis.DepartmentListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    };
+    return mThis;
+})();
+
+const DepartmentDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input id="dep_name" type="text" data-type="text" name="department" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                                <label for="dep_name" vslang="labels.Department"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="vs-material-field">
+                                <input id="dep_shortcut" type="text" data-type="text" name="shortcut" class="data-input form-control form_input" data-field="shortcut" placeholder=" " />
+                                <label for="dep_shortcut" vslang="titles.Shortcut"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea id="dep_description" name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                <label for="dep_description" vslang="labels.Description"></label>
+                            </div>
+                        </div>
+
+                    </div>`,
+                ].join("");
+            },
+
+            // configSelect:[
+            //    {
+            //      name:"department",
+            //      data:'departments',
+            //      textField:"name",
+            //      valueField:'id'
+            //    },
+            // ],
+            buttons: [
+                {
+                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span vslang='buttons.Save'></span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id; //get "id" from op
+
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/department/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "update_department_success",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "create_department_success",
+                                        );
+                                    }
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Add Department",
+                modifyTitle: "vslang:titles.Modify Department",
+                targetProp: "departments",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/department/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var JobsLevelComponent = new (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_jobsLevelComponent");
+
+    mThis.initAlready = false;
+    mThis.title_prop = "Job Levels";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_jobsLevelComponent");
+    mThis.elSearch = mThis.self.querySelector("#_job_level_search");
+    mThis.cols = [
+        {
+            transTitle: "",
+            className: "align-middle",
+        },
+
+        {
+            transTitle: "titles.Ranking",
+            className: "align-middle text-nowrap",
+            data: (data)=>
+                `<div class=" text-start p-1 " ><span class="">${data.rank}</span></div>`,
+
+        },
+        {
+            transTitle: "titles.Job Level",
+            className: "align-middle text-nowrap",
+            data: (data)=>
+                `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
+        },
+
+        {
+            transTitle: "titles.Description",
+            className: "align-middle text-nowrap",
+            data: (data)=>
+                `<div  class="text-remark text-muted" >${data.description}</div>`,
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.update_date ?? ""}</span>
+            </div>`,
+        },
+
+
+        {
+            className: "col_action align-middle",
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_jobLevel_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
+    ];
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+
+        mThis.JobLevelListView = new ListView("_job_level_list", {
+            fetchApi: `${mThis.base_url}/mhr/job_level/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.JobLevelListView.showPage();
+                },
+            };
+            if (!AuthManager.allowed(204)) return;
+            JobLevelDialog.show(op);
+        };
+        mThis.pr_tbl = mThis.JobLevelListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.JobLevelListView) {
+                    mThis.JobLevelListView.showPage(mThis.getFilterData());
+                } else {
+                    console.error("jobLevel is not defined");
+                }
+            }, 200);
+        });
+
+        mThis.initDropdownMenus(mThis.pr_tbl);
+
+        mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_jobLevel_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_jobevel"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_jobevel"
+                }
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_jobevel": {
+                        mThis.editJobLevel(id, menuLink);
+                        break;
+                    }
+                    case "delete_jobevel": {
+                        mThis.deleteJobLevel(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
+
+    mThis.setFilterPeriod = (p, name, start_date, end_date) => {
+        return p;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        return p;
+    };
+
+    mThis.editJobLevel = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.JobLevelListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(205)) return;
+        JobLevelDialog.show(op);
+    };
+
+    mThis.deleteJobLevel = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.JobLevelListView.showPage();
+            },
+        };
+        if (!AuthManager.allowed(206)) return;
+        cv_interact.confirm(
+            "delete_job_level?",
+            {
+                title: "Delete Job level",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/job_level/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(
+                                    "delete_job_level_successfully"
+                                );
+                                mThis.JobLevelListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/job_level/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions();
+        mThis.JobLevelListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+    return mThis;
+})();
+
+const JobLevelDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text"  name="name" class="form-control data-input" data-field="name" />
+                                    <label vslang="titles.Name"></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="rank" class="form-control data-input" data-field="rank" />
+                                    <label vslang="titles.Rank"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
+                                    <label vslang="titles.Description"></label>
+                                </div>
+                            </div>
+                         </div>`,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const jl = me.getData();
+
+                            jl.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/job_level/save",
+                                    ].join(""),
+                                    jl,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success( 'update_job_level_successfully');
+                                        }
+                                        else
+                                        {
+                                            cv_interact.success('create_job_level_successfully');
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                contentCreated: (me, divModal) => {
+                    me.saveJobLevel = (jl) => {
+                        alert("Data saved.");
+                    };
+                },
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Job Level",
+                    modifyTitle: "vslang:titles.Modify Job Level",
+                    targetProp: "job_levels",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/job_level/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+"use strict";
+
+var BenefitDisbursePolicyComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector( "#_main_benefit_disbursement_policy_component");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_benefit_disbursement_policy_component");
+    mThis.title_prop = "Disbursement Policy";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+
+    const monthNames = [
+        "All",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+    mThis.cols = [
+        {
+            transTitle: "titles.No",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data, index, i) => {
+                return index + 1;
+            },
+        },
+        {
+            transTitle: "titles.Benefit",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "benefit_name",
+        },
+
+        {
+            transTitle: "titles.Target Month",
+            className: "align-middle",
+            data: (data) => {
+                const month = monthNames[data.target_month ] ?? "";
+
+                return `<p class="p-0 m-0">${month} </p>`;
+            },
+        },
+
+        {
+            transTitle: "titles.Target Year",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "target_year",
+        },
+        {
+            transTitle: "titles.Withdraw Rate",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.withdraw_rate ?? 0} %</p>`;
+            },
+        },
+
+         {
+            className: "col_action align-middle",
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_bdp_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.BdpListView = new ListView("_benefit_disbursement_policy_list", {
+            fetchApi: `${main_view.base_url}/mhr/disburse-policy/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.BdpListView.showPage(mThis.getDataFormFilter());
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.BdpListView.showPage(mThis.getDataFormFilter());
+                },
+            };
+            if (!AuthManager.allowed(279)) return;
+            BdpDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.BdpListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement || mThis.pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.BdpListView.showPage(mThis.getDataFormFilter());
+        });
+
+        mThis.initDropdownMenus(mThis.pr_tbl);
+
+        mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = table => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_bdp_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify Policy</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_bdp"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Delete">Delete Policy</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_bdp"
+                }
+            ],
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_bdp": {
+                        mThis.editBfp(id, menuLink);
+                        break;
+                    }
+                    case "delete_bdp": {
+                        mThis.deleteBdp(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.editBfp = (id, btn) => {
+        if (!AuthManager.allowed(280)) return;
+        BdpDialog.show({
+            id,
+            btn,
+            onClose: () => mThis.BdpListView.showPage(mThis.getDataFormFilter()),
+        });
+    };
+
+    mThis.deleteBdp = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.BdpListView.showPage(mThis.getDataFormFilter());
+            },
+        };
+        if (!AuthManager.allowed(281)) return;
+        cv_interact.confirm(
+            "Delete this benefit disbursement policy?",
+            {
+                title: "Delete Benefit Disbursement Policy",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/disburse-policy/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.BdpListView.showPage(mThis.getDataFormFilter());
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.getDataFormFilter = () => {
+        let filters = {
+            benefit_id: mThis.elBenefit.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            filters[el.dataset.field] = el.value;
+        });
+        return filters;
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(`${main_view.base_url}/mhr/disburse-policy/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Benefits","titles"),
+                    ""
+                );
+            });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.prepareFormOptions();
+        mThis.BdpListView.showPage();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+
+    return mThis;
+})();
+
+const BdpDialog = (() => {
+    const self = {};
+    let dialogAdd = null;
+    self.show = (op) => {
+
+        dialogAdd =
+            dialogAdd ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    const months = [
+                        { value: 0, name: "All" },
+                        { value: 1, name: "January" },
+                        { value: 2, name: "February" },
+                        { value: 3, name: "March" },
+                        { value: 4, name: "April" },
+                        { value: 5, name: "May" },
+                        { value: 6, name: "June" },
+                        { value: 7, name: "July" },
+                        { value: 8, name: "August" },
+                        { value: 9, name: "September" },
+                        { value: 10, name: "October" },
+                        { value: 11, name: "November" },
+                        { value: 12, name: "December" },
+                    ];
+
+                    const currentYear = new Date().getFullYear();
+                    const years = Array.from(
+                        { length: 10 },
+                        (_, i) => currentYear + i
+                    );
+
+                    return [
+                        `<div class="row g-3">
+
+                            <div class="col-6">
+                                <select data-style="material" placeholder="${LocaleManager.trans('Benefit', 'labels')}" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id"> </select>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
+                                    <label vslang="titles.Withdraw Rate"></label>
+                                </div>
+                            </div>
+
+                        <div class=" col-6">
+                            <select data-style="material" placeholder="${LocaleManager.trans('Month', 'labels')}" name="month" class="form-control data-input" data-field="target_month">
+                                ${months
+                                        .map(
+                                            (month) =>
+                                                `<option value="${month.value}">${month.name}</option>`
+                                        )
+                                        .join("")}
+                             </select>
+                        </div>
+                        <div class=" col-6">
+                            <select data-style="material" placeholder="${LocaleManager.trans('Year', 'labels')}" name="year" class="form-control data-input" data-field="target_year">
+                                 ${years
+                                    .map(
+                                        (year) =>
+                                            `<option value="${year}">${year}</option>`
+                                    )
+                                    .join("")}
+                             </select>
+                        </div>
+                    </div>`,
+                    ].join("");
+                },
+
+                configSelect: [
+                    {
+                        name: "benefits",
+                        data: "benefits",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/disburse-policy/save"].join(
+                                        ""
+                                    ),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated benefit disburse policy successfully");
+                                        }
+                                        else{
+                                            cv_interact.success("Added benefit disburse policy successfully");
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Add Benefit Disburse Policy",
+                    modifyTitle: "vslang:titles.Edit Benefit Disburse Policy",
+                    targetProp: "disburse_policy",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/disburse-policy/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialogAdd.show(op);
+    };
+    return self;
+})();
+"use strict";
+
+var CheckPointComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_component");
+
+    mThis.title_prop = "Checkpoints";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPoint");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_check_point_search");
+    mThis.elCategory = mThis.self.querySelector("#el_check_point_category");
+
+    mThis.cols = [
+        {
+            className: "align-middle text-nowrap ",
+        },
+        {
+            transTitle: "titles.Name",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.name ?? "-"}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Category",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.category_name ?? "-"}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap text-center",
+            data: (data, index, tr) => {
+                const [date, time] = (data.updated_at ?? "").split(" ");
+                return `<div class="d-flex flex-column align-items-center justify-content-center text-center mx-auto">
+                    ${data.update_user ? `<span class="text-capitalize text-prm-custom">${data.update_user}</span>` : ""}
+                    <small class="text-muted">${date || "-"}</small>
+                    <small class="text-muted">${time ?? ""}</small>
+                </div>`;
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle text-center",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_check_point" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_check_point" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.CheckPointListView = new ListView("_check_point_list", {
+            fetchApi: `${main_view.base_url}/mhr/check-point/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.CheckPointListView.showPage(mThis.getFilterData());
+                },
+            };
+            if (!AuthManager.allowed(302)) return;
+            CheckPointDialog.show(op);
+        };
+        mThis.pr_tbl = mThis.CheckPointListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
+        });
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
+            }, 200);
+        });
+        mThis.setActionListeners();
+
+        mThis.initAlready = true;
+    };
+
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point");
+            if (btn) {
+                mThis.deleteCheckPoint(btn.dataset.id, btn);
+            }
+
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_check_point");
+            if (btn) {
+                mThis.editCheckPoint(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.editCheckPoint = (id, btn) => {
+        if (!AuthManager.allowed(301)) return;
+        CheckPointDialog.show({ id, btn, onClose: () => mThis.CheckPointListView.showPage(mThis.getFilterData()), });
+    };
+
+    mThis.deleteCheckPoint = (id, menuLink) => {
+        if (!AuthManager.allowed(303)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete Checkpoint",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(`${main_view.base_url}/mhr/check-point/delete`, { id: id }, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_success_check_point");
+                                mThis.CheckPointListView.showPage(mThis.getFilterData());
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(`${main_view.base_url}/mhr/check-point/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elCategory, d.check_point_categories, "id", "name", "", LocaleManager.trans("All Categories", "titles"), "");
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.CheckPointListView.showPage(mThis.getFilterData());
+        });
+    };
+    return mThis;
+})();
+
+const CheckPointDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <select data-style="material" name="category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input id="_check_point_name" type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label for="_check_point_name" vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+
+                configSelect: [
+                    {
+                        name: "category",
+                        data: "check_point_categories",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id; //get "id" from op
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/check-point/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_check_point");
+                                        }
+                                        else {
+                                            cv_interact.success("create_success_check_point");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Check Point",
+                    modifyTitle: "vslang:titles.Edit Check Point",
+                    targetProp: "check_points",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/check-point/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+
+var CheckPointCategoryComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_category_component");
+
+    mThis.title_prop = "Checkpoint Categories";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPointCategory");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_check_point_category_search");
+
+    mThis.cols = [
+        {
+            className: "align-middle text-nowrap ",
+        },
+        {
+            transTitle: "titles.Name",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                console.log(123456,data);
+
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
+                    </div>
+                `;
+             }
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap text-center",
+            data: (data, index, tr) => {
+                const [date, time] = (data.updated_at ?? "").split(" ");
+                return `<div class="d-flex flex-column align-items-center justify-content-center text-center mx-auto">
+                    ${data.update_user ? `<span class="text-capitalize text-prm-custom">${data.update_user}</span>` : ""}
+                    <small class="text-muted">${date || "-"}</small>
+                    <small class="text-muted">${time ?? ""}</small>
+                </div>`;
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle text-center",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_check_point_category" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_check_point_category" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.CheckPointCategoryListView = new ListView("_check_point_category_list", {
+            fetchApi: `${main_view.base_url}/mhr/check-point-category/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+                },
+            };
+            if (!AuthManager.allowed(299)) return;
+            CheckPointCategoryDialog.show(op);
+        };
+        mThis.pr_tbl = mThis.CheckPointCategoryListView.getListContainer();
+        const sh_parent = mThis.pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        }
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+        });
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+            }, 200);
+        });
+        mThis.setActionListeners();
+
+        mThis.initAlready = true;
+    };
+
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point_category");
+            if (btn) {
+                mThis.deleteCheckPointCategory(btn.dataset.id, btn);
+            }
+
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_check_point_category");
+            if (btn) {
+                mThis.editCheckPointCategory(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.editCheckPointCategory = (id, btn) => {
+        if (!AuthManager.allowed(298)) return;
+        CheckPointCategoryDialog.show({ id, btn, onClose: () => mThis.CheckPointCategoryListView.showPage(mThis.getFilterData()),});
+    };
+
+    mThis.deleteCheckPointCategory = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(300)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete Checkpoint Category",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call( `${main_view.base_url}/mhr/check-point-category/delete`, op, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("delete_success_check_point_category");
+                                mThis.CheckPointCategoryListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+
+        });
+
+        return p;
+    };
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(`${main_view.base_url}/mhr/check-point-category/form-options`,null,null,null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+    mThis.show =  (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(()=>{
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+
+        });
+
+    };
+    return mThis;
+})();
+
+const CheckPointCategoryDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label vslang="labels.Name"></label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id; //get "id" from op
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/check-point-category/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("update_success_check_point_category");
+                                        }
+                                        else{
+                                        cv_interact.success("create_success_check_point_category");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Checkpoint Category",
+                    modifyTitle: "vslang:titles.Edit Checkpoint Category",
+                    targetProp: "check_point_categories",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/check-point-category/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var AttendanceTracksComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Track Shifts";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_workshiftComponent");
+
+    mThis.btnAddShiftDetail = mThis.self.querySelector("#_btnAddShiftDetail");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.work_shift_header = mThis.self.querySelector("#_work_shift_header");
+    mThis.elFilter_status = mThis.self.querySelector("#el_work_shift");
+    const list_container = mThis.self.querySelector("#_work_shift_body");
+    const header_container = mThis.self.querySelector("#_work_shift_header");
+
+    mThis.init = function () {
+        if (mThis.initAlready) return;
+        mThis.WorkshiftListView = () => {
+            vsapi
+                .call(
+                    `${mThis.base_url}/mhr/shift-details/list-paginate`,mThis.getFilterData(),null,null).then((res) => {
+                    if (res.status_code === 200) {
+                        mThis.renderWorkShift(list_container, res.data);
+                    }
+                });
+        };
+
+        let html = `
+        <div class="_work_shift_header" id="_work_shift_header">
+            <div id="work_shift_type" class="col-12 p-3 border d-flex">
+                <div class="shift_date col-1-5">Monday</div>
+                <div class="shift_date col-1-5">Tuesday</div>
+                <div class="shift_date col-1-5">Wednesday</div>
+                <div class="shift_date col-1-5">Thursday</div>
+                <div class="shift_date col-1-5">Friday</div>
+                <div class="shift_date col-1-5">Saturday</div>
+                <div class="shift_date col-1-5">Sunday</div>
+            </div>
+        </div>`;
+        header_container.innerHTML = html;
+
+        mThis.btnAddShiftDetail.onclick = function (e) {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    cv_interact.success("Scanpoint has been saved successfully!");
+                    mThis.WorkshiftListView();
+                },
+            };
+            if (!AuthManager.allowed(487)) return;
+            ShiftDetailDialog.show(op);
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.WorkshiftListView(mThis.getFilterData());
+            };
+        });
+
+
+        mThis.initDropdownMenus(list_container);
+        mThis.initAlready = true;
+    };
+
+
+
+
+    mThis.renderWorkShift = (div, data) => {
+        data = data ?? [];
+        if (!AuthManager) {
+            console.error(
+                "Authentication Management does not seem to work properly. You may need to refresh the page"
+            );
+            return;
+        }
+
+        AuthManager.init().then((user) => {
+            mThis.beginRenderWorkShift(div, data);
+        });
+    };
+    mThis.beginRenderWorkShift = (div, data) => {
+        let html = `
+        <div class="_work_shift_body col-12">
+            <div class="row">
+    `;
+
+        for (const [day, shifts] of Object.entries(data)) {
+            html += `
+            <div class="time_cards col-2">
+                <div class="day_card">
+        `;
+
+            if (shifts.length === 0) {
+                html += `<div class="card p-4 bg-secondary no_shifts">No Shift</div>`;
+            } else {
+                shifts.forEach((shift) => {
+                    const actionClass =
+                        shift.action === "Check In" ||
+                        shift.action === "CheckIn"
+                            ? "bg-green"
+                            : shift.action === "Check Out" ||
+                              shift.action === "CheckOut"
+                            ? "bg-gold"
+                            : "";
+
+                    html += `
+                    <div class="shift_card ${actionClass}">
+                        <div class="shift_element">
+                            <div class="shift_time">${shift.time}</div>
+                            <div class="shift_action">${shift.action}</div>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-start">
+                            <div class="text-end gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="${
+                                    shift.action_id > 1
+                                        ? "d-none"
+                                        : "btn_shift-details_action"
+                                }" data-id="${shift.id}" data-statusid="${
+                        shift.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5 "></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                });
+            }
+
+            html += `
+                </div>
+            </div>
+        `;
+        }
+
+        html += `
+            </div>
+        </div>
+    `;
+
+        div.innerHTML = html;
+    };
+    mThis.getFilterData = () => {
+        const p = {
+            work_shift_id: mThis.elFilter_status.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_shift-details_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2  " vslang="titles.Edit WorkShift">Edit WorkShift</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_shift-details",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete WorkShift">Delete WorkShift</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_shift-details",
+                },
+            ],
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_shift-details": {
+                        mThis.editWorkShift(id, menuLink);
+                        break;
+                    }
+                    case "delete_shift-details": {
+                        mThis.deleteWorkShift(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
+
+    mThis.editWorkShift = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                cv_interact.success("Scanpoint is updated successfully!");
+                mThis.WorkshiftListView();
+            },
+        };
+        if (!AuthManager.allowed(488)) return;
+        ShiftDetailDialog.show(op);
+    };
+    mThis.deleteWorkShift = (id, menuLink) => {
+        const op = {
+            id: id,
+            btn: menuLink,
+        };
+        if (!AuthManager.allowed(489)) return;
+        cv_interact.confirm(
+            "Are you sure you want to delete this scanpoint?",
+            {
+                title: "Delete Scanpoint",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/shift-details/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("Deleted successfully!");
+                                mThis.WorkshiftListView();
+                            }
+                            else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+
+                }
+            }
+        );
+    };
+
+    mThis.prepareFormOptions = () => {
+        vsapi.call(`${main_view.base_url}/mhr/shift-details/form-options`,null,null,null).then((res) => {
+                if (res.status_code === 200){
+                    const d = res.data;
+                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",false,null,1);
+                }
+        });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+
+        mThis.prepareFormOptions();
+        mThis.WorkshiftListView();
+        main_view.setContentView(mThis.self, mThis.title_prop);
+    };
+    return mThis;
+})();
+const ShiftDetailDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+
+        dialog = new GeneralDialog({
+            cssClass: "modal-md",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row">
+                            <div class="form-group col-md-12">
+                                <label for="shifts" class="form-label" vslang="titles.Work Shift"></label>
+                                <span class="text-danger">*</span>
+                                <select class="form-control data-input" name="shifts" data-field="work_shift_id"></select>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <div name="day" class="d-flex week data-input" data-field="day">
+                                    <div class="days" data-value="Mon">Mon</div>
+                                    <div class="days" data-value="Tue">Tue</div>
+                                    <div class="days" data-value="Wed">Wed</div>
+                                    <div class="days" data-value="Thu">Thu</div>
+                                    <div class="days" data-value="Fri">Fri</div>
+                                    <div class="days" data-value="Sat">Sat</div>
+                                    <div class="days" data-value="Sun">Sun</div>
+                                </div>
+
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="time" class="form-label" vslang="titles.Time">Time</label>
+                                <input type="time" class="form-control data-input" data-field="time" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="time" class="form-label" vslang="titles.Sesion">Session</label>
+                                <input class="form-control data-input" data-field="session" placeholder="m, a or e"/>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="action" class="form-label" vslang="titles.Action">Action</label>
+                                <select class="modal-select data-input form_input" data-field="action">
+                                    <option value="0">select action</option>
+                                    <option value="Check In">Check In</option>
+                                    <option value="Check Out">Check Out</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
+                            <label for="action" class="form-label" vslang="titles.Scan Order Number">Scan Order Number</label>
+                            <input type="number" class="form-control data-input" placeholder="1, 2, 3 or 4" data-field="shift_order_number" />
+
+                        </div>
+                            <div class="form-group col-12">
+                                <label for="time" class="form-label" vslang="titles.Allow Scan">Allow Scan</label>
+                            </div>
+                            <div class="form-group col-6 d-flex">
+                                <label for="time" class="form-label w-25 my-auto" vslang="titles.From">From</label>
+                                <input type="time" class="form-control w-75 data-input" data-field="start_time" />
+                            </div>
+                            <div class="form-group col-6 d-flex ">
+                                <label for="time" class="form-label w-25 my-auto" vslang="titles.To">To</label>
+                                <input type="time" class="form-control w-75 data-input" data-field="end_time" />
+                            </div>
+
+                         </div>`,
+                ].join("");
+            },
+            contentCreated: (me) => {
+                const days = me.divModal.querySelectorAll(".days");
+                days.forEach((day) => {
+                    day.addEventListener("click", () => {
+                        day.classList.toggle("active");
+                    });
+                });
+
+                if (op.days) {
+                    const selectedDays = op.days.split("|");
+                    days.forEach((day) => {
+                        if (selectedDays.includes(day.dataset.value)) {
+                            day.classList.add("active");
+                        }
+                    });
+                }
+            },
+
+            configSelect: [
+                {
+                    name: "shifts",
+                    data: "shifts",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span class="text-shift-details">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+
+                        const selectedDays = [];
+                        const days =
+                            me.divModal.querySelectorAll(".days.active");
+                        days.forEach((day) => {
+                            selectedDays.push(day.dataset.value);
+                        });
+                        p.days = selectedDays.join("|");
+
+                        vsapi.call([ main_view.base_url,"/mhr/shift-details/save"].join(""),p,btn,null).then((res) => {
+                            if (res.status_code == 200) {
+                                me.hide(true, p);
+                            } else cv_interact.error(res.error_message);
+                        });
+
+
+                    },
+                },
+            ],
+
+            prepareFormOptions: {
+                createTitle: "Add Scan",
+                modifyTitle: "Edit Scan",
+                targetProp: "shift_details",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/mhr/shift-details/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                // onResponse: (me, res) => {
+                //     console.log('Result from API "/form-options": ', res);
+                // },
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.divModal.querySelectorAll(".data-input").forEach((el) => {
+                    const data_member = el.dataset.field;
+                    let id = op.id;
+                    if (id) {
+                        const days = me.divModal.querySelectorAll(".days");
+
+                        days.forEach((day) => {
+                            if (data.shift_details.day == day.dataset.value) {
+                                day.classList.add("active");
+                            } else day.classList.remove("active");
+
+                            day.classList.add("disabled");
+                        });
+
+                        if (el.tagName.toLowerCase() === "select") {
+                            if (
+                                data_member == "shifts" ||
+                                data_member == "work_shift_id" ||
+                                data_member == "emp_type_id"
+                            ) {
+                                el.setAttribute("disabled", true);
+                            }
+                        }
+                    } else {
+                        const days = me.divModal.querySelectorAll(".days");
+                        days.forEach((day) => {
+                            day.classList.remove("disabled");
+                        });
+                    }
+                    const shift = WorkshiftComponent.getFilterData().work_shift_id;
+                    if(shift) {
+                        me.controls.shifts.value = shift;
+                    }
+                });
+            },
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var ExitFormComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_exit_form_component");
+
+    mThis.title_prop = "Exit Forms";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddExitForm");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_exit_form_search");
+    mThis.cols = [
+        {
+            transTitle: "titles.Staff Name",
+            className: "align-middle text-start",
+            data: (data) => {
+                return `
+                <div class="d-flex align-items-center gap-2">
+                    <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%;"/>
+                    <div>
+                        <span class="d-block fw-semibold">${data.emp_name ?? "-"}</span>
+                        <span class="d-block text-muted" style="font-size: 12px;">${data.email ?? "-"}</span>
+                    </div>
+                </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Position",
+            className: "align-middle text-capitalize",
+            data: (data) =>
+                `<span class="text-pr-custom">${data.position ?? "-"}</span>`,
+        },
+        {
+            transTitle: "titles.Form",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-pr-custom">${data.name ?? "-"}</span>`,
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                if (data.is_finished == 1) {
+                    return `<span class="badge rounded-pill bg-success">Done</span>`;
+                }
+                return `<span class="badge rounded-pill bg-warning text-dark">Pending</span>`;
+            },
+        },
+        {
+            title: "",
+            className: "col_action align-middle",
+            data: (data) => {
+                return `
+                <div class="d-flex justify-content-center align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary btn_edit_exit_form" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-danger btn_delete_exit_form" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                        </button>
+                        <button class="btn rounded-3 p-1 btn-success btn_view_exit_form" data-id="${data.id}" data-empid="${data.emp_id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-eye"></i>
+                        </button>
+                    </div>
+                </div>`;
+            },
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.ExitFormListView = new ListView("_exit_form_list", {
+            fetchApi: `${mThis.base_url}/mhr/exit-form/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            rowCreated: (data, index, tr) => {
+                tr.dataset.id = data.id;
+            },
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            if (!AuthManager.allowed(282)) return;
+            ExitFormDialog.show({
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.ExitFormListView.showPage(mThis.getFilterData());
+                },
+            });
+        };
+
+        mThis.listContainer = mThis.ExitFormListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 170 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
+
+        mThis.initDropdownMenus(mThis.listContainer);
+        mThis.initAlready = true;
+    };
+
+    mThis.elSearch.addEventListener("keyup", () => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.ExitFormListView) {
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            }
+        }, 200);
+    });
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            if (f) p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.initDropdownMenus = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn_edit_exit_form");
+            if (btn) {
+                mThis.editExitForm(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn_delete_exit_form");
+            if (btn) {
+                mThis.deleteExitForm(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn_view_exit_form");
+            if (btn) {
+                mThis.viewExitForm(btn.dataset.id, btn);
+            }
+        });
+    };
+
+    mThis.editExitForm = (id, menulink) => {
+        if (!AuthManager.allowed(283)) return;
+        ExitFormDialog.show({
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            },
+        });
+    };
+
+    mThis.deleteExitForm = (id, menulink) => {
+        if (!AuthManager.allowed(284)) return;
+        const op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            },
+        };
+
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "Delete",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/exit-form/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("delete_success_exit_form");
+                                mThis.ExitFormListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        })
+                        .finally(() => {
+                            menulink.disabled = false;
+                        });
+                } else {
+                    menulink.disabled = false;
+                }
+            }
+        );
+    };
+
+    mThis.viewExitForm = (form_id, menulink) => {
+        if (!AuthManager.allowed(285)) return;
+        ViewExitFormDialog.show({
+            form_id: form_id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            },
+        });
+    };
+
+    mThis.show = function () {
+        mThis.init();
+        mThis.ExitFormListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
+    };
+
+    return mThis;
+})();
+
+const ExitFormDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-12">
+                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="form_name" required class="form-control data-input" data-field="name" placeholder=" " />
+                                    <label vslang="titles.Form"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <select data-style="material" name="is_finished" class="form-control data-input" data-field="is_finished" placeholder="${LocaleManager.trans("Status", "titles")}">
+                                    <option value="0">Pending</option>
+                                    <option value="1">Done</option>
+                                </select>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) =>
+                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url || ""}" alt="" /> <div class="d-flex flex-column"><span>${d.name ?? "-"}</span><span>${d.position ?? ""}</span></div></div>`,
+                        valueField: "id",
+                        emptyText: LocaleManager.trans("Employee", "labels"),
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/exit-form/save"].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_exit_form");
+                                        } else {
+                                            cv_interact.success("create_success_exit_form");
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Exit Form",
+                    modifyTitle: "vslang:titles.Modify Exit Form",
+                    targetProp: "exit_forms",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/exit-form/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    const form = data?.exit_forms || null;
+                    if (form?.emp_id && me.controls.emp_id) {
+                        me.controls.emp_id.value = form.emp_id;
+                    }
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+const ViewExitFormDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    const signatureCell = () => {
+        return [
+            '<td class="align-top p-3">',
+            '<div class="text-center mb-2">ហត្ថលេខា</div>',
+            '<div style="min-height:90px;"></div>',
+            "<div>ឈ្មោះ ........................................</div>",
+            '<div class="mt-2">តំណែង .....................................</div>',
+            '<div class="mt-3 text-center">កាលបរិច្ឆេទ<br>............................</div>',
+            "</td>",
+        ].join("");
+    };
+
+    self.show = (op) => {
+        let htmlString = [
+            '<div class="d-block position-relative min-height-top form_header">',
+            '<h4 class="text-end form_title mb-3">',
+            "</h4>",
+            '<div class="employee-info-section">',
+            '<table class="table table-bordered mb-0">',
+            "<tbody>",
+            "<tr>",
+            "<td>ឈ្មោះបុគ្គលិក៖</td>",
+            '<td class="employee_name"></td>',
+            "<td>អត្តលេខ៖</td>",
+            '<td class="employee_code"></td>',
+            "</tr>",
+            "<tr>",
+            "<td>កាលបរិច្ឆេទបិទការងារ៖</td>",
+            '<td class="employee_effective_date"></td>',
+            "<td>នាយកដ្ឋាន ឬសាខា៖</td>",
+            '<td class="employee_branch"></td>',
+            "</tr>",
+            "<tr>",
+            '<td colspan="4">',
+            '<div class="d-flex flex-wrap align-items-center gap-3">',
+            "<span>គោលបំណង៖</span>",
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" checked disabled>',
+            '<label class="form-check-label">ការលាលែងពីតំណែង</label>',
+            "</div>",
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" disabled>',
+            '<label class="form-check-label">ការបញ្ឈប់</label>',
+            "</div>",
+            '<div class="form-check mb-0">',
+            '<input type="checkbox" class="form-check-input" disabled>',
+            '<label class="form-check-label">ផ្សេងៗ (សូមបញ្ជាក់)៖</label>',
+            "</div>",
+            "</div>",
+            "</td>",
+            "</tr>",
+            "</tbody>",
+            "</table>",
+            "</div>",
+            "</div>",
+            '<div class="pb-3 bg-white mt-3">',
+            '<table class="table table-bordered tbl_exit_check_item mb-0">',
+            "<thead>",
+            "</thead>",
+            "<tbody>",
+            "</tbody>",
+            "</table>",
+            '<table class="table table-bordered mt-3 mb-0">',
+            "<thead>",
+            "<tr>",
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បុគ្គលិក</th>',
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បញ្ជាក់ដោយ</th>',
+            '<th class="align-middle text-center" style="background:#e8f0fe;color:#1a56db;">បញ្ជាក់ដោយ</th>',
+            "</tr>",
+            "</thead>",
+            "<tbody>",
+            "<tr>",
+            signatureCell(),
+            signatureCell(),
+            signatureCell(),
+            "</tr>",
+            "</tbody>",
+            "</table>",
+            "</div>",
+            '<div class="d-flex flex-column mt-3">',
+            "<span><strong>ចំណាំ៖</strong></span>",
+            "<span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>",
+            "</div>",
+        ].join("");
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg custom-modal-size",
+                backdrop: "static",
+                keyboard: true,
+                alwaysTriggerOnClose: true,
+                createContent: () => {
+                    return htmlString;
+                },
+                contentCreated: (me) => {
+                    me.generateTableHeaders = () => {
+                        return [
+                            "<tr>",
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">អ្នកទទួល ខុសត្រូវ</th>',
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">បរិយាយព័ត៌មានលម្អិត</th>',
+                            '<th class="align-middle text-center" style="background:#e8f0fe;">កាលបរិច្ឆេទត្រូវបានជម្រះ</th>',
+                            "</tr>",
+                        ].join("");
+                    };
+
+                    me.generateTableBody = (list) => {
+                        let row_group = "";
+
+                        (list || []).forEach((c) => {
+                            if (!c.items || !c.items.length) return;
+
+                            let items_html = "";
+                            c.items.forEach((item) => {
+                                items_html = [
+                                    items_html,
+                                    '<div class="d-flex align-items-center mb-1">',
+                                    `<input type="checkbox" ${
+                                        item.status_id == 1 ? "checked" : ""
+                                    } class="exit_form_check_box" data-id="${
+                                        item.id
+                                    }" style="cursor:pointer; margin-right:10px">`,
+                                    `<span>${item.name ?? ""}</span>`,
+                                    "</div>",
+                                ].join("");
+                            });
+
+                            row_group = [
+                                row_group,
+                                "<tr>",
+                                `<td class="text-capitalize align-middle">${c.name ?? ""}</td>`,
+                                `<td>${items_html}</td>`,
+                                "<td></td>",
+                                "</tr>",
+                            ].join("");
+                        });
+
+                        return row_group;
+                    };
+
+                    me.saveCheckBoxes = (event, form_id) => {
+                        const op = {
+                            id: event.target.dataset.id,
+                            form_id: form_id,
+                            status_id: event.target.checked ? 1 : 0,
+                        };
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/mhr/exit-form/update-checkbox"].join(""),
+                                op,
+                                false,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code != 200) {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    };
+                },
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Close"></span>',
+                        cssClass: "btn btn-default",
+                        click: (me) => me.hide(false),
+                    },
+                    {
+                        label: '<span><i class="fa-solid fa-print"></i></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = {
+                                ...me.getData(),
+                                form_id: me.dataOptions.form_id,
+                                id: me.dataOptions.form_id,
+                            };
+                            if (!AuthManager.allowed(286)) return;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/exit-form/details`,
+                                    p,
+                                    btn
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        windowPrintExitForm(
+                                            me.divModal.querySelector(".modal-body").innerHTML
+                                        );
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.View Exit Form",
+                    modifyTitle: "vslang:titles.View Exit Form",
+                    targetProp: "exit_form",
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/exit-form/checkpoints`,
+                        params: (op) => {
+                            return { id: op.id, form_id: op.form_id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, d) => {
+                    const tbl = me.divModal.querySelector(".tbl_exit_check_item");
+                    const thead = tbl.querySelector("thead");
+                    const tbody = tbl.querySelector("tbody");
+
+                    thead.innerHTML = me.generateTableHeaders();
+                    tbody.innerHTML = me.generateTableBody(d.list);
+
+                    const form_header = me.divModal.querySelector(".form_header");
+                    const form_title = form_header.querySelector(".form_title");
+                    const emp_info = form_header.querySelector(".employee-info-section");
+                    const emp_name = emp_info.querySelector(".employee_name");
+                    const emp_code = emp_info.querySelector(".employee_code");
+                    const emp_effective_date = emp_info.querySelector(".employee_effective_date");
+                    const emp_branch = emp_info.querySelector(".employee_branch");
+
+                    form_title.innerHTML = d.title ?? "";
+                    emp_name.innerHTML = d.employee?.emp_name ?? "";
+                    emp_code.innerHTML = d.employee?.code ?? "";
+                    emp_effective_date.innerHTML = d.employee?.efective_date ?? "";
+                    emp_branch.innerHTML = d.employee?.branch_name ?? "";
+
+                    tbl.querySelectorAll(".exit_form_check_box").forEach((cb) => {
+                        cb.onchange = (event) => {
+                            me.saveCheckBoxes(event, me.dataOptions.form_id);
+                        };
+                    });
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+/** hello Ratanak , Please DO NOT Write function outside like this. This is VERY BAD practice */
+// function check_box(event) {
+//     if (event.target.checked) {
+//         const op = {};
+//         op.check_point_id = event.target.dataset.id;
+//         op.form_id = form_id;
+//         op.status_id = 1;
+//         vsapi
+//             .call(
+//                 [main_view.base_url, "/mhr/exit-form/save-item"].join(""),
+//                 op,
+//                 false,
+//                 null
+//             )
+//             .then((res) => {
+//                 if (res.status_code == 200) {
+//                     //cv_interact.success('saved!')
+//                     return;
+//                 } else cv_interact.error(res.error_message);
+//             });
+//     } else {
+//         const op = {};
+//         op.check_point_id = event.target.dataset.id;
+//         op.form_id = form_id;
+//         op.status_id = 0;
+//         console.log("uncheck");
+//         vsapi
+//             .call(
+//                 [main_view.base_url, "/mhr/exit-form/save-item"].join(""),
+//                 op,
+//                 null,
+//                 null
+//             )
+//             .then((res) => {
+//                 if (res.status_code == 200) {
+//                     return;
+//                 } else cv_interact.error(res.error_message);
+//             });
+//     }
+// }
 

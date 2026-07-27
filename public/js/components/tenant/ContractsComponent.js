@@ -21,10 +21,10 @@ var ContractsComponent = new (function () {
         const statusId = parseInt(data.status_id, 10);
         const statusKey = (data.status ?? "").toLowerCase();
         const map = {
-            1: { text: "Pending", cls: "contract2-status contract2-status--pending" },
-            2: { text: "Active", cls: "contract2-status contract2-status--active" },
-            3: { text: "Expired", cls: "contract2-status contract2-status--expired" },
-            4: { text: "Terminated", cls: "contract2-status contract2-status--terminated" },
+            1: { text: "Pending", cls: "badge text-warning bg-warning-subtle border border-warning" },
+            2: { text: "Active", cls: "badge text-success bg-success-subtle border border-success" },
+            3: { text: "Expired", cls: "badge bg-danger-subtle text-danger border border-danger" },
+            4: { text: "Terminated", cls: "badge bg-danger-subtle text-danger border border-danger" },
         };
         const m = map[statusId] || null;
         const label =
@@ -223,9 +223,9 @@ var ContractsComponent = new (function () {
                             </span>
                             <div class="contract-card__header-text">
                                 <div class="contract-card__title-row">
-                                    <span class="contract-card__title">${unitLabel}</span>
+                                    <span class="fw-bold text-prm-custom">${unitLabel}</span>
                                 </div>
-                                <div class="contract-card__subtitle">${businessType}</div>
+                                <div class="text-muted">${businessType}</div>
                             </div>
                         </div>
                         <div class="contract-card__header-right">
@@ -241,19 +241,19 @@ var ContractsComponent = new (function () {
                             <div class="col-12 col-md-4 contract-card__col-left">
                                 ${mThis.renderSpacePhoto(data, imageMeta)}
                               <div class="contract-card__address">
-                                    <div class="contract-card__address-head">
+                                    <div class="text-prm-custom">
                                         <i class="fa-solid fa-building"></i>
-                                        <span vslang="titles.Unit Details">Unit Details</span>
+                                        <span class="px-2" vslang="titles.Unit Details">Unit Details</span>
                                     </div>
-                                    <div class="contract-card__sqft">
+                                    <div class="contract-card__sqft text-prm-custom">
                                         <span class="contract-card__sqft-label" vslang="titles.Square footage"></span>
                                         <span class="contract-card__sqft-value">${sqmDisplay}</span>
                                     </div>
-                                    <div class="contract-card__sqft">
+                                    <div class="contract-card__sqft text-prm-custom">
                                         <span class="contract-card__sqft-label" vslang="titles.Building"></span>
                                         <span class="contract-card__sqft-value">${data.building_name || "—"} , ${data.floor_name || "—"}</span>
                                     </div>
-                                     <div class="contract-card__sqft">
+                                     <div class="contract-card__sqft text-prm-custom">
                                         <span class="contract-card__sqft-label" vslang="titles.Address"></span>
                                         <span class="contract-card__sqft-value">${data.address || "—"}</span>
                                     </div>
@@ -272,7 +272,7 @@ var ContractsComponent = new (function () {
                                             <span>${duration}</span>
                                         </div>
                                         <div class="contract-card__renewal-date">
-                                            <span vslang="titles.Renewal Date"></span> <span>${keyRenewalDate}</span>
+                                            <span vslang="titles.Expiry Date"></span> <span>${keyRenewalDate}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -540,7 +540,7 @@ var ContractsComponent = new (function () {
 
         const currentRenewedDate = data.last_renewal_date || data.updated_at || "";
         const currentDateLabel = currentRenewedDate
-            ? `renewed ${mThis.formatRenewalActionDate(currentRenewedDate)}`
+            ? `Renewed ${mThis.formatRenewalActionDate(currentRenewedDate)}`
             : "—";
 
         let timelineHtml = `
@@ -574,7 +574,6 @@ var ContractsComponent = new (function () {
             <div class="contract2-renewal__item${isLast ? " is-original" : ""}">
                 <span class="contract2-renewal__dot"></span>
                 <div class="contract2-renewal__item-head">
-                    <span class="contract2-renewal__item-label" vslang="titles.Current term"></span>
                     <span class="contract2-renewal__item-date">${mThis.escapeHtml(dateLabel)}</span>
                 </div>
                 ${renderItemBox(
@@ -595,8 +594,8 @@ var ContractsComponent = new (function () {
                 </div>`;
 
         const subText = inline
-            ? `${mThis.escapeHtml(data.tenant_name ?? "—")} · ${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record`
-            : `${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record`;
+            ? `${mThis.escapeHtml(data.tenant_name ?? "—")} · ${totalEntries} Renewal${totalEntries === 1 ? "" : "s"} on record`
+            : `${totalEntries} Renewal${totalEntries === 1 ? "" : "s"} on record`;
 
         const headIconHtml = inline
             ? `<span class="contract2-renewal__head-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>`
@@ -608,7 +607,7 @@ var ContractsComponent = new (function () {
                         <div class="contract2-renewal__head-main">
                             ${headIconHtml}
                             <div>
-                                <div class="contract2-renewal__title">${unitLabel} · renewal history</div>
+                                <div class="contract2-renewal__title">${unitLabel} · Renewal History</div>
                                 <div class="contract2-renewal__sub">${subText}</div>
                             </div>
                         </div>

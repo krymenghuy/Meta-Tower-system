@@ -31,12 +31,12 @@ class Position extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh' => '0|string|0-150|text=name_required::@key;@max;@value',
             'department_id' => '1|number|exists=departments.id|text=select_department',
             'job_level_id' => '1|number|exists=job_levels.id|text=select_job_level',
-            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
-            'name_kh' => '1|string|0-150|text=name_required::@key;@max;@value',
-            'code' => '1|string|0-50|text=enter_code',
-            'staff_group_id' => '1|number|exists=staff_groups.id|text=select_staff_group',
+            'code' => '0|string|0-50|text=enter_shortcut',
+            'staff_group_id' => '0|number|exists=staff_groups.id|text=select_staff_group',
             'salary' => '1|number|text=enter_salary',
             'currency_code' => '1|choice|KHR,USD|text=select_currency_code|default=' . VSMoney::$base_currency,
             'description' => '0|string|0-1000',
@@ -75,7 +75,7 @@ class Position extends VSModel
 
         $test = $query->select('id')->first();
         if ($test) {
-            return 'Position already exists::' . $name;
+            return 'position_exist::' . $name;
         }
 
         return null;
@@ -103,8 +103,8 @@ class Position extends VSModel
 
         $updated_at = DBX::formatTime('p.updated_at', 'updated_at');
         $query = DB::table('positions as p')
-            ->leftJoin('departments as d', 'd.id', '=', 'p.department_id')
-            ->leftJoin('job_levels as job', 'job.id', '=', 'p.job_level_id')
+            ->join('departments as d', 'd.id', '=', 'p.department_id')
+            ->join('job_levels as job', 'job.id', '=', 'p.job_level_id')
             ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
             ->where('p.inactive', 0)
             ->whereRaw($str_search)
@@ -126,7 +126,7 @@ class Position extends VSModel
             ->leftJoin('departments as d', 'd.id', '=', 'p.department_id')
             ->leftJoin('job_levels as job', 'job.id', '=', 'p.job_level_id')
             ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
-            ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.job_level_id, p.staff_group_id, p.department_id, p.salary, p.currency_code, d.name as department, job.name as level, sg.name as staff_group')
+            ->selectRaw('p.id, p.name, p.name_kh, p.description, p.job_level_id, p.staff_group_id, p.department_id, p.salary, p.currency_code, d.name as department, job.name as level, sg.name as staff_group')
             ->where('p.inactive', 0)
             ->where('p.id', $id)
             ->first();
@@ -142,11 +142,14 @@ class Position extends VSModel
     {
         $id = $id ?? $this->id;
         $d = self::getProps($id, 'name');
-        if (!$d) return DV::error('Position ID does not exist');
-        $cnt = DBX::count_fk_items($id, self::$fk_tables, 'employees');
-        if ($cnt > 0) return DV::error('Cannot delete this position because it is already in use');
+        if (!$d) return DV::error('position_not_found');
+        $cnt = 0;
+        foreach (self::$fk_tables as $table => $fk_col) {
+            $cnt += DB::table($table)->where($fk_col, $id)->count();
+        }
+        if ($cnt > 0) return DV::error('position_has_employees');
         $delete = DB::table('positions')->where('id', $id)->update(['inactive' => 1]);
-        return DV::depends($delete, null, 'Failed to delete position');
+        return DV::depends($delete, null, 'delete_failed');
     }
 
     public function getFormOptions($id, $ss)

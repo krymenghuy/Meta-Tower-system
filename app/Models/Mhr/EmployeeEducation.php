@@ -32,7 +32,7 @@ class EmployeeEducation extends VSModel
         }
 
         return self::baseQuery()
-            ->where('ee.emp_id', (int) $emp_id)
+            ->where('ee.emp_id',  $emp_id)
             ->orderByDesc('ee.finish_year')
             ->orderByDesc('ee.start_year')
             ->orderBy('ee.id')

@@ -26,7 +26,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        <?php StyleManager::render('umt-style',1,24); ?>
+        <?php StyleManager::render('umt-style',1,26); ?>
         <style>
             /* Custom animations for the modal like Materialize css effect */
             .modal.fade .modal-dialog {
@@ -62,7 +62,7 @@
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1,2);
             ScriptManager::render('umt-primary-defer',1,7);
-            ScriptManager::render('umt-components',1,34);
+            ScriptManager::render('umt-components',1,36);
         ?>
     </head>
     <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">

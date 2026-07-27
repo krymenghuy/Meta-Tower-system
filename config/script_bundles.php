@@ -253,7 +253,7 @@ return [
                 '/js/components/mhr/EmployeeBenefitComponent.js',
                 '/js/components/mhr/PayrollAccountComponent.js',
                 '/js/components/mhr/WalletAccountComponent.js',
-                '/js/components/mhr/StaffAttendanceComponent.js',
+                '/js/components/mhr/EmployeeAttendanceComponent.js',
                 '/js/components/mhr/WarningComponent.js',
                 '/js/components/mhr/TaxBracketComponent.js',
                 '/js/components/mhr/PositionComponent.js',
@@ -262,6 +262,8 @@ return [
                 '/js/components/mhr/BenefitDisbursePolicyComponent.js',
                 '/js/components/mhr/CheckPointComponent.js',
                 '/js/components/mhr/CheckPointCategoryComponent.js',
+                '/js/components/mhr/AttendanceTracksComponent.js',
+                '/js/components/mhr/ExitFormComponent.js',
 
 
 
@@ -377,18 +379,18 @@ return [
             ]
         ],
 
-        // 'attendance-script' => [
-        //     'attr' => 'defer',
-        //     'single_file' => 1,
-        //     'output_file' => '/dist/js/attendance.js',
-        //     'files' => [
-        //         '/assets/material-js/jquery.min.js',
-        //         '/assets/js/sweetalert2.all.min.js',
-        //        '/assets/js/datehelper.js',
-        //         '/assets/js/date.js',
-        //         '/assets/js/jquery.datepicker2.js',
-        //         'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
-        //         '/js/components/prm/ScanAttendanceComponent.js'
-        //     ]
-        // ]
+        'attendance-script' => [
+            'attr' => 'defer',
+            'single_file' => 1,
+            'output_file' => '/dist/js/attendance.js',
+            'files' => [
+                '/assets/material-js/jquery.min.js',
+                '/assets/js/sweetalert2.all.min.js',
+               '/assets/js/datehelper.js',
+                '/assets/js/date.js',
+                '/assets/js/jquery.datepicker2.js',
+                'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
+                '/js/components/mhr/ScanAttendanceComponent.js'
+            ]
+        ]
     ];

@@ -1728,7 +1728,7 @@ const CreateTenantDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return `
-                <div class="tenant-form row">
+                <div class="tenant-form row g-3">
                     <div class="col-12 col-md-3 d-flex justify-content-center">
                         <div id="tenant-profile-container" class="tenant-profile-container d-flex align-items-center justify-content-center" >
                             <div id="tenant-upload-zone" class="tenant-image-card">
@@ -1754,7 +1754,8 @@ const CreateTenantDialog = (() => {
                         </div>
                     </div>
 
-                    <div class="col-md-9 row g-2 align-content-between flex-wrap" >
+                    <div class="col-12 col-md-9">
+                        <div class="row g-3">
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
@@ -1794,46 +1795,49 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                             </div>
-                    </div>
-                    <div class="col-12 row g-2">
-                        <div class="col-12 col-md-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
-                                <label vslang="labels.National ID">National ID</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
-                                <label vslang="labels.Passport">Passport Number</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="vs-material-field">
-                                <input type="text" data-type="date" name="issue_date" class="data-input form-control form_input" data-field="issue_date" placeholder=" " />
-                                <label vslang="labels.Issue Date On">Issue Date On</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 pt-2">
-                            <div class="vs-material-field">
-                                <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                <label vslang="labels.Phone Number">Phone Number</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 pt-2">
-                            <div class="vs-material-field">
-                                <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                <label vslang="labels.Email">Email</label>
-                            </div>
-                        </div>
-                    <div class="col-12 pt-2">
-                        <div class="vs-material-field">
-                            <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
-                            <label vslang="labels.Address">Address</label>
                         </div>
                     </div>
 
-                </div>
+                    <div class="col-12">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
+                                    <label vslang="labels.National ID">National ID</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
+                                    <label vslang="labels.Passport">Passport Number</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" data-type="date" name="issue_date" class="data-input form-control form_input" data-field="issue_date" placeholder=" " />
+                                    <label vslang="labels.Issue Date On">Issue Date On</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label vslang="labels.Phone Number">Phone Number</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label vslang="labels.Email">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
+                                    <label vslang="labels.Address">Address</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 },
 

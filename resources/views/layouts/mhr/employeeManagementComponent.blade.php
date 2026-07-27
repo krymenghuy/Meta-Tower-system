@@ -647,24 +647,96 @@
         box-shadow: 0 4px 10px rgba(242, 201, 76, 0.35);
     }
 
-    /* Employee dialog photo */
-    .emp-dialog-photo-wrap {
+    /* Employee photo uploader (same interaction as Tenant dialog) */
+    .emp-photo-container {
         width: 100%;
-        aspect-ratio: 1 / 1;
-        max-height: 160px;
-        min-height: 120px;
-        border: 1.5px dashed #c5c9d4;
-        border-radius: 8px;
-        background: #fafbfc;
+        height: 100%;
+        min-height: 180px;
+        max-width: 180px;
+        margin: 0 auto;
+    }
+
+    .emp-image-card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
+        border: 1px solid #ced4da;
+        border-radius: 12px;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .emp-upload-trigger {
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
+        border: 1px dashed #c5c9d4;
+        border-radius: 12px;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .emp-upload-trigger:hover {
+        border-color: #4f5cd1;
+        background-color: #f4f6ff;
+    }
+
+    .emp-photo-placeholder-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .emp-photo-preview {
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
         overflow: hidden;
+        border-radius: 11px;
+    }
+
+    .emp-photo-preview img {
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
+        object-fit: cover;
         cursor: pointer;
     }
 
-    .emp-dialog-photo-wrap .image-box,
-    .emp-dialog-photo-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    .emp-photo-remove {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        z-index: 10;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background-color: #dc3545;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .emp-photo-remove:hover {
+        background-color: #bd2130;
+    }
+
+    .emp-photo-remove span {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
     }
 
     @media (max-width: 991.98px) {

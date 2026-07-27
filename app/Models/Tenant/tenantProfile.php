@@ -3,23 +3,42 @@
 namespace App\Models\Tenant;
 
 use App\Models\Prm\GeneralSettings;
-use App\Models\Prm\Tenant;
+use App\Models\Prm\Tenant as PrmTenant;
+use DB;
 use DBX;
-use Illuminate\Support\Facades\DB;
+use DV;
+use Carbon\Carbon;
 
-/**
- * Tenant-portal profile model.
- * Reuses App\Models\Prm\Tenant for shared tenant CRUD / photo / lease helpers.
- * Overrides details/form-options for the tenant portal profile view.
- */
-class TenantProfile extends Tenant
+class TenantProfile
 {
-    public static function getDetails($id, $ss = null)
+    protected $userInfo = null;
+    protected static $img_dir = 'tenants';
+
+    function __construct($userInfo = null)
     {
+        $this->userInfo = $userInfo;
+    }
+
+    function getUserInfo()
+    {
+        return $this->userInfo;
+    }
+
+    function getDetails($ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        return self::details($ss);
+    }
+
+    static function details($ss)
+    {
+        $tenant_id = $ss->official_id ?? null;
+        if (!$tenant_id) return null;
+
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
-        $lastContract = static::liveContractSubquery();
+        $lastContract = PrmTenant::liveContractSubquery();
 
         $row = DB::table('tenants as t')
             ->leftJoinSub($lastContract, 'lc', function ($join) {
@@ -27,34 +46,77 @@ class TenantProfile extends Tenant
             })
             ->leftJoin('contracts as c', 'c.id', '=', 'lc.id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->leftJoin('floors as f', 'f.id', '=', 'bs.floor_id')
+            ->leftJoin('loc_countries as lc_n', 'lc_n.id', '=', 't.nationality_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
-            ->where('t.id', $id)
-            ->selectRaw(
-                "t.id,t.name,t.code,t.national_id,passport_number,"
-                . "$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,"
-                . "t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,"
-                . "c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code"
-            )
+            ->where('t.id', $tenant_id)
+            ->selectRaw("
+                t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,
+                $date_of_birth,t.nationality_id,lc_n.nationality,t.photo_file_name,t.sex,t.tenant_type,
+                t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,
+                c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,
+                bs.code as space_code,c.space_id,bs.floor_id,f.name as floor_name
+            ")
             ->first();
 
-        if ($row) {
-            $img = static::profilePicture($id, $ss);
-            $row->image_url = $img;
-            $row->photo = $img;
-            return $row;
+        if (!$row) return null;
+
+        $hasPhoto = !empty($row->photo_file_name);
+        $img = self::photoUrl($ss, $row->id);
+        $row->image_url = $img;
+        $row->photo = $img;
+        $row->has_photo = $hasPhoto;
+        unset($row->photo_file_name);
+
+        if ($row->price !== null) {
+            $row->monthly_price = $row->price_type === 'sqm'
+                ? $row->sqm_size * $row->price
+                : $row->price;
+            $row->monthly_price = number_format($row->monthly_price, 2);
         }
 
-        return null;
+        if ($row->start_date && $row->end_date) {
+            $row->lease_term = Carbon::parse($row->start_date)
+                ->diffInMonths(Carbon::parse($row->end_date)) . ' ខែ';
+        }
+
+        return $row;
     }
 
-    public static function getFormOptions($id, $ss)
+    static function getFormOptions($ss)
     {
-        $details = $id ? static::getDetails($id, $ss) : null;
-
         return (object) [
-            'tenant' => $details,
+            'tenant' => self::details($ss),
             'nationalities' => GeneralSettings::options_nationality($ss),
-            'statuses' => GeneralSettings::options_tenant_status($ss),
         ];
+    }
+
+    /** Start Save and retrieve tenant photo **/
+    static function photoUrl($ss, $id = null)
+    {
+        $id = $id ?? ($ss->official_id ?? null);
+        if (!$id) return PrmTenant::defaultPhoto($ss->subs_id ?? null);
+        return PrmTenant::profilePicture($id, $ss);
+    }
+
+    function getPhotoUrl($ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        return self::photoUrl($ss);
+    }
+
+    static function savePhoto($photo_data, $ss)
+    {
+        $id = $ss->official_id ?? null;
+        if (!$id) return DV::error('Tenant identify is not correct!');
+        return PrmTenant::createProfilePicture($photo_data, null, $id, $ss);
+    }
+
+    static function deletePhoto($ss)
+    {
+        $id = $ss->official_id ?? null;
+        if (!$id) return DV::error('Tenant identify is not correct!');
+        $tenant = new PrmTenant($id, $ss);
+        return $tenant->deleteProfilePicture($id, $ss);
     }
 }

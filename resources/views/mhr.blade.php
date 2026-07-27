@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 65);
+    StyleManager::render('prm-style', 1, 78);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -104,7 +104,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('mhr-components', 1, 283);
+    ScriptManager::render('mhr-components', 1, 295);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -332,7 +332,7 @@
                             @include('layouts.mhr.skillsComponent')
                             @include('layouts.mhr.benefitComponent')
                             @include('layouts.mhr.employeeBenefitComponent')
-                            @include('layouts.mhr.staffAttendanceComponent')
+                            @include('layouts.mhr.employeeAttendanceComponent')
                             @include('layouts.mhr.warningComponent')
                             @include('layouts.mhr.walletAccountComponent')
                             @include('layouts.mhr.workShiftListComponent')
@@ -343,6 +343,8 @@
                             @include('layouts.mhr.benefitDisbursePolicyComponent')
                             @include('layouts.mhr.checkPointComponent')
                             @include('layouts.mhr.checkPointCategoryComponent')
+                            @include('layouts.mhr.attendanceTracksComponent')
+                            @include('layouts.mhr.exitFormComponent')
 
 
 

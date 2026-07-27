@@ -4,23 +4,24 @@ var WorkShiftListComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftListComponent");
 
-    mThis.title_prop = "Shift List";
+    mThis.title_prop = "Work Shifts";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_work_shift_list_search");
     mThis.cols = [
+   
         {
             transTitle: "titles.No",
             className: "align-middle",
             data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
+                `<div class="rounded-circle align-items-center text-center p-1 text-prm-custom" style="background-color: #e7eeff; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>
             `,
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-pr-custom">${data.name}</span>`;
             },
@@ -32,7 +33,7 @@ var WorkShiftListComponent = (function () {
             data: (data) => {
                 return [
                     `<span class="text-Capitalize d-block">${data.update_user ?? '-'}</span>`,
-                    `<span class="text-small">${data.updated_at ?? '-'}</span>`,
+                    `<span class="text-muted small">${data.updated_at ?? '-'}</span>`,
                 ].join("");
             },
         },
@@ -227,14 +228,14 @@ const WorkShiftListDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 

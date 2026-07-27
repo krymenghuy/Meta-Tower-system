@@ -1,7 +1,7 @@
 <div id="_main_warningComponent" class="px-3 mobile-padding" style="display:none;">
     <div id="_divFilter_warning" class="bg-white shadow p-3 rounded-2">
         <div class="align-items-center row g-3">
-            <div class="col-12col-md-6 col-lg-3">
+            <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_warning_search" 
                 placeholder="Search by name or employee code" >
             </div>

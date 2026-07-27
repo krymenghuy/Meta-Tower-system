@@ -1,11 +1,11 @@
 "use strict";
-var JobsLevelComponent = new (function () {
+var JobsLevelComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_jobsLevelComponent");
     
     mThis.initAlready = false;
-    mThis.title_prop = "Job Levels";
+    mThis.title_prop = "Job Level";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_jobsLevelComponent");
     mThis.elSearch = mThis.self.querySelector("#_job_level_search");
@@ -19,34 +19,35 @@ var JobsLevelComponent = new (function () {
             transTitle: "titles.Ranking",
             className: "align-middle text-nowrap",
             data: (data)=>
-                `<div class=" text-start p-1 " ><span class="">${data.rank}</span></div>`,
+                `<div class=" text-start p-1 " ><span class="">${data.rank ?? '_'}</span></div>`,
 
         },
         {
-            transTitle: "titles.Job Level",
+            transTitle: "titles.Level",
             className: "align-middle text-nowrap",
             data: (data)=>
-                `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
+                `<span class="text-primary-custom">${data.name ?? '_'}</span>`,
         },
 
         {
             transTitle: "titles.Description",
             className: "align-middle text-nowrap",
             data: (data)=>
-                `<div  class="text-remark text-muted" >${data.description}</div>`,
+                `<div  class="text-remark text-prm-custom" >${data.description ?? '_'}</div>`,
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
+            className: 'align-middle text-nowrap',
             data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.update_date ?? ""}</span>
-            </div>`,
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? '_'}</span>
+                <span class="text-muted small">${data.updated_at ?? '_'}</span>
+            </div>`
         },
 
 
         {
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: data => `
             <div class="d-flex justify-content-center align-items-center">
@@ -70,7 +71,7 @@ var JobsLevelComponent = new (function () {
 
         mThis.JobLevelListView = new ListView("_job_level_list", {
             fetchApi: `${mThis.base_url}/mhr/job_level/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
@@ -122,7 +123,7 @@ var JobsLevelComponent = new (function () {
                 {
                     html:
                         '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
-                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_jobevel"
                 },
@@ -172,7 +173,7 @@ var JobsLevelComponent = new (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
-        if (!AuthManager.allowed(205)) return;
+        // if (!AuthManager.allowed(205)) return;
         JobLevelDialog.show(op);
     };
 
@@ -184,9 +185,9 @@ var JobsLevelComponent = new (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
-        if (!AuthManager.allowed(206)) return;
+        // if (!AuthManager.allowed(206)) return;
         cv_interact.confirm(
-            "Delete this job level?",
+            "delete_job_level?",
             {
                 title: "Delete Job level",
                 context: "delete",
@@ -205,7 +206,7 @@ var JobsLevelComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Job level deleted successfully"
+                                    "delete_job_level_successfully"
                                 );
                                 mThis.JobLevelListView.showPage();
                             }
@@ -248,7 +249,7 @@ const JobLevelDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static", 
                 keyboard: true, 
                 createContent: () => {
@@ -262,7 +263,7 @@ const JobLevelDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number"  name="rank" class="form-control data-input" data-field="rank" />
+                                    <input type="number" name="rank" class="form-control data-input" data-field="rank" />
                                     <label vslang="titles.Rank"></label>
                                 </div>  
                             </div>
@@ -277,15 +278,15 @@ const JobLevelDialog = (() => {
                 },
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-secondary",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
+                        label:  '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const jl = me.getData();
 
@@ -306,11 +307,11 @@ const JobLevelDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated job level successfully');
+                                            cv_interact.success( 'update_job_level_successfully');
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added job level successfully');
+                                            cv_interact.success('create_job_level_successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -338,7 +339,6 @@ const JobLevelDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                 },
             });
 

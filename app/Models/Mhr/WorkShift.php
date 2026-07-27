@@ -18,7 +18,7 @@ class WorkShift extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $id = null, $ss = null)
+    function upsert($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -31,9 +31,11 @@ class WorkShift extends VSModel
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-
+        $err = self::checkDuplicateName($inputs['name'], $id, $branch_id);
+        if ($err) {
+            return DV::error($err);
+        }
         $id = DBX::saveData(
             $ss,
             'work_shifts',
@@ -47,6 +49,23 @@ class WorkShift extends VSModel
         }
 
         return DV::error('Error saving work shifts');
+    }
+    static function checkDuplicateName($name, $id, $branch_id)
+    {
+        $query = DB::table('work_shifts as ws')
+            ->where('ws.branch_id', $branch_id)
+            ->where('ws.name', $name);
+
+        if ($id) {
+            $query->where('ws.id', '<>', $id);
+        }
+
+        $test = $query->select('id')->first();
+        if ($test) {
+            return 'work_shift_exist';
+        }
+
+        return null;
     }
 
     function getWorkShiftListPaginate($arr, $ss)
@@ -77,7 +96,7 @@ class WorkShift extends VSModel
         $count = $clone_query->count('ws.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,[''],['updated_at'],[]);
+            $row = setOfficialDates($row,[''],['updated_at'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -89,24 +108,18 @@ public function delete($id = null, $ss = null)
     $workShiftExist = DB::table('work_shifts')
         ->where('id', $id)
         ->exists();
-
     if (!$workShiftExist) {
         return DV::error('Work Shift not found');
     }
-
-    // Check if any employee is using this work shift
     $employeeExist = DB::table('employees')
         ->where('work_shift_id', $id)
         ->exists();
-
     if ($employeeExist) {
-        return DV::error('Cannot delete this work shift because it is assigned to one or more employees.');
+        return DV::error('work_shift_is_assigned_to_employee');
     }
-
     $deleted = DB::table('work_shifts')
         ->where('id', $id)
         ->delete();
-
     return DV::depends($deleted, null, 'Error deleting work shift');
 }
     static function getDetails($id, $ss)

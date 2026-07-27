@@ -32,6 +32,7 @@
     var(--vs-page-title-bg-mid)   55%,
     var(--vs-page-title-bg-end)   100%
   );
+    /* background: linear-gradient(90deg, #4d3572 0%, #4d3572 55%, #e9eaea 100%); */
 
   animation: vs-title-enter 520ms ease-out both;
 }
