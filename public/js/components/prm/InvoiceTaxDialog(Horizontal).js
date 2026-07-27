@@ -1,4 +1,4 @@
-const InvoiceTaxDialogNew = (() => {
+const InvoiceTaxDialogHorizontal = (() => {
     const self = {};
 
     const currency = "$";
@@ -17,12 +17,9 @@ const InvoiceTaxDialogNew = (() => {
     const printViaIframe = (invoiceEl) => {
         const styleHTML = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
-        
         const fontLink = `
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>`;
-            
+            <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>`;
         const fullDoc = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -30,34 +27,20 @@ const InvoiceTaxDialogNew = (() => {
                     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
                     ${fontLink}${biLink}${styleHTML}
                     <style>
-                        *, *::before, *::after { 
-                            box-sizing: border-box; 
-                            margin: 0; 
-                            padding: 0; 
-                            font-family: 'Inter', sans-serif !important; 
-                        }
+                        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
                         body {
-                            font-family: 'Inter', sans-serif !important;
+                            font-family: 'DM Sans', sans-serif;
                             background: #fff;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
-                        @page { size: A4 portrait; margin: 1rem; }
+                        @page { size: A4 landscape; margin: 1rem; }
                         @media print {
-                            *, *::before, *::after { font-family: 'Inter', sans-serif !important; }
-                            body { background: #fff !important; margin: 0; padding: 1rem !important; font-family: 'Inter', sans-serif !important; }
-                            .pi-root { padding: 1rem !important; font-family: 'Inter', sans-serif !important; }
+                            body { background: #fff !important; margin: 8mm; }
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
-                            .pi-table { min-width: 100% !important; width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
-                            
-                            /* PRINT COLUMN WIDTH ADJUSTMENTS (5 COLUMNS TOTAL) */
-                            .pi-table th.col-desc, .pi-table td.col-desc { width: 48% !important; }
-                            .pi-table th.col-num, .pi-table td.col-num { width: 13% !important; }
-                            
-                            .pi-table th, .pi-table td { font-size: 11px !important; word-wrap: break-word !important; }
-                            .pi-avoid-break { page-break-inside: avoid; }
+                            .pi-table { min-width: unset !important; }
                         }
                     </style>
                     </head>
@@ -86,32 +69,40 @@ const InvoiceTaxDialogNew = (() => {
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
+        // Visibility Flags (Normalized values checking integer conversion status)
         const showPmtStatus  = setting.show_pmt_status;
         const showBalance     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
         const QR_file        = setting.QR_file;
-        const qr_file_name   = setting.qr_file_name;
+        const qr_file_name      = setting.qr_file_name;
         const showSign        = setting.show_sign;
 
         const companyLogo  = company.logo_url;
-        const email        = company.email ;
-        const address      = company.address ;
-        const phone        = company.phone_number ;  
+        const email    = company.email ;
+        const address    = company.address ;
+        const phone    = company.phone_number ;  
         const companyName  = company.name ;  
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
 
-        let discDisplay = `<span style="color:#9CA3AF;font-size:11px;">—</span>`;
+        let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
         if (totalDiscount > 0) {
-            discDisplay = `<span style="color:#DC2626;font-size:11px;font-weight:600;">
+            discDisplay = `<span style="color:#DC2626;font-size:12px;font-weight:600;">
                 ${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''}
             </span>`;
         }
+        const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
         const statusColor = balance <= 0 ? "#059669" : (paid > 0 ? "#D97706" : "#DC2626");
         const statusLabel = balance <= 0 ? "PAID"    : (paid > 0 ? "PARTIALLY PAID" : "UNPAID");
         const statusBg    = balance <= 0 ? "#ECFDF5" : (paid > 0 ? "#FFFBEB" : "#FEF2F2");
+
+        const typeConfig = {
+            rent:    { bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
+            utility: { bg: "#FFF7ED", fg: "#C2410C", dot: "#F97316" },
+            service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
+        };
 
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
@@ -125,44 +116,45 @@ const InvoiceTaxDialogNew = (() => {
             const tax   = parseFloat(item.tax_rate || 0);
 
             const itemDiscType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
+            const rawType = (item.type || "service").toLowerCase();
+            const cfg = typeConfig[rawType] || typeConfig.service;
 
-            let itemDiscDisplay = `<span style="color:#9CA3AF;font-size:11px;">—</span>`;
+            let itemDiscDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
             if (disc > 0) {
                 const isAmount = (itemDiscType === "amount" || itemDiscType === "$");
                 const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
-                itemDiscDisplay = `<span style="color:#EF4444;font-size:11px;font-weight:500;">${displayValue}</span>`;
+                itemDiscDisplay = `<span style="color:#EF4444;font-size:12px;font-weight:500;">${displayValue}</span>`;
             }
 
             const rowBg = i % 2 !== 0 ? '#FAFBFF' : '#FFFFFF';
-            const unitTypeStr = item.unit_type ? item.unit_type.trim() : '';
 
             return `
-            <tr style="background:${rowBg};vertical-align:middle;">
-                <td class="col-desc" style="width:48%;padding:10px 8px;text-align:left;border-bottom:1px solid #E5E7EB;font-size:11px;color:#374151;word-break:break-word;">
-                    <div style="font-weight:600;color:#111827;font-size:11px;">${item.remarks || item.item_name || "—"}</div>
-                    <div style="font-size:10px;color:#6B7280;margin-top:2px;">
-                        Period: ${formatDate(item.start_date)} – ${formatDate(item.end_date)} (${qty} ${unitTypeStr})
-                    </div>
+            <tr style="background:${rowBg};transition:background 0.15s;">
+                <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
+                        ${item.remarks || item.item_name || item.description || "—"}
                 </td>
-                <td class="col-num" style="width:13%;padding:10px 8px;text-align:right;color:#374151;font-size:11px;border-bottom:1px solid #EEF0F5;word-break:break-word;">${currency}${fmt(price)}</td>
-                <td class="col-num" style="width:13%;padding:10px 8px;text-align:right;font-size:11px;border-bottom:1px solid #EEF0F5;word-break:break-word;">${itemDiscDisplay}</td>
-                <td class="col-num" style="width:13%;padding:10px 8px;text-align:right;color:#374151;font-size:11px;border-bottom:1px solid #EEF0F5;word-break:break-word;">${tax > 0 ? `${fmt(tax)}%` : "—"}</td>
-                <td class="col-num" style="width:13%;padding:10px 8px;text-align:right;font-weight:700;color:#1A3D91;font-size:11px;border-bottom:1px solid #EEF0F5;word-break:break-word;">${currency}${fmt(total)}</td>
+                <td style="padding:11px 10px;text-align:center;color:#4B5563;font-size:12px;border-bottom:1px solid #EEF0F5;">${qty} ${item.unit_type ? item.unit_type.trim() : ''}</td>
+                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.start_date)}</td>
+                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.end_date)}</td>
+                <td style="padding:11px 14px;text-align:right;color:#374151;font-size:12px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(price)}</td>
+                <td style="padding:11px 14px;text-align:right;border-bottom:1px solid #EEF0F5;">${itemDiscDisplay}</td>
+                <td style="padding:11px 14px;text-align:right;border-bottom:1px solid #EEF0F5;">${tax > 0 ? `${fmt(tax)}%` : "—"}</td>
+                <td style="padding:11px 14px;text-align:right;font-weight:700;color:#1A3D91;font-size:13px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(total)}</td>
             </tr>`;
         }).join("");
 
         return `
                 <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
                     .pi-root {
-                        font-family: 'Inter', sans-serif !important;
+                        font-family: 'DM Sans', 'Segoe UI', sans-serif;
                         color: #1f2937;
                         background: #fff;
                         max-width: 100%;
                     }
                     .pi-action-bar button {
                         cursor: pointer;
-                        font-family: 'Inter', sans-serif !important;
+                        font-family: 'DM Sans', sans-serif;
                         font-size: 13px;
                         font-weight: 500;
                         letter-spacing: 0.3px;
@@ -176,13 +168,10 @@ const InvoiceTaxDialogNew = (() => {
                     .pi-table {
                         width: 100%;
                         border-collapse: collapse;
-                        min-width: 100%;
-                        table-layout: fixed;
+                        min-width: 900px;
                     }
-                    .pi-table th.col-desc { width: 48%; }
-                    .pi-table th.col-num { width: 13%; }
                     .pi-table thead th {
-                        padding: 10px 8px;
+                        padding: 11px 14px;
                         font-size: 10px;
                         font-weight: 700;
                         letter-spacing: 1px;
@@ -190,30 +179,36 @@ const InvoiceTaxDialogNew = (() => {
                         color: #6B7280;
                         background: #F8FAFF;
                         border-bottom: 2px solid #E5E9F5;
-                        word-break: break-word;
                     }
                     .pi-table tbody tr:hover { background: #F0F4FF !important; }
                     .pi-totals-row td {
-                        padding: 12px 14px;
-                        font-size: 11px;
+                        padding: 13px 16px;
+                        font-size: 13px;
                         border-top: 1px solid #E5E9F5;
                     }
                 </style>
 
                 <div class="pi-root" id="pi-invoice-content">
 
-                    <div class="pi-avoid-break" style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+                    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
                         <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
                         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
+
+                        <!-- ✅ INVOICE text absolutely centered -->
+                        <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;">
+                            <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;white-space:nowrap;">
+                                INVOICE
+                            </div>
+                        </div>
 
                         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
                             <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
                                 <img src="${companyLogo}" alt="Logo"
                                     style="width:60px;height:63px;object-fit:contain;"
-                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,sans-serif;\'>M</span>'">
+                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,serif;\'>M</span>'">
                             </div>
                             <div>
-                                <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
+                                <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
                                         ${email}
@@ -229,7 +224,8 @@ const InvoiceTaxDialogNew = (() => {
                         </div>
 
                         <div style="text-align:right;position:relative;">
-                            <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.7px;line-height:1.1;">INVOICE</div>
+                            <!-- INVOICE text removed from here -->
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
                             <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
                             
                             ${showPmtStatus ? `
@@ -240,29 +236,18 @@ const InvoiceTaxDialogNew = (() => {
                         </div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 1rem; background: #F8FAFF; border-bottom: 1px solid #E2E8F0;">
-                        <div>
-                            <div class="section-label" style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
-                                Billed To
-                            </div>
-                            <div style="font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 2px;">
-                                ${invoice.tenant_name || "—"}
-                            </div>
-                            <div style="font-size: 12px; color: #475569; line-height: 1.5;">
-                                ${invoice.space_code   ? `<div>Space: <strong>${invoice.space_code}</strong></div>` : ''}
-                                ${invoice.tenant_email ? `<div>${invoice.tenant_email}</div>` : ''}
-                                ${invoice.tenant_phone ? `<div>${invoice.tenant_phone}</div>` : ''}
-                            </div>
+                    <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;flex-wrap:wrap;">
+                        <div style="padding:18px 24px;flex:1;min-width:200px;">
+                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px;">Bill To</div>
+                            <div style="font-size:17px;font-weight:700;color:#111827;line-height:1.2;">${invoice.tenant_name || "—"}</div>
+                            ${invoice.space_code   ? `<div style="margin-top:5px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-building" style="color:#1A3D91;font-size:10px;"></i> Space: <strong style="color:#374151;">${invoice.space_code}</strong></div>` : ""}
+                            ${invoice.tenant_email ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-envelope" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_email}</div>` : ""}
+                            ${invoice.tenant_phone ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-telephone" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_phone}</div>` : ""}
                         </div>
 
-                        <div style="text-align: right;">
-                            <div class="section-label" style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
-                                Important Dates
-                            </div>
-                            <div style="font-size: 12px; color: #475569; line-height: 1.6;">
-                                <div>Issue Date: <strong>${formatDate(invoice.issue_date)}</strong></div>
-                                <div>Due Date: <strong style="color: #DC2626;">${formatDate(invoice.due_date)}</strong></div>
-                            </div>
+                        <div style="padding:18px 24px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:160px;text-align:right;">
+                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
+                            <div style=" font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
                         </div>
                     </div>
 
@@ -270,87 +255,102 @@ const InvoiceTaxDialogNew = (() => {
                         <table class="pi-table">
                             <thead>
                                 <tr>
-                                    <th class="col-desc" style="text-align:left;">Description</th>
-                                    <th class="col-num" style="text-align:right;">Unit Price</th>
-                                    <th class="col-num" style="text-align:right;">Discount</th>
-                                    <th class="col-num" style="text-align:right;">Tax</th>
-                                    <th class="col-num" style="text-align:right;">Total</th>
+                                    <th style="text-align:left;">Description</th>
+                                    <th style="text-align:center;">Qty</th>
+                                    <th style="text-align:center;">Start Date</th>
+                                    <th style="text-align:center;">End Date</th>
+                                    <th style="text-align:right;">Unit Price</th>
+                                    <th style="text-align:right;">Discount</th>
+                                    <th style="text-align:right;">Tax</th>
+                                    <th style="text-align:right;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${itemRows || `<tr><td colspan="5" style="text-align:center;padding:48px;color:#9CA3AF;font-size:11px;">No items found</td></tr>`}
+                                ${itemRows || `<tr><td colspan="8" style="text-align:center;padding:48px;color:#9CA3AF;font-size:13px;">No items found</td></tr>`}
                             </tbody>
                         </table>
                     </div>
 
-                     <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 1rem; gap: 24px;">
-                    <div>
-                        ${qr_file_name != null && QR_file ? `
-                        <div style="width: 100px; height: 100px; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px; background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <img src="${QR_file}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;" />
-                        </div>` : ''}
-                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:24px 0px;gap:16px;">
 
-                    <div style="width: 320px; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; background: #FFFFFF;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr class="pi-totals-row">
-                                <td style="padding: 1rem; color: #4B5563;">Sub Total</td>
-                                <td style="padding: 1rem; text-align: right; font-weight: 600; color: #111827;">${currency}${fmt(subTotal)}</td>
-                            </tr>
-                            <tr class="pi-totals-row">
-                                <td style="padding: 1rem; color: #DC2626;">Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}</td>
-                                <td style="padding: 1rem; text-align: right; font-weight: 600; color: #DC2626;">-${currency}${fmt(totalDiscount)}</td>
-                            </tr>
-                            <tr class="pi-totals-row" style="background: #F8FAFF; border-top: 2px solid #E2E8F0;">
-                                <td style="padding: 1rem; font-weight: 700; color: #0F172A;">Net Total</td>
-                                <td style="padding: 1rem; text-align: right; font-weight: 800; color: #0F172A; font-size: 15px;">${currency}${fmt(netTotal)}</td>
-                            </tr>
-                            ${showAmountPaid ? `
-                            <tr class="pi-totals-row">
-                                <td style="padding: 1rem; color: #16A34A; font-weight: 600;">Amount Paid</td>
-                                <td style="padding: 1rem; text-align: right; font-weight: 700; color: #16A34A;">${currency}${fmt(paid)}</td>
-                            </tr>` : ''}
-                            ${showBalance ? `
-                            <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                <td style="padding: 1rem; color:#fff; font-weight: 700;">Balance Due</td>
-                                <td style="padding: 1rem; text-align: right; font-weight: 800; color: #FDE68A; font-size: 15px;">${currency}${fmt(balance)}</td>
-                            </tr>` : ''}
-                        </table>
+                        ${qr_file_name != null && QR_file
+                            ? `<div style="width:100px;height:100px;border:1px solid #E5E9F5;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03);flex-shrink:0;">
+                                    <img src="${QR_file}" alt="QR Code" style="width:100px;height:100px;object-fit:contain;" />
+                            </div>`
+                            : ''
+                        }
+
+                        <div style="flex:1;"></div>
+
+                        <div style="width:340px;flex-shrink:0;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#666;">Sub Total</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
+                                </tr>
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#DC2626;">
+                                        Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                                    </td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                                        ${currency}${fmt(subTotal - netTotal)}
+                                    </td>
+                                </tr>
+                                <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                                    <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
+                                </tr>
+                                ${showAmountPaid ? `
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
+                                </tr>
+                                ` : ''}
+                                ${showBalance ? `
+                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
+                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
+                                </tr>
+                                ` : ''}
+                            </table>
+                        </div>
+
                     </div>
-                </div>
 
                     ${invoice.general_remark ? `
-                    <div class="pi-avoid-break" style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+                    <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
                         <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
-                        <div style="font-size:11px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
+                        <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                     </div>` : ""}
 
                     ${showSign ? `
-                    <div class="pi-avoid-break" style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
-                        <div style="flex:1;text-align:center;">
-                            <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
-                            <div style="border-bottom:1px dashed #E5E9F5;"></div>
-                        </div>
-                        <div style="flex:1;text-align:center;">
-                            <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
-                            <div style="border-bottom:1px dashed #E5E9F5;"></div>
-                        </div>
-                    </div>
-                    ` : ''}
+                                <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                            </div>
+                            ` : ''}
 
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 1rem; background: #F8FAFF; border-top: 1px solid #E2E8F0; border-radius: 0 0 8px 8px; margin-top: 1rem;">
+                  
+
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                         <div>
-                            <div class="section-label" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1E3A8A; margin-bottom: 4px;">Terms & Conditions</div>
-                            <div style="font-size: 11px; color: #64748B; line-height: 1.5;">
+                            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
+                            <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">
                                 1. This invoice is for the monthly office rental fee.<br>
                                 2. Payment is due by 05th every month.<br>
                                 3. Late payments may incur 2% per day as outlined in the lease agreement.<br>
                                 4. The security deposit is held separately and will only be refunded after lease termination.
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 10px; color: #94A3B8;">Generated by Property Manager</div>
-                            <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 2px;">${formatDate(invoice.issue_date)}</div>
+                        <div style="text-align:right;">
+                            <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
+                            <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;"> ${formatDate(invoice.issue_date)}</div>
                         </div>
                     </div>
 
@@ -383,7 +383,7 @@ const InvoiceTaxDialogNew = (() => {
         if (!op || !op.invoice_id) {
             cv_interact?.error("Invoice ID is missing");
             return;
-        }
+    }
 
         const dlg = new GeneralDialog({
             title: "Tax Invoice",
@@ -399,9 +399,12 @@ const InvoiceTaxDialogNew = (() => {
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
                 </div>`,
             contentCreated: (me) => {
+                // console.log(121212,op);
+                
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 
+                // CRITICAL FIX: Wire the action elements right after appending HTML to the DOM
                 wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]

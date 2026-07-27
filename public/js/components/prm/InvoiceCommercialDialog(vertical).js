@@ -1,4 +1,4 @@
-const InvoiceCommercialDialogNew = (() => {
+const InvoiceCommercialDialogVertical = (() => {
     const self = {};
 
     const currency = "$";
@@ -211,7 +211,7 @@ const InvoiceCommercialDialogNew = (() => {
                         </div>
 
                         <div style="text-align:right;position:relative;z-index:2;">
-                             <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.7px;line-height:1.1;">INVOICE</div>
+                             <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.7px;line-height:1.1;">COMMERCIAL INVOICE</div>
                             <div class="invoice-num" style="font-size:15px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
                             
                             ${showPmtStatus ? `
