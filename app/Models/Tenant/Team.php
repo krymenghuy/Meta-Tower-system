@@ -327,11 +327,19 @@ class Team
         $requested_status = isset($d->status_id) ? (int) $d->status_id : null;
 
         if ($requested_status === 3) {
+            // Respect explicit Inactive choice if set
             $inputs['status_id'] = 3;
         } elseif (!empty($inputs['start_date'])) {
             $startDt = new \DateTime($inputs['start_date']);
             $today = new \DateTime('today');
-            $inputs['status_id'] = ($startDt > $today) ? 1 : 2;
+
+            // If start_date is not today (e.g. in the future), set status to Pending (1).
+            // If start_date is today (or already reached/passed), set status to Active (2).
+            if ($startDt > $today) {
+                $inputs['status_id'] = 1; // Pending
+            } else {
+                $inputs['status_id'] = 2; // Active
+            }
         } else {
             $inputs['status_id'] = $requested_status ?? 1;
         }

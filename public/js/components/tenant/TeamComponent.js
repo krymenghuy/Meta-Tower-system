@@ -96,22 +96,30 @@ var TeamComponent = new (function() {
             transTitle: "titles.Status",
             className: "align-middle text-center",
             data: data => {
-                // Both color and label keyed off status_id (1=Pending,
-                // 2=Active, 3=Inactive) rather than the label text — the
-                // status text returned by the API has been observed to
-                // disagree with status_id, so the numeric id wins.
+                let statusId = Number(data.status_id);
+
+                // Fallback check: if status_id is not explicitly provided, calculate from start_date
+                if (!statusId && data.start_date) {
+                    const startDate = new Date(data.start_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    // If start_date is in the future (not today), set Pending (1), else Active (2)
+                    statusId = startDate > today ? 1 : 2;
+                }
+
                 const meta =
                     {
                         1: { label: "Pending", cls: "badge text-warning bg-warning-subtle border border-warning" },
                         2: { label: "Active", cls: "badge text-success bg-success-subtle border border-success" },
                         3: { label: "Inactive", cls: "badge text-danger bg-danger-subtle border border-danger" }
-                    }[Number(data.status_id)] ??
+                    }[statusId] ??
                     { label: data.status ?? "", cls: "badge text-warning bg-warning-subtle border border-warning" };
 
                 return `
                     <span class="${meta.cls} text-capitalize d-inline-block text-center"
                         style="min-width:70px"
-                        data-status_id="${data.status_id}">
+                        data-status_id="${statusId}">
                         ${meta.label}
                     </span>
                 `;
@@ -178,22 +186,21 @@ var TeamComponent = new (function() {
             mThis.listViewContainer.appendChild(placeholder);
         }
 
-        // Populate the member status filter — nothing populated this before,
-        // which is why selecting a status did nothing (there was nothing to select).
-        if (mThis.elStatus && !mThis.elStatus.dataset.populated) {
-            mThis.elStatus.innerHTML = `
-                <option value=""> All Statuses</option>
-                <option value="1">Pending</option>
-                <option value="2">Active</option>
-                <option value="3">Inactive</option>
-            `;
-            mThis.elStatus.dataset.populated = "1";
-        }
+        const statusOptions = [
+                    { id: 1, name: "Pending" },
+                    { id: 2, name: "Active" },
+                    { id: 3, name: "Inactive" }
+                ];
+          VSUtil.setComboItems(
+                    mThis.elStatus,
+                    statusOptions,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    ""
+                );
 
-        // Live filtering: reload the currently-selected team's member list
-        // whenever the search box or status filter changes. Before this,
-        // getFilterData() picked up the field values fine, but nothing ever
-        // called showPage() again when they changed.
         const reloadMemberList = () => {
             if (!mThis.staffListView || !mThis.currentTeamId) return;
             mThis.staffListView.showPage({
@@ -1388,8 +1395,8 @@ const CreateTeamMemberDialog = (() => {
                     }
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Create New Staff",
-                    modifyTitle: "vslang:titles.Modify Staff",
+                    createTitle: "vslang:titles.Create Member",
+                    modifyTitle: "vslang:titles.Modify Member",
                     targetProp: "member",
                     api: {
                         endpoint: [
