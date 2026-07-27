@@ -221,6 +221,7 @@ return [
 
 
 
+
     ],
     'api_body_keys' => [
         'name' => 'ឈ្មោះ',
@@ -1513,6 +1514,11 @@ return [
         'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
+
+        
+        'create_success_team' => 'បានបង្កើតក្រុមដោយជោគជ័យ។',
+        'update_success_team' => 'បានកែប្រែក្រុមដោយជោគជ័យ។',
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
@@ -1538,6 +1544,7 @@ return [
         'Benefit'=> 'អត្ថប្រយោជន៍',
         'Policy'=> 'គោលនយោបាយ',
         'Disbursed'=> 'បានបើកប្រាក់',
+
 
 
 

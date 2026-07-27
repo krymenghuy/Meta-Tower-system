@@ -1009,7 +1009,7 @@ const CreateTeamDialog = (() => {
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "create_success_team"
+                                                'create_success_team'
                                             );
                                         }
                                         

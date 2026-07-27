@@ -177,6 +177,8 @@ return [
         'select_department' => 'Please select a department.',
         'select_job_level' => 'Please select a job level.',
         'enter_code' => 'Please enter code.',
+        'create_success_team' => 'Team created successfully !.',
+        'update_success_team' => 'Team updated successfully !.',
 
 
 
