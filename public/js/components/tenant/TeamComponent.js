@@ -1102,7 +1102,7 @@ const CreateTeamMemberDialog = (() => {
                         </div>
                     </div>
 
-                    <div class="col-md-9 row align-content-between flex-wrap" > 
+                    <div class="col-md-9 row align-content-between flex-wrap g-2" > 
                             <div class="col-12 col-md-6 ">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
@@ -1141,6 +1141,12 @@ const CreateTeamMemberDialog = (() => {
                                     <label vslang="labels.Legal Name">Legal Name</label>
                                 </div>
                             </div>
+                            <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="position" class="data-input form-control" data-field="position" placeholder=" " />
+                                    <label vslang="labels.Position">Position</label>
+                                </div>
+                            </div>
                             <div class="col-12 col-md-6" >
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                             </div>
@@ -1148,12 +1154,7 @@ const CreateTeamMemberDialog = (() => {
                     
 
                    <div class="col-12 row g-2"> 
-                        <div class="col-12 col-md-12">
-                            <div class="vs-material-field">
-                                <input type="text" name="position" class="data-input form-control" data-field="position" placeholder=" " />
-                                <label vslang="labels.Position">Position</label>
-                            </div>
-                        </div>
+                        
 
                         <!-- Shown when Nationality is Khmer (ID: 14) -->
                         <div class="col-12 col-md-8 field-khmer-nid">
