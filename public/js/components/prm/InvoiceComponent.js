@@ -680,7 +680,59 @@ var InvoiceComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, menulink) => {
+    // mThis.printInvoice = (id, menulink) => {
+    //     if (!AuthManager.allowed(238, false)) return;
+
+    //     vsapi
+    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+    //         .then(res => {
+    //             if (res.status_code === 200) {
+    //                 const invoiceDetails = res.data?.invoice_details;
+    //                 const globalSetting = res.data?.invoice_setting || {};
+    //                 const companyProfile = res.data?.company_info || {};
+    //                 const invoiceSetting = invoiceDetails.settings;
+
+    //                 const invType = invoiceDetails?.invoice_type;
+
+    //                 // Initialize params object
+    //                 const params = {
+    //                     invoice_id: id,
+    //                     btn: menulink,
+    //                     invoice: invoiceDetails,
+    //                     global: globalSetting,
+    //                     company: companyProfile,
+    //                     setting: invoiceSetting
+    //                 };
+
+    //                 if (invoiceSetting.show_balance !== null) {
+    //                     params.setting = invoiceSetting;
+    //                 } else {
+    //                     params.setting = globalSetting;
+    //                 }
+    //                 if (invType === 1) {
+    //                     InvoiceTaxDialogHorizontal.show(params);
+    //                 }
+                    
+    //                 // else if (invType === 2 && mThis.internalInvoice) {
+    //                 //     InternalInvoiceNoTaxDialog.show(params);
+    //                 // }
+                    
+    //                 else if (invType === 2) {
+    //                     InvoiceNoTaxDialogHorizontal.show(params);
+    //                 } else if (invType === 3) {
+    //                     InvoiceCommercialDialogHorizontal.show(params);
+    //                 } else {
+    //                     cv_interact.error("Unknown invoice type variant.");
+    //                 }
+    //             } else {
+    //                 cv_interact.error(
+    //                     res.message || "Could not determine invoice type."
+    //                 );
+    //             }
+    //         });
+    // };
+
+        mThis.printInvoice = (id, menulink) => {
         if (!AuthManager.allowed(238, false)) return;
 
         vsapi
@@ -710,7 +762,7 @@ var InvoiceComponent = (() => {
                         params.setting = globalSetting;
                     }
                     if (invType === 1) {
-                        InvoiceTaxDialog.show(params);
+                        InvoiceTaxDialogVertical.show(params);
                     }
                     
                     // else if (invType === 2 && mThis.internalInvoice) {
@@ -718,9 +770,9 @@ var InvoiceComponent = (() => {
                     // }
                     
                     else if (invType === 2) {
-                        InvoiceNoTaxDialog.show(params);
+                        InvoiceNoTaxDialogVertical.show(params);
                     } else if (invType === 3) {
-                        InvoiceCommercialDialog.show(params);
+                        InvoiceCommercialDialogVertical.show(params);
                     } else {
                         cv_interact.error("Unknown invoice type variant.");
                     }
@@ -1291,7 +1343,7 @@ const InvoiceDialog = (() => {
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
                                 tax_rate: Number(data.tax_rate) || 0,
-                                unit_type: `monthly`
+                                unit_type: `month`
                             };
 
                             const existingIds = me.itemsView.rows
