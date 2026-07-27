@@ -84,7 +84,7 @@ class LeaveController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id;
-        $res = $this->leaves->updateStatus($req->status_id, $id,$ss);
+        $res = $this->leaves->updateStatus($req->status_id, $id, $ss, $req->all());
 
         return JDV::raw($res);
     }

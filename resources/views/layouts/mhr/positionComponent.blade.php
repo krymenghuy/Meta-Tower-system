@@ -10,8 +10,7 @@
             
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddPosition">
-                    <i class="fa-solid fa-cubes-stacked" style="color: rgb(255, 255, 255);"></i>
-                    <span vslang="buttons.Add Position"></span>
+                    <span vslang="buttons.Create Position"></span>
                 </button>
             </div>
         </div>

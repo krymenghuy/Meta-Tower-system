@@ -14,120 +14,102 @@ var UninformedLeaveComponent = (function () {
     mThis.divListView = mThis.self.querySelector('#_leave_uninformed_list');
 
     mThis.cols = [
-
-         {
+        {
             transTitle: "",
             className: "align-middle",
-            
         },
-        {
-            transTitle: "titles.Day",
-            className: 'align-middle text-capitalize',
-            data: (data, index, tr) => {
-                const employees = data.employees ?? [];
-            let rows = '';
-
-            const day = `<div class="d-flex align-items-center" style="min-width:205px; height:72px;"><span class="text-primary-custom">${data.day}</span></div>`;
-            employees.forEach(() => {
-                rows += day;
-            });
-
-                return rows;
-             }
-        },
-
         {
             transTitle: "titles.Staff Information",
-            className: "align-middle text-start",
-            data: (data, index, tr) => {
-                const employees = data.employees;
-                let rows = '';
-                rows = [rows,`<div class="row" style="background-color:; min-width:250px;" >`].join('');
-
-                if (Array.isArray(employees) && employees.length > 0) {
-                    employees.forEach((d,i) => {
-                        rows = [rows,`
-                        <div style="display: flex; align-items: center; height: 72px;">
-                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;">
-                                <img class="h-100" src="${d.image_url}" alt="" />
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; font-weight: bold;">${d.employee ?? ''}</span>
-                                <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${d.emp_code ?? ''}</span>
-                            </div>
+            className: "align-middle text-start text-nowrap",
+            data: (data) => {
+                return `
+                    <div class="d-flex align-items-center">
+                        <div class="overflow-hidden rounded-circle border bg-white me-2" style="width: 40px; height: 40px; flex-shrink: 0;">
+                            <img class="h-100 w-100 object-fit-cover" src="${data.image_url || '/images/default-avatar.png'}" alt="" />
                         </div>
-                        `].join('');
-
-                    });
-                }
-                rows = [rows,`</div>`].join('');
-
-                return rows;
-
+                        <div>
+                            <span class="fw-bold" style="font-size: 13px;">${data.employee ?? ''}</span>
+                            <br/>
+                            <span class="text-muted" style="font-size: 11px;">${data.emp_code ?? ''}</span>
+                        </div>
+                    </div>
+                `;
             }
         },
-
         {
-            transTitle: "titles.Attendance Scan Information",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const shifts = data.shifts,
-                employees = data.employees ?? [];
-                let shift_rows = '';
-                let rows = '';
-                rows = [rows,`<div class="d-flex gap-2 w-100" style="height: 72px;">`].join('');
-                if (Array.isArray(shifts) && shifts.length > 0) {
-                    shifts.forEach((shift,i) => {
-                        const actionClass = shift.action === "Check In" || shift.action === "CheckIn" ? "bg-green" : shift.action === "Check Out" || shift.action === "CheckOut" ? "bg-gold" : "";
-                        rows = [rows,`
-                        <div class="shift_card ${actionClass} " style="width:150px !important;">
-                            <div class="shift_element">
-                                <div class="shift_time">${shift.time}</div>
-                                <div class="shift_action">${shift.action}</div>
-                            </div>
-                            <div class="d-flex justify-content-start align-items-start">
-                                <div class="text-end gap-2 d-flex flex-wrap">
-                                </div>
-                            </div>
-                        </div>
-                        `].join('');
-                    });
-                }
-                else  {
-                    let rows = '';
-                    rows = [rows,`<div class="card p-4 bg-secondary no_shifts">No Shift</div>`].join('');
-                    shift_rows = [shift_rows,rows].join('');
-                }
-                rows = [rows,`</div>`].join('');
-                employees.forEach((d,i) => {
-                    shift_rows = [shift_rows,rows].join('');
-                });
-                // rows = [rows,`</div>`].join('');
-
-                return shift_rows;
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                // return `<div class="d-flex flex-column">
-                //             <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
-                //         </div>`;
+            transTitle: "titles.Position",
+            className: "align-middle text-start",
+            data: (data) => {
+                return `
+                    <div class="d-flex flex-column">
+                        <span class="fw-semibold">${data.position ?? '-'}</span>
+                        <small class="text-muted">${data.department ?? '-'}</small>
+                    </div>
+                `;
             }
         },
-
+        {
+            transTitle: "titles.Work Shift",
+            className: "align-middle text-start",
+            data: (data) => {
+                return `
+                    <div class="d-flex flex-column">
+                        <span>${data.work_shift ?? '-'}</span>
+                        <small class="text-muted">${data.work_shift_time ?? ''}</small>
+                    </div>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Absent Period",
+            className: "align-middle text-center",
+            data: (data) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${data.date_period ?? '-'}
+                    </span>
+                `;
+            }
+        },
         // {
-        //     className: 'col_action align-middle',
-        //     data: function (data, row, display) {
+        //     transTitle: "titles.Status",
+        //     className: "align-middle text-center",
+        //     data: (data) => {
+        //         const status = data.status ?? "Pending";
+        //         let badgeClass = "bg-warning-subtle text-warning border border-warning";
+        //         if (status === "Approved") {
+        //             badgeClass = "bg-success-subtle text-success border border-success";
+        //         } else if (status === "Rejected") {
+        //             badgeClass = "bg-danger-subtle text-danger border border-danger";
+        //         }
+        //         return `<span class="badge ${badgeClass} px-2.5 py-1.5" style="font-size: 75%; font-weight: 600; text-transform: uppercase;">${status}</span>`;
+        //     }
+        // },
+        {
+            transTitle: "titles.Remarks",
+            className: "align-middle text-start",
+            data: (data) => {
+                return `<span class="text-wrap">${data.resolution ?? '-'}</span>`;
+            }
+        },
+        // {
+        //     className: 'col_action align-middle text-center',
+        //     data: (data) => {
         //         return `
-        //            <div class="d-flex justify-content-center align-items-center">
-        //                 <div class="text-center gap-2 d-flex flex-wrap">
-        //                         <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-        //                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-        //                     </a>
-        //                 </div>
+        //             <div class="d-flex justify-content-center align-items-center">
+        //                 <a href="javascript:void(0)" class="btn_leave_action"   
+        //                    data-id="${data.id ?? ''}"   
+        //                    data-status_id="${data.status_id ?? ''}"
+        //                    data-emp_id="${data.emp_id ?? ''}"
+        //                    data-start_date="${data.start_date ?? ''}"
+        //                    data-end_date="${data.end_date ?? ''}">
+        //                     <i class="fa-solid fa-ellipsis-vertical text-dark fs-5"></i>
+        //                 </a>
         //             </div>
         //         `;
         //     }
         // },
-
     ];
 
     mThis.init = () => {
@@ -183,6 +165,15 @@ var UninformedLeaveComponent = (function () {
             }, 250);
         });
 
+        const elStartDate = mThis.divFilter.querySelector("[data-field='start_date']");
+        const elEndDate = mThis.divFilter.querySelector("[data-field='end_date']");
+        if (elStartDate && typeof DateTimePicker !== "undefined") {
+            DateTimePicker.init(elStartDate);
+        }
+        if (elEndDate && typeof DateTimePicker !== "undefined") {
+            DateTimePicker.init(elEndDate);
+        }
+
         mThis.initAlready = true;
     };
 
@@ -203,30 +194,23 @@ var UninformedLeaveComponent = (function () {
     };
 
     mThis.initDropdownMenus = (table)=>{
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
                 {
-                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
-
-                    cssClass:"border-bottom pb-2",
-                    name:"change_leave_request_status"
-                },
-                {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave Request">Modify Leave Request</span>',
+                    html:'<span class="ps-2  " vslang="titles.Modify Uninformed Leave">Modify Leave Request</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_leave_request"
+                    name:"edit_uninformed_leave"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave Request">Delete Leave Request</span>',
+                    html:'<span class="ps-2  " vslang="titles.Delete Uninformed Leave">Delete Leave Request</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"delete_leave_request"
+                    name:"delete_uninformed_leave"
                 },
             ],
             adjustPosition:{
@@ -234,19 +218,23 @@ var UninformedLeaveComponent = (function () {
                 left:-300
            },
 
-            onClick:(menuLink, id, name)=>{
+             onClick:(menuLink, id, name)=>{
                 switch(name){
 
-                    case 'change_leave_request_status':{
-                        mThis.changeStatus(id,menuLink);
-                        break;
-                    }
-                    case 'edit_leave_request':{
-                      mThis.editLeaveRequest(id, menuLink);
+                    case 'edit_uninformed_leave':{
+                    //   if (!id) {
+                    //       cv_interact.error("No leave request exists for this absence yet. Please approve/reject the status first.");
+                    //       break;
+                    //   }
+                      mThis.editUninformedLeave(id, menuLink);
                       break;
                     }
-                    case 'delete_leave_request':{
-                        mThis.deleteLeaveRequest(id, menuLink);
+                    case 'delete_uninformed_leave':{
+                        // if (!id) {
+                        //     cv_interact.error("No leave request exists for this absence yet.");
+                        //     break;
+                        // }
+                        mThis.deleteUninformedLeave(id, menuLink);
                         break;
                       }
 
@@ -256,16 +244,15 @@ var UninformedLeaveComponent = (function () {
                 }
             }
         }
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     }
 
     mThis.changeStatus = (id, lnk)=>{
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
-
-        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let status_id = Validator.properCase(lnk.dataset.status_id ?? "");
+        let emp_id = lnk.dataset.emp_id;
+        let start_date = lnk.dataset.start_date;
+        let end_date = lnk.dataset.end_date;
 
         let inputOptions = {
             title: 'Set Leave Request Status',
@@ -289,16 +276,16 @@ var UninformedLeaveComponent = (function () {
             if(d){
                 let p = {
                     id: id,
-                    status_id: d.value
+                    status_id: d.value,
+                    emp_id: emp_id,
+                    start_date: start_date,
+                    end_date: end_date
                 };
 
                 vsapi.call(`${mThis.base_url}/mhr/leave/update-status`,p).then(res => {
                     if(res.status_code === 200){
-                        // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
-                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
                         cv_interact.success('The leave request status has been updated');
-                        // if(tr) tr.dataset.statuscode = d.value;
                         mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                     }
                     else
@@ -308,7 +295,7 @@ var UninformedLeaveComponent = (function () {
         });
     }
 
-    mThis.editLeaveRequest = (id, menuLink) => {
+    mThis.editUninformedLeave = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -321,7 +308,7 @@ var UninformedLeaveComponent = (function () {
         LeaveRequestDialog.show(op);
     }
 
-    mThis.deleteLeaveRequest = (id, menuLink) => {
+    mThis.deleteUninformedLeave = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
@@ -372,5 +359,4 @@ var UninformedLeaveComponent = (function () {
     };
     return mThis;
 })();
-
 
