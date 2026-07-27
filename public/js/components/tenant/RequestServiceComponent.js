@@ -81,7 +81,7 @@ var RequestServiceComponent = (function() {
 
         const unitType = String(data?.unit_type ?? "").toLowerCase();
         const unit = unitMap[unitType] || unitType || "-";
-        const price = parseFloat(data?.service_price ?? data?.price ?? 0);
+        const price = parseFloat(data?.total_price ?? data?.price ?? 0);
         const formattedPrice =
             price > 0
                 ? VSMoney.formatAmount(price, data?.currency_code ?? "USD")
@@ -648,13 +648,16 @@ const CreateServiceRequestDialog = (() => {
 
         const durationRow = me.divModal.querySelector(".select-type-time");
         const previewRow = me.divModal.querySelector("#price-preview-row");
-        const unitWrapper = me.divModal.querySelector(".unit-type-wrapper");
+        const scheduleCols = me.divModal.querySelectorAll(".unit-schedule-col");
 
-        if (unitWrapper) {
-            unitWrapper.classList.remove("col-md-3", "col-md-6");
-            unitWrapper.classList.add(showDuration ? "col-md-3" : "col-md-6");
-        }
+        // Toggle Duration container display
         if (durationRow) durationRow.style.display = showDuration ? "" : "none";
+
+        // Adjust column sizes dynamically (3 columns @ col-md-4 VS 2 columns @ col-md-6)
+        scheduleCols.forEach(col => {
+            col.classList.remove("col-md-4", "col-md-6");
+            col.classList.add(showDuration ? "col-md-4" : "col-md-6");
+        });
 
         if (!showDuration) {
             if (me.controls.duration_hours)
@@ -678,53 +681,6 @@ const CreateServiceRequestDialog = (() => {
             if (previewRow) previewRow.style.display = "none";
         }
     };
-
-    // const _populateCategoryAndService = (me, services,restoreValues = null,) => {
-    //     const categoryMap = {};
-    //     services.forEach((s) => {
-    //         const cid = s.category_id;
-    //         const cname = s.service_category ?? "";
-    //         if (cid && !categoryMap[cid])
-    //             categoryMap[cid] = { id: cid, name: cname };
-    //     });
-    //     const categories = Object.values(categoryMap);
-
-    //     VSUtil.setComboItems(
-    //         me.controls.category_id,
-    //         categories,
-    //         "id",
-    //         "name",
-    //         "",
-    //         "Select Category",
-    //     );
-
-    //     if (restoreValues?.category_id) {
-    //         me.controls.category_id.value = String(restoreValues.category_id);
-    //     }
-
-    //     const activeCategoryId = me.controls.category_id.value;
-    //     const filtered = activeCategoryId
-    //         ? services.filter((s) => String(s.category_id) === activeCategoryId)
-    //         : services;
-
-    //     VSUtil.setComboItems(
-    //         me.controls.service_id,
-    //         filtered,
-    //         "id",
-    //         "service_name",
-    //         "",
-    //         "Select Service",
-    //     );
-
-    //     if (restoreValues?.service_id) {
-    //         me.controls.service_id.value = String(restoreValues.service_id);
-
-    //         const svc = services.find(
-    //             (s) => String(s.id) === String(restoreValues.service_id),
-    //         );
-    //         if (svc) me.servicePrice = parseFloat(svc.price) || 0;
-    //     }
-    // };
 
     const _populateCategoryAndService = (
         me,
@@ -786,27 +742,28 @@ const CreateServiceRequestDialog = (() => {
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
-                        <div class="col-12 col-md-4">
+                        <div class="col-md-6">
                             <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="${LocaleManager.trans(
                                 "Unit",
                                 "titles"
                             )}"></select>
                         </div>
-                        <div class="col-12 col-md-4">
+                        <div class="col-md-6">
                             <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="${LocaleManager.trans(
                                 "Service Category",
                                 "labels"
                             )}"></select>
                         </div>
-                        <div class="col-12 col-md-4">
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
                             <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="${LocaleManager.trans(
                                 "Service",
                                 "titles"
                             )}"></select>
                         </div>
-                    </div>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-3 unit-type-wrapper">
+                        <div class="col-md-6">
                             <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="${LocaleManager.trans(
                                 "Charge As",
                                 "titles"
@@ -829,49 +786,53 @@ const CreateServiceRequestDialog = (() => {
                                 )}</option>
                             </select>
                         </div>
-                        <div class="col-md-3 select-type-time" style="display:none;">
+                    </div>
+
+                    <!-- Scheduling Row: Flexibly toggles between 2 and 3 columns -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4 select-type-time unit-schedule-col" style="display:none;">
                             <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                 <option value="">${LocaleManager.trans(
                                     "Select Duration",
                                     "labels"
                                 )}</option>
-                                    <option value="0.5">${LocaleManager.trans(
-                                        "30 minutes",
-                                        "labels"
-                                    )}</option>
-                                    <option value="1.0">${LocaleManager.trans(
-                                        "1 hour",
-                                        "labels"
-                                    )}</option>
-                                    <option value="1.5">${LocaleManager.trans(
-                                        "1.5 hours",
-                                        "labels"
-                                    )}</option>
-                                    <option value="2.0">${LocaleManager.trans(
-                                        "2 hours",
-                                        "labels"
-                                    )}</option>
-                                    <option value="2.5">${LocaleManager.trans(
-                                        "2.5 hours",
-                                        "labels"
-                                    )}</option>
-                                    <option value="3.0">${LocaleManager.trans(
-                                        "3 hours",
-                                        "labels"
-                                    )}</option>
-                                    <option value="4.0">${LocaleManager.trans(
-                                        "4 hours",
-                                        "labels"
-                                    )}</option>
+                                <option value="0.5">${LocaleManager.trans(
+                                    "30 minutes",
+                                    "labels"
+                                )}</option>
+                                <option value="1.0">${LocaleManager.trans(
+                                    "1 hour",
+                                    "labels"
+                                )}</option>
+                                <option value="1.5">${LocaleManager.trans(
+                                    "1.5 hours",
+                                    "labels"
+                                )}</option>
+                                <option value="2.0">${LocaleManager.trans(
+                                    "2 hours",
+                                    "labels"
+                                )}</option>
+                                <option value="2.5">${LocaleManager.trans(
+                                    "2.5 hours",
+                                    "labels"
+                                )}</option>
+                                <option value="3.0">${LocaleManager.trans(
+                                    "3 hours",
+                                    "labels"
+                                )}</option>
+                                <option value="4.0">${LocaleManager.trans(
+                                    "4 hours",
+                                    "labels"
+                                )}</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6 unit-schedule-col">
                             <div class="vs-material-field">
                                 <input data-type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" required />
                                 <label vslang="labels.Scheduled Date"></label>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6 unit-schedule-col">
                             <div class="vs-material-field">
                                 <input type="time" name="start_time" class="form-control data-input" data-field="start_time" placeholder=" " />
                                 <label vslang="labels.Start Time">Start Time</label>
@@ -915,7 +876,6 @@ const CreateServiceRequestDialog = (() => {
             `,
 
             contentCreated: me => {
-                // service change → auto-set unit_type & price
                 me.controls.service_id?.addEventListener("change", () => {
                     const svc = (me._availableServices || []).find(
                         s => String(s.id) === me.controls.service_id.value
@@ -964,8 +924,6 @@ const CreateServiceRequestDialog = (() => {
                     _updatePricePreview(me);
                 });
 
-                // me.controls.service_id.value = "";
-
                 const spaces = d.building_spaces || [];
                 VSUtil.setComboItems(
                     me.controls.space_id,
@@ -977,8 +935,6 @@ const CreateServiceRequestDialog = (() => {
                 );
 
                 me._availableServices = d.services || [];
-                console.log("First service object:", me._availableServices[0]);
-
                 _populateCategoryAndService(me, me._availableServices);
 
                 const detail = d.request_details || null;
@@ -1013,7 +969,6 @@ const CreateServiceRequestDialog = (() => {
                         );
                     }
 
-                    // Restore remarks
                     if (me.controls.remarks && detail.remarks) {
                         me.controls.remarks.value = detail.remarks;
                     }
@@ -1078,3 +1033,4 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
+
