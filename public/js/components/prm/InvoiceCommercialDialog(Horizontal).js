@@ -1,4 +1,4 @@
-const InvoiceNoTaxDialog = (() => {
+const InvoiceCommercialDialogHorizontal = (() => {
     const self = {};
 
     const currency = "$";
@@ -17,13 +17,9 @@ const InvoiceNoTaxDialog = (() => {
     const printViaIframe = (invoiceEl) => {
         const styleHTML = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
-        
-        // Ensure all required weights (400 to 800) are requested
         const fontLink = `
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
-        
         const fullDoc = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -35,31 +31,16 @@ const InvoiceNoTaxDialog = (() => {
                         body {
                             font-family: 'Inter', sans-serif;
                             background: #fff;
-                            color: #111;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
                         @page { size: A4 landscape; margin: 1rem; }
-                        
-                        /* Strict Print Styles to enforce font weights */
                         @media print {
-                            body { 
-                                background: #fff !important; 
-                                margin: 8mm; 
-                                font-family: 'Inter', sans-serif !important;
-                                -webkit-font-smoothing: antialiased;
-                                -moz-osx-font-smoothing: grayscale;
-                            }
+                            body { background: #fff !important; margin: 8mm;}
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
                             .pi-table { min-width: unset !important; }
-                            
-                            /* Enforce crisp rendering for bold elements on paper */
-                            strong, b, [style*="font-weight:600"], [style*="font-weight:700"], [style*="font-weight:800"] {
-                                -webkit-print-color-adjust: exact !important;
-                                print-color-adjust: exact !important;
-                            }
                         }
                     </style>
                     </head>
@@ -71,53 +52,37 @@ const InvoiceNoTaxDialog = (() => {
         document.body.appendChild(iframe);
         const iDoc = iframe.contentWindow.document;
         iDoc.open(); iDoc.write(fullDoc); iDoc.close();
-        
         iframe.onload = () => {
-            // Use an explicit check for the font loading API to avoid premature printing
-            if (iframe.contentWindow.document.fonts) {
-                iframe.contentWindow.document.fonts.ready.then(() => {
-                    setTimeout(() => {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                        setTimeout(() => document.body.removeChild(iframe), 2000);
-                    }, 400);
-                });
-            } else {
-                // Fallback if document.fonts isn't supported by the client browser
-                setTimeout(() => {
-                    iframe.contentWindow.focus();
-                    iframe.contentWindow.print();
-                    setTimeout(() => document.body.removeChild(iframe), 2000);
-                }, 800);
-            }
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                setTimeout(() => document.body.removeChild(iframe), 2000);
+            }, 400);
         };
     };
 
-    const buildInvoiceHTML = (invoice, setting,company) => {
-        console.log(4,setting);
-        
+    const buildInvoiceHTML = (invoice, setting, company) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
-        // Visibility Settings mapped from settings
         const showPmtStatus  = setting.show_pmt_status;
-        const showBalance    = setting.show_balance;
+        const showBalance     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
+        const showCommTax    = setting.show_comm_tax;
         const QR_file        = setting.QR_file;
         const qr_file_name      = setting.qr_file_name;
         const showSign        = setting.show_sign;
 
-
-        const companyLogo  = company.logo_url;
         const companyContactPersion = company.first_cp_name;
         const companyContactEmail = company.first_cp_email;
         const companyContactPhone = company.first_cp_phone;
         const companyAddress = company.address;
+        const companyLogo  = company.logo_url;
 
-        const discType     = (invoice.discount_type || "percent").toLowerCase();
+        const discType = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
         let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
         if (totalDiscount > 0) {
@@ -130,51 +95,36 @@ const InvoiceNoTaxDialog = (() => {
         const statusColor = balance <= 0 ? "#166534" : (paid > 0 ? "#92400E" : "#991B1B");
         const statusBg    = balance <= 0 ? "#DCFCE7" : (paid > 0 ? "#FEF3C7" : "#FEE2E2");
 
-        const typeConfig = {
-            rent:    { bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
-            utility: { bg: "#FFF7ED", fg: "#C2410C", dot: "#F97316" },
-            service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
-        };
-              
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
         );
-        
+
         const itemRows = validItems.map((item, i) => {
-            const qty   = parseFloat(item.qty   || 1);
-            const price = parseFloat(item.price || 0);
-            const total = parseFloat(item.total || (qty * price));
-            const disc  = parseFloat(item.discount || item.special_discount_value || 0);
-
-            const itemDiscType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-            const rawType = (item.type || "service").toLowerCase();
-            const cfg = typeConfig[rawType] || typeConfig.service;
-
-            let itemDiscDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
-            if (disc > 0) {
-                const isAmount = (itemDiscType === "amount" || itemDiscType === "$");
-                const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
-                itemDiscDisplay = `<span style="color:#DC2626;font-size:12px;font-weight:600;">${displayValue}</span>`;
-            }
-
-            const rowBg = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
+            const rowBg         = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
+            const itemTotal     = parseFloat(item.total    || 0);
+            const qty           = parseFloat(item.qty || 0);
 
             return `
             <tr style="background:${rowBg};">
                 <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
-                    ${item.remarks || item.item_name  || "—"}
+                    ${item.remarks || item.item_name || "—"}
                 </td>
                 <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${qty} ${item.unit_type ? item.unit_type.trim() : " "}</td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.start_date)}</td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.end_date)}</td>
-                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:12px;color:#333;">${currency}${fmt(price)}</td>
-                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;">${itemDiscDisplay}</td>
-                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:13px;font-weight:700;color:#111;">${currency}${fmt(total)}</td>
+                <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
+                    ${formatDate(item.start_date)}
+                </td>
+                <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
+                    ${formatDate(item.end_date)}
+                </td>
+                <td style="padding:12px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:13px;font-weight:700;color:#111;">
+                    ${currency}${fmt(itemTotal)}
+                </td>
             </tr>`;
         }).join("");
 
         return `
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
                 .pi-root {
                     font-family: 'Inter', 'Segoe UI', sans-serif;
                     background: #fff;
@@ -193,7 +143,7 @@ const InvoiceNoTaxDialog = (() => {
                 .pi-table {
                     width: 100%;
                     border-collapse: collapse;
-                    min-width: 820px;
+                    min-width: 700px;
                 }
                 .pi-table thead th {
                     padding: 10px 24px;
@@ -206,14 +156,13 @@ const InvoiceNoTaxDialog = (() => {
                     border-bottom: 2px solid #E5E9F5;
                     font-family: 'Inter', sans-serif;
                 }
-                .pi-table thead th:first-child { text-align: left; }
+                /* FIX: Cleaned up typo and grouped standard item alignments */
+                .pi-table thead th:nth-child(1) { text-align: left; }
                 .pi-table thead th:nth-child(2),
                 .pi-table thead th:nth-child(3),
-                .pi-table thead th:nth-child(4),
-                .pi-table thead th:nth-child(5) { text-align: center; }
-                .pi-table thead th:nth-child(6),
-                .pi-table thead th:nth-child(7),
-                .pi-table thead th:nth-child(8) { text-align: right; }
+                .pi-table thead th:nth-child(4) { text-align: center; }
+                .pi-table thead th:nth-child(5) { text-align: right; }
+                
                 .pi-table tbody tr:hover { background: #F0F4FF !important; }
                 .pi-totals-row td {
                     padding: 10px 16px;
@@ -223,52 +172,24 @@ const InvoiceNoTaxDialog = (() => {
                 }
             </style>
 
-            <!--<div class="pi-root" id="pi-invoice-content">
-
-                <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
-                    <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="display:flex;flex-direction:column;gap:2px;">
-                            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
-                            <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${companyContactPersion}
-                            </div>
-                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${companyContactPhone}
-                            </div>
-                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${companyAddress}
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                        <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
-                        <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
-                        
-                        <div style="display:${showPmtStatus ? 'block' : 'none'}; padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
-                            ${statusLabel}
-                        </div>
-                    </div>
-                </div> -->
-
                 <div class="pi-root" id="pi-invoice-content">
 
-                    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+                   <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
                         <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
                         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
 
-                        <!-- ✅ Centered title overlay -->
                         <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;">
                             <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;white-space:nowrap;">
-                                INVOICE
+                                Commercial Invoice
                             </div>
                         </div>
 
                         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
-                            <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-                                <img src="${companyLogo}" alt="Logo"
-                                    style="width:60px;height:63px;object-fit:contain;"
-                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,serif;\'>M</span>'">
-                            </div>
+                                <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                                    <img src="${companyLogo}" alt="Logo"
+                                        style="width:60px;height:63px;object-fit:contain;"
+                                        onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,serif;\'>M</span>'">
+                                </div>
                             <div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
@@ -299,9 +220,10 @@ const InvoiceNoTaxDialog = (() => {
                         </div>
                     </div>
 
+
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
                     <div>
-                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Customer</div>
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Billed to</div>
                         <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;font-family:'Inter',sans-serif;">${invoice.tenant_name || "—"}</div>
                         ${invoice.space_code   ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">Space: ${invoice.space_code}</div>` : ""}
                         ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
@@ -317,17 +239,15 @@ const InvoiceNoTaxDialog = (() => {
                     <table class="pi-table">
                         <thead>
                             <tr>
-                                <th style="text-align:left;"> ${LocaleManager.trans('Description', 'titles')}</th>
-                                <th style="text-align:center;">${LocaleManager.trans('Qty', 'titles')}</th>
-                                <th style="text-align:center;">${LocaleManager.trans('Start Date', 'titles')}</th>
-                                <th style="text-align:center;">${LocaleManager.trans('End Date', 'titles')}</th>
-                                <th style="text-align:right;">${LocaleManager.trans('Unit Price', 'titles')}</th>
-                                <th style="text-align:right;">${LocaleManager.trans('Discount', 'titles')}</th>
-                                <th style="text-align:right;">${LocaleManager.trans('Total', 'titles')}</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemRows || `<tr><td colspan="7" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
+                            ${itemRows || `<tr><td colspan="5" style="text-align:center;padding:48px;color:#9CA3AF;">No items found</td></tr>`}
                         </tbody>
                     </table>
                 </div>
@@ -384,19 +304,18 @@ const InvoiceNoTaxDialog = (() => {
                     <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                 </div>` : ""}
 
-
-                ${showSign ? `
-                            <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
-                            <div style="flex:1;text-align:center;">
-                                <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
-                                <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                 ${showSign ? `
+                              <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
                             </div>
-                            <div style="flex:1;text-align:center;">
-                                <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
-                                <div style="border-bottom:1px dashed #E5E9F5;"></div>
-                            </div>
-                        </div>
-                        ` : ''}
+                            ` : ''}
 
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                     <div>
@@ -413,6 +332,7 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;"> ${formatDate(invoice.issue_date)}</div>
                     </div>
                 </div>
+
                 <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0px;border-top:1px solid #EBEBEB;background:#fff;">
                     <button id="pi-print-btn"
                         style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
@@ -436,21 +356,23 @@ const InvoiceNoTaxDialog = (() => {
     };
 
     self.show = (op) => {
-        console.log(333, op);
         if (!op || !op.invoice_id) {
             cv_interact?.error("Invoice ID is missing");
             return;
         }
 
+        console.log(111,op);
+        
+
         const dlg = new GeneralDialog({
-            title: LocaleManager.trans('No Tax Invoice', 'titles'),
-            cssClass: "modal-xl vs-modal",
+            title: "Commercial Invoice",
+            cssClass: "modal-xl vs-modal ",
             backdrop: "static",
             keyboard: true,
             createContent: () => `
                 <div name="pi_container" style="min-height:280px;border-radius:8px;overflow:hidden;">
                     <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;font-family:'Inter',sans-serif;">
-                        <div style="width:28px;height:28px;border:3px solid #E5E5E5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                        <div style="width:28px;height:28px;border:3px solid #E5E9F5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
                         Loading invoice…
                     </div>
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
@@ -458,9 +380,11 @@ const InvoiceNoTaxDialog = (() => {
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
+                
+                // FIX: Wire up the button action listeners here so print/download clicks execute!
                 wireButtons(container);
             },
-            buttons: [{ label: '<span vslang="buttons.Close"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide() }]
+            buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });
         dlg.show(op);
     };

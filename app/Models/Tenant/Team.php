@@ -327,11 +327,19 @@ class Team
         $requested_status = isset($d->status_id) ? (int) $d->status_id : null;
 
         if ($requested_status === 3) {
+            // Respect explicit Inactive choice if set
             $inputs['status_id'] = 3;
         } elseif (!empty($inputs['start_date'])) {
             $startDt = new \DateTime($inputs['start_date']);
             $today = new \DateTime('today');
-            $inputs['status_id'] = ($startDt > $today) ? 1 : 2;
+
+            // If start_date is not today (e.g. in the future), set status to Pending (1).
+            // If start_date is today (or already reached/passed), set status to Active (2).
+            if ($startDt > $today) {
+                $inputs['status_id'] = 1; // Pending
+            } else {
+                $inputs['status_id'] = 2; // Active
+            }
         } else {
             $inputs['status_id'] = $requested_status ?? 1;
         }
@@ -357,26 +365,41 @@ class Team
         }
 
         // Photo Storage
-        // if ($delete_prev_image) {
-        //     $file_name = DB::table('team_member')
-        //         ->where('id', $saved_id)
-        //         ->value('photo_file_name');
-        //     if ($file_name) {
-        //         XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
-        //     }
-        //     DB::table('team_member')->where('id', $saved_id)->update(['photo_file_name' => null]);
-        // }
+        if ($delete_prev_image) {
+            $file_name = DB::table('team_member')
+                ->where('id', $saved_id)
+                ->value('photo_file_name');
+            if ($file_name) {
+                XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+            }
+            DB::table('team_member')->where('id', $saved_id)->update(['photo_file_name' => null]);
+        }
 
-        // XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $saved_id, 'store' => 'team_member.photo_file_name']);
+        if ($photo) {
+            XPublicStorage::saveImage(
+                ['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 
+                null, 
+                $photo, 
+                null, 
+                ['id' => $saved_id, 'store' => 'team_member.photo_file_name']
+            );
+        }
+
+        // Retrieve current image URL for response
+        $image_url = self::profilePicture($saved_id, $ss);
+        $inputs['image_url'] = $image_url;
 
         $count_munber = DB::table('team_member as tm')
-            ->where('team_id', $inputs['team_id'])
-            ->count();
+                ->where('team_id', $inputs['team_id'])
+                ->count();
 
-
-        return DV::depends(1, ['team_member' => $inputs, 'id' => $saved_id, 'count_number' => $count_munber]);
+            return DV::depends(1, [
+                'team_member'  => $inputs, 
+                'id'           => $saved_id, 
+                'image_url'    => $image_url,
+                'count_number' => $count_munber
+            ]);
     }
-
 
     public function autoActivatePendingMembers()
     {
@@ -448,6 +471,9 @@ class Team
             $row->image_url = '';
             if ($row->photo_file_name) {
                 $row->image_url = self::profilePicture($row->id, $ss);
+                if ($row->image_url && !empty($row->updated_at)) {
+                    $row->image_url .= '?t=' . strtotime($row->updated_at);
+                }
             }
             unset($row->photo_file_name);
             $row = setOfficialDates($row, ['date_of_birth', 'start_date', 'end_date'], ['updated_at'], []);
@@ -511,11 +537,14 @@ class Team
         $row = DB::table('team_member as s')
             ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
             ->where('s.id', $id)
-            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,s.position,$date_of_birth,$nid_issue_date,$start_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
+            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,s.position,$date_of_birth,$nid_issue_date,$start_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address,s.updated_at")
             ->first();
 
         if ($row) {
             $img = self::profilePicture($id, $ss);
+            if ($img && !empty($row->updated_at)) {
+                $img .= '?t=' . strtotime($row->updated_at);
+            }
             $row->image_url = $img;
             $row->photo = $img;
         }
@@ -561,6 +590,10 @@ class Team
         if ($res->status === 'Error') return $res;
 
         $img = self::profilePicture($id, $ss);
+        $updated_at = DB::table('team_member')->where('id', $id)->value('updated_at');
+        if ($img && $updated_at) {
+            $img .= '?t=' . strtotime($updated_at);
+        }
         return DV::depends(1, ['image_url' => $img]);
     }
 

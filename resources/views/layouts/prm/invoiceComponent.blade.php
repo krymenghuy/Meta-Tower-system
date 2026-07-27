@@ -28,10 +28,14 @@
     <div id="_invoices_list" class="table-responsive bg-white mt-3 border rounded-2"></div>
 </div>
 
-<script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>
-<script src="{{ asset('js/components/prm/InvoiceNoTaxDialog.js') }}"></script>
-<script src="{{ asset('js/components/prm/InvoiceCommercialDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceTaxDialog(Horizontal).js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceNoTaxDialog(Horizontal).js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceCommercialDialog(Horizontal).js') }}"></script>
 <script src="{{ asset('js/components/prm/InternalInvoiceNoTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceNoTaxDialog(vertical).js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceTaxDialog(vertical).js') }}"></script>
+<script src="{{asset('js/components/prm/InvoiceCommercialDialog(vertical).js')}}"></script>
+
 
 <style>
 .status-overdue {
