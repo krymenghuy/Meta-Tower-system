@@ -14,17 +14,19 @@ class GeneralSettings //extends Model
 {
     //use HasFactory;
     public static $email_chars = ['@', '-', '.', '_'],
-    $remark_chars = [':', '-', '.', '?', '$', '\'', '@'],
-    $time_chars = [':', '-'],
-    $address_chars = ['.', '#'],
-    $mime_type_chars = ['.', '-'],
-    $image_chars = ['+', ':', ',', ';', '=', '/', '\\', '?'],
-    $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%', '-', '.', '_', '#'];
+        $remark_chars = [':', '-', '.', '?', '$', '\'', '@'],
+        $time_chars = [':', '-'],
+        $address_chars = ['.', '#'],
+        $mime_type_chars = ['.', '-'],
+        $image_chars = ['+', ':', ',', ';', '=', '/', '\\', '?'],
+        $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%', '-', '.', '_', '#'];
 
     public static $upload_dirs = [
         "package" => "package", //Package's photos directory
-        "default" => "default",/** default user's photo '*/
-        "mobile-slides" => "mobile-slides",/** Mobile App banner photo files '*/
+        "default" => "default",
+        /** default user's photo '*/
+        "mobile-slides" => "mobile-slides",
+        /** Mobile App banner photo files '*/
         "partner" => "partner",
         "driver" => "driver",
         "lead" => "lead",
@@ -119,12 +121,13 @@ class GeneralSettings //extends Model
     // static function options_service_types($ss){
     //     return DB:: table('service_types')->selectRaw('id,name,code')->get();
     // }
-    static function options_pmt_status($ss=null){
-       return [
-        (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
-        (object)['id'=>0,'pmt_status'=>'Unpaid','status'=>'Unpaid'],
-        (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
-       ];
+    static function options_pmt_status($ss = null)
+    {
+        return [
+            (object)['id' => -1, 'pmt_status' => '(All)', 'status' => '(All)'],
+            (object)['id' => 0, 'pmt_status' => 'Unpaid', 'status' => 'Unpaid'],
+            (object)['id' => 1, 'pmt_status' => 'Paid', 'status' => 'Paid']
+        ];
     }
 
     static function options_calendar_month($ss = null)
@@ -270,14 +273,12 @@ class GeneralSettings //extends Model
                 'nationality' => $row->nationality,
                 'id' => $row->id
             ];
-
         }
         return $new_row;
     }
     static function loc_options_city($ss)
     {
         return DB::table('loc_cities')->selectRaw('id as birth_city_id,name as city_name')->orderByRaw('name ASC')->get();
-
     }
 
     static function options_branch($ss)
@@ -319,7 +320,6 @@ class GeneralSettings //extends Model
     static function options_recommender($ss)
     {
         return DB::table('members')->selectRaw('id,name AS recommender')->get();
-
     }
     static function options_contract_status($ss)
     {
@@ -333,13 +333,14 @@ class GeneralSettings //extends Model
             ->join('contracts as c', 'c.tenant_id', '=', 't.id')
             ->where('t.status_id', '=', 2)
             // ->where('t.branch_id', '=', $ss->branch_id)
-            ->select('t.id', 't.name as tenant','t.phone_number', 'c.id as contract_id')
+            ->select('t.id', 't.name as tenant', 't.phone_number', 'c.id as contract_id')
             ->distinct()  // In case tenant has multiple active contracts
             ->orderBy('t.name')
             ->get();
     }
 
-    static function options_document_type($ss){
+    static function options_document_type($ss)
+    {
         return DB::table('document_types')->selectRaw('id,name as document_type')->get();
     }
 
@@ -352,38 +353,38 @@ class GeneralSettings //extends Model
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
     static function options_amenity($ss)
-{
-    return DB::table('amenities')
-        ->where('status_id',1)
-        // ->where('requires_booking',1)
-        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
-        ->orderBy('name')
-        ->get();
-}
+    {
+        return DB::table('amenities')
+            ->where('status_id', 1)
+            // ->where('requires_booking',1)
+            ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
+            ->orderBy('name')
+            ->get();
+    }
 
-static function options_maintenance_amenity($ss)
-{
-    return DB::table('amenities')
-        ->where('status_id',1)
-        ->selectRaw('id, building_id, name AS amenity, code as amenity_code, max_capacity,category_id')
-        ->orderBy('name')
-        ->get();
-}
+    static function options_maintenance_amenity($ss)
+    {
+        return DB::table('amenities')
+            ->where('status_id', 1)
+            ->selectRaw('id, building_id, name AS amenity, code as amenity_code, max_capacity,category_id')
+            ->orderBy('name')
+            ->get();
+    }
 
-// static function options_amenity($ss, $requires_booking_only = true)
-// {
-//     $query = DB::table('amenities')
-//         ->where('status_id', 1);
+    // static function options_amenity($ss, $requires_booking_only = true)
+    // {
+    //     $query = DB::table('amenities')
+    //         ->where('status_id', 1);
 
-//     if ($requires_booking_only) {
-//         $query->where('requires_booking', 1);
-//     }
+    //     if ($requires_booking_only) {
+    //         $query->where('requires_booking', 1);
+    //     }
 
-//     return $query
-//         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
-//         ->orderBy('name')
-//         ->get();
-// }
+    //     return $query
+    //         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
+    //         ->orderBy('name')
+    //         ->get();
+    // }
 
     static function options_reservation_status($ss)
     {
@@ -448,12 +449,10 @@ static function options_maintenance_amenity($ss)
     static function options_building($ss)
     {
         return DB::table('buildings')->selectRaw('id,name AS building,prefix')->get();
-
     }
     static function options_floor($ss)
     {
         return DB::table('floors')->selectRaw('id,name')->get();
-
     }
     static function options_tenant($ss)
     {
@@ -467,27 +466,28 @@ static function options_maintenance_amenity($ss)
     static function options_service($ss)
     {
         return DB::table('services')
-        ->selectRaw('id,name AS service, price, charge_as, type_id')
-        ->get();
+            ->selectRaw('id,name AS service, price, charge_as, type_id')
+            ->get();
     }
 
 
     static function options_service_types($ss)
     {
         return DB::table('service_types')
-        ->selectRaw('id,name as service_type')
-        ->get();
+            ->selectRaw('id,name as service_type')
+            ->get();
     }
-      static function options_service_categories($ss)
+    static function options_service_categories($ss)
     {
         return DB::table('service_categories')
-        ->selectRaw('id,name as service_category')
-        ->get();
+            ->selectRaw('id,name as service_category')
+            ->get();
     }
 
 
 
-    static function options_service_type_request($ss){
+    static function options_service_type_request($ss)
+    {
         return DB::table('service_types')
             ->selectRaw('id, name as service_type')
             // ->whereIn('id', [1,4])
@@ -496,10 +496,11 @@ static function options_maintenance_amenity($ss)
             ->get();
     }
     static function options_bank($ss)
-        {
-            return DB::table('banks')->selectRaw('id,name')->get();
-        }
-    static function options_service_request_type($category_id = null){
+    {
+        return DB::table('banks')->selectRaw('id,name')->get();
+    }
+    static function options_service_request_type($category_id = null)
+    {
         $category_id = $category_id ?? -1;
         $str_where = '1=1';
         if ($category_id > 0) {
@@ -508,8 +509,8 @@ static function options_maintenance_amenity($ss)
         $rows = DB::table('services as s')
             ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->whereRaw($str_where)
-            ->where('s.type_id',1)
-            ->where('s.status_id',1)
+            ->where('s.type_id', 1)
+            ->where('s.status_id', 1)
             ->selectRaw('s.id, s.name as service_name, s.category_id, s.price, s.charge_as, sc.name as service_category')
             ->orderBy('sc.name')
             ->orderBy('s.name')
@@ -594,12 +595,12 @@ static function options_maintenance_amenity($ss)
         return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
 
-     static function options_receipt_status($ss)
+    static function options_receipt_status($ss)
     {
         return DB::table('receipt_statuses')->selectRaw('id,name')->get();
     }
 
-     static function options_vendor_types($ss)
+    static function options_vendor_types($ss)
     {
         return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
     }
@@ -646,13 +647,13 @@ static function options_maintenance_amenity($ss)
         if ($building_id > 0) {
             $str_where = 'bf.building_id = ' . $building_id;
             $rows = DB::table(table: 'building_floors as bf')
-            ->join('floors as f', 'f.id', '=', 'bf.floor_id')
-            ->join('buildings as b', 'b.id', '=', 'bf.building_id')
-            ->whereRaw($str_where)
-            ->selectRaw('bf.floor_id as id,f.name')->get();
-        }else{
+                ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+                ->join('buildings as b', 'b.id', '=', 'bf.building_id')
+                ->whereRaw($str_where)
+                ->selectRaw('bf.floor_id as id,f.name')->get();
+        } else {
             $rows = DB::table(table: 'floors as f')
-            ->selectRaw('f.id,f.name')->get();
+                ->selectRaw('f.id,f.name')->get();
         }
 
         return $rows;
@@ -689,7 +690,7 @@ static function options_maintenance_amenity($ss)
             ->selectRaw('id, name AS vendor, phone_number')
             ->get();
     }
-     static function options_po_status($ss)
+    static function options_po_status($ss)
     {
         return DB::table('purchase_order_statuses')->selectRaw('id,name')->whereIn('id', [1, 3, 4, 5, 7])->get();
     }
@@ -703,7 +704,7 @@ static function options_maintenance_amenity($ss)
     {
         return DB::table('expense_statuses')->selectRaw('id,name as expense_status')->get();
     }
-   public static function options_period($ss)
+    public static function options_period($ss)
     {
         $months = [];
 
@@ -720,20 +721,23 @@ static function options_maintenance_amenity($ss)
 
         return $months;
     }
-    static function options_position($ss) {
+    static function options_position($ss)
+    {
         $q = DB::table('positions')
             ->selectRaw('id, name as position_name');
 
         return $q->get();
     }
-    static function options_work_shift($ss){
+    static function options_work_shift($ss)
+    {
         $q = DB::table('work_shifts')
             ->where('subs_id', hex2bin($ss->subs_id))
             ->selectRaw('id, name');
 
         return $q->get();
     }
-    static function options_payroll($ss){
+    static function options_payroll($ss)
+    {
         return DB::table('payrolls')->selectRaw('id,name AS payroll_name,month,year')->get();
     }
     static function options_employee($emp_status_ids, $ss)

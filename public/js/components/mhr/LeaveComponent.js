@@ -566,13 +566,17 @@ const LeaveRequestDialog = (()=>{
                             const p = me.getData();
 
                             p.id = me.dataOptions.id;
+                            const payload = {
+                                ...p,
+                                status_id: me.dataOptions.id ? p.status_id : 1
+                            }
 
                             vsapi
                                 .call(
                                     [main_view.base_url, "/mhr/leave/save"].join(
                                         ""
                                     ),
-                                    p,
+                                    payload,
                                     btn,
                                     null
                                 )
