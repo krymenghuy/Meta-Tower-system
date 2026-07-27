@@ -99,7 +99,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
     Route::post('/save', [LeaveController::class, 'saveLeave']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
-    Route::post('/uninformed', [LeaveController::class, 'getLeaveUninformList']);
+    Route::post('/uninformed', [LeaveController::class, 'getLeaveUninformedList']);
     Route::post('/details', [LeaveController::class, 'getDetails']);
     Route::post('/delete', [LeaveController::class, 'delete']);
     Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
