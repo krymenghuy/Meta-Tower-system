@@ -484,7 +484,7 @@ return [
         'delete_department?' => 'Delete this department?',
         'delete_department_success' => 'Department deleted successfully.',
         'update_department_success' => 'Department updated successfully',
-        'create_success_department' => 'Department created successfully.',
+        'create_department_success' => 'Department created successfully.',
 
         'attendance_create_successfully' => 'Attendance created successfully.',
         'attendance_update_successfully' => 'Attendance updated successfully.',

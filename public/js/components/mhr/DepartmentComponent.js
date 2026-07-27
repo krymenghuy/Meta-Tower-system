@@ -12,16 +12,10 @@ var DepartmentComponent = new (function () {
     // mThis.elStatus = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_department");
     mThis.cols = [
-        {
-            title: "",
-            className: "align-middle",
-            // data: (data, index, i) => {
-
-            // },
-        },
+    
         {
             transTitle: "titles.No",
-            className: "align-middle text-capitalize text-left",
+            className: "align-middle text-capitalize",
             data: (data, index) =>
                 `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
@@ -29,40 +23,34 @@ var DepartmentComponent = new (function () {
             `,
         },
         {
-            transTitle: "titles.Department",
-            className: "align-middle text-capitalize p-3  text-left",
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
             data: (data) => `
-                <span class="text-primary-custom">${data.name}</span>`,
+                <span class="text-primary-custom">${data.name ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Shortcut",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: (data) =>
-                `<span class="text-warning ">${data.shortcut}</span>`,
+                `<span class="text-prm-custom">${data.shortcut ?? '_'}</span>`,
         },
         {
-            transTitle: "titles.Update By",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span class="text-primary-custom" style="font-size: 12px;">${
-                    data.update_user ?? ""
-                }</span>
-            </div>`,
+            transTitle: "titles.Description",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data) =>
+                `<span class="text-prm-custom">${data.description ?? '_'}</span>`,
         },
-        
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: 'align-middle text-nowrap',
             data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span class="text-primary-custom" style="font-size: 12px;">${
-                    data.updated_at ?? ""
-                }</span>
-            </div>`,
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
         },
-
         {
+            transTitle: "titles.Action",
             className: 'col_action align-middle',
             data: function (data, row, display) {
                 return `
@@ -83,7 +71,7 @@ var DepartmentComponent = new (function () {
 
         mThis.DepartmentListView = new ListView("_dep_list", {
             fetchApi: `${main_view.base_url}/mhr/department/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -154,13 +142,13 @@ var DepartmentComponent = new (function () {
 
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Department"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_department",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Department"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_department",
@@ -194,7 +182,7 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(216)) return;
+        // if (!AuthManager.allowed(216)) return;
         DepartmentDialog.show(op);
     };
 
@@ -217,11 +205,11 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(218)) return;
+        // if (!AuthManager.allowed(218)) return;
         cv_interact.confirm(
-            "delete_department?",
+            "confirm_delete",
             {
-                title: "Delete Department",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -281,10 +269,10 @@ const DepartmentDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3">
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input id="dep_name" type="text" data-type="text" name="department" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label for="dep_name" vslang="labels.Department"></label>
+                                <label for="dep_name" vslang="labels.Name"></label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -294,7 +282,7 @@ const DepartmentDialog = (() => {
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-md-12">
                             <div class="vs-material-field">
                                 <textarea id="dep_description" name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
                                 <label for="dep_description" vslang="labels.Description"></label>
@@ -315,20 +303,18 @@ const DepartmentDialog = (() => {
             // ],
             buttons: [
                 {
-                    label: '<span class="text-warning" vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-default",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
-                        //Close with Cancel button
                         me.hide(false);
                     },
                 },
                 {
-                    label: "<span vslang='buttons.Save'></span>",
-                    cssClass: "btn btn-primary",
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
-
-                        p.id = me.dataOptions.id; //get "id" from op
+                        p.id = me.dataOptions.id;
 
                         vsapi
                             .call(
@@ -358,7 +344,7 @@ const DepartmentDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "vslang:titles.Add Department",
+                createTitle: "vslang:titles.Create Department",
                 modifyTitle: "vslang:titles.Modify Department",
                 targetProp: "departments",
                 api: {
@@ -373,7 +359,6 @@ const DepartmentDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
             },
         });
 
