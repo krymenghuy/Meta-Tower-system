@@ -1625,6 +1625,11 @@ return [
 
         'update_success_team' => 'Team updated successfully.',
 
+
+        
+        'create_success_team' => 'បានបង្កើតក្រុមដោយជោគជ័យ។',
+        'update_success_team' => 'បានកែប្រែក្រុមដោយជោគជ័យ។',
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",

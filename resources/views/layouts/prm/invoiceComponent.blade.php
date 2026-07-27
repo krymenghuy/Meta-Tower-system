@@ -32,6 +32,10 @@
 <script src="{{ asset('js/components/prm/InvoiceNoTaxDialog.js') }}"></script>
 <script src="{{ asset('js/components/prm/InvoiceCommercialDialog.js') }}"></script>
 <script src="{{ asset('js/components/prm/InternalInvoiceNoTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceNoTaxDialogNew.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceTaxDialogNew.js') }}"></script>
+<script src="{{asset('js/components/prm/InvoiceCommercialDialogNew.js')}}"></script>
+
 
 <style>
 .status-overdue {
