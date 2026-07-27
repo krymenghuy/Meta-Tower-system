@@ -5,28 +5,32 @@ var EmployeeManagementComponent = (function () {
     mThis.title_prop = "Employee";
     mThis.defaultPage = 'employee_list';
 
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_employee_management_component",
-    );
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_employee_management_component");
+
+    mThis.elEmployeeStatus = mThis.self.querySelector("#_emp_status_id");
+    mThis.elEmployeeType = mThis.self.querySelector("#_emp_type_id");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddEmployee");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_employee");
-    mThis.elEmpType = mThis.self.querySelector("#_emp_type_id");
-    mThis.elStatus = mThis.self.querySelector("#_emp_status_id");
-    mThis.elSearch = mThis.self.querySelector("#_search_employee");
-    mThis.divListContainer = mThis.self.querySelector("#_employee_list_container");
-    mThis.divProfileView = mThis.self.querySelector("#_emp_profile_view");
-    mThis.divlistView = mThis.self.querySelector("#_employee_list");
-    mThis.paginationContainer = mThis.self.querySelector("#container_pagination");
+    mThis.btnBack = mThis.self.querySelector("#_btn_back_employee");
+    mThis.btnPrintCV = mThis.self.querySelector("#_btn_print_employee_cv");
+    mThis.btnEditProfile = mThis.self.querySelector("#_btn_edit_employee_profile");
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
-    mThis.btnBack = mThis.divProfileView.querySelector("#_btn_back_employee");
-    mThis.btnPrintCv = mThis.divProfileView.querySelector("#_btn_print_employee_cv");
-    mThis.btnEditProfile = mThis.divProfileView.querySelector("#_btn_edit_employee_profile");
-    mThis.profileInfoEmployee = mThis.divProfileView.querySelector("#profile_info_employee");
-    mThis.profileCardsEmployee = mThis.divProfileView.querySelector("#profile_cards_employee");
+    mThis.elSearch = mThis.self.querySelector("#_search_employee");
+    mThis.divEmployeeListContainer = mThis.self.querySelector("#_employee_list_container");
+    mThis.divProfileView = mThis.self.querySelector("#_emp_profile_view");
+
     mThis.pages = {
-        employee_list: mThis.divListContainer,
+        employee_list: mThis.divEmployeeListContainer,
         profile_view: mThis.divProfileView,
     };
+
+    mThis.profile_info_emp = mThis.divProfileView.querySelector("#profile_info_employee");
+    mThis.profile_cards_emp = mThis.divProfileView.querySelector("#profile_cards_employee");
+
+    mThis.divlistView = mThis.self.querySelector("#_employee_list");
+    mThis.paginationContainer = mThis.self.querySelector("#container_pagination");
+    mThis.employee_id = null;
+    mThis.store_filter = {};
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -41,12 +45,12 @@ var EmployeeManagementComponent = (function () {
             },
             listContainerClass: null,
         });
-         mThis.btnAdd.onclick = function (e) {
+
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
             const op = {
                 id: null,
-                // branch_id: mThis.el_branch.value,
                 btn: e.target,
                 onClose: () => {
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
@@ -56,45 +60,63 @@ var EmployeeManagementComponent = (function () {
             EmployeeDialog.show(op);
         };
 
-        mThis.pr_tbl = mThis.EmployeeListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 280 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 280 + "px";
-        };
-
-        mThis.tblEmployee = mThis.EmployeeListView.getTable();
-
-        mThis.elSearch.addEventListener("keyup", (e) => {
-            e.preventDefault();
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.EmployeeListView.showPage(mThis.getFilterData());
-            }, 250);
-        });
-
-        mThis.div_filter_fields.addEventListener("change", (e) => {
-            if (e.target.classList.contains("filter-field")) {
-                e.preventDefault();
-                mThis.EmployeeListView.showPage(mThis.getFilterData());
-            }
-        });
-
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             mThis.showPage("employee_list", mThis.getFilterData());
         };
 
+        mThis.btnPrintCV.onclick = function (e) {
+            e.preventDefault();
+            cv_interact.info(
+                LocaleManager.trans("Print CV feature is coming soon.", "message_box_default"),
+            );
+        };
+
+        mThis.btnEditProfile.onclick = function (e) {
+            e.preventDefault();
+            if (!mThis.employee_id) return;
+            mThis.editEmployee(mThis.employee_id, e.target);
+        };
+
+        mThis.div_filter_fields
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.EmployeeListView.showPage(mThis.getFilterData());
+                };
+            });
+
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+            }, 250);
+        };
+
+        mThis.listContainer = mThis.EmployeeListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 220 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+
+        window.onresize = () => {
+            sh_parent.style.height = window.innerHeight - 220 + "px";
+        };
+
+        mThis.setActionsProfileInfo(mThis.profile_info_emp);
         mThis.initAlready = true;
     };
-      mThis.getFilterData = () => {
-        const p = {"search_value":mThis.elSearch.value};
-        const elements =  mThis.div_filter_fields.querySelectorAll(".filter-field");
+
+    mThis.getFilterData = () => {
+        const p = { search_value: mThis.elSearch.value };
+        const elements = mThis.div_filter_fields.querySelectorAll(".filter-field");
         elements.forEach((el) => {
-                const f = el.dataset.field;
-                p[f] = el.value;
-            });
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
 
         return p;
     };
@@ -297,10 +319,12 @@ var EmployeeManagementComponent = (function () {
         container.innerHTML = html;
         LocaleManager.translateZone(container);
 
-        container.querySelectorAll(".see-employee-detail").forEach((link) => {
+        const seeProfileInfo = container.querySelectorAll(".see-employee-detail");
+        seeProfileInfo.forEach((link) => {
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const employeeId = e.currentTarget.dataset.id;
+                mThis.employee_id = employeeId;
                 mThis.showPage("profile_view", { id: employeeId });
             });
         });
@@ -329,9 +353,10 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis.renderProfile = (data) => {
-        if (!mThis.profileInfoEmployee || !data) return;
+        if (!mThis.profile_info_emp || !data) return;
 
         mThis.currentEmployeeProfile = data;
+        mThis.employee_id = data.id;
 
         const defaultPhoto = `${main_view.base_url}/assets/images/default/default-staff.png`;
         const hasPhoto = !!data.image_url;
@@ -435,20 +460,20 @@ var EmployeeManagementComponent = (function () {
                             </h5>
                             <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <div class="d-inline-flex align-items-center gap-2">
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement" title="Movement" aria-label="Movement">
+                        <div class="d-inline-flex align-items-center gap-2 group_action_movement">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement movement d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Movement" aria-label="Movement">
                                 <i class="fa-solid fa-right-left"></i>
                             </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement-detail d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_movement_detail" title="Detail Movement" aria-label="Detail Movement">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement-detail movement_detail d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Detail Movement" aria-label="Detail Movement">
                                 <i class="fa-solid fa-clock-rotate-left"></i>
                             </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_resign" title="Set Resign" aria-label="Set Resign">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign set_resign d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Set Resign" aria-label="Set Resign">
                                 <i class="fa-solid fa-user-xmark"></i>
                             </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-delete d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_delete" title="Delete" aria-label="Delete">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-delete delete_employee d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Delete" aria-label="Delete">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit d-inline-flex align-items-center justify-content-center" id="_emp_profile_btn_edit" title="Edit" aria-label="Edit">
+                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit edit_emp_profile_info d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Edit" aria-label="Edit">
                                 <i class="fa-regular fa-pen-to-square"></i>
                             </button>
                         </div>
@@ -482,12 +507,21 @@ var EmployeeManagementComponent = (function () {
             </div>
         `;
 
-        mThis.profileInfoEmployee.innerHTML = html;
-        LocaleManager.translateZone(mThis.profileInfoEmployee);
-        mThis.setProfileActions(data);
-        if (mThis.profileCardsEmployee) {
+        mThis.profile_info_emp.innerHTML = html;
+        LocaleManager.translateZone(mThis.profile_info_emp);
+
+        if (data.status_id == 20 || data.status_id == 30) {
+            const hideEls = mThis.profile_info_emp.querySelectorAll(
+                ".movement, .movement_detail, .set_resign, .edit_emp_profile_info, .delete_employee, .group_action_movement"
+            );
+            hideEls.forEach((el) => {
+                el.style.display = "none";
+            });
+        }
+
+        if (mThis.profile_cards_emp) {
             const cardColClass = "col-12 col-lg-4";
-            mThis.profileCardsEmployee.innerHTML = "";
+            mThis.profile_cards_emp.innerHTML = "";
             const skillCol = document.createElement("div");
             skillCol.className = cardColClass;
             const eduCol = document.createElement("div");
@@ -498,11 +532,11 @@ var EmployeeManagementComponent = (function () {
             docCol.className = cardColClass;
             const taxAllowanceCol = document.createElement("div");
             taxAllowanceCol.className = cardColClass;
-            mThis.profileCardsEmployee.appendChild(skillCol);
-            mThis.profileCardsEmployee.appendChild(eduCol);
-            mThis.profileCardsEmployee.appendChild(thirdCol);
-            mThis.profileCardsEmployee.appendChild(docCol);
-            mThis.profileCardsEmployee.appendChild(taxAllowanceCol);
+            mThis.profile_cards_emp.appendChild(skillCol);
+            mThis.profile_cards_emp.appendChild(eduCol);
+            mThis.profile_cards_emp.appendChild(thirdCol);
+            mThis.profile_cards_emp.appendChild(docCol);
+            mThis.profile_cards_emp.appendChild(taxAllowanceCol);
             const refreshProfile = (empId) =>
                 mThis.showPage("profile_view", { id: empId });
             EmployeeSkillComponent.render(
@@ -538,97 +572,81 @@ var EmployeeManagementComponent = (function () {
         }
     };
 
-    mThis.setProfileActions = (data) => {
-        mThis.currentEmployeeId = data?.id;
+    mThis.setActionsProfileInfo = (divProfile) => {
+        if (!divProfile || divProfile._profileActionsBound) return;
+        divProfile._profileActionsBound = true;
 
-        const openEditDialog = () => {
-            EmployeeDialog.show({
-                id: mThis.currentEmployeeId,
-                onClose: () => {
-                    mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
-                },
-            });
-        };
+        divProfile.addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
+            if (btn) {
+                mThis.editEmployee(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".delete_employee");
+            if (btn) {
+                mThis.deleteEmployee(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".set_resign");
+            if (btn) {
+                mThis.setResign(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".movement");
+            if (btn) {
+                mThis.movement(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".movement_detail");
+            if (btn) {
+                mThis.movementDetail(btn.dataset.id, btn);
+                return;
+            }
+        });
+    };
 
-        if (mThis.btnEditProfile) {
-            mThis.btnEditProfile.onclick = (e) => {
-                e.preventDefault();
-                openEditDialog();
-            };
-        }
+    mThis.editEmployee = (id, menuLink) => {
+        EmployeeDialog.show({
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.showPage("profile_view", { id: id });
+            },
+        });
+    };
 
-        const inlineEditBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_edit");
-        if (inlineEditBtn) {
-            inlineEditBtn.onclick = (e) => {
-                e.preventDefault();
-                openEditDialog();
-            };
-        }
+    mThis.movement = (id, menuLink) => {
+        if (typeof ProfileMovementDialog === "undefined") return;
+        ProfileMovementDialog.show({
+            id: null,
+            emp_id: id,
+            employee: mThis.currentEmployeeProfile || null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.showPage("profile_view", { id: id });
+            },
+        });
+    };
 
-        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_movement");
-        if (inlineMovementBtn) {
-            inlineMovementBtn.onclick = (e) => {
-                e.preventDefault();
-                if (typeof ProfileMovementDialog === "undefined") return;
-                ProfileMovementDialog.show({
-                    id: null,
-                    emp_id: mThis.currentEmployeeId,
-                    employee: mThis.currentEmployeeProfile || null,
-                    btn: e.currentTarget,
-                    onClose: () => {
-                        mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
-                    },
-                });
-            };
-        }
+    mThis.movementDetail = (id, menuLink) => {
+        if (typeof EmployeeMovementHistoryDialog === "undefined") return;
+        EmployeeMovementHistoryDialog.show({
+            emp_id: id,
+            employee: mThis.currentEmployeeProfile || null,
+            btn: menuLink,
+        });
+    };
 
-        const inlineMovementDetailBtn = mThis.profileInfoEmployee.querySelector(
-            "#_emp_profile_btn_movement_detail",
-        );
-        if (inlineMovementDetailBtn) {
-            inlineMovementDetailBtn.onclick = (e) => {
-                e.preventDefault();
-                if (typeof EmployeeMovementHistoryDialog === "undefined") return;
-                EmployeeMovementHistoryDialog.show({
-                    emp_id: mThis.currentEmployeeId,
-                    employee: mThis.currentEmployeeProfile || null,
-                    btn: e.currentTarget,
-                });
-            };
-        }
-
-        const inlineResignBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_resign");
-        if (inlineResignBtn) {
-            inlineResignBtn.onclick = (e) => {
-                e.preventDefault();
-                if (typeof ProfileResignDialog === "undefined") return;
-                ProfileResignDialog.show({
-                    emp_id: mThis.currentEmployeeId,
-                    employee: mThis.currentEmployeeProfile || null,
-                    btn: e.currentTarget,
-                    onClose: () => {
-                        mThis.showPage("employee_list", mThis.getFilterData());
-                    },
-                });
-            };
-        }
-
-        const inlineDeleteBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_delete");
-        if (inlineDeleteBtn) {
-            inlineDeleteBtn.onclick = (e) => {
-                e.preventDefault();
-                mThis.deleteEmployee(mThis.currentEmployeeId, e.currentTarget);
-            };
-        }
-
-        if (mThis.btnPrintCv) {
-            mThis.btnPrintCv.onclick = (e) => {
-                e.preventDefault();
-                cv_interact.info(
-                    LocaleManager.trans("Print CV feature is coming soon.", "message_box_default"),
-                );
-            };
-        }
+    mThis.setResign = (id, menuLink) => {
+        if (typeof ProfileResignDialog === "undefined") return;
+        ProfileResignDialog.show({
+            emp_id: id,
+            employee: mThis.currentEmployeeProfile || null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.showPage("employee_list", mThis.getFilterData());
+            },
+        });
     };
 
     mThis.deleteEmployee = (id, menulink) => {
@@ -682,11 +700,32 @@ var EmployeeManagementComponent = (function () {
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/mhr/employee/form-options`, null)
+            .call(
+                `${main_view.base_url}/mhr/employee/form-options`,
+                null,
+                null,
+                null
+            )
             .then((res) => {
-                const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',"",LocaleManager.trans("All Statuses", "titles"),"");
-                VSUtil.setComboItems(mThis.elEmpType,d.types,'id','name',"",LocaleManager.trans("All Types", "titles"),"");
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elEmployeeStatus,
+                    d.status,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    ""
+                );
+                VSUtil.setComboItems(
+                    mThis.elEmployeeType,
+                    d.types,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Types", "titles"),
+                    ""
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -703,7 +742,8 @@ var EmployeeManagementComponent = (function () {
             }
             case "profile_view": {
                 mThis.currentPage = "profile_view";
-                const employeeId = op.id || op.employee_id || op;
+                const employeeId = op.id || op.employee_id || op.emp_id || op;
+                mThis.employee_id = employeeId;
                 const res = await vsapi.call(
                     `${main_view.base_url}/mhr/employee/details`,
                     { id: employeeId },
@@ -757,16 +797,6 @@ const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const materialField = (name, dataField, label, opts = {}) => {
-        const typeAttr = opts.date ? ' data-type="date"' : opts.type ? ` type="${opts.type}"` : ' type="text"';
-        const required = opts.required ? " required" : "";
-        return `
-            <div class="vs-material-field">
-                <input${typeAttr} name="${name}" class="form-control data-input" data-field="${dataField}" placeholder=" "${required} />
-                <label>${label}</label>
-            </div>`;
-    };
-
     self.show = (op) => {
         dialog =
             dialog ||
@@ -776,159 +806,154 @@ const EmployeeDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="tenant-form row g-3">
+                        `<div class="row g-3">
                             <div class="col-12 col-md-3">
-                                <div class="emp-photo-container">
-                                    <div id="emp-upload-zone" class="emp-image-card">
-                                        <input id="emp-photo-input" type="file" accept=".png,.jpg,.jpeg" class="d-none" />
-                                        <button type="button" id="emp-choose-photo" class="emp-upload-trigger" aria-label="Choose employee photo">
-                                            <svg class="emp-photo-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                                <polyline points="21 15 16 10 5 21"></polyline>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div id="emp-preview-zone" class="emp-image-card d-none">
-                                        <button type="button" id="emp-remove-photo" class="emp-photo-remove" aria-label="Remove employee photo">
-                                            <span>&times;</span>
-                                        </button>
-                                        <div class="emp-photo-preview">
-                                            <img id="emp-preview-image" src="" alt="Employee profile" title="Click to change photo" />
-                                        </div>
-                                    </div>
+                                <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
+                                    <div name="div_emp_photo" data-field="photo" class="h-100"></div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-9">
                                 <div class="row g-3">
-                                    <div class="col-12 col-md-6">
-                                        ${materialField("name", "name", "Full Name", { required: true })}
+                                    <div class="col-md-6">
+                                        <div class="vs-material-field">
+                                            <input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " required />
+                                            <label>Full Name</label>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        ${materialField("name_kh", "name_kh", "Khmer Name", { required: true })}
+                                    <div class="col-md-6">
+                                        <div class="vs-material-field">
+                                            <input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder=" " required />
+                                            <label>Khmer Name</label>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        <select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="Sex" required>
+                                    <div class="col-md-6">
+                                        <select data-style="material" name="sex" class="form-control data-input" placeholder="Sex" data-field="sex" required>
                                             <option value="">Select</option>
                                             <option value="M">Male</option>
                                             <option value="F">Female</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        ${materialField("date_of_birth", "date_of_birth", "Date of Birth", { date: true, required: true })}
+                                    <div class="col-md-6">
+                                        <div class="vs-material-field">
+                                            <input data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" required />
+                                            <label>Date of Birth</label>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="Marital Status" required>
+                                    <div class="col-md-6">
+                                        <select data-style="material" name="marital_status" class="form-control data-input" placeholder="Marital Status" data-field="marital_status" required>
                                             <option value="single">Single</option>
                                             <option value="married">Married</option>
                                             <option value="divorced">Divorced</option>
                                             <option value="widowed">Widowed</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        <select data-style="material" name="nationality_id" class="form-control data-input" data-field="nationality_id" placeholder="Nationality" required></select>
+                                    <div class="col-md-6">
+                                        <select data-style="material" name="nationality_id" class="form-control data-input" placeholder="Nationality" data-field="nationality_id" required></select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-12 row g-3">
-                                <div class="col-12 col-md-6">
-                                    ${materialField("nid", "nid", "Identity Card", { required: true })}
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder=" " required />
+                                    <label>Identity Card</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("nid_expiry_date", "nid_expiry_date", "Identity Card Expiry", { date: true, required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" required />
+                                    <label>Identity Card Expiry</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("nssf_id", "nssf_id", "NSSF ID", { required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder=" " required />
+                                    <label>NSSF ID</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("passport_number", "passport_number", "Passport Number", { required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder=" " required />
+                                    <label>Passport Number</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("passport_expiry_date", "passport_expiry_date", "Passport Expiry", { date: true, required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" required />
+                                    <label>Passport Expiry</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <select data-style="material" name="birth_city_id" class="form-control data-input" data-field="birth_city_id" placeholder="Place of Birth" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="birth_city_id" class="form-control data-input" placeholder="Place of Birth" data-field="birth_city_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="emp_type_id" class="form-control data-input" placeholder="Employee Type" data-field="emp_type_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="position_id" class="form-control data-input" placeholder="Position" data-field="position_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder=" " required />
+                                    <label>Phone</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <select data-style="material" name="emp_type_id" class="form-control data-input" data-field="emp_type_id" placeholder="Employee Type" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="email" name="email" class="form-control data-input" data-field="email" placeholder=" " required />
+                                    <label>Email</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <select data-style="material" name="position_id" class="form-control data-input" data-field="position_id" placeholder="Position" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder=" " required />
+                                    <label>Salary</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("phone_number", "phone_number", "Phone", { required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" required />
+                                    <label>Joining Date</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("email", "email", "Email", { type: "email", required: true })}
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="address" class="form-control data-input" data-field="address" placeholder=" " required />
+                                    <label>Address</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("salary", "salary", "Salary", { type: "number", required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder=" " required />
+                                    <label>Spouse Name</label>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("joining_date", "joining_date", "Joining Date", { date: true, required: true })}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder=" " required />
+                                    <label>Spouse Occupation</label>
                                 </div>
-                                <div class="col-12">
-                                    ${materialField("address", "address", "Address", { required: true })}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("spouse_name", "spouse_name", "Spouse Name", { required: true })}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    ${materialField("spouse_occ_code", "spouse_occ_code", "Spouse Occupation", { required: true })}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <select data-style="material" name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id" placeholder="Spouse Employee" required></select>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <select data-style="material" name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax" placeholder="Apply Payroll Tax" required></select>
-                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="spouse_emp_id" class="form-control data-input" placeholder="Spouse Employee" data-field="spouse_emp_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" placeholder="Apply Payroll Tax" data-field="apply_payroll_tax" required></select>
                             </div>
                         </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    me.photoInput = me.divModal.querySelector("#emp-photo-input");
-                    me.photoUploadZone = me.divModal.querySelector("#emp-upload-zone");
-                    me.photoPreviewZone = me.divModal.querySelector("#emp-preview-zone");
-                    me.photoPreviewImage = me.divModal.querySelector("#emp-preview-image");
-                    me.employeePhoto = null;
+                    LocaleManager.translateZone(me.divModal);
+                    const div_emp_photo = me.controls.div_emp_photo;
 
-                    me.renderEmployeePhoto = () => {
-                        const hasPhoto = Boolean(me.employeePhoto);
-                        me.photoUploadZone.classList.toggle("d-none", hasPhoto);
-                        me.photoPreviewZone.classList.toggle("d-none", !hasPhoto);
-                        me.photoPreviewImage.src = hasPhoto ? me.employeePhoto : "";
-                        if (!hasPhoto) me.photoInput.value = "";
-                    };
-
-                    me.divModal.querySelector("#emp-choose-photo").onclick = () => {
-                        me.photoInput.click();
-                    };
-                    me.photoPreviewImage.onclick = () => me.photoInput.click();
-                    me.divModal.querySelector("#emp-remove-photo").onclick = (event) => {
-                        event.stopPropagation();
-                        me.employeePhoto = null;
-                        me.renderEmployeePhoto();
-                    };
-
-                    me.photoInput.addEventListener("change", (event) => {
-                        const file = event.target.files[0];
-                        if (!file) return;
-
-                        const extension = file.name.split(".").pop().toLowerCase();
-                        if (!["jpg", "jpeg", "png"].includes(extension)) {
-                            cv_interact.error("Please select a valid image file (.jpg, .jpeg, .png)");
-                            me.photoInput.value = "";
-                            return;
-                        }
-
-                        const reader = new FileReader();
-                        reader.onload = (readerEvent) => {
-                            me.employeePhoto = readerEvent.target.result;
-                            me.renderEmployeePhoto();
-                        };
-                        reader.readAsDataURL(file);
+                    me.empImageBox = new ImageBox(div_emp_photo, {
+                        defaultPhotoName: "default-staff",
+                        containerClass: "emp-profile-container",
+                        imgClass: "data-input",
+                        dataset: {
+                            field: "photo",
+                        },
                     });
                 },
                 configSelect: [
@@ -973,6 +998,48 @@ const EmployeeDialog = (() => {
                         },
                     },
                 ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+                            p.photo = me.empImageBox ? me.empImageBox.getImage() : "";
+
+                            if (!p.id) {
+                                p.branch_id = main_view.branch_id;
+                                p.status_id = p.status_id || 10;
+                            }
+
+                            vsapi
+                                .call(
+                                    [main_view.base_url, "/mhr/employee/save"].join(
+                                        ""
+                                    ),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_employee");
+                                        } else {
+                                            cv_interact.success("create_success_employee");
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Add Employee",
                     modifyTitle: "vslang:titles.Modify Employee",
@@ -982,16 +1049,19 @@ const EmployeeDialog = (() => {
                             main_view.base_url,
                             "/mhr/employee/form-options",
                         ].join(""),
-                        params: (op) => ({ id: op.id }),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
+
                 onPrepareForm: (me, data) => {
                     const emp = data?.employee;
                     const isEdit = Number(me.dataOptions.id) > 0;
 
-                    me.employeePhoto = emp?.image_url || null;
-                    me.photoInput.value = "";
-                    me.renderEmployeePhoto();
+                    if (me.empImageBox) {
+                        me.empImageBox.setImage(emp?.image_url || null);
+                    }
 
                     if (isEdit) {
                         me.setReadOnly(true, [
@@ -1003,51 +1073,6 @@ const EmployeeDialog = (() => {
                         me.controls.apply_payroll_tax.value = "1";
                     }
                 },
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn-vs-cancel",
-                        click: (me) => me.hide(false),
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn-vs-save",
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            op.photo = me.employeePhoto || "";
-
-                            if (!op.id) {
-                                op.branch_id = main_view.branch_id;
-                                op.status_id = op.status_id || 10;
-                            }
-                            console.log(44,op);
-
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/mhr/employee/save",
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, op);
-                                        if(me.dataOptions.id > 0){
-                                            cv_interact.success('update_success_employee');
-                                        }else {
-                                            cv_interact.success('create_success_employee');
-                                        }
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        },
-                    },
-                ],
             });
 
         dialog.show(op);
@@ -1055,6 +1080,7 @@ const EmployeeDialog = (() => {
 
     return self;
 })();
+//end:: EmployeeDialog
 
 const ProfileResignDialog = (() => {
     const self = {};
@@ -1070,78 +1096,48 @@ const ProfileResignDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal resign-dialog",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
-                    return `
-                    <div class="resign-dialog-body">
-                        <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
-
-                        <div class="mb-3">
-                            <label class="form-label resign-field-label">
-                                Resign Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" data-type="date" name="resign_date"
-                                class="form-control data-input resign-field-input"
-                                data-field="resign_date" placeholder="dd-MM-yyyy" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label resign-field-label">
-                                Effective Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" data-type="date" name="effective_date"
-                                class="form-control data-input resign-field-input"
-                                data-field="effective_date" placeholder="dd-MM-yyyy" />
-                        </div>
-
-                        <div class="mb-1">
-                            <label class="form-label resign-field-label">Remarks</label>
-                            <textarea name="remarks" rows="4"
-                                class="form-control data-input resign-field-input resign-field-remarks"
-                                data-field="remarks"></textarea>
-                        </div>
-                    </div>`;
+                    return [
+                        `<div class="row g-3">
+                            <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="resign_date" class="form-control data-input" data-field="resign_date" required />
+                                    <label>Resign Date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="effective_date" class="form-control data-input" data-field="effective_date" required />
+                                    <label>Effective Date</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remarks</label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
                 },
                 contentCreated: (me) => {
-                    if (me.controls.resign_date) DateTimePicker.init(me.controls.resign_date);
-                    if (me.controls.effective_date) DateTimePicker.init(me.controls.effective_date);
-
-                    const setTitle = () => {
-                        const titleEl =
-                            me.divModal.querySelector(".modal-title") ||
-                            me.divModal.querySelector(".modal-header h5") ||
-                            me.divModal.querySelector(".modal-header .modal-title");
-                        if (titleEl) titleEl.textContent = "Set Resign";
-                    };
-                    setTitle();
-                    me._setResignTitle = setTitle;
-                },
-                prepareFormOptions: {
-                    createTitle: "Set Resign",
-                    modifyTitle: "Set Resign",
-                },
-                onPrepareForm: (me) => {
-                    if (typeof me._setResignTitle === "function") me._setResignTitle();
-
-                    const emp = me.dataOptions.employee || {};
-                    if (me.controls.emp_id) {
-                        me.controls.emp_id.value = me.dataOptions.emp_id || emp.id || "";
-                    }
-                    LocaleManager.translateZone(me.divModal);
                 },
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
+                        click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+
                             p.emp_id =
                                 me.dataOptions.emp_id ||
                                 me.dataOptions.employee?.id ||
@@ -1168,10 +1164,12 @@ const ProfileResignDialog = (() => {
 
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/mhr/employee/resign`,
+                                    [main_view.base_url, "/mhr/employee/resign"].join(
+                                        ""
+                                    ),
                                     p,
                                     btn,
-                                    null,
+                                    null
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
@@ -1185,22 +1183,27 @@ const ProfileResignDialog = (() => {
                                                 "message_box_default",
                                             ),
                                         );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Set Resign",
+                    modifyTitle: "vslang:titles.Set Resign",
+                },
+
+                onPrepareForm: (me, data) => {
+                    const emp = me.dataOptions.employee || {};
+                    if (me.controls.emp_id) {
+                        me.controls.emp_id.value = me.dataOptions.emp_id || emp.id || "";
+                    }
+                },
             });
+
         dialog.show(op);
-        setTimeout(() => {
-            const titleEl = document.querySelector(
-                ".resign-dialog .modal-title, .resign-dialog .modal-header h5",
-            );
-            if (titleEl) titleEl.textContent = "Set Resign";
-        }, 0);
     };
 
     return self;
 })();
+//end:: ProfileResignDialog
