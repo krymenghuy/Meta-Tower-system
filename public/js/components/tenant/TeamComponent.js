@@ -313,11 +313,14 @@ var TeamComponent = new (function() {
             btn: menuLink,
             team_id: mThis.currentTeamId,
             onClose: () => {
-            mThis.staffListView.showPage({
-                ...mThis.getFilterData(),
-                team_id: mThis.currentTeamId
-            });
-        }
+                if (mThis.currentPage === "member_profile_view") {
+                    mThis.showPage("member_profile_view", { id: id });
+                }
+                mThis.staffListView.showPage({
+                    ...mThis.getFilterData(),
+                    team_id: mThis.currentTeamId
+                });
+            }
         };
         CreateTeamMemberDialog.show(op);
     };
@@ -438,7 +441,13 @@ var TeamComponent = new (function() {
                 const teamId = e.currentTarget.dataset.id;
                 CreateTeamMemberDialog.show({
                     id: 0,
-                    team_id: teamId
+                    team_id: teamId,
+                    onClose: () => {
+                        mThis.staffListView.showPage({
+                            ...mThis.getFilterData(),
+                            team_id: teamId
+                        });
+                    }
                 });
             });
         });
@@ -1129,43 +1138,38 @@ const CreateTeamMemberDialog = (() => {
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                             </div>
                     </div>
-                    <div class="col-12 row g-2"> 
-                        <div class="col-12 col-md-6">
+                    
+
+                   <div class="col-12 row g-2"> 
+                        <div class="col-12 col-md-12">
                             <div class="vs-material-field">
                                 <input type="text" name="position" class="data-input form-control" data-field="position" placeholder=" " />
                                 <label vslang="labels.Position">Position</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+
+                        <!-- Shown when Nationality is Khmer (ID: 14) -->
+                        <div class="col-12 col-md-8 field-khmer-nid">
                             <div class="vs-material-field">
                                 <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                 <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
-                        <div class="d-none col-6 col-md-6">
-                            <select name="space_id" 
-                                    class="data-input form-control"
-                                    data-style="material" 
-                                    data-field="space_id"
-                                    required
-                                    placeholder="${LocaleManager.trans(
-                                        "Select Space",
-                                        "labels"
-                                    )}">      
-                            </select>
-                        </div>
-                        <div class="col-12 col-md-3 pt-2">
+                        <div class="col-12 col-md-4 field-khmer-issue">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
                                 <label vslang="labels.Issue Date">Issue Date</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 pt-2">
+
+                        <!-- Shown when Nationality is Foreign (Non-Khmer) -->
+                        <div class="col-12 col-md-12 field-foreign-passport">
                             <div class="vs-material-field">
                                 <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
                                 <label vslang="labels.Passport">Passport Number</label>
                             </div>
                         </div>
+
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
@@ -1178,10 +1182,11 @@ const CreateTeamMemberDialog = (() => {
                                 <label vslang="labels.Email">Email</label>
                             </div>
                         </div>
-                    <div class="col-12 pt-2">
-                        <div class="vs-material-field">
-                            <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
-                            <label vslang="labels.Address">Address</label>
+                        <div class="col-12 pt-2">
+                            <div class="vs-material-field">
+                                <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
+                                <label vslang="labels.Address">Address</label>
+                            </div>
                         </div>
                     </div>
 
@@ -1217,35 +1222,29 @@ const CreateTeamMemberDialog = (() => {
                     me.ext = null;
 
                     me.renderMembeImage = () => {
-                        const src = new URL(me.previewImg.src).pathname
-                            .split("/")
-                            .pop();
+                        const isEdit = me.dataOptions.id > 0;
+                        
+                        // We check if we have a valid custom photo loaded or uploaded.
+                        let hasPhoto = false;
+                        if (me.fileBase64 && !me.fileBase64.includes("placeholder.svg")) {
+                            hasPhoto = true;
+                        } else if (me.previewImg && me.previewImg.src) {
+                            const srcPath = me.previewImg.src;
+                            const filename = srcPath.split("?")[0].split("/").pop();
+                            if (filename && filename !== "placeholder.svg" && !srcPath.endsWith("/")) {
+                                hasPhoto = true;
+                            }
+                        }
 
-                        if (me.dataOptions.id == null && me.fileBase64) {
+                        if (hasPhoto) {
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
-                        } else if (
-                            me.dataOptions.id == null &&
-                            !me.fileBase64
-                        ) {
-                            me.uploadZone.classList.remove("d-none");
-                            me.previewZone.classList.add("d-none");
-                            me.uploadInput.value = "";
-                            if (me.displayInput) me.displayInput.value = "";
-                            if (me.previewImg) me.previewImg.src = "";
-                        } else if (
-                            me.dataOptions.id > 0 &&
-                            !me.fileBase64 &&
-                            src == "placeholder.svg"
-                        ) {
-                            me.uploadZone.classList.remove("d-none");
-                            me.previewZone.classList.add("d-none");
-                            me.uploadInput.value = "";
-                            if (me.displayInput) me.displayInput.value = "";
-                            if (me.previewImg) me.previewImg.src = "";
                         } else {
-                            me.uploadZone.classList.add("d-none");
-                            me.previewZone.classList.remove("d-none");
+                            me.uploadZone.classList.remove("d-none");
+                            me.previewZone.classList.add("d-none");
+                            me.uploadInput.value = "";
+                            if (me.displayInput) me.displayInput.value = "";
+                            if (me.previewImg) me.previewImg.src = "";
                         }
                     };
 
@@ -1333,6 +1332,7 @@ const CreateTeamMemberDialog = (() => {
                                 if (res.status_code == 200) {
                                     me.fileBase64 = null;
                                     me.ext = null;
+                                    if (me.previewImg) me.previewImg.src = "";
                                     me.renderMembeImage();
                                     cv_interact.success(
                                         "Profile photo was deleted!"
@@ -1361,32 +1361,23 @@ const CreateTeamMemberDialog = (() => {
                             });
                     };
 
-                    const LOCAL_NATIONALITY_ID = 14;
+               const LOCAL_NATIONALITY_ID = 14;
 
                     me.toggleIdentityFields = () => {
                         const isLocal =
-                            String(me.controls.nationality_id.value) ===
-                            String(LOCAL_NATIONALITY_ID);
+                            String(me.controls.nationality_id.value) === String(LOCAL_NATIONALITY_ID);
 
-                        const nidWrap = me.divModal
-                            .querySelector('[data-field="national_id"]')
-                            ?.closest(".col-12, .col-md-6");
-                        const issueWrap = me.divModal
-                            .querySelector('[data-field="nid_issue_date"]')
-                            ?.closest(".col-12, .col-md-3");
-                        const passportWrap = me.divModal
-                            .querySelector('[data-field="passport_number"]')
-                            ?.closest(".col-12, .col-md-6");
+                        const nidWrap = me.divModal.querySelector('.field-khmer-nid');
+                        const issueWrap = me.divModal.querySelector('.field-khmer-issue');
+                        const passportWrap = me.divModal.querySelector('.field-foreign-passport');
 
                         if (nidWrap) nidWrap.classList.toggle("d-none", !isLocal);
                         if (issueWrap) issueWrap.classList.toggle("d-none", !isLocal);
                         if (passportWrap) passportWrap.classList.toggle("d-none", isLocal);
                     };
 
-                    me.controls.nationality_id.addEventListener(
-                        "change",
-                        me.toggleIdentityFields
-                    );
+                    // Ensure initial check runs when nationality changes
+                    me.controls.nationality_id.addEventListener("change", me.toggleIdentityFields);
                 },
                 configSelect: [
                     {
@@ -1414,8 +1405,6 @@ const CreateTeamMemberDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    me.renderMembeImage();
-
                     if (me.dataOptions && me.dataOptions.team_id) {
                         me.team_id = me.dataOptions.team_id; // Store it
                         // Add hidden input if not exists
@@ -1441,6 +1430,8 @@ const CreateTeamMemberDialog = (() => {
                         }
                     }
 
+                    me.renderMembeImage();
+
                     // ✅ FIX: apply the nationality-based show/hide after the
                     // nationality select has been populated and (if editing)
                     // its value has been set via me.setData above.
@@ -1452,7 +1443,11 @@ const CreateTeamMemberDialog = (() => {
                         if (me.dataOptions.id > 0) {
                             if (data && data.image_url) {
                                 me.previewImg.src = data.image_url;
-                                me.fileBase64 = data.image_url;
+                                if (!data.image_url.includes("placeholder.svg")) {
+                                    me.fileBase64 = data.image_url;
+                                } else {
+                                    me.fileBase64 = null;
+                                }
                             }
                         }
                     }
