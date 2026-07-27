@@ -18,8 +18,7 @@ class CheckPointController extends Controller
     function save(Request $req)
     {
         $id = $req->id ?? null;
-        $prn_code = $id ? 301 : 302;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->check_points->save($id, $ss, $req->all());
         return JDV::raw($res);
@@ -54,7 +53,7 @@ class CheckPointController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 303);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

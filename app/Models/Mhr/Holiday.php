@@ -25,6 +25,7 @@ class Holiday extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh' => '1|string|0-150|text=name_required::@key;@max;@value',
             'holiday_type_id' => '1|number|text=select_holiday_type',
             'start_date' => '1|date|text=start_date',
             'end_date' => '1|date|text=end_date',
@@ -86,9 +87,6 @@ class Holiday extends VSModel
         $search_value = $d->search_value ?? null;
         $year = $d->year ?? date('Y');
         $skip_rows = ($current_page - 1) * $per_page;
-        $start_date = DBX::formatDate('h.start_date','start_date');
-        $end_date = DBX::formatDate('h.end_date','end_date');
-        $updated_at = DBX::formatTime('h.updated_at','updated_at');
         $str_search = '1=1';
         if ($search_value) {
             $skip_rows = 0;
@@ -97,7 +95,7 @@ class Holiday extends VSModel
         }
 
 
-        $selectRow = 'h.id,h.name,h.holiday_type_id,ht.name as holiday_type,'.$start_date.','.$end_date.',h.description,h.update_user,'.$updated_at.'';
+        $selectRow = 'h.id,h.name,h.name_kh,h.holiday_type_id,ht.name as holiday_type,h.start_date,h.end_date,h.description,h.update_user,h.updated_at';
         $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereYear('h.start_date', $year)->whereRaw($str_search)->selectRaw($selectRow);
 
         $holiday_type_id = $d->holiday_type_id ?? null;
@@ -108,13 +106,16 @@ class Holiday extends VSModel
         $count_query = clone $query;
         $count = $count_query->count('h.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('h.id ASC')->get();
+        foreach($rows as $row){
+            setOfficialDates($row,['start_date','end_date'],['updated_at'],['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     public function getDetails($id=null, $ss=null)
     {
         $row = DB::table('holidays as h')
-            ->selectRaw('h.id,h.name,h.holiday_type_id,h.start_date,h.end_date,h.description,h.updated_at,h.update_user')
+            ->selectRaw('h.id,h.name,h.name_kh,h.holiday_type_id,h.start_date,h.end_date,h.description,h.updated_at,h.update_user')
             ->where('h.id', $id)->get()->first();
         if($row) {
             setOfficialDates($row, ['start_date','end_date'], ['updated_at'],['']);
@@ -150,7 +151,7 @@ class Holiday extends VSModel
         $year = $d->year ?? date('Y');
         $query = DB::table('holidays as hd')
         ->join('holiday_types as ht', 'ht.id', '=', 'hd.holiday_type_id')
-        ->selectRaw('hd.id, hd.holiday_type_id, hd.name, hd.start_date, hd.end_date, hd.description')
+        ->selectRaw('hd.id, hd.holiday_type_id, hd.name, h.name_kh,hd.start_date, hd.end_date, hd.description')
         ->where('hd.branch_id', $ss->branch_id)
         ->where('hd.start_date', $year);
         if ($search_value) {

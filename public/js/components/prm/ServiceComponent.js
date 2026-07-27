@@ -111,7 +111,7 @@ var ServiceComponent = (() => {
                         "badge text-danger bg-danger-subtle border border-danger";
                 }
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:170px">
                         ${data.status ?? ""}
                     </span>
                 `;

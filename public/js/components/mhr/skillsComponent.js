@@ -15,7 +15,7 @@ var SkillsComponent = (function () {
             transTitle: "titles.No",
             className: "align-middle",
             data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #1a1647; width: 30px; height: 30px;">
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>`,
         },
@@ -30,35 +30,37 @@ var SkillsComponent = (function () {
             transTitle: "titles.Description",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-muted">${data.description ?? "-"}</span>`;
+                return `<div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
+                    </div>`;
             },
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data) => {
-                return [
-                    `<span class="text-Capitalize d-block">${data.update_user ?? "-"}</span>`,
-                    `<span class="text-small">${data.updated_at ?? "-"}</span>`,
-                ].join("");
-            },
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
         },
         {
-            title: "",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-center align-items-middle">
-                    <div class="text-middle gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_skill" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_skill" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_skill_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
         },
     ];
 
@@ -100,8 +102,48 @@ var SkillsComponent = (function () {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
 
-        mThis.setActionListeners();
+        mThis.initDropdownMenus(mThis.listContainer);
         mThis.initAlready = true;
+    };
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_skill_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "btn_edit_skill"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "btn_delete_skill"
+                }
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "btn_edit_skill": {
+                        mThis.editSkill(id, menuLink);
+                        break;
+                    }
+                    case "btn_delete_skill": {
+                        mThis.deleteSkill(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptopns);
     };
 
     mThis.elSearch.addEventListener("keyup", () => {
@@ -128,19 +170,7 @@ var SkillsComponent = (function () {
         return p;
     };
 
-    mThis.setActionListeners = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_edit_skill");
-            if (btn) {
-                mThis.editSkill(btn.dataset.id, btn);
-            }
-
-            btn = VSUtil.closestLimited(e.target, ".btn_delete_skill");
-            if (btn) {
-                mThis.deleteSkill(btn.dataset.id, btn);
-            }
-        });
-    };
+    
 
     mThis.editSkill = (id, menulink) => {
         SkillListDialog.show({
@@ -238,14 +268,14 @@ const SkillListDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;

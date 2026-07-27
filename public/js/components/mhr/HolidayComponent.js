@@ -6,7 +6,7 @@ var HolidayComponent = (function () {
         "#_main_holidayComponent",
     );
 
-    mThis.title_prop = "Manage Holiday";
+    mThis.title_prop = "Holidays";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_holiday");
     mThis.elSearch = mThis.self.querySelector("#_search_holiday");
@@ -20,45 +20,68 @@ var HolidayComponent = (function () {
             // },
         },
         {
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
+            data: (data) => {
+                return `<span class="text-prm-custom text-capitalize">${data.name ?? '_'}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Name KH",
+            className: "align-middle text-capitalize",
+            data: (data) => {
+                return `<span class="text-prm-custom text-capitalize">${data.name_kh ?? '_'}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Type",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                const type = (data.holiday_type ?? "").toLowerCase();
+                let cls = "text-info";
+
+                if (type == "public holiday") {
+                    cls =
+                        "badge text-danger bg-danger-subtle border border-danger";
+                } else if (type == "private holiday") {
+                    cls =
+                        "badge text-primary bg-primary-subtle border border-primary";
+                }
+                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="width:100px">
+                        ${data.holiday_type ?? "_"}
+                    </span> `;
+            },
+        },
+        {
             transTitle: "titles.Holiday Date",
-            className: "align-middle",
+            className: "align-middle text-capitalize",
             data: (data) => {
                 return ` <div class="d-flex flex-column">
                             <div class="d-flex justify-content-start align-items-center">
-                                <span class="text-nowrap" style="font-size: 90%;">${data.start_date}</span>
-                                <span class="text-primary px-1">~</span>
-                                <span class="text-nowrap" style="font-size: 90%;">${data.end_date}</span>
+                                <span class="text-nowrap">${data.start_date}</span>
+                                <span class="text-primary px-1">-</span>
+                                <span class="text-nowrap">${data.end_date}</span>
                             </div>
                         </div>`;
             },
         },
-
         {
-            transTitle: "titles.Holiday Name",
-            className: "align-middle fw-bold",
+            transTitle: "titles.Description",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="text-danger text-capitalize">${data.name}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Holiday Type",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.holiday_type ?? ""}</span>`;
+                return `<div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
+                    </div>`;
             },
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                    <span class="text-primary fw-semibold text-capitalize">${data.update_user}</span>
-                    <span>
-                        <small class="text-nowrap">${data.updated_at}</small>
-                    </span>
-                </div>`;
-            },
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
         },
         {
             className: "col_action align-middle",
@@ -104,7 +127,7 @@ var HolidayComponent = (function () {
                     mThis.HolidayListView.showPage();
                 },
             };
-            if (!AuthManager.allowed(260)) return;
+            // if (!AuthManager.allowed(260)) return;
             HolidayDialog.show(op);
         };
         mThis.listContainer = mThis.HolidayListView.getListContainer();
@@ -192,7 +215,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(262)) return;
+        // if (!AuthManager.allowed(262)) return;
         HolidayDialog.show(op);
     };
 
@@ -205,7 +228,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(263)) return;
+        // if (!AuthManager.allowed(263)) return;
         cv_interact.confirm(
             "delete_holiday",
             {
@@ -266,7 +289,7 @@ var HolidayComponent = (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("Holiday Type", "titles"),
+                    LocaleManager.trans("All Type", "titles"),
                     "",
                 );
             });
@@ -287,7 +310,7 @@ const HolidayDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-            cssClass: "modal-md vs-modal",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -295,20 +318,26 @@ const HolidayDialog = (() => {
                     `<div class="row g-3">
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="text" data-type="text" name="holiday" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label vslang="labels.Holiday Name"></label>
+                                <input type="text" data-type="text" name="name" class="data-input form-control form_input" data-field="name" placeholder=" " />
+                                <label vslang="labels.Name"></label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans('Holiday Type', 'labels')}" data-field="holiday_type_id"></select>
+                            <div class="vs-material-field">
+                                <input type="text" data-type="text" name="name_kh" class="data-input form-control form_input" data-field="name_kh" placeholder=" " />
+                                <label vslang="labels.Name (KH)"></label>
+                            </div>
                         </div>
                         <div class="col-6">
+                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans('Type', 'labels')}" data-field="holiday_type_id"></select>
+                        </div>
+                        <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
                                 <label vslang="labels.Start Date"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
                                 <label vslang="labels.End Date"></label>
@@ -324,8 +353,6 @@ const HolidayDialog = (() => {
                 ].join("");
             },
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.start_date);
-                DateTimePicker.init(me.controls.end_date);
             },
             configSelect: [
                 {
@@ -338,14 +365,14 @@ const HolidayDialog = (() => {
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn-vs-cancel",
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
 
@@ -393,7 +420,6 @@ const HolidayDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
             },
         });
 

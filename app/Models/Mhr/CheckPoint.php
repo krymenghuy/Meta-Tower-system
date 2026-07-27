@@ -31,9 +31,10 @@ class CheckPoint
         $branch_id = $ss->branch_id;
 
         $validationRules = [
-            'id' => '0|identity=1',
-            'name' => '1|string|0-250',
+            'name' => '1|string|0-150',
+            'name_kh' => '1|string|0-150',
             'category_id' => '1|number',
+            'description' => '0|string|0-300',
         ];
 
         $restrictedChars = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
@@ -83,7 +84,7 @@ class CheckPoint
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(cp.name LIKE '%" . $search_value . "%' OR cpc.name LIKE '%" . $search_value . "%')";
+            $str_search = "(cp.name LIKE '%" . $search_value . "%' OR cp.name_kh LIKE '%" . $search_value . "%')";
         }
         if($category_id){
             $str_moreWhere .= ' AND cp.category_id ='.$category_id;
@@ -92,13 +93,13 @@ class CheckPoint
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('cp.id, cp.name, cpc.name as category_name, cp.updated_at, cp.update_user')
+            ->selectRaw('cp.id, cp.name,cp.name_kh, cpc.name as category_name,cp.description, cp.updated_at, cp.update_user')
             ->orderBy('cp.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('cp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,[''],['updated_at'],[]);
+            setOfficialDates($row,[''],['updated_at'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -107,7 +108,7 @@ class CheckPoint
     {
         return DB::table('check_points as cp')
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
-            ->selectRaw('cp.id, cp.name, cp.category_id, cpc.name as category_name')
+            ->selectRaw('cp.id, cp.name,cp.name_kh,cp.description, cp.category_id, cpc.name as category_name')
             ->where('cp.id', $id)->get()
             ->first();
     }

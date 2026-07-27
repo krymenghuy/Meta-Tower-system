@@ -19,8 +19,7 @@ class CheckPointCategoryController extends Controller
     function save(Request $req)
     {
         $id = $req->id ?? null;
-        $prn_code = $id ? 298 : 299;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

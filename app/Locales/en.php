@@ -506,6 +506,17 @@ return [
         'create_success_employee' => 'Created employee successfully.',
         'delete_success_employee' => 'Employee deleted successfully.',
 
+        'update_success_skill' => 'Updated skill successfully.',
+        'create_success_skill' => 'Created skill successfully.',
+        'delete_success_skill' => 'Skill delete successfully.',
+
+        'create_success_check_point_category' => 'Checkpoint category has been created successfully.',
+        'update_success_check_point_category' => 'Checkpoint category has been updated successfully.',
+        'delete_success_check_point_category' => 'Checkpoint category has been deleted successfully.',
+
+        'create_success_check_point' => 'Checkpoint has been created successfully.',
+        'update_success_check_point' => 'Checkpoint has been updated successfully.',
+        'delete_success_check_point' => 'Checkpoint has been deleted successfully.',
 
         'update_job_level_successfully' => 'Updated job level successfully.',
         'create_job_level_successfully' => 'Added job level successfully.',

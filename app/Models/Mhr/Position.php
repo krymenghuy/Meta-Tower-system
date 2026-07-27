@@ -33,13 +33,13 @@ class Position extends VSModel
         $v_rule = [
             'name' => '1|string|0-150|text=name_required::@key;@max;@value',
             'name_kh' => '0|string|0-150|text=name_required::@key;@max;@value',
-            'department_id' => '1|number|exists=departments.id|text=select_department',
-            'job_level_id' => '1|number|exists=job_levels.id|text=select_job_level',
             'code' => '0|string|0-50|text=enter_shortcut',
-            'staff_group_id' => '0|number|exists=staff_groups.id|text=select_staff_group',
+            'job_level_id' => '1|number|exists=job_levels.id|text=select_job_level',
+            'department_id' => '1|number|exists=departments.id|text=select_department',
             'salary' => '1|number|text=enter_salary',
             'currency_code' => '1|choice|KHR,USD|text=select_currency_code|default=' . VSMoney::$base_currency,
-            'description' => '0|string|0-1000',
+            'staff_group_id' => '0|number|exists=staff_groups.id|text=select_staff_group',
+            'description' => '0|string|0-300',
         ];
         $chars = ['&', '$', '#', '@', '!', '.', '-', '(', ')', ' ', ','];
         $res = DBX::validateObject($arr, $v_rule, true, ['name' => $chars, 'name_kh' => $chars, 'code' => $chars, 'description' => $chars], $ss->lang, false, null);
@@ -77,7 +77,6 @@ class Position extends VSModel
         if ($test) {
             return 'position_exist::' . $name;
         }
-
         return null;
     }
 
@@ -98,17 +97,16 @@ class Position extends VSModel
         $str_search = '1=1';
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "(p.name LIKE '%" . $search_value . "%' OR d.name = '" . $search_value . "')";
+            $str_search = "(p.name LIKE '%" . $search_value . "%' OR p.name_kh = '" . $search_value . "')";
         }
 
-        $updated_at = DBX::formatTime('p.updated_at', 'updated_at');
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->join('job_levels as job', 'job.id', '=', 'p.job_level_id')
             ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
             ->where('p.inactive', 0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.staff_group_id, sg.name as staff_group, p.department_id, p.job_level_id, job.name as level, p.salary, p.currency_code, d.name as department, ' . $updated_at . ', p.update_user')
+            ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.staff_group_id, sg.name as staff_group, p.department_id, p.job_level_id, job.name as level, p.salary, p.currency_code, d.name as department, p.updated_at, p.update_user')
             ->orderByRaw('job.rank ASC, d.name ASC');
         if ($search_department) {
             $query->where('p.department_id', $search_department);
@@ -116,6 +114,9 @@ class Position extends VSModel
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            setOfficialDates($row,[''],['updated_at'],['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -126,7 +127,7 @@ class Position extends VSModel
             ->leftJoin('departments as d', 'd.id', '=', 'p.department_id')
             ->leftJoin('job_levels as job', 'job.id', '=', 'p.job_level_id')
             ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
-            ->selectRaw('p.id, p.name, p.name_kh, p.description, p.job_level_id, p.staff_group_id, p.department_id, p.salary, p.currency_code, d.name as department, job.name as level, sg.name as staff_group')
+            ->selectRaw('p.id, p.name, p.name_kh,p.code, p.description, p.job_level_id, p.staff_group_id, p.department_id, p.salary, p.currency_code, d.name as department, job.name as level, sg.name as staff_group')
             ->where('p.inactive', 0)
             ->where('p.id', $id)
             ->first();
