@@ -11,51 +11,74 @@ var CheckPointCategoryComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_check_point_category_search");
 
     mThis.cols = [
-        {
-            className: "align-middle text-nowrap ",
+         {
+            transTitle: "titles.No",
+            className: "align-middle text-capitalize",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
             transTitle: "titles.Name",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
-                console.log(123456,data);
-
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "_"}</span>
                     </div>
                 `;
              }
         },
         {
-            transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap text-center",
+            transTitle: "titles.Name KH",
+            className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
-                const [date, time] = (data.updated_at ?? "").split(" ");
-                return `<div class="d-flex flex-column align-items-center justify-content-center text-center mx-auto">
-                    ${data.update_user ? `<span class="text-capitalize text-prm-custom">${data.update_user}</span>` : ""}
-                    <small class="text-muted">${date || "-"}</small>
-                    <small class="text-muted">${time ?? ""}</small>
-                </div>`;
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name_kh ?? "_"}</span>
+                    </div>
+                `;
+             }
+        },
+        {
+            transTitle: "titles.Description",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
+                    </div>`;
             },
         },
         {
-            title: "",
-            className: "col_action align-middle text-center",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-center align-items-middle">
-                    <div class="text-middle gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_check_point_category" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_check_point_category" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
+            transTitle: "titles.Last Updated",
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
         },
+        {
+            transTitle: "titles.Action",
+            className: "col_action align-middle",
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_check_point_category_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
+       
     ];
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -79,7 +102,7 @@ var CheckPointCategoryComponent = (function () {
                     mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(299)) return;
+            // if (!AuthManager.allowed(299)) return;
             CheckPointCategoryDialog.show(op);
         };
         mThis.pr_tbl = mThis.CheckPointCategoryListView.getListContainer();
@@ -101,27 +124,53 @@ var CheckPointCategoryComponent = (function () {
                 mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
             }, 200);
         });
-        mThis.setActionListeners();
+       mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis.initAlready = true;
     };
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_check_point_category_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "btn_edit_check_point_category"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "btn_delete_check_point_category"
+                }
+            ],
 
-    mThis.setActionListeners = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point_category");
-            if (btn) {
-                mThis.deleteCheckPointCategory(btn.dataset.id, btn);
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "btn_edit_check_point_category": {
+                        mThis.editCheckPointCategory(id, menuLink);
+                        break;
+                    }
+                    case "btn_delete_check_point_category": {
+                        mThis.deleteCheckPointCategory(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
-
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_check_point_category");
-            if (btn) {
-                mThis.editCheckPointCategory(btn.dataset.id, btn);
-            }
-        });
+        };
+        new VSDropdownMenu(menuOptopns);
     };
 
     mThis.editCheckPointCategory = (id, btn) => {
-        if (!AuthManager.allowed(298)) return;
+        // if (!AuthManager.allowed(298)) return;
         CheckPointCategoryDialog.show({ id, btn, onClose: () => mThis.CheckPointCategoryListView.showPage(mThis.getFilterData()),});
     };
 
@@ -206,12 +255,24 @@ const CheckPointCategoryDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                     <label vslang="labels.Name"></label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name_kh" required class="data-input form-control" data-field="name_kh" placeholder=" " />
+                                    <label vslang="labels.Name (KH)"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                    <label vslang="labels.Description"></label>
+                                </div>
+                            </div> 
                         </div>`,
                     ].join("");
                 },
@@ -219,7 +280,7 @@ const CheckPointCategoryDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             //Close with Cancel button
                             me.hide(false);
@@ -227,7 +288,7 @@ const CheckPointCategoryDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -277,7 +338,7 @@ const CheckPointCategoryDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
+                    // LocaleManager.translateZone(me.divModal);
                 },
             });
 

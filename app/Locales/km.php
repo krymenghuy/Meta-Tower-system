@@ -1278,6 +1278,8 @@ return [
         'Service Name' => 'ឈ្មោះសេវាកម្ម',
         'Unit Type' => 'ប្រភេទឯកតា',
         'Name' => 'ឈ្មោះ',
+        'Name (KH)' => 'ឈ្មោះខ្មែរ',
+
 
 
         'Deposit Amount' => 'ចំនួនប្រាក់កក់',
@@ -1622,6 +1624,18 @@ return [
         'create_success_employee' => 'បានបង្កើតព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+
+        'create_success_skill' => 'បានបង្កើតជំនាញដោយជោគជ័យ។',
+        'update_success_skill' => 'បានកែប្រែជំនាញដោយជោគជ័យ។',
+        'delete_success_skill' => 'បានលុបជំនាញដោយជោគជ័យ។',
+
+        'create_success_check_point_category' => 'បានបង្កើតប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
+        'update_success_check_point_category' => 'បានកែប្រែប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
+        'delete_success_check_point_category' => 'បានលុបប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
+
+        'create_success_check_point' => 'បានបង្កើតចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
+        'update_success_check_point' => 'បានកែប្រែចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
+        'delete_success_check_point' => 'បានលុបចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
 
         'update_success_team' => 'Team updated successfully.',
 

@@ -38,7 +38,9 @@ var DepartmentComponent = new (function () {
             transTitle: "titles.Description",
             className: "align-middle text-capitalize text-nowrap",
             data: (data) =>
-                `<span class="text-prm-custom">${data.description ?? '_'}</span>`,
+                `<div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
+                    </div>`
         },
         {
             transTitle: "titles.Last Updated",
@@ -96,7 +98,7 @@ var DepartmentComponent = new (function () {
                     mThis.DepartmentListView.showPage();
                 },
             };
-            if (!AuthManager.allowed(217)) return;
+            // if (!AuthManager.allowed(217)) return;
             DepartmentDialog.show(op);
         };
         mThis.listContainer = mThis.DepartmentListView.getListContainer();

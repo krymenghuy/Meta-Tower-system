@@ -13,16 +13,34 @@ var PositionComponent = (function () {
     mThis.elDepartment = mThis.self.querySelector("#el_department");
 
     mThis.cols = [
+        
         {
-            title: "",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "",
+            transTitle: "titles.No",
+            className: "align-middle text-capitalize",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
-            transTitle: "titles.Position",
+            transTitle: "titles.Name",
+            className: "align-middle text-capitalize",
+            data: (data) =>
+                `<div class="text-prm-custom text-capitalize" style="width:90px; ">
+                <span class="text-prm-custom text-capitalize" >${data.name ?? "_"}</span></div>`,
+        },
+        {
+            transTitle: "titles.Shortcut",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-capitalize">${data.name ?? "_"}</span>`,
+                `<span class="text-capitalize text-primary-custom">${data.code ?? '_'}</span>`,
+        },
+        {
+            transTitle: "titles.Level",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="text-capitalize text-primary-custom">${data.level ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Department",
@@ -30,19 +48,12 @@ var PositionComponent = (function () {
             data: (data) =>
                 `<span class="text-primary-custom ">${data.department ?? '_'}</span>`,
         },
-         {
-            transTitle: "titles.Job Level",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<span class="text-capitalize text-primary-custom">${data.level ?? '_'}</span>`,
-        },
         {
             transTitle: "titles.Staff Group",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-primary-custom">${data.staff_group ?? '_'}</span>`,
         },
-
         {
             transTitle: "titles.Salary",
             className: "align-middle text-nowrap",
@@ -56,12 +67,11 @@ var PositionComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '_'}</span>
+                        <span class="text-wrap text-break small" style ="word-break:break-word;">${data.description ?? '_'}</span>
                     </div>
                 `;
             },
         },
-
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
@@ -290,39 +300,38 @@ const PositionDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position" class="data-input form-control form_input" data-field="name" placeholder=" " />
-                                <label vslang="labels.Position (EN)"></label>
+                                <label vslang="labels.Name"></label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="position_kh" class="data-input form-control form_input" data-field="name_kh" placeholder=" " />
-                                <label vslang="labels.Position (KH)"></label>
+                                <label vslang="labels.Name (KH)"></label>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
-                        </div>
-                        <div class="col-6">
-                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
-                        </div>
-                        
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="code" class="data-input form-control form_input" data-field="code" placeholder=" " />
                                 <label vslang="labels.Shortcut"></label>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
+                        <div class="col-3">
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
                         </div>
                         <div class="col-6">
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
+                        </div>
+                        <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="number" data-type="text" name="salary" class="data-input form-control form_input" data-field="salary" placeholder=" " />
                                 <label vslang="labels.Salary"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans('Currency Code', 'labels')}"  data-field="currency_code"></select>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
@@ -404,7 +413,7 @@ const PositionDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "vslang:titles.Add Position",
+                createTitle: "vslang:titles.Create Position",
                 modifyTitle: "vslang:titles.Modify Position",
                 targetProp: "positions",
                 api: {

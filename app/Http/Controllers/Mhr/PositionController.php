@@ -19,8 +19,7 @@ class PositionController extends Controller
     public function savePosition(Request $req)
     {
         $id = $req->id ?? null;
-        $prn_code = $id ? 219 : 220;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -52,7 +51,7 @@ class PositionController extends Controller
 
     public function deletePosition(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 221);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

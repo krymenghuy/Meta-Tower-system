@@ -11,16 +11,13 @@ var JobsLevelComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_job_level_search");
     mThis.cols = [
         {
-            transTitle: "",
-            className: "align-middle",
-        },
-
-        {
             transTitle: "titles.Ranking",
-            className: "align-middle text-nowrap",
-            data: (data)=>
-                `<div class=" text-start p-1 " ><span class="">${data.rank ?? '_'}</span></div>`,
-
+            className: "align-middle text-capitalize",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${data.rank ?? '_'}</span>
+                </div>
+            `,
         },
         {
             transTitle: "titles.Level",
@@ -32,8 +29,11 @@ var JobsLevelComponent = (function () {
         {
             transTitle: "titles.Description",
             className: "align-middle text-nowrap",
-            data: (data)=>
-                `<div  class="text-remark text-prm-custom" >${data.description ?? '_'}</div>`,
+            data: (data)=>{
+                return `<div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</spam>
+                    </div>`;
+            }
         },
         {
             transTitle: "titles.Last Updated",
@@ -87,7 +87,7 @@ var JobsLevelComponent = (function () {
                     mThis.JobLevelListView.showPage();
                 },
             };
-            if (!AuthManager.allowed(204)) return;
+            // if (!AuthManager.allowed(204)) return;
             JobLevelDialog.show(op);
         };
         mThis.pr_tbl = mThis.JobLevelListView.getListContainer();

@@ -24,9 +24,12 @@ class CheckPointCategory extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-250|text=name_required::@key;@max;@value',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'description' => '0|string|0-300',
         ];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, null);
+         $name_char = ['$','#','@','!','/','.','-','_','=','?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['name'=>$name_char,'name_kh'=>$name_char,'description'=>$name_char], $ss->lang , false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -59,18 +62,17 @@ class CheckPointCategory extends VSModel
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(cpc.name LIKE '%" . $search_value . "%')";
+            $str_search = "(cpc.name LIKE '%" . $search_value . "%' OR cpc.name_kh LIKE '%" . $search_value . "%')";
         }
         $query = DB::table('check_point_categories as cpc')
             ->whereRaw($str_search)
-            ->selectRaw('cpc.id, cpc.name,cpc.updated_at,cpc.update_user');
+            ->selectRaw('cpc.id, cpc.name,cpc.name_kh,cpc.description,cpc.updated_at,cpc.update_user');
 
         $clone_query = clone $query;
         $count = $clone_query->count('cpc.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-
-            $row = setOfficialDates($row,[''],['updated_at'],['']);
+            setOfficialDates($row,[''],['updated_at'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -79,7 +81,7 @@ class CheckPointCategory extends VSModel
     {
         $row = DB::table('check_point_categories as cpc')
             ->where('cpc.id', $id)
-            ->selectRaw('cpc.id,cpc.name,updated_at')
+            ->selectRaw('cpc.id,cpc.name,cpc.name_kh,cpc.description,cpc.updated_at')
             ->first();
         if($row){
             setOfficialDates($row,[''],['updated_at'],['']);
@@ -119,7 +121,7 @@ class CheckPointCategory extends VSModel
         return DB::table('check_point_categories as cpc')
             ->where('cpc.branch_id', $branch_id)
             ->whereRaw($str_search)
-            ->selectRaw('cpc.id, cpc.name')
+            ->selectRaw('cpc.id, cpc.name,cpc.name_kh,cpc.description')
             ->get();
     }
 

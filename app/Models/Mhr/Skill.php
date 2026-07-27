@@ -26,7 +26,7 @@ class Skill extends VSModel
 
         $v_rule = [
             'title' => '1|string|0-100|text=name_required::@key;@max;@value',
-            'description' => '0|string|0-1000',
+            'description' => '0|string|0-300',
         ];
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
         $res = DBX::validateObject($arr, $v_rule, true, ['title' => $chars, 'description' => $chars], $ss->lang, false, null);
@@ -80,7 +80,7 @@ class Skill extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row = setOfficialDates($row, [], ['updated_at'], []);
+            setOfficialDates($row, [''], ['updated_at'], ['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
