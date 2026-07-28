@@ -61,6 +61,7 @@ class Warning extends VSModel
             'action_id' => $inputs['warning_type_id'],
             'start_date' => $inputs['warning_date'],
             'end_date' => $inputs['warning_date'],
+            'warning_date' => $inputs['warning_date'],
             'issues' => $inputs['issues'],
             'remarks' => $inputs['remarks'] ?? null,
             'branch_id' => $ss->branch_id,
@@ -94,12 +95,12 @@ class Warning extends VSModel
 
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
-            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-            ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->whereRaw($str_search)
-            ->where('emp.subs_id', hex2bin($ss->subs_id))
-            ->whereIn('emp.branch_id', getAccessBranches($ss))
-            ->selectRaw('w.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex, p.name as position, w.start_date as warning_date, w.warning_type_id, wt.name as warning_type, w.issues, w.remarks, w.update_user, w.updated_at')
+            // ->where('emp.subs_id', hex2bin($ss->subs_id))
+            // ->whereIn('emp.branch_id', getAccessBranches($ss))
+            ->selectRaw('w.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex,p.name as position, w.start_date as warning_date, w.warning_type_id, wt.name as warning_type, w.issues, w.remarks, w.update_user, w.updated_at')
             ->orderBy('w.id', 'DESC');
 
         if ($warning_type_id) {
@@ -112,7 +113,7 @@ class Warning extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row = setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
+            setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -124,8 +125,8 @@ class Warning extends VSModel
 
         $row = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
-            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-            ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->where('w.id', $id)
             ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
             ->first();

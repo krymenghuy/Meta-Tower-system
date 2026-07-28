@@ -743,7 +743,7 @@ class GeneralSettings //extends Model
     static function options_employee($emp_status_ids, $ss)
     {
         $q = DB::table('employees as e')
-            ->where('e.subs_id', hex2bin($ss->subs_id))
+            // ->where('e.subs_id', hex2bin($ss->subs_id))
             ->selectRaw('id, name, code, sex, name_kh, phone_number, email, position_id, photo_file_name');
 
         if (!empty($emp_status_ids)) {

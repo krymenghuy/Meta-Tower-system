@@ -43,6 +43,7 @@ class EmployeeBenefit extends VSModel
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
             'effective_date' => '0|date',
+            'issue_date' => '0|date',
             // 'balance' => '0|number|default=0',
             'amount' => '1|number',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
@@ -58,6 +59,7 @@ class EmployeeBenefit extends VSModel
         $inputs = $res->values;
         $d = (object)$inputs;
         $inputs['effective_date'] = convertDate($d->effective_date);
+        $inputs['issue_date'] = convertDate($d->issue_date);
         if(!$id){
         //     $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
         //     if($id){
@@ -287,6 +289,7 @@ class EmployeeBenefit extends VSModel
                 b.type_id as benefit_type_id,
                 eb.benefit_id,
                 eb.effective_date,
+                eb.issue_date,
                 eb.tax_option_id,
                 eb.flat_tax_rate,
                 eb.balance,
@@ -301,7 +304,7 @@ class EmployeeBenefit extends VSModel
             $rows = $query->skip($skip_rows)->take($per_page)->get();
             foreach ($rows as $row) {
                 $row->image_url = '';
-                $row = setOfficialDates($row,['effective_date'],[''],['']);
+                $row = setOfficialDates($row,['effective_date','issue_date'],[''],['']);
                 if (isset($row->emp_id) && $row->emp_photo) {
                     $row->image_url = Employee::profilePicture($row->emp_id);
                 }
@@ -327,6 +330,7 @@ class EmployeeBenefit extends VSModel
             b.type_id as benefit_type_id,
             eb.benefit_id,
             eb.effective_date,
+            eb.issue_date,
             eb.tax_option_id,
             eb.flat_tax_rate,
             eb.balance,

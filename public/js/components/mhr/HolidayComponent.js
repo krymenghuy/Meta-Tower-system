@@ -289,7 +289,7 @@ var HolidayComponent = (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("All Type", "titles"),
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
             });

@@ -21,14 +21,14 @@ var WarningComponent = (function () {
             data: "",
         },
         {
-            transTitle: "titles.Employee Code",
+            transTitle: "titles.Code",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary-prm text-capitalize">${data.emp_code}</span>`;
             },
         },
         {
-            transTitle: "titles.Full Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 const sex =
@@ -83,12 +83,11 @@ var WarningComponent = (function () {
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
-                    <small class="text-muted">${data.updated_at ?? ""}</small>
-                </div>`;
-            },
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? '_'}</span><br/>
+                <small >${data.updated_at ?? ""}</small>
+            </div>`,
         },
         {
             className: 'col_action align-middle',
@@ -377,7 +376,7 @@ const WarningDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id;
-
+                            
                             vsapi
                                 .call(
                                     [main_view.base_url, "/mhr/emp-warning/save"].join(
@@ -404,7 +403,7 @@ const WarningDialog = (() => {
                     },
             ],
             prepareFormOptions: {
-                createTitle: "vslang:titles.Add Warning",
+                createTitle: "vslang:titles.Create Warning",
                 modifyTitle: "vslang:titles.Modify Warning",
                 targetProp: "warning",
                 api: {

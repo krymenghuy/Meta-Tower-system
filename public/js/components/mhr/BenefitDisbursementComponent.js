@@ -39,7 +39,7 @@ var BenefitDisbursementComponent =  (function () {
                 <div style="display: flex; align-items: center;">
                     <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
-                        <span style="font-size: 14px; font-weight: bold;">${
+                        <span style="font-size: 14px;">${
                             data.name ?? ""
                         }</span><br/>
                         <span style="font-size: 12px; color: gray;">${
@@ -55,14 +55,14 @@ var BenefitDisbursementComponent =  (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.benefit_name ?? "HD"
+                    data.benefit_name ?? "_"
                 }</span>`,
         },
         {
             transTitle: "titles.Target Month",
             className: "align-middle",
             data: (data) => {
-                const month = monthNames[data.target_month ] ?? "";
+                const month = monthNames[data.target_month ] ?? "_";
 
                 return `<p class="p-0 m-0">${month} </p>`;
             },
@@ -71,7 +71,7 @@ var BenefitDisbursementComponent =  (function () {
             transTitle: "titles.Target Year",
             className: "align-middle",
             data: (data) =>
-                `<span class="text-prm-custom">${data.target_year}</span>`,
+                `<span class="text-prm-custom">${data.target_year ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Withdraw Percent",
@@ -80,22 +80,32 @@ var BenefitDisbursementComponent =  (function () {
                 `<span class="text-prm-custom">${data.withdraw_rate ?? "0"}%</span>`,
         },
         {
+            transTitle: "titles.Last Updated",
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? '_'}</span>
+                <span class="text-muted small">${data.updated_at ?? '_'}</span>
+            </div>`
+        },
+        {
             transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn-benefit-disbursement-modify" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-benefit-disbursement-delete" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
-        },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_benefit_disbursement_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
+        }
     ];
     mThis.init = function () {
         if (mThis.initAlready) return;
@@ -172,23 +182,46 @@ var BenefitDisbursementComponent =  (function () {
         });
         return filters;
     };
-    mThis.initDropdownMenus = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(
-                e.target,
-                ".btn-benefit-disbursement-modify"
-            );
-            if (btn) {
-                mThis.editBenefitDisburse(btn.dataset.id, btn);
+  
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_benefit_disbursement_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_benefit_disbursement"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_benefit_disbursement"
+                }
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_benefit_disbursement": {
+                        mThis.editBenefitDisburse(id, menuLink);
+                        break;
+                    }
+                    case "delete_benefit_disbursement": {
+                        mThis.deleteBenefitDisburse(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
-            btn = VSUtil.closestLimited(
-                e.target,
-                ".btn-benefit-disbursement-delete"
-            );
-            if (btn) {
-                mThis.deleteBenefitDisburse(btn.dataset.id, btn);
-            }
-        });
+        };
+        new VSDropdownMenu(menuOptopns);
     };
     mThis.editBenefitDisburse = (id, menulink) => {
         let op = {
@@ -256,9 +289,9 @@ var BenefitDisbursementComponent =  (function () {
                     d.benefits,
                     "id",
                     "name",
-                    true,
-                    "All Benefits",
-                    null
+                    "",
+                    LocaleManager.trans("All Benefits", "titles"),
+                    ""
                 );
             });
     };
@@ -358,14 +391,14 @@ const BenefitDisburseDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const jl = me.getData();
 
@@ -397,9 +430,7 @@ const BenefitDisburseDialog = (() => {
                     },
                 ],
                 contentCreated: (me, divModal) => {
-                    me.saveBenefitDisburse = (bd) => {
-                        alert("It seems no action yet!");
-                    };
+                    
                 },
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Benefit Disburse",
@@ -434,7 +465,6 @@ const BenefitDisburseDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                     setTimeout(() => {
                         if (data.target_month) {
                             const monthSelect = me.divModal.querySelector(

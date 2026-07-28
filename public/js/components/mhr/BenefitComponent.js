@@ -13,15 +13,20 @@ var BenefitComponent =  (function () {
 
     mThis.cols = [
         {
-            className: "align-middle text-nowrap ",
+            transTitle: "titles.No",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>`,
         },
         {
             transTitle: "titles.Name",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
+                    <div class="text-primary-custom" style="width:180px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "_"}</span>
                     </div>
                 `;
              }
@@ -46,31 +51,32 @@ var BenefitComponent =  (function () {
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column" style="width:180px;">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? "-"}</span>
-                    <small class="text-muted">${data.updated_at ?? "-"}</small>
-                </div>`;
-            },
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? '_'}</span>
+                <span class="text-muted small">${data.updated_at ?? '_'}</span>
+            </div>`
         },
         {
-            title: "",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-center align-items-middle">
-                    <div class="text-middle gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_benefit" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_benefit_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
         },
+        
     ];
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -94,7 +100,7 @@ var BenefitComponent =  (function () {
                     mThis.BenefitListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(270)) return;
+            // if (!AuthManager.allowed(270)) return;
             BenefitDialog.show(op);
         };
         mThis.pr_tbl = mThis.BenefitListView.getListContainer();
@@ -116,27 +122,55 @@ var BenefitComponent =  (function () {
                 mThis.BenefitListView.showPage(mThis.getFilterData());
             }, 200);
         });
-        mThis.setActionListeners();
+        mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis.initAlready = true;
     };
- 
-    mThis.setActionListeners = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
-            if (btn) {
-                mThis.deleteBenefit(btn.dataset.id, btn);
-            }
+     mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_benefit_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_benefit"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_benefit"
+                }
+            ],
 
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_benefit");
-            if (btn) {
-                mThis.editBenefit(btn.dataset.id, btn);
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_benefit": {
+                        mThis.editBenefit(id, menuLink);
+                        break;
+                    }
+                    case "delete_benefit": {
+                        mThis.deleteBenefit(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
-        });
+        };
+        new VSDropdownMenu(menuOptopns);
     };
+ 
+    
 
     mThis.editBenefit = (id, btn) => {
-        if (!AuthManager.allowed(271)) return;
+        // if (!AuthManager.allowed(271)) return;
         BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getFilterData()),});
     };
 
@@ -242,7 +276,7 @@ const BenefitDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             //Close with Cancel button
                             me.hide(false);
@@ -250,7 +284,7 @@ const BenefitDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -300,7 +334,6 @@ const BenefitDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                 },
             });
 
