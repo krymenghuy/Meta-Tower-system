@@ -443,6 +443,22 @@ const WarningDialog = (() => {
                         updatePosition();
                     }
                 }
+
+                if (me.dataOptions && !me.dataOptions.id) {
+                    if (me.dataOptions.emp_id && me.controls.employee_id) {
+                        me.controls.employee_id.value = me.dataOptions.emp_id;
+                        me.controls.employee_id.dispatchEvent(new Event("change"));
+                    }
+                    if (me.dataOptions.warning_date && me.controls.warning_date) {
+                        me.controls.warning_date.value = me.dataOptions.warning_date;
+                    }
+                    if (me.dataOptions.issues && me.controls.issues) {
+                        me.controls.issues.value = me.dataOptions.issues;
+                    }
+                    if (me.dataOptions.remarks && me.controls.remarks) {
+                        me.controls.remarks.value = me.dataOptions.remarks;
+                    }
+                }
             },
         });
 

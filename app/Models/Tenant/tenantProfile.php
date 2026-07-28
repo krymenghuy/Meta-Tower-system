@@ -4,7 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Prm\GeneralSettings;
 use App\Models\Prm\Tenant as PrmTenant;
-use DB;
+use Illuminate\Support\Facades\DB;
 use DBX;
 use DV;
 use Carbon\Carbon;

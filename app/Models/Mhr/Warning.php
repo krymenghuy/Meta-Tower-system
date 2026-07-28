@@ -59,6 +59,7 @@ class Warning extends VSModel
             'emp_id' => $inputs['emp_id'],
             'warning_type_id' => $inputs['warning_type_id'],
             'action_id' => $inputs['warning_type_id'],
+            'warning_date' => $inputs['warning_date'],
             'start_date' => $inputs['warning_date'],
             'end_date' => $inputs['warning_date'],
             'warning_date' => $inputs['warning_date'],
