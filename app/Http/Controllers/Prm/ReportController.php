@@ -44,7 +44,7 @@ class ReportController extends Controller
     }
 
     function getIncomeByCategories(Request $req){
-        $ss = XAuthService::verifyAuth($req,'301');
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code != 200) return $ss;
         $report = new Report();
         return JDV::result($report->getIncomeByCategories($req->all(),$ss));

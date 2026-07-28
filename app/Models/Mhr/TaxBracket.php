@@ -31,9 +31,7 @@ class TaxBracket //extends VSModel
             'bias' => '1|number',
            'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$national_currency,
         ];
-        $checkUnique = [
-            "$branch_id|tax_brackets|lower_amount,upper_amount|id=id|text= already exists by tax bracket."
-        ];
+        $checkUnique = null;
 
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
@@ -74,9 +72,8 @@ class TaxBracket //extends VSModel
 
 
 
-        $update_date = DBX::formatTime("tb.updated_at", 'updated_at');
         $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code, tb.update_user, ' . $update_date)
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code, tb.update_user,tb.updated_at')
             ->where('tb.branch_id', $branch_id)
             ->orderBy('tb.lower_amount', 'asc') // Order by lower_amount first
             ->orderBy('tb.upper_amount', 'asc'); // Then order by upper_amount
@@ -84,6 +81,10 @@ class TaxBracket //extends VSModel
 
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            setOfficialDates($row,[''],['updated_at'],['']);
+
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

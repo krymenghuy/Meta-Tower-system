@@ -7,7 +7,7 @@
             </div>
             <div class="ms-md-auto col-12 col-md-auto">
                 <button type="button" class="w-100 btnAddNewPrm" id="_btnAddWorkShift">
-                    <span vslang="buttons.Create Shift"></span>
+                    <span vslang="buttons.Create WorkShift"></span>
                 </button>
             </div>
         </div>

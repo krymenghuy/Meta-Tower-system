@@ -4,12 +4,12 @@
 
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm"  id="_btnAddTaxBracket">
-                    <i class="fa-brands fa-nfc-symbol" style="color: rgb(249, 251, 255);"></i>
+                    <i class="fa-brands fa-nfc-symbol"></i>
                      <span vslang="buttons.Create Tax Bracket">Create Tax Bracket</span>
                 </button>
             </div> 
         </div>
     </div>
 
-    <div id="_taxBracket_list" class="mt-3 px-3"></div>
+    <div id="_taxBracket_list" class="mt-3"></div>
 </div>

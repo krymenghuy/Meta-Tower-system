@@ -1527,6 +1527,12 @@ function incomeByCategoryTable(div, d) {
             <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
         </div>
         <div class="d-block">
+            <p>Checked By</p>
+            <hr class="bg-dark pb-0 mb-1 mt-5"/>
+            <p class="pb-0 mb-1">Finance Manager</p>
+            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
+        </div>
+        <div class="d-block">
             <p>Approved By</p>
             <hr class="bg-dark mt-5"/>
             <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>

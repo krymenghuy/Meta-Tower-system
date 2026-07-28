@@ -548,10 +548,10 @@ public static function getIncomeByCategories($arr, $ss)
             'date' => date('d-M-Y', strtotime($row->receipt_date)),
             'receipt_no' => $row->receipt_no,
             'tenant_name' => $row->tenant_name,
-            'cash' => $cash,
-            'transfer' => $transfer,
-            'cheque' => $cheque,
-            'card' => $card,
+            'cash' => '$' . number_format(floatval($cash ?? 0), 2),
+            'transfer' => '$' . number_format(floatval($transfer ?? 0), 2),
+            'cheque' => '$' . number_format(floatval($cheque ?? 0), 2),
+            'card' => '$' . number_format(floatval($card ?? 0), 2),
             'remark' => $row->general_remark,
         ];
     }

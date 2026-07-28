@@ -5,9 +5,9 @@
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_department"
                     placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddDepartment">
-                    <i class="fa-solid fa-cubes-stacked" style="color: rgb(255, 255, 255);"></i>
+                    <i class="fa-solid fa-cubes-stacked"></i>
                     <span vslang="buttons.Create Department"></span>
                 </button>
             </div>

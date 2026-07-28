@@ -500,7 +500,9 @@ return [
 
 
 
-
+        'create_success_tax_bracket' => 'Tax bracket has been created successfully.',
+        'update_success_tax_bracket' => 'Tax bracket has been updated successfully.',
+        'delete_success_tax_bracket' => 'Tax bracket has been deleted successfully.',
 
         'update_success_employee' => 'Updated employee successfully.',
         'create_success_employee' => 'Created employee successfully.',

@@ -44,8 +44,6 @@ var JobsLevelComponent = (function () {
                 <span class="text-muted small">${data.updated_at ?? '_'}</span>
             </div>`
         },
-
-
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",

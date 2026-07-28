@@ -10,11 +10,11 @@ var WorkShiftListComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_work_shift_list_search");
     mThis.cols = [
    
-        {
+       {
             transTitle: "titles.No",
-            className: "align-middle",
+            className: "align-middle text-capitalize",
             data: (data, index) =>
-                `<div class="rounded-circle align-items-center text-center p-1 text-prm-custom" style="background-color: #e7eeff; width: 30px; height: 30px;">
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>
             `,
@@ -23,37 +23,37 @@ var WorkShiftListComponent = (function () {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-pr-custom">${data.name}</span>`;
+                return `<span class="text-pr-custom">${data.name ?? '_'}</span>`;
             },
         },
-
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data) => {
-                return [
-                    `<span class="text-Capitalize d-block">${data.update_user ?? '-'}</span>`,
-                    `<span class="text-muted small">${data.updated_at ?? '-'}</span>`,
-                ].join("");
-            },
+            className: "align-middle text-nowrap",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? '_'}</span><br/>
+                <small >${data.updated_at ?? ""}</small>
+            </div>`,
         },
         {
-            title: "",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => {
-                return `
-                <div class="d-flex justify-content-center align-items-middle">
-                    <div class="text-middle gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_work_shift" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_work_shift" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>`;
-            },
+            data: data => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-end gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "work_shift_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`
         },
+       
     ];
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -118,17 +118,45 @@ var WorkShiftListComponent = (function () {
 
         return p;
     };
-    mThis.initDropdownMenus = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_edit_work_shift");
-            if (btn) {
-                mThis.editWorkShift(btn.dataset.id, btn);
+    mThis.initDropdownMenus = table => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "work_shift_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_work_shift"
+                },
+                {
+                    html:
+                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_work_shift"
+                }
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_work_shift": {
+                        mThis.editWorkShift(id, menuLink);
+                        break;
+                    }
+                    case "delete_work_shift": {
+                        mThis.deleteWorkShift(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
-            btn = VSUtil.closestLimited(e.target, ".btn_delete_work_shift");
-            if (btn) {
-                mThis.deleteWorkShift(btn.dataset.id, btn);
-            }
-        });
+        };
+        new VSDropdownMenu(menuOptopns);
     };
     mThis.editWorkShift = (id, menulink) => {
         let op = {

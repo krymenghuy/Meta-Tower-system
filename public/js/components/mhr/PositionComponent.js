@@ -27,7 +27,7 @@ var PositionComponent = (function () {
             transTitle: "titles.Name",
             className: "align-middle text-capitalize",
             data: (data) =>
-                `<div class="text-prm-custom text-capitalize" style="width:90px; ">
+                `<div class="text-prm-custom text-capitalize" style="width:150px; ">
                 <span class="text-prm-custom text-capitalize" >${data.name ?? "_"}</span></div>`,
         },
         {
@@ -130,7 +130,7 @@ var PositionComponent = (function () {
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
