@@ -53,7 +53,7 @@ class DepartmentController extends Controller
 
     public function deleteDepartment(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 218);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

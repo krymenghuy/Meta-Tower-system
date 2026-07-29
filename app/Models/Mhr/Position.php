@@ -108,6 +108,7 @@ class Position extends VSModel
             ->whereRaw($str_search)
             ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.staff_group_id, sg.name as staff_group, p.department_id, p.job_level_id, job.name as level, p.salary, p.currency_code, d.name as department, p.updated_at, p.update_user')
             ->orderByRaw('job.rank ASC, d.name ASC');
+            // ->orderByRaw('p.id DESC');
         if ($search_department) {
             $query->where('p.department_id', $search_department);
         }

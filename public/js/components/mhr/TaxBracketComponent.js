@@ -375,7 +375,7 @@ const TaxBracketDialog = (() => {
                     }
                 ],
                 onPrepareForm: (me, data) => {
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    // me.controls.currency_code.value = VSMoney.getCurrency().code;
                 }
             });
 

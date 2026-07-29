@@ -731,7 +731,7 @@ class GeneralSettings //extends Model
     static function options_work_shift($ss)
     {
         $q = DB::table('work_shifts')
-            ->where('subs_id', hex2bin($ss->subs_id))
+            // ->where('subs_id', hex2bin($ss->subs_id))
             ->selectRaw('id, name');
 
         return $q->get();
