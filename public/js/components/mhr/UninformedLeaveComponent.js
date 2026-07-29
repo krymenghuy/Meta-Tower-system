@@ -35,18 +35,18 @@ var UninformedLeaveComponent = (function () {
                 `;
             },
         },
-        // {
-        //     transTitle: "titles.Position",
-        //     className: "align-middle text-start",
-        //     data: (data) => {
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 <span>${data.position_name ?? "-"}</span>
-        //             </div>
-        //         `;
-        //     },
-        // },
-        
+        {
+            transTitle: "titles.Position",
+            className: "align-middle text-start",
+            data: (data) => {
+                return `
+                    <div class="d-flex flex-column">
+                        <span>${data.position_name ?? "-"}</span>
+                    </div>
+                `;
+            },
+        },
+
         {
             transTitle: "titles.Absent Period",
             className: "align-middle text-center text-nowrap",
@@ -54,18 +54,18 @@ var UninformedLeaveComponent = (function () {
                 return `
                     <span class="badge bg-light text-prm-custom border px-3 py-2">
                         <i class="fa-regular fa-calendar me-1"></i>
-                        ${data.date_period ?? (data.start_date + " - " + data.end_date)}
+                        ${data.date_period ?? data.start_date + " - " + data.end_date}
                     </span>
                 `;
             },
         },
 
         {
-            transTitle: "titles.Reason",
+            transTitle: "titles.Issue",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-prm text-capitalize" style="width:100px;">
+                    <div class="text-primary-prm text-capitalize" style="width:250px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
                     </div>
                 `;
@@ -83,10 +83,18 @@ var UninformedLeaveComponent = (function () {
                 if (status == "Pending") {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning";
-                } else if (status === "Inactive" || status === "Uninformed" || status === "uninformed") {
+                } else if (
+                    status === "Inactive" ||
+                    status === "Uninformed" ||
+                    status === "uninformed"
+                ) {
                     cls =
                         "badge text-danger bg-danger-subtle border border-danger";
-                } else if (status == "Active" || status === "Excused" || status === "excused") {
+                } else if (
+                    status == "Active" ||
+                    status === "Excused" ||
+                    status === "excused"
+                ) {
                     cls =
                         "badge text-success bg-success-subtle border border-success";
                 }
@@ -104,23 +112,45 @@ var UninformedLeaveComponent = (function () {
             transTitle: "titles.Decision",
             className: "align-middle text-center",
             data: (data) => {
-                let decision = "Deduct";
-                let cls = "badge text-danger bg-danger-subtle border border-danger";
+                console.log("LEAVE DATA IN GRID:", data);
+                let decision = null;
+                let cls = "";
 
                 if (data.has_warning) {
                     decision = "Warning";
                     cls = "badge text-warning bg-warning-subtle border border-warning";
-                } else if (data.status === "Excused" || data.status === "excused" || data.status_id == 5) {
+                } else if (
+                    data.status === "Excused" ||
+                    data.status === "excused" ||
+                    data.status_id == 5
+                ) {
                     decision = "Excuse";
                     cls = "badge text-success bg-success-subtle border border-success";
+                } else if (parseFloat(data.deduction) > 0) {
+                    decision = "Deduct";
+                    cls = "badge text-danger bg-danger-subtle border border-danger";
+                }
+
+                if (!decision) {
+                    return `<span class="text-muted">-</span>`;
                 }
 
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                    <span class="${cls} text-capitalize d-inline-block text-center" 
+                          style="min-width:70px;">
                         ${decision}
                     </span>
                 `;
             },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle text-nowrap",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? '_'}</span><br/>
+                <small >${data.updated_at ?? ""}</small>
+            </div>`,
         },
         {
             className: "col_action align-middle",
@@ -129,9 +159,13 @@ var UninformedLeaveComponent = (function () {
                     <a href="javascript:void(0)"
                     class="btn_leave_action"
                     data-id="${data.id}"
-                    data-emp_id="${data.emp_id ?? ''}"
-                    data-start_date="${data.start_date ?? ''}"
-                    data-end_date="${data.end_date ?? ''}"
+                    data-emp_id="${data.emp_id ?? ""}"
+                    data-emp_name="${data.emp_name ?? ""}"
+                    data-emp_salary="${data.emp_salary ?? 0.0}"
+                    data-deduction="${data.deduction ?? 0.0}"
+                    data-remarks="${data.remarks ?? ""}"
+                    data-start_date="${data.start_date ?? ""}"
+                    data-end_date="${data.end_date ?? ""}"
                     data-has_warning="${data.has_warning ?? 0}"
                     data-statusid="${data.status_id}"
                     aria-haspopup="true"
@@ -141,7 +175,6 @@ var UninformedLeaveComponent = (function () {
                     </a>
                 </div>`,
         },
-      
     ];
 
     mThis.init = () => {
@@ -149,7 +182,7 @@ var UninformedLeaveComponent = (function () {
 
         mThis.LeaveRequestListView = new ListView("_leave_uninformed_list", {
             fetchApi: `${main_view.base_url}/mhr/leave/uninformed`,
-            perPage: 3,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -173,6 +206,7 @@ var UninformedLeaveComponent = (function () {
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
         mThis.initDropdownMenus(mThis.tblLeaves);
+
         mThis.pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
@@ -249,6 +283,12 @@ var UninformedLeaveComponent = (function () {
                     name: "excuse_uninformed_leave",
                 },
                 {
+                    html: '<span class="ps-2" vslang="titles.Deduct">Deduct</span>',
+                    icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "deduct_uninformed_leave",
+                },
+                {
                     html: '<span class="ps-2" vslang="titles.Warning">Warning</span>',
                     icon: `<i class="fa-regular fa-bell fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -276,6 +316,10 @@ var UninformedLeaveComponent = (function () {
                         mThis.excuseLeave(id, menuLink);
                         break;
                     }
+                    case "deduct_uninformed_leave": {
+                        mThis.deductLeave(id, menuLink);
+                        break;
+                    }
                     case "warning_uninformed_leave": {
                         mThis.warningLeave(id, menuLink);
                         break;
@@ -296,60 +340,6 @@ var UninformedLeaveComponent = (function () {
             },
         };
         new VSDropdownMenu(menuOptions);
-    };
-
-    mThis.changeStatus = (id, lnk) => {
-        let tr = lnk.closest("tr");
-        let status_id = Validator.properCase(lnk.dataset.status_id ?? "");
-        let emp_id = lnk.dataset.emp_id;
-        let start_date = lnk.dataset.start_date;
-        let end_date = lnk.dataset.end_date;
-
-        let inputOptions = {
-            title: "Set Leave Request Status",
-            dataLabel: "Leave status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
-                {
-                    status_id: "2",
-                    name: "Approved",
-                },
-                {
-                    status_id: "3",
-                    name: "Rejected",
-                },
-            ],
-            defaultValue: status_id,
-        };
-
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value,
-                    emp_id: emp_id,
-                    start_date: start_date,
-                    end_date: end_date,
-                };
-
-                vsapi
-                    .call(`${mThis.base_url}/mhr/leave/update-status`, p)
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            InputBox2.close();
-                            cv_interact.success(
-                                "The leave request status has been updated",
-                            );
-                            mThis.LeaveRequestListView.showPage(
-                                mThis.getFilterData(),
-                            );
-                        } else cv_interact.error(res.error_message);
-                    });
-            }
-        });
     };
 
     mThis.editUninformedLeave = (id, menuLink) => {
@@ -393,15 +383,14 @@ var UninformedLeaveComponent = (function () {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
                                 mThis.LeaveRequestListView.showPage();
+                            } else {
+                                cv_interact.error(res.error_message);
                             }
                         });
-                } else {
-                    cv_interact.error(res.error_message);
                 }
             },
         );
     };
-
 
     mThis.excuseLeave = (id, menuLink) => {
         ExcuseLeaveDialog.show({
@@ -416,10 +405,32 @@ var UninformedLeaveComponent = (function () {
         });
     };
 
+    mThis.deductLeave = (id, menuLink) => {
+        DeductLeaveDialog.show({
+            id: id,
+            emp_id: menuLink.dataset.emp_id,
+            employee: menuLink.dataset.emp_name,
+            emp_salary: menuLink.dataset.emp_salary,
+            deduction: menuLink.dataset.deduction,
+            remarks: menuLink.dataset.remarks,
+            start_date: menuLink.dataset.start_date,
+            end_date: menuLink.dataset.end_date,
+            btn: menuLink,
+            onClose: (res) => {
+                cv_interact.success(
+                    res?.data?.message || "Leave deducted successfully",
+                );
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            },
+        });
+    };
+
     mThis.warningLeave = (id, menuLink) => {
         let has_warning = menuLink.dataset.has_warning;
         if (has_warning === "1" || has_warning === "true") {
-            cv_interact.error("Warning has already been issued for this absence.");
+            cv_interact.error(
+                "Warning has already been issued for this absence.",
+            );
             return;
         }
 
@@ -427,22 +438,51 @@ var UninformedLeaveComponent = (function () {
         let start_date = menuLink.dataset.start_date;
         let end_date = menuLink.dataset.end_date;
 
-        let today = new Date();
-        let dd = String(today.getDate()).padStart(2, '0');
-        let mm = today.toLocaleString('en-US', { month: 'short' });
-        let yyyy = today.getFullYear();
-        let todayFormatted = `${dd}-${mm}-${yyyy}`;
-
         let issues = `Uninformed Leave from ${start_date} to ${end_date}`;
+        let temp_issues = issues;
+
+        const onInputWarning = (e) => {
+            if (e.target && e.target.name === "issues") {
+                temp_issues = e.target.value;
+            }
+        };
+        document.addEventListener("input", onInputWarning);
 
         let op = {
             id: null,
             emp_id: emp_id,
-            warning_date: todayFormatted,
+            warning_date: start_date,
             issues: issues,
             btn: menuLink,
-            onClose: () => {
-                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            onClose: (arg1, arg2) => {
+                document.removeEventListener("input", onInputWarning);
+
+                let saved = false;
+                if (typeof arg1 === "boolean") {
+                    saved = arg1;
+                } else if (arg1 && typeof arg1 === "object") {
+                    saved = true;
+                }
+
+                if (!saved) return;
+
+                // Update the leave status to refresh the last updated details
+                const payload = {
+                    id: id,
+                    status_id: "uninformed",
+                    remarks: `Warning issued: ${temp_issues}`,
+                };
+
+                vsapi
+                    .call(
+                        `${main_view.base_url}/mhr/leave/update-status`,
+                        payload,
+                        menuLink,
+                        false,
+                    )
+                    .then((res) => {
+                        mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+                    });
             },
         };
         WarningDialog.show(op);
@@ -698,18 +738,15 @@ const UninformedLeaveDialog = (() => {
 
 const ExcuseLeaveDialog = (() => {
     const self = {};
-    let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                title: "Excuse Leave Request",
-                cssClass: "modal-md vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: (me) => {
-                    return `
+        const dialog = new GeneralDialog({
+            title: "Excuse Leave Request",
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: (me) => {
+                return `
                 <div class="row g-3">
                     <div class="col-12">
                         <div class="vs-material-field">
@@ -719,52 +756,128 @@ const ExcuseLeaveDialog = (() => {
                     </div>
                 </div>
                 `;
+            },
+            buttons: [
+                {
+                    label: "Cancel",
+                    cssClass: "btn-vs-cancel",
+                    click: (me) => {
+                        me.hide(false);
+                    },
                 },
-                buttons: [
-                    {
-                        label: "Cancel",
-                        cssClass: "btn-vs-cancel",
-                        click: (me) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: "Submit",
-                        cssClass: "btn-vs-save",
-                        click: (me, btn) => {
-                            const p = me.getData();
-                            const payload = {
-                                id: me.dataOptions.id,
-                                status_id: 'excuse',
-                                remarks: p.remarks,
-                            };
+                {
+                    label: "Submit",
+                    cssClass: "btn-vs-save",
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        const payload = {
+                            id: me.dataOptions.id,
+                            status_id: "excuse",
+                            remarks: p.remarks,
+                        };
 
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/mhr/leave/update-status`,
-                                    payload,
-                                    btn,
-                                    false,
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true);
-                                        if (
-                                            typeof me.dataOptions.onClose ===
-                                            "function"
-                                        ) {
-                                            me.dataOptions.onClose(res);
-                                        }
-                                    } else {
-                                        cv_interact.error(res.error_message);
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/mhr/leave/update-status`,
+                                payload,
+                                btn,
+                                false,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true);
+                                    if (
+                                        typeof me.dataOptions.onClose ===
+                                        "function"
+                                    ) {
+                                        me.dataOptions.onClose(res);
                                     }
-                                });
-                        },
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
                     },
-                ],
-            });
+                },
+            ],
+        });
 
         dialog.show(op);
+    };
+
+    return self;
+})();
+
+const DeductLeaveDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        if (typeof DeductionComponent === "undefined" || !DeductionComponent.DeductDialog) {
+            cv_interact.error("Deduction dialog is not available.");
+            return;
+        }
+
+        let temp_deduct = op.deduction;
+        let temp_remarks = `Uninformed Leave (${op.start_date} to ${op.end_date})`;
+
+        const onInputDeduct = (e) => {
+            if (e.target) {
+                if (e.target.name === "deduct_amount") {
+                    temp_deduct = e.target.value;
+                }
+                if (e.target.name === "issues") {
+                    temp_remarks = e.target.value;
+                }
+            }
+        };
+        document.addEventListener("input", onInputDeduct);
+
+        const deductDialogOptions = {
+            id: null,
+            emp_id: op.emp_id || op.btn?.dataset?.emp_id,
+            deduct_amount: op.deduction,
+            issues: `Uninformed Leave (${op.start_date} to ${op.end_date})`,
+            btn: op.btn,
+            silentSuccess: true, // prevent double dialogs on save
+            onClose: (arg1, arg2) => {
+                document.removeEventListener("input", onInputDeduct);
+
+                let saved = false;
+                if (typeof arg1 === "boolean") {
+                    saved = arg1;
+                } else if (arg1 && typeof arg1 === "object") {
+                    saved = true;
+                }
+
+                if (!saved) return;
+
+                // If saved successfully, update leave status
+                const payload = {
+                    id: op.id,
+                    status_id: "deduct",
+                    remarks: temp_remarks,
+                    deduction: temp_deduct,
+                };
+
+                vsapi
+                    .call(
+                        `${main_view.base_url}/mhr/leave/update-status`,
+                        payload,
+                        op.btn,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code == 200) {
+                            if (typeof op.onClose === "function") {
+                                op.onClose(res);
+                            }
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+            }
+        };
+
+        DeductionComponent.DeductDialog.show(deductDialogOptions);
     };
 
     return self;
