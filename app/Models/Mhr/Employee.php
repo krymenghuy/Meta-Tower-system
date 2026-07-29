@@ -21,7 +21,11 @@ class Employee extends VSModel
     protected static $img_dir = 'employees';
 
     protected $userInfo = null;
-
+    public function __construct($id = null, $userInfo = null)
+    {
+        $this->id = $id;
+        $this->userInfo = $userInfo;
+    }
     static function getProps($id, $cols){
           if(!$cols) $cols = 'id,code,name,sex';
           return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
@@ -33,41 +37,6 @@ class Employee extends VSModel
          'description'=>$message
        ];
        DBX::saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
-    }
-
-    public static function resolveWorkShiftId($ss)
-    {
-        $subsId = $ss->subs_id ?? null;
-        $subsBin = $subsId ? @hex2bin($subsId) : null;
-
-        if ($subsBin) {
-            $id = DB::table('work_shifts')
-                ->where('subs_id', $subsBin)
-                ->orderBy('id')
-                ->value('id');
-            if ($id) {
-                return $id;
-            }
-        }
-
-        $id = DB::table('work_shifts')->orderBy('id')->value('id');
-        if ($id) {
-            return $id;
-        }
-
-        $now = getNowTime();
-        return DB::table('work_shifts')->insertGetId([
-            'name' => 'Default',
-            'subs_id' => $subsBin,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-    }
-
-    public function __construct($id = null, $userInfo = null)
-    {
-        $this->id = $id;
-        $this->userInfo = $userInfo;
     }
     public static function checkUniqueEmployeeByPhone($phone_number, $id = null)
     {
@@ -112,42 +81,32 @@ class Employee extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
-        // Required (1) fields are checked top → bottom to match the form
         $v_rule = [
-            // Basic info
-            'name'            => '1|string|0-150|text=full_name_required',
-            'name_kh'         => '1|string|0-150|text=khmer_name_required',
-            'date_of_birth'   => '1|date|text=date_of_birth_required',
+            'name'            => '1|string|0-150|text=name_required::@key;@max;@value_required',
+            'name_kh'         => '1|string|0-150|text=name_required::@key;@max;@value',
             'sex'             => '1|choice|F,M|text=select_gender',
-            'marital_status'  => '1|string|0-30|text=marital_status_required',
-            // Identification
             'nationality_id'  => '1|number|text=nationality_required',
-            'nid'             => '1|string|1-30|text=identity_card_required',
+            'marital_status'  => '1|string|0-30|text=marital_status_required',
+            'date_of_birth'   => '1|date|text=date_of_birth_required',
+            'nid'             => '1|string|1-30|text=national_id_required',
             'nid_expiry_date' => '1|date|text=identity_card_expiry_required',
             'nssf_id'         => '1|string|1-30|text=nssf_id_required',
-            'passport_number' => '1|string|1-30|text=passport_number_required',
-            'passport_expiry_date' => '1|date|text=passport_expiry_required',
-            // Employment & Contact
+            'passport_number' => '0|string|1-30',
+            'passport_expiry_date' => '0|date|text=passport_expiry_required',
             'birth_city_id'   => '1|number|text=place_of_birth_required',
             'emp_type_id'     => '1|number|text=employee_type_required',
             'position_id'     => '1|number|text=position_required',
             'phone_number'    => '1|string|1-30|text=phone_number_required',
-            // Use string (not email): DBX isEmail() always returns true, so empty email would pass
-            'email'           => '1|string|1-100|text=email_required',
+            'email'           => '0|string|1-30',
             'salary'          => '1|number|text=salary_required',
             'joining_date'    => '1|date|text=joining_date_required',
             'address'         => '1|string|text=enter_address',
-            // Family & Payroll
-            'spouse_name'     => '1|string|1-30|text=spouse_name_required',
-            'spouse_occ_code' => '1|string|1-30|text=spouse_occupation_required',
-            'spouse_emp_id'   => '1|number|text=spouse_employee_required',
-            'apply_payroll_tax' => '1|number|default = 1|text=apply_payroll_tax_required',
-            // System defaults
-            'currency_code'   => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
-            'work_shift_id'   => '0|number|exists=work_shifts.id',
-            'status_id'       => '1|number|default = 10',
+            'spouse_name'     => '0|string|1-30|text=spouse_name_required',
+            'spouse_occ_code' => '0|string|1-30|text=spouse_occupation_required',
+            'spouse_emp_id'   => '0|number|text=spouse_employee_required',
+            'apply_payroll_tax' => '1|number|default = 1',
+            'work_shift_id'   => '1|number|exists=work_shifts.id',
             'photo'           => '0|image',
-            'branch_id'       => '1|number|default = 1',
         ];
         $checkUnique = null;
         $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
@@ -155,14 +114,6 @@ class Employee extends VSModel
 
         $inputs = $res->values;
         $d = (object) $inputs;
-        if (!empty($d->email) && !filter_var($d->email, FILTER_VALIDATE_EMAIL)) {
-            return DV::error('Please enter a valid Email.');
-        }
-        if (empty($inputs['work_shift_id'])) {
-            $inputs['work_shift_id'] = self::resolveWorkShiftId($ss);
-        }
-        $inputs['currency_code'] = VSMoney::$base_currency ?: 'KHR';
-        $d->currency_code = $inputs['currency_code'];
         $nid = $d->nid ?? null;
         if($nid){
             $expire_date = $d->nid_expiry_date ?? null;
@@ -206,8 +157,6 @@ class Employee extends VSModel
         }
 
         $inputs['salary'] = $salary;
-        $currency_code = VSMoney::$base_currency;
-        $inputs['currency_code'] = $currency_code;
         $org_joining_date = null;
         $change_joining_date = false;
         if(!$created){
@@ -422,7 +371,7 @@ class Employee extends VSModel
         }
         return $row;
     }
-        static function profilePicture($id)
+    static function profilePicture($id)
     {
         $col_subs_id = DBX::getHex('e.subs_id', 'subs_id');
         $row = DB::table('employees as e')->where('e.id', $id)->selectRaw($col_subs_id . ',e.branch_id,e.photo_file_name')->first();
@@ -433,12 +382,10 @@ class Employee extends VSModel
             return validateUrl($url, $def_image);
         } else return $def_image;
     }
-
     static function defaultPhoto($subs_id)
     {
         return url('') . '/assets/images/default/default-staff.png';
     }
-
     public static function getFormOptions($id,$ss)
     {
        $employee = null;
@@ -448,8 +395,8 @@ class Employee extends VSModel
        $emp = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
             'payroll_taxes'=>[
-                ['id' => '1', 'name' => 'tax'],
-                ['id' => '0', 'name' => 'non tax'],
+                ['id' => '1', 'name' => 'Tax'],
+                ['id' => '0', 'name' => 'Non Tax'],
             ],
             'nationalities' => GeneralSettings::options_nationality($ss),
             'currency_codes' => VSMoney::options_currency($ss),

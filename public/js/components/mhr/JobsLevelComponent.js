@@ -69,7 +69,7 @@ var JobsLevelComponent = (function () {
 
         mThis.JobLevelListView = new ListView("_job_level_list", {
             fetchApi: `${mThis.base_url}/mhr/job_level/list-paginate`,
-            perPage: 8,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
@@ -267,7 +267,7 @@ const JobLevelDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
+                                    <textarea class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
                                     <label vslang="titles.Description"></label>
                                 </div>
                             </div>

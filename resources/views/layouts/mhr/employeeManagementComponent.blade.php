@@ -15,7 +15,7 @@
                 <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                     <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddEmployee">
                         <i class="fa-solid fa-user-plus" style="color: rgb(249, 251, 255);"></i>
-                        <span vslang="buttons.Add Employee"></span>
+                        <span vslang="buttons.Create Employee"></span>
                     </button>
                 </div>
             </div>

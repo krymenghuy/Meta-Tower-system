@@ -17,8 +17,7 @@ class JobLevelController extends Controller
     function saveJobLevel(Request $req)
     {
         $id = $req->id ?? null;
-        $prn_code = $id ? 204 : 205;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $job_level = new JobLevel($id, $ss);
@@ -57,7 +56,7 @@ class JobLevelController extends Controller
     }
     public function deleteJobLevel(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 206);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
