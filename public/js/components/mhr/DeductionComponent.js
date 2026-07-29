@@ -1,18 +1,18 @@
 "use strict";
-var WarningComponent = (function () {
+var DeductionComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_warningComponent",
+        "#_main_deductionComponent",
     );
 
-    mThis.title_prop = "Employee Warning";
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddWarning");
-    mThis.elSearch = mThis.self.querySelector("#_warning_search");
-    mThis.containerFilter = mThis.self.querySelector("#_divFilter_warning");
-    mThis.elWarningType = mThis.self.querySelector("#warning_type");
+    mThis.title_prop = "Employee Deduction";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddDeduction");
+    mThis.elSearch = mThis.self.querySelector("#_deduction_search");
+    mThis.containerFilter = mThis.self.querySelector("#_divFilter_deduction");
+    mThis.elDeductionType = mThis.self.querySelector("#deduction_type");
 
-    mThis.divListView = mThis.self.querySelector("#_warning_list");
+    mThis.divListView = mThis.self.querySelector("#_deduction_list");
 
     mThis.cols = [
         {
@@ -21,26 +21,18 @@ var WarningComponent = (function () {
             data: "",
         },
         {
-            transTitle: "titles.Code",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<span class="text-primary-prm text-capitalize">${data.emp_code}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Name",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                const sex =
-                    data.sex === "M"
-                        ? "Male"
-                        : data.sex === "F"
-                          ? "Female"
-                          : "Other";
-                return `<p class="d-flex flex-column">
-                    <span class="text-Capitalize">${data.name}</span>
-                    <small class="text-muted">${sex}</small>
-                </p>`;
+            transTitle: "titles.Employee",
+            className: "align-middle text-start text-nowrap",
+            data: (data) => {
+                return `
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <span class="fw-bold" style="font-size: 13px;">${data.name ?? ""}</span>
+                            <br/>
+                            <span class="text-muted" style="font-size: 11px;">${data.emp_code ?? ""}</span>
+                        </div>
+                    </div>
+                `;
             },
         },
         {
@@ -51,24 +43,25 @@ var WarningComponent = (function () {
             },
         },
         {
-            transTitle: "titles.Warning Type",
+            transTitle: "titles.Deduct Amount",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.warning_type ?? ''}</span>`;
+                let amt = parseFloat(data.deduct_amount) || 0;
+                return `<span class="text-nowrap text-prm-custom">$${amt.toFixed(2)}</span>`;
             }
         },
-        {
-            transTitle: "titles.Date",
-            className: "align-middle text-center text-nowrap",
-            data: (data, index, tr) => {
-                return `
-                    <span class="badge bg-light text-prm-custom border px-3 py-2">
-                        <i class="fa-regular fa-calendar me-1"></i>
-                        ${data.warning_date ?? "-"}
-                    </span>
-                `;
-            },
-        },
+        // {
+        //     transTitle: "titles.Date",
+        //     className: "align-middle text-center text-nowrap",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <span class="badge bg-light text-prm-custom border px-3 py-2">
+        //                 <i class="fa-regular fa-calendar me-1"></i>
+        //                 ${data.deduct_date ?? "-"}
+        //             </span>
+        //         `;
+        //     },
+        // },
         {
             transTitle: "titles.Issue",
             className: "align-middle text-nowrap",
@@ -89,28 +82,28 @@ var WarningComponent = (function () {
                 <small >${data.updated_at ?? ""}</small>
             </div>`,
         },
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                    <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_warning_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        },
+        // {
+        //     className: 'col_action align-middle',
+        //     data: function (data, row, display) {
+        //         return `
+        //             <div class="d-flex justify-content-center align-items-center">
+        //                 <div class="text-center gap-2 d-flex flex-wrap">
+        //                         <a href="javascript:void(0)" class="btn_warning_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+        //                             <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+        //                     </a>
+        //                 </div>
+        //             </div>
+        //         `;
+        //     }
+        // },
 
     ];
 
     mThis.init = function () {
         if (mThis.initAlready) return;
 
-        mThis.WarningListView = new ListView(mThis.divListView, {
-            fetchApi: `${mThis.base_url}/mhr/emp-warning/list-paginate`,
+        mThis.DeductListView = new ListView(mThis.divListView, {
+            fetchApi: `${mThis.base_url}/mhr/emp-deduction/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -125,13 +118,13 @@ var WarningComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.WarningListView.showPage(mThis.getFilterData());
+                    mThis.DeductListView.showPage(mThis.getFilterData());
                 },
             };
-            WarningDialog.show(op);
+            DeductDialog.show(op);
         };
 
-        mThis.pr_tbl = mThis.WarningListView.getListContainer();
+        mThis.pr_tbl = mThis.DeductListView.getListContainer();
         mThis.initDropdownMenus(mThis.pr_tbl);
         const elDate = mThis.containerFilter.querySelector(
             "[data-select='datepicker']",
@@ -152,7 +145,7 @@ var WarningComponent = (function () {
             .forEach((el) => {
                 el.onchange = (e) => {
                     e.preventDefault();
-                    mThis.WarningListView.showPage(mThis.getFilterData());
+                    mThis.DeductListView.showPage(mThis.getFilterData());
                 };
             });
 
@@ -160,7 +153,7 @@ var WarningComponent = (function () {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.WarningListView.showPage(mThis.getFilterData());
+                mThis.DeductListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -170,7 +163,7 @@ var WarningComponent = (function () {
     mThis.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/mhr/emp-warning/form-options`,
+                `${main_view.base_url}/mhr/emp-deduction/form-options`,
                 null,
                 null,
                 null,
@@ -210,27 +203,27 @@ var WarningComponent = (function () {
 
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Warning"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Deduction"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_warning",
+                    name: "edit_deduction",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Warning"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Deduction"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_warning",
+                    name: "delete_deduction",
                 },
             ],
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "edit_warning": {
-                        mThis.editWarning(id, menuLink);
+                    case "edit_deduction": {
+                        mThis.editDeduction(id, menuLink);
                         break;
                     }
-                    case "delete_warning": {
-                        mThis.deleteWarning(id, menuLink);
+                    case "delete_deduction": {
+                        mThis.deleteDeduction(id, menuLink);
                         break;
                     }
 
@@ -243,39 +236,37 @@ var WarningComponent = (function () {
         new VSDropdownMenu(menuOptions);
     };
 
-    mThis.editWarning = (id, menuLink) => {
+    mThis.editDeduction = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WarningListView.showPage(mThis.getFilterData());
+                mThis.DeductListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(241)) return;
-        WarningDialog.show(op);
+        DeductDialog.show(op);
     };
 
-    mThis.deleteWarning = (id, menuLink) => {
+    mThis.deleteDeduction = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WarningListView.showPage(mThis.getFilterData());
+                mThis.DeductListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm("delete_warning?",
+        cv_interact.confirm("delete_deduction?",
         {
-            title: "Delete Warning.",
+            title: "Delete Deduction.",
             context: "delete",
             confirmButtonText: "Delete",
         },function (e) {
                 if (e) {
-                    vsapi.call(`${main_view.base_url}/mhr/emp-warning/delete`,op, false, false, false)
+                    vsapi.call(`${main_view.base_url}/mhr/emp-deduction/delete`,op, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("warning_delete_successfully");
-                                mThis.WarningListView.showPage();
+                                cv_interact.success("deduction_delete_successfully");
+                                mThis.DeductListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message || 'An error occurred while deleting.');
                             }
@@ -287,19 +278,19 @@ var WarningComponent = (function () {
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions();
-        mThis.WarningListView.showPage();
+        mThis.DeductListView.showPage();
         main_view.setContentView(mThis.self, mThis.title_prop);
     };
 
     return mThis;
 })();
 
-const WarningDialog = (() => {
+const DeductDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
+            cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -309,27 +300,15 @@ const WarningDialog = (() => {
                             <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}" data-field="emp_id"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans('Position', 'labels')}" data-field="position_id" disabled></select>
-                        </div>
-                        <div class="col-6">
-                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="${LocaleManager.trans('Warning Type', 'labels')}" data-field="warning_type_id"></select>
-                        </div>
-                        <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="text" data-type="date" name="warning_date" class="data-input form-control form_input" data-field="warning_date" placeholder=" " />
-                                <label vslang="labels.Warning Date"></label>
+                                <input type="text" data-type="text" name="deduct_amount" class="data-input form-control form_input" data-field="deduct_amount" placeholder=" " />
+                                <label vslang="labels.Deduct Amount"></label>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
-                                <input type="text" data-type="text" name="issues" class="data-input form-control form_input" data-field="issues" placeholder=" " />
-                                <label vslang="labels.Issue"></label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="vs-material-field">
-                                <textarea name="remarks" class="form-control data-input form_input" placeholder=" " data-field="remarks"></textarea>
-                                <label vslang="labels.Remarks"></label>
+                                <textarea name="issues" class="form-control data-input form_input" placeholder=" " data-field="issues"></textarea>
+                                <label vslang="labels.Issues"></label>
                             </div>
                         </div>  
                     </div>`,
@@ -347,20 +326,6 @@ const WarningDialog = (() => {
                     },
                     valueField: "id",
                     emptyText: LocaleManager.trans("Employee", "titles"),
-                },
-                {
-                    name: "position",
-                    data: "positions",
-                    textField: "name",
-                    valueField: "id",
-                    emptyText: LocaleManager.trans("Position", "titles"),
-                },
-                {
-                    name: "warning_type",
-                    data: "warning_types",
-                    textField: "name",
-                    valueField: "id",
-                    emptyText: LocaleManager.trans("Warning Type", "titles"),
                 }
             ],
             buttons: [
@@ -379,23 +344,24 @@ const WarningDialog = (() => {
                             
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/emp-warning/save"].join(
+                                    [main_view.base_url, "/mhr/emp-deduction/save"].join(
                                         ""
                                     ),
                                     p,
-                                    btn,
-                                    null
+                                     {loader: false,agent :btn}
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("warning_update_successfully");
-                                        }
-                                        else
-                                        {
-                                            cv_interact.success("warning_create_successfully");
+                                        if (!me.dataOptions.silentSuccess) {
+                                            if(me.dataOptions.id > 0)
+                                            {
+                                                cv_interact.success("deduction_update_successfully");
+                                            }
+                                            else
+                                            {
+                                                cv_interact.success("deduction_create_successfully");
+                                            }
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -403,13 +369,13 @@ const WarningDialog = (() => {
                     },
             ],
             prepareFormOptions: {
-                createTitle: "vslang:titles.Create Warning",
-                modifyTitle: "vslang:titles.Modify Warning",
-                targetProp: "warning",
+                createTitle: "vslang:titles.Create Deduction",
+                modifyTitle: "vslang:titles.Modify Deduction",
+                targetProp: "deduction",
                 api: {
                     endpoint: [
                         main_view.base_url,
-                        "/mhr/emp-warning/form-options",
+                        "/mhr/emp-deduction/form-options",
                     ].join(""),
                     params: (op) => {
                         return { id: op.id };
@@ -420,43 +386,28 @@ const WarningDialog = (() => {
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
 
-                if (me.controls.employee_id && me.controls.position) {
-                    me.controls.position.setAttribute('disabled', 'true');
-
-                    const updatePosition = () => {
-                        const empId = me.controls.employee_id.value;
-                        const emp = (data.employees || []).find(e => e.id == empId);
-                        if (emp) {
-                            me.controls.position.value = emp.position_id || "";
-                        } else {
-                            me.controls.position.value = "";
-                        }
-                        me.controls.position.dispatchEvent(new Event("change"));
-                        if (window.jQuery) {
-                            jQuery(me.controls.position).change();
-                        }
-                    };
-
-                    me.controls.employee_id.addEventListener("change", updatePosition);
-
-                    if (me.controls.employee_id.value) {
-                        updatePosition();
+                const deductionRecord = data?.deduction;
+                if (deductionRecord) {
+                    if (me.controls.employee_id) {
+                        me.controls.employee_id.value = deductionRecord.emp_id || "";
+                        me.controls.employee_id.dispatchEvent(new Event("change"));
                     }
-                }
-
-                if (me.dataOptions && !me.dataOptions.id) {
+                    if (me.controls.deduct_amount) {
+                        me.controls.deduct_amount.value = deductionRecord.deduct_amount || "";
+                    }
+                    if (me.controls.issues) {
+                        me.controls.issues.value = deductionRecord.issues || deductionRecord.remarks || "";
+                    }
+                } else if (me.dataOptions) {
                     if (me.dataOptions.emp_id && me.controls.employee_id) {
                         me.controls.employee_id.value = me.dataOptions.emp_id;
                         me.controls.employee_id.dispatchEvent(new Event("change"));
                     }
-                    if (me.dataOptions.warning_date && me.controls.warning_date) {
-                        me.controls.warning_date.value = me.dataOptions.warning_date;
+                    if (me.dataOptions.deduct_amount && me.controls.deduct_amount) {
+                        me.controls.deduct_amount.value = me.dataOptions.deduct_amount;
                     }
-                    if (me.dataOptions.issues && me.controls.issues) {  
-                        me.controls.issues.value = me.dataOptions.issues;
-                    }
-                    if (me.dataOptions.remarks && me.controls.remarks) {
-                        me.controls.remarks.value = me.dataOptions.remarks;
+                    if (me.controls.issues) {
+                        me.controls.issues.value = me.dataOptions.issues || me.dataOptions.remarks || "";
                     }
                 }
             },
@@ -467,3 +418,5 @@ const WarningDialog = (() => {
 
     return self;
 })();
+
+DeductionComponent.DeductDialog = DeductDialog;

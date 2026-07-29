@@ -25,6 +25,7 @@ use  App\Http\Controllers\Mhr\StaffAttendanceController;
 use App\Http\Controllers\Mhr\EmployeeBenefitController;
 use App\Http\Controllers\Mhr\WorkShiftController;
 use App\Http\Controllers\Mhr\WarningController;
+use App\Http\Controllers\Mhr\DeductionController;
 use App\Http\Controllers\Mhr\TaxBracketController;
 use App\Http\Controllers\Mhr\SkillController;
 use App\Http\Controllers\Mhr\CheckPointController;
@@ -165,6 +166,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')
     Route::post('/form-options', [WarningController::class, 'getFormOptions']);
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
     Route::post('/list', [WarningController::class, 'warningList']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-deduction')->group(function () {
+    Route::post('/save', [DeductionController::class, 'saveDeduction']);
+    Route::post('/list-paginate', [DeductionController::class, 'getDeductionListPaginate']);
+    Route::post('/details', [DeductionController::class, 'getDetails']);
+    Route::post('/delete', [DeductionController::class, 'delete']);
+    Route::post('/form-options', [DeductionController::class, 'getFormOptions']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
