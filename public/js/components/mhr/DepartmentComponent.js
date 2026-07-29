@@ -38,7 +38,7 @@ var DepartmentComponent = new (function () {
             transTitle: "titles.Description",
             className: "align-middle text-capitalize text-nowrap",
             data: (data) =>
-                `<div class="text-primary-custom" style="width:200px;">
+                `<div class="text-primary-custom" style="width:350px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
                     </div>`
         },
@@ -105,7 +105,7 @@ var DepartmentComponent = new (function () {
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
