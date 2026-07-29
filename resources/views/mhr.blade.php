@@ -345,6 +345,7 @@
                             @include('layouts.mhr.checkPointCategoryComponent')
                             @include('layouts.mhr.attendanceTracksComponent')
                             @include('layouts.mhr.exitFormComponent')
+                            @include('layouts.mhr.deductionComponent')
 
 
 

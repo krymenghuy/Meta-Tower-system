@@ -1112,6 +1112,7 @@ return [
 
         'Create Department' => 'បង្កើតនាយកដ្ឋាន',
         'Create Warning' => 'បង្កើតការព្រមាន',
+        'Create Deduction' => 'បង្កើតការកាត់កង',
 
         'Create Skill' => 'បង្កើតជំនាញ',
 

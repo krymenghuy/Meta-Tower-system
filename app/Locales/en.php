@@ -232,6 +232,9 @@ return [
     ],
     'titles' => [
         'dashboard' => 'Dashboard - Meta Tower',
+        'Create Warning' => 'Create Warning',
+        'Create Deduction' => 'Create Deduction',
+        'Deduct' => 'Deduct',
         'Personal Information' => 'Personal Information',
         'Overview' => 'Overview',
         'Contract' => 'Contract',

@@ -364,8 +364,7 @@ class Payroll
                      'phone_number' => $emp->phone_number,
                      'issue' => $res->error_message
                  ];
-                 \Log::error('Error in disbursement of payyroll: ');
-                 \Log::info(json_encode($failed_emps));
+           
              }
          }
          if($failed_count > 0){
@@ -484,7 +483,6 @@ class Payroll
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $emp = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.payroll_id',$id)->where('emp_id',$emp_id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
-        \Log::info('test:: '.json_encode($emp));
         if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
         if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
      
@@ -643,7 +641,6 @@ class Payroll
         $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed,month,year,start_date, end_date,currency_code');
         if (!$payroll) return DV::error('No Payroll ID provided');
         $payroll->start_date = convertDate($payroll->start_date);
-        $payroll->start_date = convertDate($payroll->start_date);
         if ($payroll->authorized == 1) return DV::error('Cannot calculate payroll that as been authorized! The next step is to disburse payments to all staffs');
         if ($payroll->disbursed == 1) return DV::error('Cannot calculate any amounts because this payroll has been disbursed already!');
         $start_date = DBX::formatDate('p.start_date', 'start_date');
@@ -800,7 +797,49 @@ class Payroll
             $allowance_used = ($allowance / $day_in_month) * $payroll_days;
             $allowance_per_day = $allowance_used / $payroll_days;
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
-            $deduction = $payroll->deduction;
+            $uninformed_deduction = DB::table('leaves as l')
+                ->where('l.emp_id', $payroll->emp_id)
+                ->where('l.status_id', 4) // Uninformed/Deduct
+                ->where('l.start_date', '<=', $payroll->end_date)
+                ->where('l.end_date', '>=', $payroll->start_date)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                          ->from('emp_warnings as ew')
+                          ->whereColumn('ew.emp_id', 'l.emp_id')
+                          ->whereRaw('ew.warning_date BETWEEN l.start_date AND l.end_date');
+                })
+                ->sum('l.deduction') ?? 0;
+
+            if ($uninformed_deduction == 0) {
+                $leaves = DB::table('leaves as l')
+                    ->where('l.emp_id', $payroll->emp_id)
+                    ->where('l.status_id', 4) // Uninformed/Deduct
+                    ->where('l.start_date', '<=', $payroll->end_date)
+                    ->where('l.end_date', '>=', $payroll->start_date)
+                    ->whereNotExists(function ($query) {
+                        $query->select(DB::raw(1))
+                              ->from('emp_warnings as ew')
+                              ->whereColumn('ew.emp_id', 'l.emp_id')
+                              ->whereRaw('ew.warning_date BETWEEN l.start_date AND l.end_date');
+                    })
+                    ->selectRaw('l.start_date, l.end_date')
+                    ->get();
+
+                $uninformed_days = 0;
+                foreach ($leaves as $leave) {
+                    $overlap_start = max(strtotime($leave->start_date), strtotime($payroll->start_date));
+                    $overlap_end = min(strtotime($leave->end_date), strtotime($payroll->end_date));
+                    if ($overlap_start <= $overlap_end) {
+                        $uninformed_days += (($overlap_end - $overlap_start) / 86400) + 1;
+                    }
+                }
+
+                if ($uninformed_days > 0) {
+                    $uninformed_deduction = ($payroll->salary / $day_in_month) * $uninformed_days;
+                }
+            }
+
+            $deduction = $uninformed_deduction;
             if ($payroll->apply_payroll_tax == 1) {
 
                 $tax_rate = $payroll->tax_rate ?? 0;
@@ -918,6 +957,7 @@ class Payroll
                 'benefit_flat_rate' => $flat_rate_details,
                 'p_allowance' => $last_allowance,
                 'p_bias' => $last_bias,
+                'deduction' => $deduction,
                 'total_salary' => $payroll->total
             ]);
             $payroll_total = DB::table('payroll_list')
@@ -987,7 +1027,6 @@ class Payroll
         $success = 0;
         $error = 0;
         foreach ($employees as $emp) {
-            \Log::info(json_encode($payroll_id));
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
 
@@ -1190,7 +1229,7 @@ class Payroll
                 $usedAmountByTaxRate = [];
 
                 foreach ($benefitFlatRates as $bfr) {
-                    $taxRate = (float) $bfr->flat_tax_rate;
+                    $taxRate = (string) $bfr->flat_tax_rate;
                     $usedAmount = (float) $bfr->used_amount;
 
                     if (!isset($usedAmountByTaxRate[$taxRate])) {
@@ -1205,7 +1244,7 @@ class Payroll
             } else {
                 $benefitFlatRate = $row->benefit_flat_rate->first();
                 $row->benefit_flat_rate = $benefitFlatRate ? [$benefitFlatRate] : 0;
-                $row->used_amount = $benefitFlatRate ? [(float) $benefitFlatRate->flat_tax_rate => (float) $benefitFlatRate->used_amount] : 0;
+                $row->used_amount = $benefitFlatRate ? [(string) $benefitFlatRate->flat_tax_rate => (float) $benefitFlatRate->used_amount] : 0;
             }
 
             $row->tax_base = ($row->tax_base ?? 0);
