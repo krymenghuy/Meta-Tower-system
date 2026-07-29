@@ -14,13 +14,8 @@ var DepartmentComponent = new (function () {
     mThis.cols = [
     
         {
-            transTitle: "titles.No",
+            transTitle: "",
             className: "align-middle text-capitalize",
-            data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
-                    <span>${index + 1}</span>
-                </div>
-            `,
         },
         {
             transTitle: "titles.Name",
