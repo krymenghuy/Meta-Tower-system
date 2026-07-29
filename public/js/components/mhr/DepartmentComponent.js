@@ -14,13 +14,8 @@ var DepartmentComponent = new (function () {
     mThis.cols = [
     
         {
-            transTitle: "titles.No",
+            transTitle: "",
             className: "align-middle text-capitalize",
-            data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
-                    <span>${index + 1}</span>
-                </div>
-            `,
         },
         {
             transTitle: "titles.Name",
@@ -38,7 +33,7 @@ var DepartmentComponent = new (function () {
             transTitle: "titles.Description",
             className: "align-middle text-capitalize text-nowrap",
             data: (data) =>
-                `<div class="text-primary-custom" style="width:200px;">
+                `<div class="text-primary-custom" style="width:350px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>
                     </div>`
         },
@@ -105,7 +100,7 @@ var DepartmentComponent = new (function () {
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }

@@ -66,7 +66,7 @@ var PositionComponent = (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                    <div class="text-primary-prm text-capitalize" style="width:300px;">
                         <span class="text-wrap text-break small" style ="word-break:break-word;">${data.description ?? '_'}</span>
                     </div>
                 `;

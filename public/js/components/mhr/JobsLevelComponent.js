@@ -30,7 +30,7 @@ var JobsLevelComponent = (function () {
             transTitle: "titles.Description",
             className: "align-middle text-nowrap",
             data: (data)=>{
-                return `<div class="text-primary-custom" style="width:200px;">
+                return `<div class="text-primary-custom" style="width:300px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</spam>
                     </div>`;
             }
