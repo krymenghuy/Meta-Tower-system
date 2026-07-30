@@ -180,7 +180,7 @@ var EmployeeDocumentComponent = (function () {
                </div>`;
 
         container.innerHTML = `
-                <div class="emp-doc-card h-100">
+                <div class="emp-doc-card">
                     <div class="emp-doc-header">
                         <div class="emp-doc-header-title">
                             <span class="emp-doc-header-icon">

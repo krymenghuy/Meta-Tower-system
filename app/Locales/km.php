@@ -822,6 +822,7 @@ return [
         'Edit Skill' => 'កែប្រែជំនាញ',
         'Delete Skill' => 'លុបជំនាញ',
         'Skills' => 'ជំនាញ',
+        'Rating' => 'វាយតម្លៃ',
 
         'Work Shifts' => 'វេនការងារ',
 
@@ -1632,9 +1633,13 @@ return [
         'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
-        'create_success_skill' => 'បានបង្កើតជំនាញដោយជោគជ័យ។',
-        'update_success_skill' => 'បានកែប្រែជំនាញដោយជោគជ័យ។',
-        'delete_success_skill' => 'បានលុបជំនាញដោយជោគជ័យ។',
+        'create_success_emp_skill' => 'បានបង្កើតជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
+        'update_success_emp_skill' => 'បានធ្វើបច្ចុប្បន្នភាពជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
+        'delete_success_emp_skill' => 'បានលុបជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
+
+        'create_success_skill' => 'បានបង្កើតជំនាញដោយជោគជ័យ!',
+        'update_success_skill' => 'បានធ្វើបច្ចុប្បន្នភាពជំនាញដោយជោគជ័យ!',
+        'delete_success_skill' => 'បានលុបជំនាញដោយជោគជ័យ!',
 
         'create_success_check_point_category' => 'បានបង្កើតប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
         'update_success_check_point_category' => 'បានកែប្រែប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',

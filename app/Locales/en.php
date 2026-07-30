@@ -507,13 +507,17 @@ return [
         'update_success_tax_bracket' => 'Tax bracket has been updated successfully.',
         'delete_success_tax_bracket' => 'Tax bracket has been deleted successfully.',
 
-        'update_success_employee' => 'Updated employee successfully.',
-        'create_success_employee' => 'Created employee successfully.',
-        'delete_success_employee' => 'Employee deleted successfully.',
+        'create_success_employee' => 'Employee information has been created successfully.',
+        'update_success_employee' => 'Employee information has been updated successfully.',
+        'delete_success_employee' => 'Employee information has been deleted successfully.',
 
-        'update_success_skill' => 'Updated skill successfully.',
-        'create_success_skill' => 'Created skill successfully.',
-        'delete_success_skill' => 'Skill delete successfully.',
+        'create_success_skill' => 'Skill has been created successfully!',
+        'update_success_skill' => 'Skill has been updated successfully!',
+        'delete_success_skill' => 'Skill has been deleted successfully!',
+
+        'create_success_emp_skill' => 'Employee skill has been created successfully!',
+        'update_success_emp_skill' => 'Employee skill has been updated successfully!',
+        'delete_success_emp_skill' => 'Employee skill has been deleted successfully!',
 
         'create_success_check_point_category' => 'Checkpoint category has been created successfully.',
         'update_success_check_point_category' => 'Checkpoint category has been updated successfully.',
