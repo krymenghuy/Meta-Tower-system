@@ -52,13 +52,6 @@ class Warning extends VSModel
         if (!$employee_info) return DV::error('It seems the employee information does not exist');
         if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
 
-        $warning_date = $inputs['warning_date'];
-        $today = date('Y-m-d');
-
-        if (!$id && $warning_date < $today) {
-            return DV::error('It seems your warning date is in the past. Please check the warning date!');
-        }
-
         $id = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'warning saved'], 'failed_to_save');
     }

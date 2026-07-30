@@ -305,6 +305,12 @@ const DeductDialog = (() => {
                                 <label vslang="labels.Deduct Amount"></label>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="deduct_date" class="data-input form-control form_input" data-field="deduct_date" placeholder=" " />
+                                <label vslang="labels.Deduct Date"></label>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="issues" class="form-control data-input form_input" placeholder=" " data-field="issues"></textarea>
@@ -339,6 +345,11 @@ const DeductDialog = (() => {
                         cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
+
+                            if (!p.deduct_amount || parseFloat(p.deduct_amount) <= 0) {
+                                cv_interact.error(LocaleManager.trans("Deduction amount must be greater than 0", "validation") || "Deduction amount must be greater than 0");
+                                return;
+                            }
 
                             p.id = me.dataOptions.id;
                             
@@ -395,6 +406,9 @@ const DeductDialog = (() => {
                     if (me.controls.deduct_amount) {
                         me.controls.deduct_amount.value = deductionRecord.deduct_amount || "";
                     }
+                    if (me.controls.deduct_date) {
+                        me.controls.deduct_date.value = deductionRecord.deduct_date || "";
+                    }
                     if (me.controls.issues) {
                         me.controls.issues.value = deductionRecord.issues || deductionRecord.remarks || "";
                     }
@@ -405,6 +419,9 @@ const DeductDialog = (() => {
                     }
                     if (me.dataOptions.deduct_amount && me.controls.deduct_amount) {
                         me.controls.deduct_amount.value = me.dataOptions.deduct_amount;
+                    }
+                    if (me.dataOptions.deduct_date && me.controls.deduct_date) {
+                        me.controls.deduct_date.value = me.dataOptions.deduct_date;
                     }
                     if (me.controls.issues) {
                         me.controls.issues.value = me.dataOptions.issues || me.dataOptions.remarks || "";

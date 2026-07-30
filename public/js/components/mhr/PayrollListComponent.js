@@ -398,12 +398,12 @@ var PayrollListComponent = (()=> {
                 //     cssClass:"border-bottom pb-2",
                 //     name:"disburse_payroll_list"
                 // },
-                {
-                    html:'<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"add_deduction"
-                },
+                // {
+                //     html:'<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
+                //     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                //     cssClass:"border-bottom pb-2",
+                //     name:"add_deduction"
+                // },
                 {
                     html:'<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
@@ -704,16 +704,115 @@ var PayrollListComponent = (()=> {
     mThis.addDeduction = (id, menuLink) => {
         if (!AuthManager.allowed(214)) return;
 
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+        // Fetch payroll list row details first to pre-fill the dialog correctly
+        vsapi.call([main_view.base_url, '/mhr/payroll/staff/form-options'].join(''), { id: id }, menuLink, null)
+            .then(res => {
+                if (res.status_code !== 200) {
+                    cv_interact.error(res.error_message);
+                    return;
+                }
 
-            }
-        };
+                const payroll_list = res.data.payroll_list;
+                if (!payroll_list) {
+                    cv_interact.error("Payroll record not found.");
+                    return;
+                }
 
-        AddDeductionDialog.show(op);
+                const op = {
+                    id: res.data.emp_deduct_id || null, // set to existing emp_deduct_id if it exists, otherwise null
+                    emp_id: payroll_list.emp_id,
+                    deduct_amount: res.data.emp_deduct_amount || "",
+                    deduct_date: "",
+                    issues: "",
+                    remarks: "",
+                    silentSuccess: true,
+                    btn: menuLink,
+                };
+
+                const showDialog = () => {
+                    // Temporarily disable the employee select field so they cannot change the employee
+                    let oldOnPrepare = op.onPrepareForm;
+                    op.onPrepareForm = (me, data) => {
+                        if (typeof oldOnPrepare === "function") oldOnPrepare(me, data);
+                        let empSelect = me.divModal.querySelector('[name="employee_id"]');
+                        if (empSelect) {
+                            empSelect.disabled = true;
+                        }
+                    };
+
+                    let temp_deduct = op.deduct_amount || 0.0;
+                    let temp_remarks = op.issues;
+
+                    const onInputDeduct = (e) => {
+                        if (e.target) {
+                            if (e.target.name === "deduct_amount") {
+                                temp_deduct = e.target.value;
+                            }
+                            if (e.target.name === "issues") {
+                                temp_remarks = e.target.value;
+                            }
+                        }
+                    };
+                    document.addEventListener("input", onInputDeduct);
+                    document.addEventListener("change", onInputDeduct);
+
+                    op.onClose = (arg1, arg2) => {
+                        document.removeEventListener("input", onInputDeduct);
+                        document.removeEventListener("change", onInputDeduct);
+
+                        let saved = false;
+                        if (typeof arg1 === "boolean") {
+                            saved = arg1;
+                        } else if (arg1 && typeof arg1 === "object") {
+                            saved = true;
+                        }
+
+                        if (!saved) return;
+
+                        let final_deduct = temp_deduct;
+                        let final_remarks = temp_remarks;
+
+                        // Fallback: read directly from modal inputs if still in DOM
+                        const domDeduct = document.querySelector('.vs-modal [name="deduct_amount"]');
+                        const domRemarks = document.querySelector('.vs-modal [name="issues"]');
+                        if (domDeduct && domDeduct.value) final_deduct = domDeduct.value;
+                        if (domRemarks && domRemarks.value) final_remarks = domRemarks.value;
+
+                        // Save the deduction value to payroll_list row
+                        const payload = {
+                            id: id,
+                            emp_id: payroll_list.emp_id,
+                            payroll_id: payroll_list.payroll_id,
+                            deduction: final_deduct || 0.0,
+                            skip_db_deduct: true // skip writing to emp_deductions because DeductDialog already did it
+                        };
+
+                        vsapi.call([main_view.base_url, '/mhr/payroll/staff/add-deduction'].join(''), payload, menuLink, null)
+                            .then(saveRes => {
+                                if (saveRes.status_code === 200) {
+                                    cv_interact.success("Deduction saved successfully");
+                                    mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                                } else {
+                                    cv_interact.error(saveRes.error_message);
+                                }
+                            });
+                    };
+
+                    DeductionComponent.DeductDialog.show(op);
+                };
+
+                if (typeof DeductionComponent === "undefined" || !DeductionComponent.DeductDialog) {
+                    const script = document.createElement("script");
+                    script.src = `${main_view.base_url}/js/components/mhr/DeductionComponent.js`;
+                    script.onload = showDialog;
+                    script.onerror = () => {
+                        cv_interact.error("Failed to load deduction component.");
+                    };
+                    document.body.appendChild(script);
+                } else {
+                    showDialog();
+                }
+            });
     }
 
     mThis.disburseOne = (id, emp_id,payroll_id, menuLink) => {
@@ -829,107 +928,6 @@ var PayrollListComponent = (()=> {
         });
     };
     return mThis;
-})();
-
-const AddDeductionDialog = (() => {
-    const self = {};
-    let dialog = null;
-    self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: 'modal-lg vs-modal',
-            backdrop: 'static',
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row g-3">
-                        <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" disabled placeholder="${LocaleManager.trans('Name', 'labels')}">
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <select data-style="material" name="payroll_name" class="data-input form-control" data-field="payroll_id" disabled placeholder="${LocaleManager.trans('Payroll Name', 'labels')}">
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="deduction" class="data-input form-control" data-field="deduction" placeholder=" " />
-                                <label vslang="labels.Deduction"></label>
-                            </div>
-                        </div>
-                    </div>`,
-                ].join("");
-            },
-            contentCreated: (me) => {
-            },
-            prepareFormOptions: {
-                createTitle: 'Add Deduction',
-                modifyTitle: 'Edit Deduction ',
-                targetProp: 'payroll_list',
-                api: {
-                    endpoint: [main_view.base_url, '/mhr/payroll/staff/form-options'].join(''),
-                    params: (op) => {
-                        return { 'id': op.id };
-                    }
-                },
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            },
-
-            configSelect: [
-                {
-                    name: "employee",
-                    data: 'employees',
-                    textField: "name",
-                    valueField: 'id'
-                },
-                {
-                    name: "payroll_name",
-                    data: 'payrolls',
-                    textField: "payroll_name",
-                    valueField: 'id'
-                }
-            ],
-
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: 'btn btn-default',
-                    click: (me, btn) => {
-                        // Close with Cancel button
-                        me.hide(false);
-                    }
-                },
-                {
-                    label: '<span>Save</span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const p = me.getData();
-                        p.id = me.dataOptions.id; // Get "id" from op
-                        if (!AuthManager.allowed(214)) return;
-
-                        vsapi.call([main_view.base_url, '/mhr/payroll/staff/add-deduction'].join(''), p, btn, null)
-                            .then(res => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, p);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Added deduction successfully");
-                                    } else {
-                                        cv_interact.success("Added deduction successfully");
-                                    }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    }
-                }
-            ],
-        });
-        dialog.show(op);
-    };
-
-    return self;
 })();
 
 
