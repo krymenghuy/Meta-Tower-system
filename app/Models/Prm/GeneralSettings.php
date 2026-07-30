@@ -551,6 +551,21 @@ class GeneralSettings //extends Model
             ');
     }
 
+
+    static function options_building_space_for_access_card($ss)
+    {
+        return DB::table('building_spaces as bs')
+            ->join('floors as f', 'f.id', '=', 'bs.floor_id')
+            ->where('bs.status_id', 1)
+            ->where('bs.branch_id', $ss->branch_id)
+            ->selectRaw('
+                bs.id,
+                bs.code,
+                f.name as floor_name
+            ')
+            ->get();
+    }
+
     static function options_building_space($ss, $include_space_id = null, $exclude_under_maintenance = false)
     {
         $query = self::buildingSpaceOptionRowsBaseQuery()

@@ -156,9 +156,7 @@ return [
                 'js/components/prm/PrintContractDialog.js',
                 'js/components/prm/DepositComponent.js',
                 'js/components/prm/AnnouncementComponent.js',
-
-
-
+                'js/components/prm/AccessControlComponent.js',
             ]
         ],
 

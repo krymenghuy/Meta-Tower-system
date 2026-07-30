@@ -280,7 +280,7 @@ function v_display($mod_id, $module_ids = null)
                                     </a>
                                 </li>
 
-                                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
+                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
                                     <a href="InvoiceSettingComponent" modid="218" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
                                             <img class="opacity-icons icons"
@@ -290,6 +290,17 @@ function v_display($mod_id, $module_ids = null)
                                     </a>
                                 </li>
 
+                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(310); ?>>
+                                    <a href="AccessControlComponent" modid="310" class="menu-item kt-menu__link">
+                                        <span class="kt-menu__link-icon">
+                                            <img class="opacity-icons icons"
+                                                src="{{ asset('assets/images/icons/access.svg') }}" />
+                                        </span>
+                                        <span class="font-color kt-menu__link-text" vslang="menus.Access Control"></span>
+                                    </a>
+                                </li>
+
+                               
                            
 
                             </ul>
