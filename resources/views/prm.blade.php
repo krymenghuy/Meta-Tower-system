@@ -29,7 +29,7 @@ echo $user->lang ?? 'en';
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 116);
+    StyleManager::render('prm-style', 1, 117);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -101,7 +101,7 @@ echo $user->lang ?? 'en';
     ScriptManager::render('priority-one', 1, 14);
     ScriptManager::render('primary', 1, 18);
     ScriptManager::render('primary-defer', 1, 43);
-    ScriptManager::render('prm-components', 1, 316);
+    ScriptManager::render('prm-components', 1, 317);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -438,6 +438,7 @@ echo $user->lang ?? 'en';
                             @include('layouts.prm.contractComponent')
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')
+                            @include('layouts.prm.accessControlComponent')
                             @include('layouts.prm.vendorComponent')
                             @include('layouts.prm.billComponent')
                             @include('layouts.prm.billPaymentComponent')

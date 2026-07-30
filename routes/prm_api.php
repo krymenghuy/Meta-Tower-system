@@ -33,6 +33,7 @@ use App\Http\Controllers\Prm\ReceiptController;
 use App\Http\Controllers\Prm\ReportController;
 use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Prm\DepositController;
+use App\Http\Controllers\Prm\AccessController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -393,6 +394,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('announcement'
     Route::post('/details', [AnnouncementController::class, 'details']);
     Route::post('/form-options', [AnnouncementController::class, 'getFormOptions']);
     Route::post('/delete', [AnnouncementController::class, 'delete']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('access_control')->group(function () {
+    Route::post('/save', [AccessController::class, 'createAccessCard']);
+    Route::post('/list-paginate', [AccessController::class, 'getListPaginate']);
+    Route::post('/details', [AccessController::class, 'details']);
+    Route::post('/form-options', [AccessController::class, 'getFormOptions']);
+    Route::post('/search-card-holder', [AccessController::class, 'searchCardHolder']);
+    Route::post('/delete', [AccessController::class, 'delete']);
+    Route::post('/update-status', [AccessController::class, 'updateCardStatus']);
 });
 
 

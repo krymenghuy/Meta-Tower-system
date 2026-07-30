@@ -289,17 +289,7 @@ const BenefitDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id; //get "id" from op
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/mhr/benefit/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
+                            vsapi.call([main_view.base_url,"/mhr/benefit/save"].join(""),p,{loader:false,agent:btn})
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
