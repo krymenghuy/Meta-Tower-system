@@ -30,7 +30,7 @@ var JobsLevelComponent = (function () {
             transTitle: "titles.Description",
             className: "align-middle text-nowrap",
             data: (data)=>{
-                return `<div class="text-primary-custom" style="width:200px;">
+                return `<div class="text-primary-custom" style="width:300px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</spam>
                     </div>`;
             }
@@ -44,8 +44,6 @@ var JobsLevelComponent = (function () {
                 <span class="text-muted small">${data.updated_at ?? '_'}</span>
             </div>`
         },
-
-
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
@@ -71,7 +69,7 @@ var JobsLevelComponent = (function () {
 
         mThis.JobLevelListView = new ListView("_job_level_list", {
             fetchApi: `${mThis.base_url}/mhr/job_level/list-paginate`,
-            perPage: 8,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
@@ -269,7 +267,7 @@ const JobLevelDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
+                                    <textarea class="form-control data-input" data-field="description" id="description" placeholder=""></textarea>
                                     <label vslang="titles.Description"></label>
                                 </div>
                             </div>

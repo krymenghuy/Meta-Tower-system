@@ -27,14 +27,16 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.cols = [
         {
             transTitle: "titles.No",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            className: "align-middle text-capitalize",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
             transTitle: "titles.Benefit",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: "benefit_name",
         },
 
@@ -50,18 +52,19 @@ var BenefitDisbursePolicyComponent =  (function () {
 
         {
             transTitle: "titles.Target Year",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: "target_year",
         },
         {
             transTitle: "titles.Withdraw Rate",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.withdraw_rate ?? 0} %</p>`;
             },
         },
 
          {
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: data => `
             <div class="d-flex justify-content-center align-items-center">
@@ -107,7 +110,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                     mThis.BdpListView.showPage(mThis.getDataFormFilter());
                 },
             };
-            if (!AuthManager.allowed(279)) return;
+            // if (!AuthManager.allowed(279)) return;
             BdpDialog.show(op);
         };
 
@@ -138,7 +141,7 @@ var BenefitDisbursePolicyComponent =  (function () {
             menus: [
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify">Modify Policy</span>',
-                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_bdp"
                 },
@@ -169,7 +172,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     };
 
     mThis.editBfp = (id, btn) => {
-        if (!AuthManager.allowed(280)) return;
+        // if (!AuthManager.allowed(280)) return;
         BdpDialog.show({
             id,
             btn,
@@ -185,7 +188,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                 mThis.BdpListView.showPage(mThis.getDataFormFilter());
             },
         };
-        if (!AuthManager.allowed(281)) return;
+        // if (!AuthManager.allowed(281)) return;
         cv_interact.confirm(
             "Delete this benefit disbursement policy?",
             {
@@ -338,14 +341,14 @@ const BdpDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
@@ -378,7 +381,7 @@ const BdpDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Add Benefit Disburse Policy",
+                    createTitle: "vslang:titles.Create Benefit Disburse Policy",
                     modifyTitle: "vslang:titles.Edit Benefit Disburse Policy",
                     targetProp: "disburse_policy",
                     api: {
@@ -393,7 +396,6 @@ const BdpDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {            
-                    LocaleManager.translateZone(me.divModal);
                 },
             });
 

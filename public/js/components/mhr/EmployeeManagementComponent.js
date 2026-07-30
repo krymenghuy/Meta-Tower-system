@@ -806,14 +806,14 @@ const EmployeeDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row g-3">
+                        `<div class="row g-4">
                             <div class="col-12 col-md-3">
                                 <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
                                     <div name="div_emp_photo" data-field="photo" class="h-100"></div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-9">
-                                <div class="row g-3">
+                            <div class="col-12 col-md-9 pt-3">
+                                <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="vs-material-field">
                                             <input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " required />
@@ -823,79 +823,70 @@ const EmployeeDialog = (() => {
                                     <div class="col-md-6">
                                         <div class="vs-material-field">
                                             <input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder=" " required />
-                                            <label>Khmer Name</label>
+                                            <label>Name (KH)</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <select data-style="material" name="sex" class="form-control data-input" placeholder="Sex" data-field="sex" required>
-                                            <option value="">Select</option>
-                                            <option value="M">Male</option>
-                                            <option value="F">Female</option>
+                                    <div class="col-md-4">
+                                        <select data-style="material" name="sex" class="form-control data-input" data-field="sex" placeholder="${LocaleManager.trans("Gender", "labels")}">
+                                            <option value="M">${LocaleManager.trans("Male", "labels")}</option>
+                                            <option value="F">${LocaleManager.trans("Female", "labels")}</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="vs-material-field">
-                                            <input data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" required />
-                                            <label>Date of Birth</label>
-                                        </div>
+                                    <div class="col-md-4">
+                                        <select data-style="material" name="nationality_id" class="form-control data-input" placeholder="Nationality" data-field="nationality_id" required></select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <select data-style="material" name="marital_status" class="form-control data-input" placeholder="Marital Status" data-field="marital_status" required>
-                                            <option value="single">Single</option>
+                                    <div class="col-md-4">
+                                        <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${LocaleManager.trans("Marital Status", "labels")}">
                                             <option value="married">Married</option>
                                             <option value="divorced">Divorced</option>
                                             <option value="widowed">Widowed</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <select data-style="material" name="nationality_id" class="form-control data-input" placeholder="Nationality" data-field="nationality_id" required></select>
+                                    <div class="col-md-4">
+                                        <div class="vs-material-field">
+                                            <input data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" required />
+                                            <label>Date of Birth</label>
+                                        </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="vs-material-field">
+                                            <input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder=" " required />
+                                            <label>ID Card</label>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <div class="vs-material-field">
+                                            <input data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" required />
+                                            <label>ID Card Expiry</label>
+                                        </div>
+                                    </div>
+                                    
+                                  
                                 </div>
                             </div>
-
-                            <div class="col-md-6">
-                                <div class="vs-material-field">
-                                    <input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder=" " required />
-                                    <label>Identity Card</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="vs-material-field">
-                                    <input data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" required />
-                                    <label>Identity Card Expiry</label>
-                                </div>
-                            </div>
+                           
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder=" " required />
                                     <label>NSSF ID</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder=" " required />
                                     <label>Passport Number</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" required />
                                     <label>Passport Expiry</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <select data-style="material" name="birth_city_id" class="form-control data-input" placeholder="Place of Birth" data-field="birth_city_id" required></select>
-                            </div>
-                            <div class="col-md-6">
-                                <select data-style="material" name="emp_type_id" class="form-control data-input" placeholder="Employee Type" data-field="emp_type_id" required></select>
-                            </div>
-                            <div class="col-md-6">
-                                <select data-style="material" name="position_id" class="form-control data-input" placeholder="Position" data-field="position_id" required></select>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder=" " required />
-                                    <label>Phone</label>
+                                    <label>Phone Number</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -905,10 +896,26 @@ const EmployeeDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-md-6">
+                                <select data-style="material" name="position_id" class="form-control data-input" placeholder="Position" data-field="position_id" required></select>
+                            </div>  
+                            <div class="col-md-3">
+                                <select data-style="material" name="emp_type_id" class="form-control data-input" placeholder="Employee Type" data-field="emp_type_id" required></select>
+                            </div>
+                             
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder=" " required />
                                     <label>Salary</label>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="birth_city_id" class="form-control data-input" placeholder="Place of Birth" data-field="birth_city_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="work_shift_id" class="form-control data-input" placeholder="WorkShift" data-field="work_shift_id" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" placeholder="Apply Payroll Tax" data-field="apply_payroll_tax" required></select>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
@@ -916,35 +923,33 @@ const EmployeeDialog = (() => {
                                     <label>Joining Date</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="vs-material-field">
-                                    <input type="text" name="address" class="form-control data-input" data-field="address" placeholder=" " required />
-                                    <label>Address</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3 d-none">
                                 <div class="vs-material-field">
                                     <input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder=" " required />
                                     <label>Spouse Name</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3 d-none">
                                 <div class="vs-material-field">
                                     <input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder=" " required />
                                     <label>Spouse Occupation</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea type="text" name="address" class="form-control data-input" data-field="address" placeholder=" "></textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 d-none">
                                 <select data-style="material" name="spouse_emp_id" class="form-control data-input" placeholder="Spouse Employee" data-field="spouse_emp_id" required></select>
                             </div>
-                            <div class="col-md-6">
-                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" placeholder="Apply Payroll Tax" data-field="apply_payroll_tax" required></select>
-                            </div>
+                            
                         </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    LocaleManager.translateZone(me.divModal);
                     const div_emp_photo = me.controls.div_emp_photo;
 
                     me.empImageBox = new ImageBox(div_emp_photo, {
@@ -988,6 +993,12 @@ const EmployeeDialog = (() => {
                         valueField: "id",
                     },
                     {
+                        name: "work_shift_id",
+                        data: "work_shifts",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
                         name: "spouse_emp_id",
                         data: "employees",
                         textField: "name",
@@ -1001,12 +1012,12 @@ const EmployeeDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -1024,8 +1035,7 @@ const EmployeeDialog = (() => {
                                         ""
                                     ),
                                     p,
-                                    btn,
-                                    null
+                                    {loader:false,agent:btn}
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
@@ -1041,7 +1051,7 @@ const EmployeeDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Add Employee",
+                    createTitle: "vslang:titles.Create Employee",
                     modifyTitle: "vslang:titles.Modify Employee",
                     targetProp: "employee",
                     api: {

@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 79);
+    StyleManager::render('prm-style', 1, 90);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -102,9 +102,9 @@
     <?php
     ScriptManager::render('priority-one', 1, 10);
     ScriptManager::render('primary', 1, 14);
-    ScriptManager::render('primary-defer', 1, 38);
+    ScriptManager::render('primary-defer', 1, 39);
 
-    ScriptManager::render('mhr-components', 1, 296);
+    ScriptManager::render('mhr-components', 1, 300);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -345,6 +345,7 @@
                             @include('layouts.mhr.checkPointCategoryComponent')
                             @include('layouts.mhr.attendanceTracksComponent')
                             @include('layouts.mhr.exitFormComponent')
+                            @include('layouts.mhr.deductionComponent')
 
 
 

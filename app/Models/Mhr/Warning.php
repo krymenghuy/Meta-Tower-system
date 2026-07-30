@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Mhr;
+
 use App\Models\Prm\GeneralSettings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -8,18 +9,21 @@ use DBX;
 use DV;
 use XPublicStorage;
 use Vsd\Vsloquent\VSModel;
+
 class Warning extends VSModel
 {
     protected $userInfo;
     protected $table = 'emp_warnings';
     protected static $img_dir = 'warnings';
 
-    function __construct($id = null, $userInfo = null) {
+    function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null) {
+    public function upsert($arr = [], $id = null, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
 
@@ -38,13 +42,13 @@ class Warning extends VSModel
 
         $emp_id = $inputs['emp_id'];
         if (!$d->emp_id) return DV::error('Employee ID is missing');
-        
+
         $employee_info = DB::table('employees as emp')
-                            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-                            ->where('emp.id', $emp_id)
-                            ->selectRaw('emp.id, emp.status_id, emp.name, emp.code, p.name as position_name')
-                            ->first();
-                            
+            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
+            ->where('emp.id', $emp_id)
+            ->selectRaw('emp.id, emp.status_id, emp.name, emp.code, p.name as position_name')
+            ->first();
+
         if (!$employee_info) return DV::error('It seems the employee information does not exist');
         if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
 
@@ -55,19 +59,7 @@ class Warning extends VSModel
             return DV::error('It seems your warning date is in the past. Please check the warning date!');
         }
 
-        $saveData = [
-            'emp_id' => $inputs['emp_id'],
-            'warning_type_id' => $inputs['warning_type_id'],
-            'action_id' => $inputs['warning_type_id'],
-            'start_date' => $inputs['warning_date'],
-            'end_date' => $inputs['warning_date'],
-            'issues' => $inputs['issues'],
-            'remarks' => $inputs['remarks'] ?? null,
-            'branch_id' => $ss->branch_id,
-            'subs_id' => $ss->subs_id,
-        ];
-
-        $id = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $saveData, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'warning saved'], 'failed_to_save');
     }
 
@@ -94,12 +86,10 @@ class Warning extends VSModel
 
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
-            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-            ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->whereRaw($str_search)
-            ->where('emp.subs_id', hex2bin($ss->subs_id))
-            ->whereIn('emp.branch_id', getAccessBranches($ss))
-            ->selectRaw('w.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex, p.name as position, w.start_date as warning_date, w.warning_type_id, wt.name as warning_type, w.issues, w.remarks, w.update_user, w.updated_at')
+            ->selectRaw('w.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex,p.name as position, w.warning_date, w.warning_type_id, wt.name as warning_type, w.issues, w.remarks, w.update_user, w.updated_at')
             ->orderBy('w.id', 'DESC');
 
         if ($warning_type_id) {
@@ -112,20 +102,21 @@ class Warning extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row = setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
+            setOfficialDates($row, ['warning_date'], ['updated_at'], ['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function getDetails($id, $ss = null) {
-        $warning_dates = DBX::formatDate('w.start_date', 'warning_date');
+    public function getDetails($id, $ss = null)
+    {
+        $warning_dates = DBX::formatDate('w.warning_date', 'warning_date');
         $col_update_date = DBX::formatDate('w.updated_at', 'update_date');
 
         $row = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
-            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-            ->leftJoin('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('warning_types as wt', 'wt.id', '=', 'w.warning_type_id')
             ->where('w.id', $id)
             ->selectRaw('w.id, w.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position, w.warning_type_id, wt.name as warning_type, ' . $warning_dates . ', w.issues, w.remarks, w.update_user, ' . $col_update_date)
             ->first();

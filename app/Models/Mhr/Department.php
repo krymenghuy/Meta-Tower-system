@@ -32,10 +32,11 @@ class Department extends VSModel
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '(', ')', ' '];
         $allow_chars = [
-            'name' => ['(', ')', '-', '/', '.', ' ', ','],
+            'name' => ['(', ')', '-', '/', '.', ' ', ',','&'],
+            'shortcut' => ['(', ')', '-', '/', '.', ' ', ','],
             'description' => $pos_char,
         ];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
+        $res = DBX::validateObject($arr, $v_rule, true,  $allow_chars, $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }

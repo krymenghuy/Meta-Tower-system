@@ -27,7 +27,7 @@ var PositionComponent = (function () {
             transTitle: "titles.Name",
             className: "align-middle text-capitalize",
             data: (data) =>
-                `<div class="text-prm-custom text-capitalize" style="width:90px; ">
+                `<div class="text-prm-custom text-capitalize" style="width:150px; ">
                 <span class="text-prm-custom text-capitalize" >${data.name ?? "_"}</span></div>`,
         },
         {
@@ -66,7 +66,7 @@ var PositionComponent = (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                    <div class="text-primary-prm text-capitalize" style="width:300px;">
                         <span class="text-wrap text-break small" style ="word-break:break-word;">${data.description ?? '_'}</span>
                     </div>
                 `;
@@ -130,7 +130,7 @@ var PositionComponent = (function () {
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
@@ -385,16 +385,7 @@ const PositionDialog = (() => {
                         const p = me.getData();
 
                         p.id = me.dataOptions.id;
-
-                        vsapi
-                            .call(
-                                [main_view.base_url, "/mhr/position/save"].join(
-                                    "",
-                                ),
-                                p,
-                                btn,
-                                null,
-                            )
+                            vsapi.call([main_view.base_url, "/mhr/position/save"].join(""), p, {loader: false,agent :btn})
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
@@ -430,7 +421,7 @@ const PositionDialog = (() => {
                 //    }
             },
             onPrepareForm: (me, data) => {
-                me.controls.currency_code.value = VSMoney.getCurrency().code;
+                // me.controls.currency_code.value = VSMoney.getCurrency().code;
             },
         });
 

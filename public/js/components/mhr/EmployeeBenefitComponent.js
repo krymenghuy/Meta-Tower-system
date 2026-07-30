@@ -38,11 +38,20 @@ var EmployeeBenefitComponent = new (function () {
              }
         },
         {
+            transTitle: "titles.Effective Date",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary p-0 m-0">${
+                    data.effective_date ?? "_"
+                }</span>`;
+            },
+        },
+        {
             transTitle: "titles.Issue Date",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<span class="text-primary p-0 m-0">${
-                    data.effective_date ?? "N/A"
+                    data.issue_date ?? "_"
                 }</span>`;
             },
         },
@@ -91,20 +100,19 @@ var EmployeeBenefitComponent = new (function () {
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => {
+            data: function (data, row, display) {
                 return `
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary btn_edit_emp_benefit" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn rounded-3 p-1 btn-danger btn_delete_benefit" data-id="${data.id}">
-                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
-                        </button>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_benefit_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>`;
+                `;
             },
         },
+       
     ];
 
     mThis.init = function () {
@@ -124,7 +132,7 @@ var EmployeeBenefitComponent = new (function () {
         });
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
-            if (!AuthManager.allowed(273)) return;
+            // if (!AuthManager.allowed(273)) return;
             EmployeeBenefitDialog.show({
                 id: null,
                 btn: e.target,
@@ -135,7 +143,7 @@ var EmployeeBenefitComponent = new (function () {
         };
         mThis.btnImport.onclick = (e) => {
             e.preventDefault();
-            if (!AuthManager.allowed(325)) return;
+            // if (!AuthManager.allowed(325)) return;
             FileChooser.chooseFile({
                 accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             },(d) => {
@@ -175,22 +183,50 @@ var EmployeeBenefitComponent = new (function () {
             el.onchange = () =>
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         });
-        mThis.setActionListeners();
+        mThis.initDropdownMenus(pr_tbl);
+
         mThis.initAlready = true;
     };
 
-    mThis.setActionListeners = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
-            if (btn) {
-                mThis.deleteBenefit(btn.dataset.id, btn);
-            }
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_benefit_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2  " vslang="titles.Edit Employee Benefit">Edit Employee Benefit</span>',
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_emp_benefit",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Employee Benefit">Delete Employee Benefit</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_emp_benefit",
+                },
+            ],
 
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_emp_benefit");
-            if (btn) {
-                mThis.editBenefit(btn.dataset.id, btn);
-            }
-        });
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_emp_benefit": {
+                        mThis.editEmployeeBenefit(id, menuLink);
+                        break;
+                    }
+                    case "delete_emp_benefit": {
+                        mThis.deleteEmployeeBenefit(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.getFilterData = () => {
@@ -205,8 +241,8 @@ var EmployeeBenefitComponent = new (function () {
         return filters;
     };
 
-    mThis.editBenefit = (id, btn) => {
-        if (!AuthManager.allowed(274)) return;
+    mThis.editEmployeeBenefit = (id, btn) => {
+        // if (!AuthManager.allowed(274)) return;
         EmployeeBenefitDialog.show({
             id,
             btn,
@@ -214,7 +250,7 @@ var EmployeeBenefitComponent = new (function () {
         });
     };
 
-    mThis.deleteBenefit = (id, menuLink) => {
+    mThis.deleteEmployeeBenefit = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -307,7 +343,20 @@ const EmployeeBenefitDialog = (() => {
                             <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" disabled></select>
+                            <div class="vs-material-field">
+                                <input type="number" name="amount" class="form-control data-input" data-field="amount" placeholder=" " />
+                                <label vslang="titles.Amount"></label>
+
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" ></select>
+                        </div>
+                        <div class="col-3">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="issue_date" class="data-input form-control form_input" data-field="issue_date" placeholder=" " />
+                                <label vslang="labels.Issue Date">Issue Date</label>
+                            </div>
                         </div>
                         <div class="col-6">
                             <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans('Tax Options', 'labels')}">
@@ -317,23 +366,18 @@ const EmployeeBenefitDialog = (() => {
                                 <option value="3">Flat Rate</option>
                             </select>
                         </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="number" name="amount" class="form-control data-input" data-field="amount" placeholder=" " />
-                                <label vslang="titles.Amount"></label>
-
-                            </div>
-                        </div>
-                        <div class="col-6 effective_date d-none">
-                            <div class="vs-material-field">
-                                <input name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" "></input>
-                                <label vslang="titles.Effective Date"></label>
-                            </div>
-                        </div>
-                        <div class="col-6 flat_tax_rate d-none">
+                   
+                       
+                        <div class="col-3 flat_tax_rate d-none">
                             <div class="vs-material-field">
                                 <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
                                 <label vslang="titles.Flat Tax"></label>
+                            </div>
+                        </div>
+                         <div class="col-3 effective_date d-none">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" "></input>
+                                <label vslang="titles.Effective Date"></label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -346,7 +390,6 @@ const EmployeeBenefitDialog = (() => {
                 ].join("");
             },
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.effective_date);
                 const taxOptionField = me.divModal.querySelector("#tax_option_id");
                 const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
                 taxOptionField.addEventListener("change", () => {
@@ -374,8 +417,9 @@ const EmployeeBenefitDialog = (() => {
                 const effective_date = me.divModal.querySelector(".effective_date");
                 BenefitField.addEventListener("change", () => {
                     const selectedValue = BenefitField.value;
-                    const benefit_disburse_policies =
-                        data.benefit_disburse_policies;
+                    const benefit_disburse_policies = data.benefit_disburse_policies;
+                    console.log(123,benefit_disburse_policies);
+                    
                     const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
                     if (exists) {
                         effective_date.classList.remove("d-none");
@@ -384,7 +428,6 @@ const EmployeeBenefitDialog = (() => {
                     }
                 });
                 BenefitField.dispatchEvent(new Event("change"));
-                LocaleManager.translateZone(me.divModal);
                 me.controls.currency_code.value = VSMoney.getCurrency().code;
 
                 Object.keys(data).forEach((key) => {
@@ -437,7 +480,8 @@ const EmployeeBenefitDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
                         p.id = me.dataOptions.id;
-
+                        console.log(123,p);
+                        
                         vsapi
                             .call(
                                 `${main_view.base_url}/mhr/emp-benefit/save`,

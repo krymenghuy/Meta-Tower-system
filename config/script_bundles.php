@@ -262,6 +262,7 @@ return [
                 '/js/components/mhr/CheckPointCategoryComponent.js',
                 '/js/components/mhr/AttendanceTracksComponent.js',
                 '/js/components/mhr/ExitFormComponent.js',
+                '/js/components/mhr/DeductionComponent.js',
 
 
 

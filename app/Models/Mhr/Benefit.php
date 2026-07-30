@@ -71,14 +71,14 @@ class Benefit extends VSModel
         $query = DB::table('benefits as b')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('b.id, b.name,b.type_id,b.updated_at,b.update_user');
+            ->selectRaw('b.id, b.name,b.type_id,b.updated_at,b.update_user')
+            ->orderByRaw('b.id ASC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-
-            $row = setOfficialDates($row,[''],['updated_at'],['']);
+            setOfficialDates($row,[''],['updated_at'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -94,14 +94,40 @@ class Benefit extends VSModel
         }
         return $row;
     }
-
-    function deleteBenefit($id = null,$ss = null)
+    public function deleteBenefit($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $delete = DB::table('benefits')->where('id', $id)->delete();
-        return $delete ? DV::depends($delete,['action'=>'deleted']): DV::error('Deleted failed.');
+        if (!$id) {
+            return DV::error('Benefit ID is not valid.');
+        }
+
+        $benefitExists = DB::table('benefits')
+            ->where('id', $id)
+            ->exists();
+
+        if (!$benefitExists) {
+            return DV::error('Benefit not found.');
+        }
+
+        if (DB::table('emp_benefits')->where('benefit_id', $id)->exists()) {
+            return DV::error('Benefit is assigned to employees.');
+        }
+
+        if (DB::table('benefit_disburse_policies')->where('benefit_id', $id)->exists()) {
+            return DV::error('Benefit is used in disbursement policies.');
+        }
+
+        if (DB::table('benefit_disbursements')->where('benefit_id', $id)->exists()) {
+            return DV::error('Benefit has disbursement records.');
+        }
+
+        $deleted = DB::table('benefits')
+            ->where('id', $id)
+            ->delete();
+
+        return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete benefit.');
     }
 
     public function getFormOptions($id, $ss = null)

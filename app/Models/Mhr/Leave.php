@@ -56,9 +56,13 @@ class Leave extends VSModel
         $start_date = $inputs['start_date'] ?? $today;
         $end_date = $inputs['end_date'];
         $remarks = $inputs['remarks'];
+        $status_id = $inputs['status_id'] ?? null;
 
-        if ($start_date < $today || $end_date < $today) {
-            return DV::error('It seems your date request leave in the past. Please check start date and end date!');
+        // Uninformed leaves (status_id = 4) are allowed to be in the past
+        if ($status_id != 4) {
+            if ($start_date < $today || $end_date < $today) {
+                return DV::error('It seems your date request leave in the past. Please check start date and end date!');
+            }
         }
         if (strtotime($start_date) > strtotime($end_date)) {
             return DV::error('It seems your request start date later end date. Please check start date and end date!');
@@ -76,7 +80,6 @@ class Leave extends VSModel
         if (Employee::isOnLeave($d->emp_id)) {
             return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
         }
-        \Log::info(print_r($inputs, true));
 
         $id = DBX::saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
@@ -196,6 +199,7 @@ class Leave extends VSModel
             $current_page = 1;
         }
         $search_value = $d->search_value ?? null;
+        $work_shift_id = $d->work_shift_id ?? $d->shifts ?? null;
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = '1=1';
@@ -203,17 +207,40 @@ class Leave extends VSModel
             $skip_rows = 0;
             $str_search = "(e.name LIKE '%" . $search_value . "%')";
         }
+        $excuse_status_id = DB::table('leave_statuses')
+            ->where('name', 'LIKE', '%excuse%')
+            ->value('id') ?? 5;
+
         $query = DB::table('leaves as l')
             ->leftJoin('employees as e', 'l.emp_id', '=', 'e.id')
             ->leftJoin('positions as p', 'p.id', '=', 'e.position_id')
             ->leftJoin('work_shifts as ws', 'ws.id', '=', 'e.work_shift_id')
-            ->where('l.status_id', 4)
+            ->leftJoin('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+            ->whereIn('l.status_id', [4, $excuse_status_id])
             ->whereRaw($str_search)
-            ->select('l.id', 'l.emp_id', 'l.start_date', 'l.end_date', 'l.status_id', 'l.updated_at', 'l.update_user', 'e.name as emp_name', 'e.code as emp_code', 'p.name as position_name', 'ws.name as work_shift_name');
+            ->orderBy('l.id', 'DESC');
+
+        if ($work_shift_id) {
+            $query->where('e.work_shift_id', $work_shift_id);
+        }
+
+        $query->select(
+            'l.id', 'l.emp_id', 'l.start_date', 'l.end_date', 'l.status_id', 'ls.name as status', 'l.updated_at', 'l.update_user', 'e.name as emp_name', 'e.code as emp_code', 'e.salary as emp_salary', 'l.deduction', 'p.name as position_name', 'ws.name as work_shift_name', 'l.remarks',
+            DB::raw('EXISTS(
+                SELECT 1 FROM emp_warnings as ew 
+                WHERE ew.emp_id = l.emp_id 
+                AND ew.warning_date BETWEEN l.start_date AND l.end_date
+            ) as has_warning')
+        );
         $clone_query = clone  $query;
         $count = $clone_query->count('l.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
+            $start = Carbon::parse($row->start_date);
+            $end = Carbon::parse($row->end_date);
+            $days_count = $start->diffInDays($end) + 1;
+            $row->date_period = self::formatDatePeriod($row->start_date, $row->end_date, $days_count);
+
             setOfficialDates($row, ['start_date', 'end_date'], ['updated_at'], ['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -418,7 +445,7 @@ class Leave extends VSModel
             ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
             ->where('l.id', $id)
             //->where('l.status_id',2
-            ->selectRaw('l.id, l.emp_id, emp.work_shift_id as work_shift_id, emp.code as emp_code, emp.name as employee, p.name, l.leave_type_id, lt.name as leave_type,' . $leave_dates . ', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,' . $col_update_date)
+            ->selectRaw('l.id, l.emp_id, emp.work_shift_id as work_shift_id, emp.code as emp_code, emp.name as employee, emp.salary as emp_salary, l.deduction, p.name, l.leave_type_id, lt.name as leave_type,' . $leave_dates . ', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,' . $col_update_date)
             ->first();
         return $leave;
     }
@@ -449,6 +476,20 @@ class Leave extends VSModel
     {
         $ss = $ss ? $ss : $this->userInfo;
 
+        if ($status_id === 'excuse' || $status_id === 'excused' || $status_id == 5) {
+            $resolved_status_id = DB::table('leave_statuses')
+                ->where('name', 'LIKE', '%excuse%')
+                ->value('id');
+            $status_id = $resolved_status_id ?? 5;
+        }
+
+        if ($status_id === 'deduct' || $status_id === 'uninformed' || $status_id == 4) {
+            $resolved_status_id = DB::table('leave_statuses')
+                ->where('name', 'LIKE', '%uninformed%')
+                ->value('id');
+            $status_id = $resolved_status_id ?? 4;
+        }
+
         if (empty($id) && !empty($extra['emp_id'])) {
             $uninformed_leave_type_id = DB::table('leave_types')
                 ->where('name', 'LIKE', '%uninformed%')
@@ -460,7 +501,8 @@ class Leave extends VSModel
                 'end_date' => date('Y-m-d', strtotime($extra['end_date'])),
                 'leave_type_id' => $uninformed_leave_type_id,
                 'status_id' => $status_id,
-                'remarks' => '-',
+                'remarks' => $extra['remarks'] ?? '-',
+                'deduction' => $extra['deduction'] ?? 0.00,
                 'branch_id' => $ss->branch_id,
                 'subs_id' => hex2bin($ss->subs_id),
                 'created_at' => getNowTime(),
@@ -469,6 +511,28 @@ class Leave extends VSModel
                 'update_uid' => $ss->user_id ?? $ss->id ?? null
             ]);
 
+            // Sync to overlapping active payrolls
+            $payroll_start_date = date('Y-m-d', strtotime($extra['start_date']));
+            $payroll_end_date = date('Y-m-d', strtotime($extra['end_date']));
+            $payrolls = DB::table('payrolls')
+                ->where('authorized', 0)
+                ->where('disbursed', 0)
+                ->where('start_date', '<=', $payroll_end_date)
+                ->where('end_date', '>=', $payroll_start_date)
+                ->get();
+
+            foreach ($payrolls as $p) {
+                $pl_id = DB::table('payroll_list')
+                    ->where('payroll_id', $p->id)
+                    ->where('emp_id', $extra['emp_id'])
+                    ->value('id');
+
+                if ($pl_id) {
+                    $payrollModel = new Payroll($p->id, $ss);
+                    $payrollModel->calculate($p->id, $ss);
+                }
+            }
+
             return DV::success([
                 'message' => 'Leave status updated successfully',
                 'id' => $insert_id
@@ -476,16 +540,63 @@ class Leave extends VSModel
         }
 
         $currentStatus = DB::table('leaves')->where('id', $id)->value('status_id');
-        if ($currentStatus == $status_id) {
-            return DV::error('It is the same current status.');
+        $hasDeductionChange = isset($extra['deduction']) && (DB::table('leaves')->where('id', $id)->value('deduction') != $extra['deduction']);
+        $currentRemarks = DB::table('leaves')->where('id', $id)->value('remarks');
+        $hasRemarksChange = isset($extra['remarks']) && ($currentRemarks != $extra['remarks']);
+
+        if ($currentStatus == $status_id && !$hasDeductionChange && !$hasRemarksChange) {
+            return DV::success([
+                'message' => 'Leave status updated successfully',
+                'id' => $id
+            ]);
         }
-        $x = DB::table('leaves')->where('id', $id)->update([
+
+        $updateData = [
             'status_id' => $status_id,
             'update_user' => $ss->full_name,
             'updated_at' => getNowTime(),
             'update_uid' => $ss->user_id ?? $ss->id ?? null
+        ];
+        if (isset($extra['remarks'])) {
+            $updateData['remarks'] = $extra['remarks'];
+        }
+        if (isset($extra['deduction'])) {
+            $updateData['deduction'] = $extra['deduction'];
+        }
+
+        $x = DB::table('leaves')->where('id', $id)->update($updateData);
+
+        // Sync to overlapping active payrolls
+        $leave = DB::table('leaves')->where('id', $id)->first();
+        if ($leave) {
+            $emp_id = $leave->emp_id;
+            $start_date = $leave->start_date;
+            $end_date = $leave->end_date;
+
+            $payrolls = DB::table('payrolls')
+                ->where('authorized', 0)
+                ->where('disbursed', 0)
+                ->where('start_date', '<=', $end_date)
+                ->where('end_date', '>=', $start_date)
+                ->get();
+
+            foreach ($payrolls as $p) {
+                $pl_id = DB::table('payroll_list')
+                    ->where('payroll_id', $p->id)
+                    ->where('emp_id', $emp_id)
+                    ->value('id');
+
+                if ($pl_id) {
+                    $payrollModel = new Payroll($p->id, $ss);
+                    $payrollModel->calculate($p->id, $ss);
+                }
+            }
+        }
+
+        return DV::success([
+            'message' => 'Leave status updated successfully',
+            'id' => $id
         ]);
-        return DV::depends($x, ['Leave  status', 'updated']);
     }
     function getLeaveList($arr, $ss)
     {
@@ -511,4 +622,5 @@ class Leave extends VSModel
         // Return the rows as a result
         return $rows;
     }
+
 }

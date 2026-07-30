@@ -232,6 +232,9 @@ return [
     ],
     'titles' => [
         'dashboard' => 'Dashboard - Meta Tower',
+        'Create Warning' => 'Create Warning',
+        'Create Deduction' => 'Create Deduction',
+        'Deduct' => 'Deduct',
         'Personal Information' => 'Personal Information',
         'Overview' => 'Overview',
         'Contract' => 'Contract',
@@ -500,7 +503,9 @@ return [
 
 
 
-
+        'create_success_tax_bracket' => 'Tax bracket has been created successfully.',
+        'update_success_tax_bracket' => 'Tax bracket has been updated successfully.',
+        'delete_success_tax_bracket' => 'Tax bracket has been deleted successfully.',
 
         'update_success_employee' => 'Updated employee successfully.',
         'create_success_employee' => 'Created employee successfully.',

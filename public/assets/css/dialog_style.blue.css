@@ -283,11 +283,11 @@
 .vs-modal .form-control,
 .vs-modal .form-select{
 
-    height:44px;
+    /* height:44px; */
 
-    border-radius:10px;
+    border-radius:6px;
 
-    border:1px solid var(--dlg-border);
+    border:1px solid #d1d5db;
 
     background:#fff;
 

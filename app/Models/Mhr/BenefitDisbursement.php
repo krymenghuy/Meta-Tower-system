@@ -33,9 +33,8 @@ class BenefitDisbursement //extends VSModel
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
-            'emp_id' => '1|number',
-            'benefit_id' => '1|number',
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
+            'benefit_id' => '1|number|exists=benefits.id',
             'target_month' => '1|number|default=0',
             'target_year' => '1|number|default=0',
             'withdraw_rate' => '1|number|default=100',
@@ -113,6 +112,7 @@ class BenefitDisbursement //extends VSModel
             if (!empty($row->emp_id) && $row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
+            setOfficialDates($row,[''],['updated_at'],['']);
             unset($row->emp_photo);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

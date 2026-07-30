@@ -20,8 +20,7 @@ class BenefitDisbursePolicyController extends Controller
     public function saveBenefitDisbursePolicy(Request $req)
     {
         $id = $req->benefit_disburse_policy_id ?? $req->id;
-        $prn_code = $id ? 279 : 280;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

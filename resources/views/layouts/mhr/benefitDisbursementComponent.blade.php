@@ -2,7 +2,7 @@
     <div class="bg-white p-3 mt-2 rounded-2 shadow" id="container_benefit_disburse">
         <div class="row align-items-center g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_benefit_disburse_search" placeholder="Search here....">
+                <input type="text" class="filter-field rounded-2 input-search" id="_benefit_disburse_search" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_benefit" class="data-input filter-field" data-field="benefit_id"></select>
@@ -16,6 +16,6 @@
         
         </div>
     </div>
-    <div id="_benefit_disburse_list" class="mt-3 p-3">
+    <div id="_benefit_disburse_list" class="mt-3">
     </div>
 </div>

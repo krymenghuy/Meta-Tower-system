@@ -26,12 +26,11 @@ var TaxBracketComponent = (function() {
     mThis.cols = [
         {
             transTitle: "titles.No",
-            className: "align-middle  text-nowrap ",
+            className: "align-middle",
             data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color:#1f386b; width: 30px; height: 30px;">
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
-                </div>
-            `
+                </div>`,
         },
         {
             transTitle: "titles.Salary Range",
@@ -44,7 +43,7 @@ var TaxBracketComponent = (function() {
                 // vs bounded ranges (e.g., "$1,000 to $5,000 USD")
                 const rangeText = data.upper_amount == -1 
                     ? `${lowerAmount} ${currency} ${LocaleManager.trans('and upwards', 'titles')}`
-                    : `${LocaleManager.trans('Salary ranges from', 'titles')}${lowerAmount} ${LocaleManager.trans('to', 'titles')} ${data.upper_amount} ${currency}`;
+                    : `${LocaleManager.trans('Salary ranges from', 'titles')} ${lowerAmount} ${LocaleManager.trans('to', 'titles')} ${data.upper_amount} ${currency}`;
 
                 return `<p class="p-0 m-0">${rangeText}</p>`;
             }
@@ -79,6 +78,7 @@ var TaxBracketComponent = (function() {
         },
 
         {
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: data => `
             <div class="d-flex justify-content-center align-items-center">
@@ -125,7 +125,7 @@ var TaxBracketComponent = (function() {
                     mThis.TaxBracketListView.showPage();
                 }
             };
-            if (!AuthManager.allowed(253)) return;
+            // if (!AuthManager.allowed(253)) return;
             TaxBracketDialog.show(op);
         };
         mThis.pr_tbl = mThis.TaxBracketListView.getListContainer();
@@ -152,7 +152,7 @@ var TaxBracketComponent = (function() {
                 {
                     html:
                         '<span class="ps-2 " vslang="titles.Modify">Modify Tax Bracket</span>',
-                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_taxBracket"
                 },
@@ -193,7 +193,7 @@ var TaxBracketComponent = (function() {
                 mThis.TaxBracketListView.showPage();
             }
         };
-        if (!AuthManager.allowed(254)) return;
+        // if (!AuthManager.allowed(254)) return;
         TaxBracketDialog.show(op);
     };
 
@@ -205,7 +205,7 @@ var TaxBracketComponent = (function() {
                 mThis.TaxBracketListView.showPage();
             }
         };
-        if (!AuthManager.allowed(255)) return;
+        // if (!AuthManager.allowed(255)) return;
         cv_interact.confirm(
             "Delete this tax bracket?",
             {
@@ -298,10 +298,8 @@ const TaxBracketDialog = (() => {
                                 </div>
                             </div>
                              <div class="col-6">
-                                <div class="vs-material-field">
-                                     <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                                     <select  data-style="material" class="form-control data-input" name="currency_code" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}">
                                      </select>
-                                     <label vslang="titles.Currency">Currency</label>
                                 </div>
                             </div>
 
@@ -311,16 +309,15 @@ const TaxBracketDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-white">Cancel</span>',
-                        cssClass: "btn btn-sm btn-warning",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         }
                     },
                     {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-sm btn-primary",
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -338,6 +335,15 @@ const TaxBracketDialog = (() => {
                                 .then(res => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_tax_bracket",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_tax_bracket",
+                                            );
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         }
@@ -369,8 +375,7 @@ const TaxBracketDialog = (() => {
                     }
                 ],
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    // me.controls.currency_code.value = VSMoney.getCurrency().code;
                 }
             });
 
