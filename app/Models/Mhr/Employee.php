@@ -165,18 +165,10 @@ class Employee extends VSModel
             $org_joining_date = convertDate($emp->joining_date);
             $change_joining_date =  $input_joining_date != $org_joining_date;
             unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id'], $inputs['branch_id']);
-        }else{
-             $branch_id = $d->branch_id ?? null;
-             if(!$branch_id){
-                return DV::error('Please specify the branch, in which the employee is based in');
-             }
         }
         $id = DBX::saveData($ss, 'employees', ['id' => $id], $inputs, [], 1,false);
 
         if ($id && $created) {
-            // if($inputs['branch_id'] > 0){
-            //     DB::table('employees')->where('id', $id)->update(['branch_id' => $inputs['branch_id']]);
-            // }
             $prefix = 'MT';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
 
