@@ -167,6 +167,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-warning')
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
     Route::post('/list', [WarningController::class, 'warningList']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-promotion')->group(function () {
+    Route::post('/promote',[EmployeeController::class,'promoteStaff']);
+    Route::post('/form-options',[EmployeeController::class,'getFormOptionPromotion']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-deduction')->group(function () {
     Route::post('/save', [DeductionController::class, 'saveDeduction']);

@@ -145,7 +145,7 @@ var TaxAllowanceComponent = (function () {
                </div>`;
 
         container.innerHTML = `
-                <div class="emp-tax-allowance-card h-100">
+                <div class="emp-tax-allowance-card">
                     <div class="emp-tax-allowance-header">
                         <div class="emp-tax-allowance-header-title">
                             <span class="emp-tax-allowance-header-icon">

@@ -12,8 +12,6 @@ var EmployeeManagementComponent = (function () {
     mThis.elEmployeeType = mThis.self.querySelector("#_emp_type_id");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddEmployee");
     mThis.btnBack = mThis.self.querySelector("#_btn_back_employee");
-    mThis.btnPrintCV = mThis.self.querySelector("#_btn_print_employee_cv");
-    mThis.btnEditProfile = mThis.self.querySelector("#_btn_edit_employee_profile");
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
     mThis.elSearch = mThis.self.querySelector("#_search_employee");
     mThis.divEmployeeListContainer = mThis.self.querySelector("#_employee_list_container");
@@ -64,20 +62,6 @@ var EmployeeManagementComponent = (function () {
             e.preventDefault();
             mThis.showPage("employee_list", mThis.getFilterData());
         };
-
-        mThis.btnPrintCV.onclick = function (e) {
-            e.preventDefault();
-            cv_interact.info(
-                LocaleManager.trans("Print CV feature is coming soon.", "message_box_default"),
-            );
-        };
-
-        mThis.btnEditProfile.onclick = function (e) {
-            e.preventDefault();
-            if (!mThis.employee_id) return;
-            mThis.editEmployee(mThis.employee_id, e.target);
-        };
-
         mThis.div_filter_fields
             .querySelectorAll(".filter-field")
             .forEach((el) => {
@@ -129,7 +113,7 @@ var EmployeeManagementComponent = (function () {
         if (!scrollEl) return;
 
         const setHeight = () => {
-            scrollEl.style.maxHeight = window.innerHeight - 20 + "px";
+            scrollEl.style.maxHeight = window.innerHeight - 70 + "px";
         };
 
         setHeight();
@@ -370,137 +354,87 @@ var EmployeeManagementComponent = (function () {
 
         const html = `
             <div class="emp-profile-wrap">
-                <section class="emp-hero">
-                    <div class="emp-hero-top">
-                        <div class="emp-hero-identity">
-                            <div class="emp-avatar-wrap${photoWrapClass}">
-                                <img src="${imageUrl}" class="emp-avatar" alt="${mThis._escapeHtml(data.name)}"
-                                    onerror="this.style.display='none';this.parentElement.classList.add('is-empty');">
-                                <span class="emp-avatar-placeholder"><i class="fa-solid fa-user"></i></span>
-                            </div>
-                            <div class="emp-hero-info">
-                                <div class="emp-hero-name-block">
-                                    <div class="emp-hero-name-row">
-                                        <h2 class="emp-hero-name text-capitalize">${mThis._escapeHtml(data.name ?? "_")}</h2>
-                                        <span class="emp-status-badge ${mThis._statusBadgeClass(data.status)}">${mThis._escapeHtml(data.status ?? "Active")}</span>
-                                    </div>
-                                    <div class="emp-hero-social">
-                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--facebook" title="Facebook" aria-label="Facebook">
-                                            <i class="fa-brands fa-facebook-f"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" class="emp-social-btn emp-social-btn--linkedin" title="LinkedIn" aria-label="LinkedIn">
-                                            <i class="fa-brands fa-linkedin-in"></i>
-                                        </a>
-                                        <a href="${
-                                            data.phone_number
-                                                ? `https://t.me/${mThis._escapeHtml(String(data.phone_number).replace(/[^0-9+]/g, ""))}`
-                                                : "javascript:void(0)"
-                                        }" class="emp-social-btn emp-social-btn--telegram" title="Telegram" aria-label="Telegram"${data.phone_number ? ' target="_blank" rel="noopener noreferrer"' : ""}>
-                                            <i class="fa-brands fa-telegram-plane"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emp-hero-stats">
-                            <div class="emp-stat-card">
-                                <span class="emp-stat-icon"><i class="fa fa-id-card"></i></span>
-                                <div class="emp-stat-label">${LocaleManager.trans("Employee ID", "labels")}</div>
-                                <div class="emp-stat-value">${mThis._escapeHtml(data.code ?? "_")}</div>
-                            </div>
-                            <div class="emp-stat-card">
-                                <span class="emp-stat-icon"><i class="fa fa-briefcase"></i></span>
-                                <div class="emp-stat-label">${LocaleManager.trans("Position", "labels")}</div>
-                                <div class="emp-stat-value text-capitalize">${mThis._escapeHtml(data.position ?? "_")}</div>
-                            </div>
-                            <div class="emp-stat-card">
-                                <span class="emp-stat-icon"><i class="fa fa-user-tag"></i></span>
-                                <div class="emp-stat-label">${LocaleManager.trans("Staff Type", "labels")}</div>
-                                <div class="emp-stat-value text-capitalize">${mThis._escapeHtml(data.type ?? "_")}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="emp-hero-contact row g-3">
-                        <div class="col-12 col-md-4">
-                            <div class="emp-contact-item h-100">
-                                <span class="emp-contact-icon"><i class="fa fa-phone"></i></span>
-                                <div class="emp-contact-body">
-                                    <span class="emp-contact-label">${LocaleManager.trans("Phone Number", "labels")}</span>
-                                    <span class="emp-contact-value">${mThis._pillText(data.phone_number)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <div class="emp-contact-item h-100">
-                                <span class="emp-contact-icon"><i class="fa fa-envelope"></i></span>
-                                <div class="emp-contact-body">
-                                    <span class="emp-contact-label">${LocaleManager.trans("Email", "labels")}</span>
-                                    <span class="emp-contact-value">${mThis._pillText(data.email)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <div class="emp-contact-item h-100"${addressTitle}>
-                                <span class="emp-contact-icon"><i class="fa fa-location-dot"></i></span>
-                                <div class="emp-contact-body">
-                                    <span class="emp-contact-label">${LocaleManager.trans("Address", "labels")}</span>
-                                    <span class="emp-contact-value text-capitalize">${mThis._pillText(addressText)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <section class="emp-personal">
                     <div class="emp-personal-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                         <div>
                             <h5 class="emp-personal-title">
-                                <span class="emp-personal-title-icon"><i class="fa fa-user"></i></span>
-                                <span>${LocaleManager.trans("Personal Information", "titles")}</span>
+                                <span class="emp-personal-title-icon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+
+                                <span class="emp-personal-info">
+                                    <span class="text-prm-custom fw-semibold emp-personal-name">${data.name}</span>
+                                    <span class="text-muted emp-personal-sex">
+                                        ${mThis._sexLabel(data.sex)}
+                                    </span>
+                                </span>
                             </h5>
-                            <p class="emp-personal-subtitle">${LocaleManager.trans("Employee details and work information", "labels")}</p>
                         </div>
-                        <div class="d-inline-flex align-items-center gap-2 group_action_movement">
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement movement d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Movement" aria-label="Movement">
-                                <i class="fa-solid fa-right-left"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-movement-detail movement_detail d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Detail Movement" aria-label="Detail Movement">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-resign set_resign d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Set Resign" aria-label="Set Resign">
-                                <i class="fa-solid fa-user-xmark"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-delete delete_employee d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Delete" aria-label="Delete">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                            <button type="button" class="emp-profile-action-btn emp-profile-action-btn-edit edit_emp_profile_info d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-status="${data.status_id}" title="Edit" aria-label="Edit">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </button>
-                        </div>
+                      <div class="d-inline-flex align-items-center gap-2 group_action_movement">
+                        <button type="button" class="btn btn-warning btn-sm edit_emp_profile_info" data-id="${data.id}" data-status="${data.status_id}" title="Edit">
+                            <i class="fa-regular fa-pen-to-square text-white fs-5 ps-2"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm delete_employee" data-id="${data.id}" data-status="${data.status_id}" title="Delete">
+                            <i class="fa-regular fa-trash-can fs-5 ps-2"></i>
+                        </button>
+
+                        <button type="button"
+                            class="btn btn-primary btn-sm movement"
+                            data-id="${data.id}"
+                            data-status="${data.status_id}"
+                            title="Movement">
+                            <i class="fa-solid fa-right-left fs-5 ps-2"></i>
+                        </button>
+
+                        <button type="button"
+                            class="btn btn-success btn-sm movement_detail"
+                            data-id="${data.id}"
+                            data-status="${data.status_id}"
+                            title="Movement Detail">
+                            <i class="fa-regular fa-address-book fs-5 ps-2"></i>
+                        </button>
+
+                        <button type="button"
+                            class="btn btn-info btn-sm set_resign"
+                            data-id="${data.id}"
+                            data-status="${data.status_id}"
+                            title="Set Resign">
+                            <i class="fa-brands fa-r-project fs-5 ps-2"></i>
+                        </button>
+
+                       
+
+                    </div>
                     </div>
 
                     <div class="emp-profile-groups">
                         <div class="emp-profile-group">
-                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Personal", "titles")}</h6>
                             <div class="emp-profile-field-grid">
-                                ${mThis._profileLine(LocaleManager.trans("Name", "labels"), data.name)}
-                                ${mThis._profileLine(LocaleManager.trans("Sex", "labels"), mThis._sexLabel(data.sex))}
-                                ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
+                                ${mThis._profileLine(LocaleManager.trans("Code", "labels"), data.code)}
                                 ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
                                 ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
                                 ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
+                                ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
+                                ${mThis._profileLine(LocaleManager.trans("ID Card", "labels"), data.nid)}
+                                <div class="emp-profile-field emp-profile-field-full">
+                                    ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address)}
+                                </div>
                             </div>
+                           
                         </div>
                         <div class="emp-profile-group">
-                            <h6 class="emp-profile-group-title">${LocaleManager.trans("Work", "titles")}</h6>
                             <div class="emp-profile-field-grid">
-                                ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type, { gold: true })}
-                                ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position, { gold: true })}
-                                ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date, { gold: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position)}
                                 ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
-                                ${mThis._profileLine(LocaleManager.trans("Identity Card", "labels"), data.nid)}
-                                ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address, { gold: true, capitalize: true })}
+                                ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type)}
+                                ${mThis._profileLine(LocaleManager.trans("WorkShift", "labels"), data.work_shift)}
+                                ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date)}
+                                ${mThis._profileLine(LocaleManager.trans("Apply Tax", "labels"), data.apply_payroll_tax)}
+                                <div class="emp-profile-field emp-profile-field-full">
+                                    ${mThis._profileLine(LocaleManager.trans("Place Of Birth", "labels"), data.city_name)}
+                                </div>
                             </div>
+                           
                         </div>
                     </div>
                 </section>
@@ -539,12 +473,7 @@ var EmployeeManagementComponent = (function () {
             mThis.profile_cards_emp.appendChild(taxAllowanceCol);
             const refreshProfile = (empId) =>
                 mThis.showPage("profile_view", { id: empId });
-            EmployeeSkillComponent.render(
-                skillCol,
-                data.skills || [],
-                data.id,
-                refreshProfile,
-            );
+            EmployeeSkillComponent.render(skillCol,data.skills || [],data.id,refreshProfile);
             EmployeeEducationComponent.render(
                 eduCol,
                 data.educations || [],
@@ -837,6 +766,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="col-md-4">
                                         <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${LocaleManager.trans("Marital Status", "labels")}">
+                                            <option value="single">Single</option>
                                             <option value="married">Married</option>
                                             <option value="divorced">Divorced</option>
                                             <option value="widowed">Widowed</option>
@@ -1029,14 +959,7 @@ const EmployeeDialog = (() => {
                                 p.status_id = p.status_id || 10;
                             }
 
-                            vsapi
-                                .call(
-                                    [main_view.base_url, "/mhr/employee/save"].join(
-                                        ""
-                                    ),
-                                    p,
-                                    {loader:false,agent:btn}
-                                )
+                            vsapi.call([main_view.base_url, "/mhr/employee/save"].join(""), p, {loader: false,agent :btn})
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);

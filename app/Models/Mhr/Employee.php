@@ -136,11 +136,14 @@ class Employee extends VSModel
 
         $nid_check = $this->checkUniqueEmployeeByNID($d->nid, $id);
         if ($nid_check) return DV::error($nid_check);
-
+        $nationality_id = $d->nationality_id;
+        $d->birth_country_id = $nationality_id;
+        $inputs['birth_country_id'] = $d->birth_country_id;
         if (!$d->name_kh) {
             $d->name_kh = $d->name;
             $inputs['name_kh'] = $d->name_kh;
         }
+
         unset($inputs['photo']);
         $created = !$id;
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
@@ -292,7 +295,8 @@ class Employee extends VSModel
         }
         foreach ($rows as &$row) {
             $row->nationality = Country::nationality($row->nationality_id, $countries);
-            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
+            setOfficialDates($row,['joining_date','nid_expiry_date','date_of_birth','passport_expiry_date'],[''],['']);
 
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -611,4 +615,100 @@ class Employee extends VSModel
 
         return DV::depends(1, ['id' => $id, 'emp_id' => $emp_id]);
     }
+    function promoteStaff($arr, $id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $d = (object)$arr;
+        $change_branch = $d->change_branch ?? null;
+        $change_position = $d->change_position ?? null;
+        $change_salary = $d->change_salary ?? null;
+        $change_work_shift = $d->change_work_shift ?? null;
+
+        if (!$change_branch && !$change_position && !$change_salary && !$change_work_shift) {
+            return DV::error('No Promotion Request!');
+        }
+
+        DB::beginTransaction();
+        // Create promotion record
+        $promo_id = self::createPromotion($arr, $ss);
+        if (!$promo_id) return DV::error('Failed to create promotion');
+
+        $event_names = [];
+        $remarks = $d->remarks ?? null;
+        $event_date = $d->event_date ?? date('Y-m-d');
+
+        if ($change_branch) {
+            $resBranch = self::changeBranch($ss, $id, $promo_id, $change_branch);
+            if ($resBranch->status_code == 200) {
+                $event_names[] = 'Change Branch';
+            } else {
+                DB::rollBack();
+                return $resBranch;
+            }
+        }
+
+        if ($change_position) {
+            $resPosition = self::changePosition($ss, $id, $promo_id, $change_position);
+            if ($resPosition->status_code == 200) {
+                $event_names[] = 'Change Position';
+            } else {
+                DB::rollBack();
+                return $resPosition;
+            }
+        }
+
+        if ($change_salary) {
+            $resSalary = self::changeSalary($ss, $id, $promo_id, $change_salary);
+            if ($resSalary ->status_code == 200) {
+                $event_names[] = 'Change Salary';
+            } else {
+                DB::rollBack();
+                return $resSalary;
+            }
+        }
+        if($change_work_shift){
+            $resWorkShift = self::changeWorkShift($ss, $id, $promo_id, $change_work_shift);
+            if ($resWorkShift ->status_code == 200) {
+                $event_names[] = 'Change Work Shift';
+            } else {
+                DB::rollBack();
+                return $resWorkShift;
+            }
+        }
+        DB::commit();
+
+        foreach ($event_names as $event_name) {
+            $event_data = [
+                'name' => $event_name,
+                'remarks' => $remarks,
+                'event_date' => $event_date,
+            ];
+
+            $event_id = self::getEventId($event_name);
+            if (!$event_id) {
+                $event = Event::createEvent($event_data, $ss);
+                $event_id = $event->status_code == 200 ? $event->data['id'] : null;
+            }
+
+            if (!$event_id) {
+                return DV::error("Failed to create or fetch event: $event_name.");
+            }
+
+            $inputs = [
+                'emp_id' => $id,
+                'event_id' => $event_id,
+                'impact' => 'Positive',
+                'remarks' => $remarks,
+                'event_date' => $event_date,
+            ];
+
+            $event_id = DBX::saveData($ss, 'emp_events', ['id'=>null], $inputs, [], 1, false);
+            if(!$event_id){
+                \Log::error('Employee->promoteStaff(): Failed to create record in table "emp_events"');
+            }
+        }
+        return DV::success(['message' => 'Employee promotion was successful']);
+    }
+
 }
