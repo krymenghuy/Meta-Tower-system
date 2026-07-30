@@ -438,6 +438,7 @@ echo $user->lang ?? 'en';
                             @include('layouts.prm.contractComponent')
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')
+                            @include('layouts.prm.accessControlComponent')
                             @include('layouts.prm.vendorComponent')
                             @include('layouts.prm.billComponent')
                             @include('layouts.prm.billPaymentComponent')

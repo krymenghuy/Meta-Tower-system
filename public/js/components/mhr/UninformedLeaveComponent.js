@@ -112,20 +112,12 @@ var UninformedLeaveComponent = (function () {
             transTitle: "titles.Decision",
             className: "align-middle text-center",
             data: (data) => {
-                console.log("LEAVE DATA IN GRID:", data);
                 let decision = null;
                 let cls = "";
 
-                if (data.has_warning) {
+                if (data.remarks && data.remarks.toLowerCase().includes("warning issued")) {
                     decision = "Warning";
                     cls = "badge text-warning bg-warning-subtle border border-warning";
-                } else if (
-                    data.status === "Excused" ||
-                    data.status === "excused" ||
-                    data.status_id == 5
-                ) {
-                    decision = "Excuse";
-                    cls = "badge text-success bg-success-subtle border border-success";
                 } else if (parseFloat(data.deduction) > 0) {
                     decision = "Deduct";
                     cls = "badge text-danger bg-danger-subtle border border-danger";
@@ -406,6 +398,14 @@ var UninformedLeaveComponent = (function () {
     };
 
     mThis.deductLeave = (id, menuLink) => {
+        let deduction = parseFloat(menuLink.dataset.deduction);
+        if (deduction > 0) {
+            cv_interact.error(
+                "Deduct has already been issued for this absence.",
+            );
+            return;
+        }
+
         DeductLeaveDialog.show({
             id: id,
             emp_id: menuLink.dataset.emp_id,
@@ -816,8 +816,9 @@ const DeductLeaveDialog = (() => {
             return;
         }
 
-        let temp_deduct = op.deduction;
-        let temp_remarks = `Uninformed Leave (${op.start_date} to ${op.end_date})`;
+        let temp_deduct = op.deduction || 0.0;
+        let default_remarks = `Uninformed Leave (${op.start_date} to ${op.end_date})`;
+        let temp_remarks = default_remarks;
 
         const onInputDeduct = (e) => {
             if (e.target) {
@@ -830,16 +831,19 @@ const DeductLeaveDialog = (() => {
             }
         };
         document.addEventListener("input", onInputDeduct);
+        document.addEventListener("change", onInputDeduct);
 
         const deductDialogOptions = {
             id: null,
             emp_id: op.emp_id || op.btn?.dataset?.emp_id,
             deduct_amount: op.deduction,
-            issues: `Uninformed Leave (${op.start_date} to ${op.end_date})`,
+            deduct_date: op.start_date || op.end_date || "",
+            issues: default_remarks,
             btn: op.btn,
             silentSuccess: true, // prevent double dialogs on save
             onClose: (arg1, arg2) => {
                 document.removeEventListener("input", onInputDeduct);
+                document.removeEventListener("change", onInputDeduct);
 
                 let saved = false;
                 if (typeof arg1 === "boolean") {
@@ -850,12 +854,21 @@ const DeductLeaveDialog = (() => {
 
                 if (!saved) return;
 
+                let final_deduct = arg2?.deduct_amount || temp_deduct;
+                let final_remarks = arg2?.issues || temp_remarks;
+
+                // Fallback: read directly from modal inputs if still in DOM
+                const domDeduct = document.querySelector('.vs-modal [name="deduct_amount"]');
+                const domRemarks = document.querySelector('.vs-modal [name="issues"]');
+                if (!final_deduct && domDeduct && domDeduct.value) final_deduct = domDeduct.value;
+                if (!final_remarks && domRemarks && domRemarks.value) final_remarks = domRemarks.value;
+
                 // If saved successfully, update leave status
                 const payload = {
                     id: op.id,
                     status_id: "deduct",
-                    remarks: temp_remarks,
-                    deduction: temp_deduct,
+                    remarks: final_remarks || default_remarks,
+                    deduction: final_deduct || 0.0,
                 };
 
                 vsapi

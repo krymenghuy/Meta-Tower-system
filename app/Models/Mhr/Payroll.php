@@ -12,9 +12,9 @@ use App\Models\Mhr\TaxBracket;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 
-class Payroll 
+class Payroll
 {
-   protected $id = null;
+    protected $id = null;
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -139,26 +139,26 @@ class Payroll
 
         $search_value = $d->search_value ?? null;
         $branch_id = $d->branch_id ?? null;
-        $authorized = isset($d->authorized) ? $d->authorized: null;
+        $authorized = isset($d->authorized) ? $d->authorized : null;
         $disbursed = isset($d->disbursed) ? $d->disbursed : null;
 
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
-        $audit_info = DBX::query_user_info('p','update_date',true,'create_date');
+        $audit_info = DBX::query_user_info('p', 'update_date', true, 'create_date');
         $query = DB::table('payrolls as p')
             ->selectRaw('p.id, p.name, p.month, p.year,
                         ' . $start_date . ', ' . $end_date . ',
                          p.p_number,p.head_count ,p.total, p.authorized, p.disbursed,
                          p.currency_code, p.exchange_rate,' . $audit_info);
-        if ($branch_id){
+        if ($branch_id) {
             $query->where('p.branch_id', $branch_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where(function ($q) use ($search_value) {
                 $q->where('p.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('p.p_number', 'LIKE', "%{$search_value}%");
+                    ->orWhere('p.p_number', 'LIKE', "%{$search_value}%");
             });
         }
         if ($authorized !== null) {
@@ -217,165 +217,166 @@ class Payroll
         return DV::depends(1);
     }
 
-    static function createDisburseTrack($payroll, $id,$ss){
-       $nowTime = date('d-M-Y h:i');
-       if(!$payroll) $payroll = DB::table('payrolls as p')->where('p.id',$id)->selectRaw('id,total,currency_code')->first();
-       $inputs = [
-         'payroll_id'=>$id,
-         'description'=>"disbursement by $ss->full_name at $nowTime",
-         'total'=>$payroll->total,
-         'currency_code'=>$payroll->currency_code,
-         'head_count'=>$payroll->head_count
-       ];
-       $disburse_id = DBX::saveData($ss,'payroll_disbursements',['id'=>null],$inputs,[],1,false,'binary');
-       if($disburse_id) return bin2hex($disburse_id);
-       return null;
+    static function createDisburseTrack($payroll, $id, $ss)
+    {
+        $nowTime = date('d-M-Y h:i');
+        if (!$payroll) $payroll = DB::table('payrolls as p')->where('p.id', $id)->selectRaw('id,total,currency_code')->first();
+        $inputs = [
+            'payroll_id' => $id,
+            'description' => "disbursement by $ss->full_name at $nowTime",
+            'total' => $payroll->total,
+            'currency_code' => $payroll->currency_code,
+            'head_count' => $payroll->head_count
+        ];
+        $disburse_id = DBX::saveData($ss, 'payroll_disbursements', ['id' => null], $inputs, [], 1, false, 'binary');
+        if ($disburse_id) return bin2hex($disburse_id);
+        return null;
     }
 
     // static function getTotalBenefitUsed($emp_benefit_id){
     //    return DB::table('payroll_list_benefits')->where('emp_benefit_id',$emp_benefit_id)->sum('used_amount');
     // }
 
-    static function updatePayrollBenefitBalance($payroll_id, $emp_id, $disburse_id){
+    static function updatePayrollBenefitBalance($payroll_id, $emp_id, $disburse_id)
+    {
         DB::beginTransaction();
-        try{
-            DB::table('payroll_list_benefits')->where('payroll_id',$payroll_id)->where('emp_id',$emp_id)->update(['disburse_id'=>$disburse_id,'disbursed'=>1]);
-            $rows = DB::table('emp_benefits as b')->join('payroll_list_benefits as pb','b.id','=','pb.emp_benefit_id')->where('payroll_id',$payroll_id)->selectRaw('b.id as emp_benefit_id,b.amount,b.balance')->get();
-            foreach($rows as $row){
+        try {
+            DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp_id)->update(['disburse_id' => $disburse_id, 'disbursed' => 1]);
+            $rows = DB::table('emp_benefits as b')->join('payroll_list_benefits as pb', 'b.id', '=', 'pb.emp_benefit_id')->where('payroll_id', $payroll_id)->selectRaw('b.id as emp_benefit_id,b.amount,b.balance')->get();
+            foreach ($rows as $row) {
                 $emp_benefit_id = $row->emp_benefit_id ?? 0;
                 DB::statement(DB::raw("UPDATE emp_benefits SET balance = amount - (SELECT SUM(used_amount) FROM payroll_list_benefits WHERE emp_benefit_id =$emp_benefit_id AND disbursed =1 AND disburse_id IS NOT NULL) WHERE emp_benefits.id = $emp_benefit_id"));
-                DB::table('emp_benefits')->where('id',$emp_benefit_id)->where('emp_id',$emp_id)->update(['last_disburse_id'=>$disburse_id]);
+                DB::table('emp_benefits')->where('id', $emp_benefit_id)->where('emp_id', $emp_id)->update(['last_disburse_id' => $disburse_id]);
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
         }
         DB::commit();
         return DV::depends(1);
     }
 
-    static function reverseBenefits($payroll_id, $disburse_id=null){
-        if(!$disburse_id){
-            $d = Payroll::getProps($payroll_id,'id,last_disburse_id');
+    static function reverseBenefits($payroll_id, $disburse_id = null)
+    {
+        if (!$disburse_id) {
+            $d = Payroll::getProps($payroll_id, 'id,last_disburse_id');
             $disburse_id = $d->last_disburse_id;
         }
-        if(!$disburse_id) return;
-        $payroll = self::getProps($payroll_id,'exchange_rate, currency_code');
-        if(!$payroll) return DV::error('payroll ID does not exist');
-        $emps = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->join('payroll_list_benefits as pb','p.id','=','l.payroll_id')->where('p.id',$payroll_id)->selectRaw('pb.emp_id, pb.emp_benefit_id')->get();
-        DB::table('payroll_list_benefits')->where('payroll_id',$payroll_id)->update(['disbursed'=>0,'disburse_id'=>null]);
+        if (!$disburse_id) return;
+        $payroll = self::getProps($payroll_id, 'exchange_rate, currency_code');
+        if (!$payroll) return DV::error('payroll ID does not exist');
+        $emps = DB::table('payrolls as p')->join('payroll_list as l', 'l.payroll_id', '=', 'p.id')->join('payroll_list_benefits as pb', 'p.id', '=', 'l.payroll_id')->where('p.id', $payroll_id)->selectRaw('pb.emp_id, pb.emp_benefit_id')->get();
+        DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->update(['disbursed' => 0, 'disburse_id' => null]);
         //$since_date = date('Y-m-d', strtotime('-12 months'));
         //$since_last_year = DBX::convertToDate('pb.updated_at')." >='$since_date'";
 
         //foreach($emps as $emp){
-            //$rows = DB::table('emp_benefits as b')->join('payroll_list_benefits as pb','b.id','=','pb.emp_benefit_id')->where('pb.payroll_id','<>',$payroll_id)->where('b.emp_id',$emp->id)->where('pb.disbursed',1)->whereNotNull('pb.disburse_id')->whereRaw($since_last_year)->selectRaw('emp_benefit_id')->get();
-            foreach($emps as $row){
-                 $emp_benefit_id = $row->emp_benefit_id ?? 0;
-                 DB::statement(DB::raw("UPDATE emp_benefits SET balance = amount - IFNULL((SELECT SUM(used_amount) FROM payroll_list_benefits WHERE emp_benefit_id = $emp_benefit_id AND disbursed =1 AND disburse_id IS NOT NULL),0) WHERE id = $emp_benefit_id"));
-                 $last_disburse_id = DB::table('payroll_list_benefits AS pb')->where('emp_benefit_id',$emp_benefit_id)->whereNotNull('pb.disburse_id')->orderByRaw('created_at DESC')->value('disburse_id');
-                 DB::table('emp_benefits')->where('id',$emp_benefit_id)->update(['last_disburse_id'=>$last_disburse_id]);
-            }
+        //$rows = DB::table('emp_benefits as b')->join('payroll_list_benefits as pb','b.id','=','pb.emp_benefit_id')->where('pb.payroll_id','<>',$payroll_id)->where('b.emp_id',$emp->id)->where('pb.disbursed',1)->whereNotNull('pb.disburse_id')->whereRaw($since_last_year)->selectRaw('emp_benefit_id')->get();
+        foreach ($emps as $row) {
+            $emp_benefit_id = $row->emp_benefit_id ?? 0;
+            DB::statement(DB::raw("UPDATE emp_benefits SET balance = amount - IFNULL((SELECT SUM(used_amount) FROM payroll_list_benefits WHERE emp_benefit_id = $emp_benefit_id AND disbursed =1 AND disburse_id IS NOT NULL),0) WHERE id = $emp_benefit_id"));
+            $last_disburse_id = DB::table('payroll_list_benefits AS pb')->where('emp_benefit_id', $emp_benefit_id)->whereNotNull('pb.disburse_id')->orderByRaw('created_at DESC')->value('disburse_id');
+            DB::table('emp_benefits')->where('id', $emp_benefit_id)->update(['last_disburse_id' => $last_disburse_id]);
+        }
         //}
-       return DV::depends(1);
-
+        return DV::depends(1);
     }
 
-     //disburseAllPayrollList()
-     function disburseAll($id = null, $ss = null)
-     {
-         $ss = $ss ?? $this->userInfo;
-         $payroll_id = $id ?? $this->id;
-         $master_account_id = 1;
+    //disburseAllPayrollList()
+    function disburseAll($id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $payroll_id = $id ?? $this->id;
+        $master_account_id = 1;
 
-         $payroll = self::getProps($payroll_id, 'id,name,currency_code, total,exchange_rate,head_count');
-         if (!$payroll) return DV::error('The provided payroll ID does not exist');
-         if (!self::isAuthorized($payroll_id)) {
-             return DV::error('This payroll has not been authorized!');
-         }
+        $payroll = self::getProps($payroll_id, 'id,name,currency_code, total,exchange_rate,head_count');
+        if (!$payroll) return DV::error('The provided payroll ID does not exist');
+        if (!self::isAuthorized($payroll_id)) {
+            return DV::error('This payroll has not been authorized!');
+        }
 
-         if ($payroll_id) DB::statement(DB::raw("update payrolls set total = (SELECT SUM(IFNULL(total_salary,0)) FROM payroll_list WHERE payroll_id = $payroll_id) WHERE id = $payroll_id"));
-         $master_account = DB::table('accounts')
-             ->where('id', $master_account_id)
-             ->selectRaw('id,balance,currency_code')->first();
+        if ($payroll_id) DB::statement(DB::raw("update payrolls set total = (SELECT SUM(IFNULL(total_salary,0)) FROM payroll_list WHERE payroll_id = $payroll_id) WHERE id = $payroll_id"));
+        $master_account = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->selectRaw('id,balance,currency_code')->first();
 
-         if (!$master_account) {
-             return DV::error('Master account not found! NOTE: master account is the Cash Account of the company that is used to send cash to staff`s payroll accounts');
-         }
-         $master_account_balance = $master_account->balance ?? 0;
-         if ($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
-         if (self::isDisbursed($payroll_id)) {
-             return DV::error('Payroll has already been disbursed');
-         }
-         $master_amount = 0;
-         if ($payroll->currency_code != $master_account->currency_code) {
-             $master_amount = VSMoney::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
-         } else if (!$payroll->currency_code) {
-             return DV::error('Either payroll currency or master payroll account currency is not valid!');
-         } else {
-             $master_amount = $master_account->balance ?? 0;
-         }
+        if (!$master_account) {
+            return DV::error('Master account not found! NOTE: master account is the Cash Account of the company that is used to send cash to staff`s payroll accounts');
+        }
+        $master_account_balance = $master_account->balance ?? 0;
+        if ($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
+        if (self::isDisbursed($payroll_id)) {
+            return DV::error('Payroll has already been disbursed');
+        }
+        $master_amount = 0;
+        if ($payroll->currency_code != $master_account->currency_code) {
+            $master_amount = VSMoney::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
+        } else if (!$payroll->currency_code) {
+            return DV::error('Either payroll currency or master payroll account currency is not valid!');
+        } else {
+            $master_amount = $master_account->balance ?? 0;
+        }
 
-         if ($master_amount < $payroll->total) {
-             $p_amount = $payroll->currency_code . ' ' . $payroll->total;
-             return DV::error('Insufficient balance of the Master Payroll Account. ?? is required for overall payroll disbursements::' . $p_amount);
-         }
+        if ($master_amount < $payroll->total) {
+            $p_amount = $payroll->currency_code . ' ' . $payroll->total;
+            return DV::error('Insufficient balance of the Master Payroll Account. ?? is required for overall payroll disbursements::' . $p_amount);
+        }
 
-         $payrollEntries = DB::table('payroll_list as pl')
-             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-             ->where('pl.payroll_id', $payroll_id)
-             ->whereRaw('IFNULL(pl.disbursed,0) =0')
-             ->selectRaw('pl.id,e.id AS emp_id,e.name,e.code,e.phone_number, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks, p.exchange_rate')
-             ->get();
+        $payrollEntries = DB::table('payroll_list as pl')
+            ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+            ->where('pl.payroll_id', $payroll_id)
+            ->whereRaw('IFNULL(pl.disbursed,0) =0')
+            ->selectRaw('pl.id,e.id AS emp_id,e.name,e.code,e.phone_number, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks, p.exchange_rate')
+            ->get();
 
-         //$emp_id_no_account = [];
-         $success_count = 0;
-         $failed_count = 0;
-         $failed_emps = [];
-         if($payrollEntries->isEmpty()) return DV::error('It looks like there are no staff in the payroll list');
-         $disburse_id = self::createDisburseTrack($payroll,$payroll_id,$ss);
-         if(!$disburse_id) return DV::error('Failed to create disbursement track!');
-         $bin_disburse_id = hex2bin($disburse_id);
-         DB::beginTransaction();
-         foreach ($payrollEntries as &$emp) {
-             $payroll_account = Employee::getPayrollAccount($emp->emp_id);
-             if (!$payroll_account) {
+        //$emp_id_no_account = [];
+        $success_count = 0;
+        $failed_count = 0;
+        $failed_emps = [];
+        if ($payrollEntries->isEmpty()) return DV::error('It looks like there are no staff in the payroll list');
+        $disburse_id = self::createDisburseTrack($payroll, $payroll_id, $ss);
+        if (!$disburse_id) return DV::error('Failed to create disbursement track!');
+        $bin_disburse_id = hex2bin($disburse_id);
+        DB::beginTransaction();
+        foreach ($payrollEntries as &$emp) {
+            $payroll_account = Employee::getPayrollAccount($emp->emp_id);
+            if (!$payroll_account) {
                 DB::rollback();
                 return DV::error('Staff named ?? does not have payroll account yet!::' . $emp->name);
-             } else {
-                 $emp->account_id = $payroll_account->account_id;
-             }
-             // if (!isset($payroll_account->account_id)) {
-             //     $emp_id_no_account[] = $emp_id;
-             // }
-             $trx_inputs = ['disburse_id'=>$bin_disburse_id,'to_account_id' => $emp->account_id, 'amount' => $emp->amount, 'exchange_rate' => $emp->exchange_rate, 'remarks' => null, 'payroll_id'=>$payroll_id];
-             $account = new Account(1, $ss);
-             $res = $account->transferTo($trx_inputs);
-             if ($res->status_code === 200) {
-                 $success_count++;
-                 DB::table('payroll_list')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->update(['disbursed' => 1]);
-                 self::updatePayrollBenefitBalance($payroll_id,$emp->emp_id,$bin_disburse_id);
-             } else {
+            } else {
+                $emp->account_id = $payroll_account->account_id;
+            }
+            // if (!isset($payroll_account->account_id)) {
+            //     $emp_id_no_account[] = $emp_id;
+            // }
+            $trx_inputs = ['disburse_id' => $bin_disburse_id, 'to_account_id' => $emp->account_id, 'amount' => $emp->amount, 'exchange_rate' => $emp->exchange_rate, 'remarks' => null, 'payroll_id' => $payroll_id];
+            $account = new Account(1, $ss);
+            $res = $account->transferTo($trx_inputs);
+            if ($res->status_code === 200) {
+                $success_count++;
+                DB::table('payroll_list')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->update(['disbursed' => 1]);
+                self::updatePayrollBenefitBalance($payroll_id, $emp->emp_id, $bin_disburse_id);
+            } else {
                 DB::rollback();
-                 $failed_count++;
-                 $failed_emps[] = [
-                     'emp_id' => $emp->emp_id,
-                     'emp_code' => $emp->code,
-                     'emp_name' => $emp->name,
-                     'phone_number' => $emp->phone_number,
-                     'issue' => $res->error_message
-                 ];
-           
-             }
-         }
-         if($failed_count > 0){
+                $failed_count++;
+                $failed_emps[] = [
+                    'emp_id' => $emp->emp_id,
+                    'emp_code' => $emp->code,
+                    'emp_name' => $emp->name,
+                    'phone_number' => $emp->phone_number,
+                    'issue' => $res->error_message
+                ];
+            }
+        }
+        if ($failed_count > 0) {
             DB::rollback();
             return DV::error('Failed to disburse the ?? staffs::' . $failed_count);
-        }else{
-           DB::table('payrolls')->where('id', $payroll_id)->update(['disbursed' => 1, 'last_disburse_id'=>$bin_disburse_id]);
-           DB::commit();
+        } else {
+            DB::table('payrolls')->where('id', $payroll_id)->update(['disbursed' => 1, 'last_disburse_id' => $bin_disburse_id]);
+            DB::commit();
         }
-         return DV::depends(1, ['success_count' => $success_count, 'failed_count' => $failed_count, 'failed_emps' => $failed_emps]);
-     }
+        return DV::depends(1, ['success_count' => $success_count, 'failed_count' => $failed_count, 'failed_emps' => $failed_emps]);
+    }
 
     /** changeCurrency() makes change to payroll's currency. This can be done only before payroll is authorized */
     function changeCurrency($new_currency, $exchange_rate, $id = null, $ss = null)
@@ -386,17 +387,17 @@ class Payroll
         if (!$payroll) return DV::error('Payroll ID is not valid');
         if ($payroll->authorized == 1) return DV::error('Cannot change currency because the payroll is already authorized');
         DB::beginTransaction();
-        try{
+        try {
             DB::table('payrolls')->where('id', $id)->update(['currency_code' => $new_currency, 'exchange_rate' => $exchange_rate]);
             DB::table('payroll_list')->where('payroll_id', $id)->update(['currency_code' => $new_currency]);
             DB::table('payroll_list_benefits')->where('payroll_id', $id)->update(['currency_code' => $new_currency]);
-            $res = $this->calculate($id,$ss);
-            if($res->status_code !==200){
+            $res = $this->calculate($id, $ss);
+            if ($res->status_code !== 200) {
                 DB::rollBack();
                 return $res;
-            }else DV::depends(1);
-        }catch (\Exception $e){
-             DB::rollBack();
+            } else DV::depends(1);
+        } catch (\Exception $e) {
+            DB::rollBack();
         }
         DB::commit();
     }
@@ -478,35 +479,35 @@ class Payroll
         return "Staff named $row->name dosn't have enough account balance";
     }
 
-    function removeStaff($emp_id, $id= null, $ss = null)
+    function removeStaff($emp_id, $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $emp = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.payroll_id',$id)->where('emp_id',$emp_id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
-        if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
-        if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
-     
+        $emp = DB::table('payrolls as p')->join('payroll_list as l', 'l.payroll_id', '=', 'p.id')->where('l.payroll_id', $id)->where('emp_id', $emp_id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
+        if (!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
+        if ($emp->authorized == 1 || $emp->staff_disbursed == 1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
+
         $x = DB::table('payroll_list')
             ->where('payroll_id', $id)
-            ->where('emp_id',$emp_id)
+            ->where('emp_id', $emp_id)
             ->delete();
-        return DV::depends($x,null,'Failed to remove staff from payroll');
+        return DV::depends($x, null, 'Failed to remove staff from payroll');
     }
- 
 
-    function reverseTransactions($id =null, $ss = null)
+
+    function reverseTransactions($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-        $master_account_id =1;
+        $master_account_id = 1;
         $authorized = self::isAuthorized($id);
         if (!$authorized) return DV::error('Payroll is not authorizad yet!');
         $isDisbursed = self::isDisbursed($id);
         if (!$isDisbursed) {
             return DV::error('Payroll is not yet disbursed!');
         }
-        $payroll = self::getProps($id,'last_disburse_id');
-        if(!$payroll) return DV::error('Payroll ID does not exist');
+        $payroll = self::getProps($id, 'last_disburse_id');
+        if (!$payroll) return DV::error('Payroll ID does not exist');
         $isDisbursed = self::isDisbursed($id);
         if ($isDisbursed) {
             $rows = DB::table('transactions')->where('disburse_id', $payroll->last_disburse_id)->where('status', 'in')->selectRaw('id, account_id, exchange_rate, amount, currency_code')->get();
@@ -518,7 +519,7 @@ class Payroll
                     'payroll_id' => $id,
                     'remarks' => null,
                     'amount' => $row->amount,
-                    'exchange_rate'=>$row->exchange_rate,
+                    'exchange_rate' => $row->exchange_rate,
                     'trx_type' => 3,
                     'status' => 'out',
                 ];
@@ -528,7 +529,7 @@ class Payroll
                     $success_count++;
                     DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
                     DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
-                    self::reverseBenefits($id,$payroll->last_disburse_id);
+                    self::reverseBenefits($id, $payroll->last_disburse_id);
                 } else {
                     $failed_count++;
                 }
@@ -536,13 +537,12 @@ class Payroll
             if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
                 DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
-                return DV::depends(1,['failed_count'=>$failed_count,'success_count'=>$success_count]);
+                return DV::depends(1, ['failed_count' => $failed_count, 'success_count' => $success_count]);
             }
             return DV::error("Failed to reset payroll!");
-        } else{
+        } else {
             return DV::error('Payroll has not been disbursed to any staff');
         }
-
     }
 
     function reset($id = null, $ss = null)
@@ -552,46 +552,46 @@ class Payroll
         if (!$authorized) return DV::error('Payroll is not authorizad yet!');
         $isDisbursed = self::isDisbursed($id);
         $failed_count = -1;
-        $success_count =0;
+        $success_count = 0;
         DB::beginTransaction();
         if ($isDisbursed) {
-            $v_res = $this->reverseTransactions($id,$ss);
-            if($v_res->status_code ===200){
+            $v_res = $this->reverseTransactions($id, $ss);
+            if ($v_res->status_code === 200) {
                 $failed_count = $v_res->data['failed_count'];
                 $success_count = $v_res->data['success_count'];
             }
         }
-        DB::table('payrolls')->where('id', $id)->update(['authorized' => 0,'auth_user'=>null,'auth_date'=>null, 'disbursed' => 0, 'last_disburse_id'=>null]);
+        DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'auth_user' => null, 'auth_date' => null, 'disbursed' => 0, 'last_disburse_id' => null]);
         DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
-        if ($failed_count <=0){
+        if ($failed_count <= 0) {
             DB::commit();
-            return DV::depends(1,['reversed_transaction_count'=>$success_count]);
+            return DV::depends(1, ['reversed_transaction_count' => $success_count]);
         } else return DV::error('Failed to reset payroll because some payment transactions could not be reversed back to master payroll account');
-
     }
 
-    static function getAllBenefits($emp_id, $payroll){
-      $str_emp = $emp_id? 'pb.emp_id ='.$emp_id : '1=1';
-      $rows= DB::table('payroll_list_benefits as pb')->whereRaw($str_emp)->where('pb.payroll_id','=',$payroll->id)->where('pb.used_amount','>',0)->selectRaw('pb.id,pb.payroll_id,pb.emp_id,pb.benefit_id,pb.used_amount,pb.tax_option_id,pb.target_month,flat_tax_rate')->get();
-      return $rows;
+    static function getAllBenefits($emp_id, $payroll)
+    {
+        $str_emp = $emp_id ? 'pb.emp_id =' . $emp_id : '1=1';
+        $rows = DB::table('payroll_list_benefits as pb')->whereRaw($str_emp)->where('pb.payroll_id', '=', $payroll->id)->where('pb.used_amount', '>', 0)->selectRaw('pb.id,pb.payroll_id,pb.emp_id,pb.benefit_id,pb.used_amount,pb.tax_option_id,pb.target_month,flat_tax_rate')->get();
+        return $rows;
     }
 
 
-/** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable}
- * NOTE: $payroll = {days,total_days}. if $payroll is given then getSimpleBenefits() returns the split amount, not total benefit
-*/
-    static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
+    /** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable}
+     * NOTE: $payroll = {days,total_days}. if $payroll is given then getSimpleBenefits() returns the split amount, not total benefit
+     */
+    static function getSimpleBenefits($data, $emp_id, $tax_option_id, $payroll = null)
     {
         if (!in_array($tax_option_id, [1, 2])) {
             return 0;
         }
-            $amount1 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month == 0)
+        $amount1 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month == 0)
             ->sum('used_amount');
-            $amount2 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month > 0)
+        $amount2 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month > 0)
             ->sum('used_amount');
-            $amount2 = $amount2 * $payroll->days / $payroll->total_days;
+        $amount2 = $amount2 * $payroll->days / $payroll->total_days;
 
-            return ($amount1 + $amount2);
+        return ($amount1 + $amount2);
     }
 
     static function getFlatRateBenefits($data, $emp_id, $payroll = null)
@@ -617,12 +617,12 @@ class Payroll
 
         // Group by flat_tax_rate and sum up the amounts
         return $merged->groupBy('flat_tax_rate')
-                    ->map(fn($group, $rate) => [
-                        'flat_tax_rate' => $rate,
-                        'amount' => $group->sum('amount')
-                    ])
-                    ->values()
-                    ->toArray();
+            ->map(fn($group, $rate) => [
+                'flat_tax_rate' => $rate,
+                'amount' => $group->sum('amount')
+            ])
+            ->values()
+            ->toArray();
     }
 
     static function formatFlatRateBenefits(array $benefits)
@@ -640,7 +640,11 @@ class Payroll
         $payroll_id = $id ?? $this->id;
         $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed,month,year,start_date, end_date,currency_code');
         if (!$payroll) return DV::error('No Payroll ID provided');
-        $payroll->start_date = convertDate($payroll->start_date);
+        $db_start_date = convertDate($payroll->start_date);
+        $db_end_date = convertDate($payroll->end_date);
+        $payroll->start_date = $db_start_date;
+        $payroll->end_date = $db_end_date;
+
         if ($payroll->authorized == 1) return DV::error('Cannot calculate payroll that as been authorized! The next step is to disburse payments to all staffs');
         if ($payroll->disbursed == 1) return DV::error('Cannot calculate any amounts because this payroll has been disbursed already!');
         $start_date = DBX::formatDate('p.start_date', 'start_date');
@@ -676,7 +680,8 @@ class Payroll
                         pl.deduction,
                         e.status_id,
                         e.joining_date,
-                        e.last_rejoin_date
+                        e.last_rejoin_date,
+                        e.branch_id as branch_id
                        ')
             ->orderBy('e.id')
             ->get();
@@ -732,21 +737,21 @@ class Payroll
                 ->selectRaw('id,allowance,currency_code as allowance_currency')
                 ->get();
 
-                $row->apply_payroll_tax = DB::table('employees')
+            $row->apply_payroll_tax = DB::table('employees')
                 ->where('id', $row->emp_id)
                 ->value('apply_payroll_tax');
 
-            $benefits = self::getAllBenefits($row->emp_id,$payroll);
-            $benefits_taxable = self::getSimpleBenefits($benefits,$row->emp_id,1,$payroll);
-            $benefits_not_taxable = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll);
-            $benefits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
-            if($row->allowance){
+            $benefits = self::getAllBenefits($row->emp_id, $payroll);
+            $benefits_taxable = self::getSimpleBenefits($benefits, $row->emp_id, 1, $payroll);
+            $benefits_not_taxable = self::getSimpleBenefits($benefits, $row->emp_id, 2, $payroll);
+            $benefits_flat_rate = self::getFlatRateBenefits($benefits, $row->emp_id, $payroll);
+            if ($row->allowance) {
                 foreach ($row->allowance as $allowance) {
-                            if ($allowance->allowance_currency != $row->payroll_currency) {
-                                $allowance->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
-                            }
-                        }
-                        $row->allowance = $row->allowance->sum('allowance');
+                    if ($allowance->allowance_currency != $row->payroll_currency) {
+                        $allowance->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
+                    }
+                }
+                $row->allowance = $row->allowance->sum('allowance');
             }
 
             $row->allowance = $row->allowance ?? 0;
@@ -775,7 +780,7 @@ class Payroll
                 ];
                 continue;
             }
-            if($payroll->salary <= 0){
+            if ($payroll->salary <= 0) {
                 $issues_count++;
                 $issues[] = (object)[
                     'id' => $payroll->emp_id,
@@ -797,49 +802,12 @@ class Payroll
             $allowance_used = ($allowance / $day_in_month) * $payroll_days;
             $allowance_per_day = $allowance_used / $payroll_days;
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
-            $uninformed_deduction = DB::table('leaves as l')
-                ->where('l.emp_id', $payroll->emp_id)
-                ->where('l.status_id', 4) // Uninformed/Deduct
-                ->where('l.start_date', '<=', $payroll->end_date)
-                ->where('l.end_date', '>=', $payroll->start_date)
-                ->whereNotExists(function ($query) {
-                    $query->select(DB::raw(1))
-                          ->from('emp_warnings as ew')
-                          ->whereColumn('ew.emp_id', 'l.emp_id')
-                          ->whereRaw('ew.warning_date BETWEEN l.start_date AND l.end_date');
-                })
-                ->sum('l.deduction') ?? 0;
+            $deduction = DB::table('emp_deductions')
+                ->where('emp_id', $payroll->emp_id)
+                ->whereBetween('deduct_date', [$db_start_date, $db_end_date])
+                ->sum('deduct_amount') ?? 0;
+            
 
-            if ($uninformed_deduction == 0) {
-                $leaves = DB::table('leaves as l')
-                    ->where('l.emp_id', $payroll->emp_id)
-                    ->where('l.status_id', 4) // Uninformed/Deduct
-                    ->where('l.start_date', '<=', $payroll->end_date)
-                    ->where('l.end_date', '>=', $payroll->start_date)
-                    ->whereNotExists(function ($query) {
-                        $query->select(DB::raw(1))
-                              ->from('emp_warnings as ew')
-                              ->whereColumn('ew.emp_id', 'l.emp_id')
-                              ->whereRaw('ew.warning_date BETWEEN l.start_date AND l.end_date');
-                    })
-                    ->selectRaw('l.start_date, l.end_date')
-                    ->get();
-
-                $uninformed_days = 0;
-                foreach ($leaves as $leave) {
-                    $overlap_start = max(strtotime($leave->start_date), strtotime($payroll->start_date));
-                    $overlap_end = min(strtotime($leave->end_date), strtotime($payroll->end_date));
-                    if ($overlap_start <= $overlap_end) {
-                        $uninformed_days += (($overlap_end - $overlap_start) / 86400) + 1;
-                    }
-                }
-
-                if ($uninformed_days > 0) {
-                    $uninformed_deduction = ($payroll->salary / $day_in_month) * $uninformed_days;
-                }
-            }
-
-            $deduction = $uninformed_deduction;
             if ($payroll->apply_payroll_tax == 1) {
 
                 $tax_rate = $payroll->tax_rate ?? 0;
@@ -978,7 +946,7 @@ class Payroll
         ]);
     }
 
-    function importStaffList($id=null, $ss=null)
+    function importStaffList($id = null, $ss = null)
     {
         $payroll_id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -1031,12 +999,12 @@ class Payroll
             $tax_base = $emp_salary;
 
             $payroll_list_benefit = Employee::savePayrollListBenefit($payroll_id, $emp->emp_id, $ss);
-            if($payroll_list_benefit->status_code != 200)
-                $taxable_benefits = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->where('tax_option_id',1)->sum('used_amount');
-                $tax_base = $emp_salary + ($taxable_benefits ?? 0);
-                if ($emp->salary_currency != $currency_code ) {
-                    $tax_base = VSMoney::convert($ss, $tax_base, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
-                }
+            if ($payroll_list_benefit->status_code != 200)
+                $taxable_benefits = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->where('tax_option_id', 1)->sum('used_amount');
+            $tax_base = $emp_salary + ($taxable_benefits ?? 0);
+            if ($emp->salary_currency != $currency_code) {
+                $tax_base = VSMoney::convert($ss, $tax_base, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
+            }
 
             if ($emp->apply_payroll_tax == 1) {
                 $taxInfo = null;
@@ -1049,7 +1017,7 @@ class Payroll
                     $taxInfo->bias = VSMoney::convert($ss, $taxInfo->bias, VSMoney::$national_currency, $currency_code, (1 / $exchange_rate));
                     $last_bias = $taxInfo->bias;
                     // \Log::info('bias : '.json_encode($taxInfo->bias));
-                }else{
+                } else {
                     $taxInfo = TaxBracket::get($tax_base);
                     $last_bias = $taxInfo->bias;
                 }
@@ -1092,7 +1060,7 @@ class Payroll
         return DV::depends(1, ['success_count' => $success, 'error' => $error]);
     }
 
-    function getStaffList($arr, $id=null, $ss=null)
+    function getStaffList($arr, $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -1131,7 +1099,7 @@ class Payroll
                         pl.total_salary,
                         pl.disbursed,
                         p.currency_code,
-                        e.photo_file_name as emp_photo')->where('p.id',$id);
+                        e.photo_file_name as emp_photo')->where('p.id', $id);
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -1263,15 +1231,15 @@ class Payroll
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $payroll = self::getProps($id,'id,name,authorized,disbursed');
-        if(!$payroll) return DV::error('Payroll ID does not exist');
-        if($payroll->authorized ==1 || $payroll->disbursed==1) return DV::error('Cannot add or remove staff from payroll list because the payroll is already authorized!');
+        $payroll = self::getProps($id, 'id,name,authorized,disbursed');
+        if (!$payroll) return DV::error('Payroll ID does not exist');
+        if ($payroll->authorized == 1 || $payroll->disbursed == 1) return DV::error('Cannot add or remove staff from payroll list because the payroll is already authorized!');
         $inputs = [
-            'emp_id'=>$emp_id,
-            'payroll_id'=>$id
+            'emp_id' => $emp_id,
+            'payroll_id' => $id
         ];
-        $pl_id = DBX::saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1,false);
-        return DV::depends($pl_id,null,'Failed to add staff to payroll list');
+        $pl_id = DBX::saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1, false);
+        return DV::depends($pl_id, null, 'Failed to add staff to payroll list');
     }
 
     static function getResigInfo($emp_id, $payroll_start_date, $payroll_end_date)
