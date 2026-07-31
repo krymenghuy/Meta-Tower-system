@@ -25,30 +25,31 @@
         <div id="container_pagination" class="px-3 d-flex justify-content-start bg-light"></div>
     </div>
 
-    <div id="_emp_profile_view" class="emp-profile-page" style="display:none;">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
-            <a href="javascript:void(0)" id="_btn_back_employee"
-                class="btn emp-profile-btn-back d-inline-flex align-items-center gap-2 px-3 py-2 fw-bold text-uppercase text-white text-decoration-none">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span vslang="buttons.Back">BACK</span>
-            </a>
-            <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
-                <button type="button" class="btn emp-profile-btn-print d-inline-flex align-items-center gap-2 px-3 py-2 bg-white"
-                    id="_btn_print_employee_cv">
-                    <i class="fa-solid fa-print"></i>
-                    <span vslang="buttons.Print CV">Print CV</span>
-                </button>
-                <button type="button" class="btn emp-profile-btn-edit d-inline-flex align-items-center gap-2 px-3 py-2"
-                    id="_btn_edit_employee_profile">
-                    <i class="fa-solid fa-pen"></i>
-                    <span vslang="buttons.Edit Profile">Edit Profile</span>
-                </button>
+    <div id="_emp_profile_view" class="" style="display:none;">
+        <div class="d-flex align-items-center justify-content-between bg-white shadow-sm mt-2 p-3 rounded-3">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="javascript:void(0)" id="_btn_back_employee"
+                    class="d-flex align-items-center gap-2 shadow-sm btn-outline-secondary btn btn-sm">
+                    <i class="fa-angles-left fa-solid fs-5"></i><span vslang="buttons.Back">Back</span>
+                </a>
+                <div class="d-sm-block vr d-none"></div>
+                <nav aria-label="breadcrumb">
+                    <ol class="align-items-center mb-0 breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="javascript:void(0)" class="text-muted text-decoration-none"></a><span class="text-muted" vslang="titles.Employee">Employee</span>
+                        </li>
+                        <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
+                            <span vslang="titles.Personal Information">Personal Information</span>
+                        </li>
+                    </ol>
+                </nav>
+                
             </div>
         </div>
 
-        <div class="pb-4" id="sub_view_employee_profile">
+        <div class="mt-3 pb-4" id="sub_view_employee_profile">
             <div id="profile_info_employee"></div>
-            <div id="profile_cards_employee" class="row g-3 mt-3"></div>
+            <div id="profile_cards_employee" class="row gy-3"></div>
         </div>
     </div>
 </div>
@@ -100,9 +101,7 @@
             linear-gradient(180deg, #FAFBFF 0%, var(--emp-bg) 100%);
     }
 
-    .emp-profile-wrap {
-        padding-top: 4px;
-    }
+  
 
     .emp-hero {
         position: relative;
@@ -407,7 +406,7 @@
     .emp-personal {
         background: #fff;
         border: 1px solid var(--emp-border);
-        border-radius: 18px;
+        border-radius: 6px;
         padding: 22px 24px 24px;
         box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
         margin-bottom: 8px;
@@ -420,9 +419,8 @@
     }
 
     .emp-personal-title {
-        margin: 0 0 4px;
+        margin: 0;
         font-size: 1rem;
-        font-weight: 800;
         color: var(--emp-primary);
         display: flex;
         align-items: center;
@@ -433,14 +431,22 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
         background: linear-gradient(165deg, #254278 0%, #1a3058 100%);
         color: #f2cb5c;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         flex-shrink: 0;
     }
+
+    .emp-personal-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+    }
+
+ 
 
     .emp-personal-subtitle {
         margin: 0;
@@ -476,6 +482,9 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
     }
+    .emp-profile-field-full {
+        grid-column: 1 / -1;
+    }
 
     .emp-profile-field {
         background: #fff;
@@ -499,7 +508,6 @@
         display: block;
         color: var(--emp-primary);
         font-size: 0.88rem;
-        font-weight: 700;
         line-height: 1.35;
         word-break: break-word;
     }
@@ -512,74 +520,16 @@
         font-weight: 500;
     }
 
-    .emp-profile-action-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
-        border: 1px solid var(--emp-border);
-        background: #f8fafc;
-        color: var(--emp-primary2);
-        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    .group_action_movement .btn {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: .5rem;
     }
 
-    .emp-profile-action-btn:hover {
-        transform: translateY(-1px);
-    }
-
-    .emp-profile-action-btn-movement {
-        color: #2563eb;
-        border-color: #bfdbfe;
-        background: #eff6ff;
-    }
-    .emp-profile-action-btn-movement:hover {
-        color: #1d4ed8;
-        border-color: #93c5fd;
-        background: #dbeafe;
-    }
-
-    .emp-profile-action-btn-movement-detail {
-        color: #0d9488;
-        border-color: #99f6e4;
-        background: #f0fdfa;
-    }
-    .emp-profile-action-btn-movement-detail:hover {
-        color: #0f766e;
-        border-color: #5eead4;
-        background: #ccfbf1;
-    }
-
-    .emp-profile-action-btn-resign {
-        color: #d97706;
-        border-color: #fcd34d;
-        background: #fffbeb;
-    }
-    .emp-profile-action-btn-resign:hover {
-        color: #b45309;
-        border-color: #fbbf24;
-        background: #fef3c7;
-    }
-
-    .emp-profile-action-btn-delete {
-        color: #dc2626;
-        border-color: #fca5a5;
-        background: #fef2f2;
-    }
-    .emp-profile-action-btn-delete:hover {
-        color: #b91c1c;
-        border-color: #f87171;
-        background: #fee2e2;
-    }
-
-    .emp-profile-action-btn-edit {
-        color: #4f46e5;
-        border-color: #c7d2fe;
-        background: #eef2ff;
-    }
-    .emp-profile-action-btn-edit:hover {
-        color: #4338ca;
-        border-color: #a5b4fc;
-        background: #e0e7ff;
-    }
 
     .resign-dialog .modal-header {
         border-bottom: 1px solid #e5e7eb;

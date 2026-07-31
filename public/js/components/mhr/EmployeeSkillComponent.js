@@ -152,13 +152,13 @@ var EmployeeSkillComponent = (function () {
                </div>`;
 
         container.innerHTML = `
-                <div class="emp-skill-card h-100">
+                <div class="emp-skill-card">
                     <div class="emp-skill-header">
                         <div class="emp-skill-header-title">
                             <span class="emp-skill-header-icon">
                                 <i class="fa-solid fa-lightbulb"></i>
                             </span>
-                            <span class="emp-skill-header-label" vslang="titles.Skill">Skill</span>
+                            <span class="emp-skill-header-label" vslang="titles.Skills">Skills</span>
                         </div>
                         <button type="button" class="emp-skill-add-btn" id="_emp_skill_btn_add" title="Add" aria-label="Add skill">
                             <i class="fa-solid fa-plus"></i>
@@ -166,8 +166,8 @@ var EmployeeSkillComponent = (function () {
                     </div>
                     <div class="emp-skill-body">
                         <div class="emp-skill-cols">
-                            <span vslang="titles.Skill">Skill</span>
-                            <span vslang="labels.Rate">Rate</span>
+                            <span vslang="titles.Skills">Skills</span>
+                            <span vslang="titles.Rating">Rating</span>
                             <span vslang="titles.Action">Action</span>
                         </div>
                         <div class="emp-skill-list">
@@ -216,13 +216,13 @@ const SkillDialog = (() => {
                 </div>`,
             buttons: [
                 {
-                    label: LocaleManager.trans("Cancel", "buttons"),
-                    cssClass: "btn btn-secondary",
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn-vs-cancel",
                     click: (me) => me.hide(false),
                 },
                 {
-                    label: LocaleManager.trans("Save", "buttons"),
-                    cssClass: "btn btn-primary",
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
                         p.id = me.dataOptions.id;
@@ -237,23 +237,11 @@ const SkillDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
-                                    if (
-                                        typeof me.dataOptions.onClose ===
-                                        "function"
-                                    ) {
-                                        me.dataOptions.onClose();
-                                    }
-                                    cv_interact.success(
-                                        me.dataOptions.id
-                                            ? LocaleManager.trans(
-                                                  "update_success",
-                                                  "message_box_default",
-                                              )
-                                            : LocaleManager.trans(
-                                                  "create_success",
-                                                  "message_box_default",
-                                              ),
-                                    );
+                                    if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_skill");
+                                        } else {
+                                            cv_interact.success("create_success_skill");
+                                        }
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }

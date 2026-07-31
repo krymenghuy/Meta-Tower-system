@@ -175,7 +175,7 @@ var EmployeeExperienceComponent = (function () {
                </div>`;
 
         container.innerHTML = `
-                <div class="emp-exp-card h-100">
+                <div class="emp-exp-card">
                     <div class="emp-exp-header">
                         <div class="emp-exp-header-title">
                             <span class="emp-exp-header-icon">

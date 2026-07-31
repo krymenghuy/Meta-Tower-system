@@ -8,9 +8,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use App\Models\Prm\GeneralSettings;
 use App\Models\Mhr\Employee;
+
 class PayrollList //extends Model
 {
-   protected $id = null;
+    protected $id = null;
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -28,7 +29,6 @@ class PayrollList //extends Model
             'payroll_id' => '1|number|exists=payrolls.id',
             'emp_id' => '1|number',
             'deduction' => '1|number',
-
         ];
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -238,6 +238,7 @@ class PayrollList //extends Model
     function getDetails($id, $ss)
     {
         $ss = $ss ?? $this->userInfo;
+        $auth_db = config('database.connections.auth_db.database');
         $branch_id = $ss->branch_id;
         $joining_date = DBX::formatDate('e.joining_date', 'joining_date');
 
@@ -245,7 +246,7 @@ class PayrollList //extends Model
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-            ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
+            ->join("$auth_db.um_branches as b", 'b.id', '=', 'e.branch_id')
             ->selectRaw('pl.id,
                     p.id as payroll_id,
                     p.name as payroll_name,
@@ -253,7 +254,7 @@ class PayrollList //extends Model
                     e.code as emp_code,
                     e.name as emp_name,
                     e.sex,
-                    pos.title as emp_position,
+                    pos.name as emp_position,
                     b.name as branch_name,
                     pl.salary,
                     e.apply_payroll_tax,
@@ -304,12 +305,34 @@ class PayrollList //extends Model
         }
         return $row;
     }
- 
+
     function getFormOptions($id, $ss)
     {
         $payroll_list = null;
+        $emp_deduct_id = null;
+        $emp_deduct_amount = null;
         if ($id) {
             $payroll_list = $this->getDetails($id, $ss);
+            if ($payroll_list) {
+                $payroll = DB::table('payrolls')->where('id', $payroll_list->payroll_id)->selectRaw('start_date, end_date')->first();
+                if ($payroll) {
+                    $emp_deduct_row = DB::table('emp_deductions')
+                        ->where('emp_id', $payroll_list->emp_id)
+                        ->whereBetween('deduct_date', [$payroll->start_date, $payroll->end_date])
+                        ->where(function ($query) {
+                            $query->whereNull('issues')
+                                ->orWhere('issues', '')
+                                ->orWhere('issues', 'not like', 'Uninformed Leave%');
+                        })
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    if ($emp_deduct_row) {
+                        $emp_deduct_id = $emp_deduct_row->id;
+                        $emp_deduct_amount = $emp_deduct_row->deduct_amount;
+                    }
+                }
+            }
         }
         return (object) [
 
@@ -327,19 +350,21 @@ class PayrollList //extends Model
             'payrolls' => GeneralSettings::options_payroll($ss),
             // 'branches' => GeneralSettings::options_branch($ss),
             'payroll_list' => $payroll_list,
+            'emp_deduct_id' => $emp_deduct_id,
+            'emp_deduct_amount' => $emp_deduct_amount,
         ];
     }
 
     function delete($id = null)
     {
         $id = $id ?? $this->id;
-        $emp = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.id',$id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
-        if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
-        if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
+        $emp = DB::table('payrolls as p')->join('payroll_list as l', 'l.payroll_id', '=', 'p.id')->where('l.id', $id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
+        if (!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
+        if ($emp->authorized == 1 || $emp->staff_disbursed == 1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
         $x = DB::table('payroll_list')
             ->where('id', $id)
             ->delete();
-        return DV::depends($x,null,'Failed to remove staff from payroll');
+        return DV::depends($x, null, 'Failed to remove staff from payroll');
     }
 
     // function disburseOne($id, $ss = null)
@@ -442,7 +467,7 @@ class PayrollList //extends Model
                         e.name as emp_name,
                         e.sex,
                         e.apply_payroll_tax,
-                        pos.title as emp_position,
+                        pos.name as emp_position,
                         b.name as branch_name,
                         pl.p_salary,
                         pl.benefit_taxable,

@@ -226,11 +226,7 @@ class Leave extends VSModel
 
         $query->select(
             'l.id', 'l.emp_id', 'l.start_date', 'l.end_date', 'l.status_id', 'ls.name as status', 'l.updated_at', 'l.update_user', 'e.name as emp_name', 'e.code as emp_code', 'e.salary as emp_salary', 'l.deduction', 'p.name as position_name', 'ws.name as work_shift_name', 'l.remarks',
-            DB::raw('EXISTS(
-                SELECT 1 FROM emp_warnings as ew 
-                WHERE ew.emp_id = l.emp_id 
-                AND ew.warning_date BETWEEN l.start_date AND l.end_date
-            ) as has_warning')
+            DB::raw("IF(l.remarks LIKE '%Warning issued%', 1, 0) as has_warning")
         );
         $clone_query = clone  $query;
         $count = $clone_query->count('l.id');
@@ -539,16 +535,20 @@ class Leave extends VSModel
             ]);
         }
 
-        $currentStatus = DB::table('leaves')->where('id', $id)->value('status_id');
-        $hasDeductionChange = isset($extra['deduction']) && (DB::table('leaves')->where('id', $id)->value('deduction') != $extra['deduction']);
-        $currentRemarks = DB::table('leaves')->where('id', $id)->value('remarks');
-        $hasRemarksChange = isset($extra['remarks']) && ($currentRemarks != $extra['remarks']);
+        $currLeave = DB::table('leaves')->where('id', $id)->selectRaw('status_id, deduction, remarks')->first();
+        if ($currLeave) {
+            $currentStatus = $currLeave->status_id;
+            $currentDeduction = (float) $currLeave->deduction;
+            $hasDeductionChange = isset($extra['deduction']) && ($currentDeduction != (float) $extra['deduction']);
+            $currentRemarks = $currLeave->remarks;
+            $hasRemarksChange = isset($extra['remarks']) && ($currentRemarks != $extra['remarks']);
 
-        if ($currentStatus == $status_id && !$hasDeductionChange && !$hasRemarksChange) {
-            return DV::success([
-                'message' => 'Leave status updated successfully',
-                'id' => $id
-            ]);
+            if ($currentStatus == $status_id && !$hasDeductionChange && !$hasRemarksChange) {
+                return DV::success([
+                    'message' => 'Leave status updated successfully',
+                    'id' => $id
+                ]);
+            }
         }
 
         $updateData = [

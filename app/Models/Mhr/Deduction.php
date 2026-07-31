@@ -33,6 +33,14 @@ class Deduction extends VSModel
         $res = DBX::validateObject($arr, $v_rule, true, ['issues' => $chars], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        if (!isset($inputs['deduct_amount']) || floatval($inputs['deduct_amount']) <= 0) {
+            return DV::error('Deduction amount must be greater than 0');
+        }
+        if (empty($inputs['deduct_date'])) {
+            $inputs['deduct_date'] = date('Y-m-d');
+        } else {
+            $inputs['deduct_date'] = convertDate($inputs['deduct_date']);
+        }
         $d = (object) $inputs;
 
         $emp_id = $inputs['emp_id'];
