@@ -33,7 +33,7 @@ var PayrollListComponent = (()=> {
         },
 
         {
-            title: "Employee",
+            transTitle: "titles.Employee",
             className: "align-middle text-start w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
@@ -52,7 +52,7 @@ var PayrollListComponent = (()=> {
         },
 
         {
-            title: "Salary",
+            transTitle: "titles.Salary",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
@@ -60,21 +60,21 @@ var PayrollListComponent = (()=> {
             }
         },
         {
-            title: "Taxable BFT",
+            transTitle: "titles.Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_taxable), data.currency_code)}</p>`;
             }
         },
         {
-            title: "Nontaxable BFT",
+            transTitle: "titles.Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</p>`;
             }
         },
         {
-            title: "BFT (Flat Tax)",
+            transTitle: "titles.BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 if (!data.used_amount || Object.keys(data.used_amount).length === 0) {
@@ -93,28 +93,28 @@ var PayrollListComponent = (()=> {
         },
 
         {
-            title: "Deduction",
+            transTitle: "titles.Deduction",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.deduction, data.currency_code)}</p>`;
             }
         },
         {
-            title: "Allowance",
+            transTitle: "titles.Allowance",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.allowance, data.currency_code)}</p>`;
             }
         },
         {
-            title: "Tax Rate",
+            transTitle: "titles.Tax Rate",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
             }
         },
         {
-            title: "Bias",
+            transTitle: "titles.Bias",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
@@ -122,7 +122,7 @@ var PayrollListComponent = (()=> {
         },
 
         {
-            title: "Tax Base",
+            transTitle: "titles.Tax Base",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</p>`;
@@ -136,21 +136,21 @@ var PayrollListComponent = (()=> {
         //     }
         // },
         {
-            title: "Benefit Tax",
+            transTitle: "titles.Benefit Tax",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_tax), data.currency_code)}</p>`;
             }
         },
         {
-            title: "Total",
+            transTitle: "titles.Total",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0 ${data.disbursed == '1' ? 'text-success' : ''}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
             }
         },
         {
-            title:"Action",
+            transTitle:"titles.Action",
             className: "col_action align-middle",
             data: (data,index,tr) => {
                 return [
@@ -387,7 +387,7 @@ var PayrollListComponent = (()=> {
             //menuItemClass:"",
             menus:[
                 {
-                    html: '<span class="ps-2 " vslang="titles.View Pay Slip">View Pay Slip</span>',
+                    html: '<span class="ps-2 " vslang="titles.View Pay Slip"></span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "pay_slip",
@@ -405,7 +405,7 @@ var PayrollListComponent = (()=> {
                 //     name:"add_deduction"
                 // },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
+                    html:'<span class="ps-2  " vslang="titles.Remove from List"></span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_payroll_list"

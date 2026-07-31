@@ -276,27 +276,27 @@ var PayrollComponent = new (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2"> Authorize </span>',
+                    html: '<span class="ps-2" vslang=titles.Authorize> Authorize </span>',
                     icon: '<i class="fa-regular fa-circle-check"></i>',
                     name: "change_authorize",
                 },
                 {
-                    html: '<span class="ps-2"> Reset</span>',
+                    html: '<span class="ps-2" vslang=titles.Reset> Reset</span>',
                     icon: '<i class="fa fa-reply"></i>',
                     name: "reset_authorize",
                 },
                 {
-                    html: '<span class="ps-2"> Disburse All</span>',
+                    html: '<span class="ps-2" vslang=titles.Disburse All> Disburse All</span>',
                     icon: '<i class="fa-solid fa-square-check"></i>',
                     name: "change_disbursed",
                 },
                 {
-                    html: '<span class="ps-2">Modify Payroll</span>',
+                    html: '<span class="ps-2" vslang=titles.Modify Payroll>Modify Payroll</span>',
                     icon: '<i class="fa-regular fa-edit fs-5"></i>',
                     name: "edit_payroll",
                 },
                 {
-                    html: '<span class="ps-2">Delete Payroll</span>',
+                    html: '<span class="ps-2" vslang=titles.Delete Payroll>Delete Payroll</span>',
                     icon: '<i class="fa-regular fa-trash-can fs-5"></i>',
                     name: "delete_payroll",
                 },
@@ -665,7 +665,7 @@ const AddPayRollListDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;

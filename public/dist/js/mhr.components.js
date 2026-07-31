@@ -1,55 +1,78 @@
-'use strict';
-var main_view = (()=>{
+"use strict";
+var main_view = (() => {
     const mThis = {};
-    mThis.apiCluster = 'menus';
+    mThis.apiCluster = "menus";
     mThis.onLayoutLoad = null;
-    mThis.elScreenTitle = document.querySelector('#screen_title');
-    mThis.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
+    mThis.elScreenTitle = document.querySelector("#screen_title");
+    mThis.elScreenTitle_mobile = document.querySelector("#mobile_screen_title");
 
-    mThis.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content');
+    mThis.base_url = document
+        .querySelector('meta[name="base_url"]')
+        .getAttribute("content");
     //mThis.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
-    mThis.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');
-    mThis.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
-    mThis.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
-    mThis.subs_id = document.querySelector('meta[name="subs_id"]').getAttribute('content');
-    mThis.app_id = document.querySelector('meta[name="app_id"]').getAttribute('content');
+    mThis.asset_url = document
+        .querySelector('meta[name="asset_url"]')
+        .getAttribute("content");
+    mThis.branch_id = document
+        .querySelector('meta[name="sess_branch_id"]')
+        .getAttribute("content");
+    mThis.user_id = document
+        .querySelector('meta[name="sess_user_id"]')
+        .getAttribute("content");
+    mThis.subs_id = document
+        .querySelector('meta[name="subs_id"]')
+        .getAttribute("content");
+    mThis.app_id = document
+        .querySelector('meta[name="app_id"]')
+        .getAttribute("content");
 
-    mThis.VSAppContent = document.querySelector('#_app_content');
+    mThis.VSAppContent = document.querySelector("#_app_content");
     //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
 
-    mThis.auth_script_url ="https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js?v=2";
+    mThis.auth_script_url =
+        "https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js?v=2";
     //mThis.auth_script_url = mThis.base_url +  "/assets/js/AuthManager.v2.js?v=2";
 
-    mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
-    mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
+    mThis.secure_endpoint = [
+        mThis.base_url,
+        "/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en",
+    ].join("");
+    mThis.top_right_menus = document.querySelector("#_main_top_right_menus");
 
     // mThis.btnTasks = mThis.top_right_menus.querySelector('#_main_btn_tasks');
-    mThis.btnLang = mThis.top_right_menus.querySelector('#_main_btn_lang');
-    mThis.btnUser = mThis.top_right_menus.querySelector('#_main_btn_user');
-    mThis.btnNotif = mThis.top_right_menus.querySelector('#_main_btn_notif');
+    mThis.btnLang = mThis.top_right_menus.querySelector("#_main_btn_lang");
+    mThis.btnUser = mThis.top_right_menus.querySelector("#_main_btn_user");
+    mThis.btnNotif = mThis.top_right_menus.querySelector("#_main_btn_notif");
 
-    mThis.current_view_name = '';
+    mThis.current_view_name = "";
     mThis.pusher_channel = {};
 
-    mThis.MULTI_WAREHOUSE_OP =1;
-    mThis.DEF_TO_WAREHOUSE_ID =1;
-    mThis.DEF_WAREHOUSE_ID =1;
+    mThis.MULTI_WAREHOUSE_OP = 1;
+    mThis.DEF_TO_WAREHOUSE_ID = 1;
+    mThis.DEF_WAREHOUSE_ID = 1;
 
     // mThis.mnuChangePassword =mThis.top_right_menus.querySelector('#_main_mnu_changepwd');
-    mThis.mnuLogout = mThis.top_right_menus.querySelector('#_main_mnu_logout');
-    mThis.mnuAbout1 = mThis.top_right_menus.querySelector('#_main_mnu_about');
+    mThis.mnuLogout = mThis.top_right_menus.querySelector("#_main_mnu_logout");
+    mThis.mnuAbout1 = mThis.top_right_menus.querySelector("#_main_mnu_about");
 
-    if (!mThis.branch_id || !mThis.user_id){
-        console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
+    if (!mThis.branch_id || !mThis.user_id) {
+        console.error(
+            "branch_id (company_id) and user_id are not found! => so Notifications will not work!",
+        );
     }
     /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
-    mThis.backend_channel_name = ['ypg_backend_',(mThis.subs_id || '').toLowerCase()].join('');
-    mThis.getEncryptData = (qstring,onFinish)=>{
-        const p = {'data':qstring};
-        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
-            onFinish(res.data || res);
-        });
-    }
+    mThis.backend_channel_name = [
+        "ypg_backend_",
+        (mThis.subs_id || "").toLowerCase(),
+    ].join("");
+    mThis.getEncryptData = (qstring, onFinish) => {
+        const p = { data: qstring };
+        vsapi
+            .call([mThis.base_url, "/api/vs-encrypt031181"].join(""), p)
+            .then((res) => {
+                onFinish(res.data || res);
+            });
+    };
 
     // function channelPrefix(){
     //     return 'vsksmkidsworld';
@@ -76,91 +99,109 @@ var main_view = (()=>{
     //     }
     // };
 
-mThis.init_vsapi = async () => {
-  await vsapi.init({
-    authType: vsapi.authTypes.BEARER,
-    //fetchTokenUrl:'/api/vsx-sec/token',
-    tokenResolver: async () => {
-      const res = await fetch('/api/vsx-sec/token', {
-         credentials: 'include',
-         headers: {
-         'X-Requested-With': 'XMLHttpRequest'
+    mThis.init_vsapi = async () => {
+        await vsapi.init({
+            authType: vsapi.authTypes.BEARER,
+            //fetchTokenUrl:'/api/vsx-sec/token',
+            tokenResolver: async () => {
+                const res = await fetch("/api/vsx-sec/token", {
+                    credentials: "include",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                });
+                const json = await res.json();
+                if (json.status_code == 200) {
+                    return json.data.token;
+                } else {
+                    alert(
+                        "[vsapi] tokenResolver() got error: " +
+                            json.error_message,
+                    );
+                    return null;
+                }
+            },
+            defaultLoaderSelector: "#vs_loader",
+            useStreamingProgress: true,
+            //useCache: true,
+            //cacheTTL: 3000,
+
+            // online: () => {
+            //   console.log('ðŸŸ¢ Back online');
+            // },
+
+            // offline: () => {
+            //   console.warn('ðŸ”´ Connection lost');
+            // }
+            // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
+        });
+    };
+    mThis.init = async () => {
+        //window.Sanitizer  = window.Sanitizer || StringSanitizer || null;
+        //BEGIN:: process side menus click using VSRoute
+        mThis.side_menus = document.querySelector("#_dms_aside_menus");
+
+        //Sanitizer.setDebugMode(false);
+        VSRoute.init(
+            mThis.side_menus.querySelectorAll("a.menu-item"),
+            "DashboardComponent",
+            mThis.side_menus,
+            { debug: true },
+        );
+
+        // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
+        //   if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
+        //       window.ContractComponent = ContractsComponent;
+        //   } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
+        //       window.ContractsComponent = ContractComponent;
+        //   }
+
+        if (typeof ReceiptsComponent !== "undefined") {
+            window.ReceiptsComponent = ReceiptsComponent;
         }
-     });
-      const json = await res.json();
-      if(json.status_code == 200){
-         return json.data.token;
-      }else{
-        alert('[vsapi] tokenResolver() got error: ' + json.error_message);
-        return null;
-      }
-    },
-    defaultLoaderSelector: '#vs_loader',
-    useStreamingProgress: true,
-    //useCache: true,
-    //cacheTTL: 3000,
 
-    // online: () => {
-    //   console.log('ðŸŸ¢ Back online');
-    // },
+        if (
+            typeof EmployeeManagementComponent !== "undefined" &&
+            typeof TeamComponent === "undefined"
+        ) {
+            window.TeamComponent = EmployeeManagementComponent;
+        }
 
-    // offline: () => {
-    //   console.warn('ðŸ”´ Connection lost');
-    // }
-    // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
-  });
-};
-    mThis.init = async()=>{
-      //window.Sanitizer  = window.Sanitizer || StringSanitizer || null;
-     //BEGIN:: process side menus click using VSRoute
-       mThis.side_menus = document.querySelector('#_dms_aside_menus');
-
-      //Sanitizer.setDebugMode(false);
-      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,{debug:true});
-
-      // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
-    //   if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
-    //       window.ContractComponent = ContractsComponent;
-    //   } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
-    //       window.ContractsComponent = ContractComponent;
-    //   }
-
-      if (typeof ReceiptsComponent !== 'undefined') {
-          window.ReceiptsComponent = ReceiptsComponent;
-      }
-
-      if (typeof EmployeeManagementComponent !== 'undefined' && typeof TeamComponent === 'undefined') {
-          window.TeamComponent = EmployeeManagementComponent;
-      }
-
-     //END:: process side menus click using VSRoute
+        //END:: process side menus click using VSRoute
 
         mThis.displayUserMenus();
         mThis.displayNotifications();
         //mThis.displayTasks();
 
-        mThis.top_right_menus.onclick = e =>{
-           let btn = VSUtil.closestLimited(e.target,'.btn-dropdown');
-           if(btn){
-                let div =  e.target.closest('div.dropdown').querySelector('.dropdown-menu');
-                if(mThis.prev_shown_dropdown_menus && mThis.prev_shown_dropdown_menus !== div) mThis.prev_shown_dropdown_menus.classList.remove('show');
-                if(div){
-                    div.classList.toggle('show');
-                    if (div.classList.contains('show')) mThis.prev_shown_dropdown_menus = div;
+        mThis.top_right_menus.onclick = (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn-dropdown");
+            if (btn) {
+                let div = e.target
+                    .closest("div.dropdown")
+                    .querySelector(".dropdown-menu");
+                if (
+                    mThis.prev_shown_dropdown_menus &&
+                    mThis.prev_shown_dropdown_menus !== div
+                )
+                    mThis.prev_shown_dropdown_menus.classList.remove("show");
+                if (div) {
+                    div.classList.toggle("show");
+                    if (div.classList.contains("show"))
+                        mThis.prev_shown_dropdown_menus = div;
                 }
                 return;
-           }
+            }
 
-           btn = VSUtil.closestLimited(e.target,'.lnk-lang');
-           if(btn){
-            let lang = btn.dataset.lang;
-            LocaleManager.translateAll(lang);
-            mThis.setLangMenu(lang);
-            btn.closest('.dropdown-menu').classList.remove('show');
-            LocaleManager.saveLang(lang);
-            return;
-           }
-        }
+            btn = VSUtil.closestLimited(e.target, ".lnk-lang");
+            if (btn) {
+                let lang = btn.dataset.lang;
+                LocaleManager.translateAll(lang);
+                mThis.setLangMenu(lang);
+                btn.closest(".dropdown-menu").classList.remove("show");
+                LocaleManager.saveLang(lang);
+                return;
+            }
+        };
 
         // $(document).on('click', function(e){
         //     let x = $(this).find('body div.dropdown-menu');
@@ -173,21 +214,23 @@ mThis.init_vsapi = async () => {
         //     e.stopPropagation();
         // });
 
-        document.addEventListener('click', e => {
-            let dropdownMenu =  mThis.prev_shown_dropdown_menus ; // //document.querySelector('.dropdown-menu');
+        document.addEventListener("click", (e) => {
+            let dropdownMenu = mThis.prev_shown_dropdown_menus; // //document.querySelector('.dropdown-menu');
             // Get the container element
-            let container = dropdownMenu ? dropdownMenu.closest('.dropdown') : null;
+            let container = dropdownMenu
+                ? dropdownMenu.closest(".dropdown")
+                : null;
 
             if (container) {
                 // Check if the click target is outside the container
                 if (!container.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
+                    dropdownMenu.classList.remove("show");
                 }
             }
 
-            if (e.target.matches('.dropdown-item')) {
+            if (e.target.matches(".dropdown-item")) {
                 // Get the parent element and remove the 'show' class
-                e.target.parentElement.classList.remove('show');
+                e.target.parentElement.classList.remove("show");
             }
         });
 
@@ -195,19 +238,23 @@ mThis.init_vsapi = async () => {
         //     $(this).parent().removeClass('show');
         // });
 
-        mThis.lnkLogout = mThis.side_menus.querySelector('#_main_lnkLogout');
-        mThis.lnkLogout.onclick = e =>{
-            cv_interact.confirm("Do you want to log out?",{
-                title: "Sign Out",
-                confirmButtonText: "Log Out",
-                cancelButtonText: "No, I stay in",
-                context: "delete",
-                translate: true
-            },(e) => {
-                if(e){
-                    mThis.logOut();
-                }
-            });
+        mThis.lnkLogout = mThis.side_menus.querySelector("#_main_lnkLogout");
+        mThis.lnkLogout.onclick = (e) => {
+            cv_interact.confirm(
+                "Do you want to log out?",
+                {
+                    title: "Sign Out",
+                    confirmButtonText: "Log Out",
+                    cancelButtonText: "No, I stay in",
+                    context: "delete",
+                    translate: true,
+                },
+                (e) => {
+                    if (e) {
+                        mThis.logOut();
+                    }
+                },
+            );
         };
 
         // mThis.mnuChangePassword.addEventListener('click',e => {
@@ -219,60 +266,69 @@ mThis.init_vsapi = async () => {
         //     ChangePasswordDialog.show({login_name:user.login_name,user_id:user.id});
         // });
 
-        mThis.mnuLogout.addEventListener('click',e => {
-            cv_interact.confirm("Do you want to log out?",{
-                title: "Sign Out",
-                confirmButtonText: "Log Out",
-                cancelButtonText: "No, I stay in",
-                context: "delete",
-                translate: true
-            },(e) => {
-                if(e){
-                    mThis.logOut();
-                }
-            });
+        mThis.mnuLogout.addEventListener("click", (e) => {
+            cv_interact.confirm(
+                "Do you want to log out?",
+                {
+                    title: "Sign Out",
+                    confirmButtonText: "Log Out",
+                    cancelButtonText: "No, I stay in",
+                    context: "delete",
+                    translate: true,
+                },
+                (e) => {
+                    if (e) {
+                        mThis.logOut();
+                    }
+                },
+            );
         });
 
-
-        if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
-    }
+        if (typeof mThis.onLayoutLoad === "function") mThis.onLayoutLoad();
+    };
     //end::main_view.init()
 
-    mThis.logOut = ()=>{
+    mThis.logOut = () => {
         mThis.deleteAllCookies();
-        window.location.replace([mThis.base_url,'/logout'].join(''));
-    }
+        window.location.replace([mThis.base_url, "/logout"].join(""));
+    };
 
-    mThis.setLangMenu = (lang)=>{
-        let lnkName = mThis.top_right_menus.querySelector('#_main_lang_name');
+    mThis.setLangMenu = (lang) => {
+        let lnkName = mThis.top_right_menus.querySelector("#_main_lang_name");
         let lang_name = LocaleManager.langs[lang].name;
         let icon_image = LocaleManager.langs[lang].icon_image;
 
-        let icon_url = [document.querySelector('meta[name="asset_url"]').getAttribute('content'),'/images/icons/',icon_image].join('');
-        lnkName.textContent =  lang_name;
+        let icon_url = [
+            document
+                .querySelector('meta[name="asset_url"]')
+                .getAttribute("content"),
+            "/images/icons/",
+            icon_image,
+        ].join("");
+        lnkName.textContent = lang_name;
 
-        mThis.btnLang.querySelector('img').setAttribute('src',icon_url);
+        mThis.btnLang.querySelector("img").setAttribute("src", icon_url);
         mThis.btnLang.dataset.lang = lang;
         LocaleManager.lang = lang;
         const body = document.body;
-        body.classList.remove('font-kh', 'font-en');
-        if (lang === 'km') {
-            body.classList.add('font-kh');
+        body.classList.remove("font-kh", "font-en");
+        if (lang === "km") {
+            body.classList.add("font-kh");
         } else {
-            body.classList.add('font-en');
+            body.classList.add("font-en");
         }
-    }
+    };
 
     mThis.addNotificationItem = (notif, update_count = true) => {
-        if(!notif || !notif.message) return;
-        let div = mThis.top_right_menus.querySelector('.main-notif-panel');
-        let emptyItems = div.querySelectorAll('.empty-item');
-        emptyItems.forEach(item => item.remove());
-        let newDiv = document.createElement('div');
-        newDiv.classList.add('main-notif-item');
-        let title = notif.title?notif.title:'General';
-        if(['na','n/a'].indexOf(title.toLowerCase()) >=0 ) title = 'General';
-        newDiv.innerHTML = `<span class="notif-title">${(title)}</span><span class="notif-text">${notif.message}</span>`;
+        if (!notif || !notif.message) return;
+        let div = mThis.top_right_menus.querySelector(".main-notif-panel");
+        let emptyItems = div.querySelectorAll(".empty-item");
+        emptyItems.forEach((item) => item.remove());
+        let newDiv = document.createElement("div");
+        newDiv.classList.add("main-notif-item");
+        let title = notif.title ? notif.title : "General";
+        if (["na", "n/a"].indexOf(title.toLowerCase()) >= 0) title = "General";
+        newDiv.innerHTML = `<span class="notif-title">${title}</span><span class="notif-text">${notif.message}</span>`;
         div.insertBefore(newDiv, div.firstChild);
 
         if (update_count) {
@@ -281,106 +337,121 @@ mThis.init_vsapi = async () => {
     };
 
     mThis.changeRequestStatus = (d) => {
-        d.request_id =d.request_id?d.request_id:d.id;
-        d.request_completed =d.request_completed?d.request_completed:d.completed;
-        d.request_status = d.request_status? d.request_status:d.status;
+        d.request_id = d.request_id ? d.request_id : d.id;
+        d.request_completed = d.request_completed
+            ? d.request_completed
+            : d.completed;
+        d.request_status = d.request_status ? d.request_status : d.status;
 
-        let div = mThis.top_right_menus.querySelector('div.main-task-panel');
-        let el =null;
-        div.querySelectorAll('.main-task-item').forEach(el =>{
-            if(el.dataset.id == d.request_id) return false;
+        let div = mThis.top_right_menus.querySelector("div.main-task-panel");
+        let el = null;
+        div.querySelectorAll(".main-task-item").forEach((el) => {
+            if (el.dataset.id == d.request_id) return false;
         });
 
-        if(el) {
-            let v = el.querySelector('div.task-buttons');
+        if (el) {
+            let v = el.querySelector("div.task-buttons");
             let buttons = null;
 
-            if(d.request_completed == 1) {
-                if((d.request_status+'').toLowerCase() =='approved')
+            if (d.request_completed == 1) {
+                if ((d.request_status + "").toLowerCase() == "approved")
                     buttons = `<span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span>`;
                 else
                     buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;
             }
             v.innerHTML = buttons;
         }
-    }
+    };
 
-    mThis.setTitle = (title_prop=null)=>{
-        const title = LocaleManager.trans(title_prop,'titles');
+    mThis.setTitle = (title_prop = null) => {
+        const title = LocaleManager.trans(title_prop, "titles");
         mThis.elScreenTitle.textContent = title;
         mThis.elScreenTitle_mobile.textContent = title;
-          mThis.elScreenTitle.setAttribute('vslang', `titles.${title_prop}`);
+        mThis.elScreenTitle.setAttribute("vslang", `titles.${title_prop}`);
         // mThis.elScreenTitle.dataset.vslang = `titles.${title_prop}`;
-        mThis.elScreenTitle_mobile.setAttribute('vslang', `titles.${title_prop}`);
-    }
+        mThis.elScreenTitle_mobile.setAttribute(
+            "vslang",
+            `titles.${title_prop}`,
+        );
+    };
 
     mThis.deleteAllCookies = () => {
-        const cookies = document.cookie.split(';');
+        const cookies = document.cookie.split(";");
         for (const cookie of cookies) {
-            const [name] = cookie.trim().split('=');
+            const [name] = cookie.trim().split("=");
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
         }
     };
 
-    mThis.addTaskItem = (c={},update_count=true)=>{
+    mThis.addTaskItem = (c = {}, update_count = true) => {
         let buttons = null;
-        c.request_id =c.request_id?c.request_id:c.id;
-        c.request_status =c.request_status?c.request_status:c.status;
-        c.request_completed =c.request_completed?c.request_completed:c.completed;
+        c.request_id = c.request_id ? c.request_id : c.id;
+        c.request_status = c.request_status ? c.request_status : c.status;
+        c.request_completed = c.request_completed
+            ? c.request_completed
+            : c.completed;
 
-        if(c.completed ==1){
-            if((c.status+'').toLowerCase() =='approved')
+        if (c.completed == 1) {
+            if ((c.status + "").toLowerCase() == "approved")
                 buttons = `<div class="task-buttons"><span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span></div>`;
             else
                 buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;
-        }
-        else{
+        } else {
             buttons = `<div class="task-buttons form-inline">
             <button data-id="${c.request_id}" data-status="${c.request_status}" class="btn btn-sm btn-danger btn-reject-request">Reject</button>&nbsp;
             <button data-id="${c.request_id}" class="btn btn-sm btn-success btn-approve-request">Approve</button>
             </div>`;
         }
 
-        let item =`<div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
+        let item = `<div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
         <span class="task-title">${c.title}</span>
         <span class="task-text">${c.description}</span>
                 ${buttons}
         </div>`;
 
-        mThis.top_right_menus.find('div.main-task-panel').prepend(item);
-        if(update_count) mThis.incrementTaskCount();
-    }
+        mThis.top_right_menus.find("div.main-task-panel").prepend(item);
+        if (update_count) mThis.incrementTaskCount();
+    };
 
-    mThis.displayUserMenus = ()=>{
+    mThis.displayUserMenus = () => {
         return;
-    }
+    };
 
-    mThis.displayNotifications = ()=> {
-        vsapi.call(`${mThis.base_url}/api/user/notifications`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
-            let i=0;
-            if(res.status_code ===200){
-                let d = res.data;
-                if(d) {
-                    let items = d.items;
-                    const notifCount = mThis.btnNotif.querySelector('span.number--notification');
-                    notifCount.textContent =  d.unread_count;
-                    if(items){
-                        let c;
-                        do{
-                            c= items[i];
-                            if(!c) break;
-                            mThis.addNotificationItem(c,false);
-                            i++;
-                        }while(c);
+    mThis.displayNotifications = () => {
+        vsapi
+            .call(`${mThis.base_url}/api/user/notifications`, null, {
+                useCache: false,
+                cacheTTL: 3000,
+            })
+            .then((res) => {
+                let i = 0;
+                if (res.status_code === 200) {
+                    let d = res.data;
+                    if (d) {
+                        let items = d.items;
+                        const notifCount = mThis.btnNotif.querySelector(
+                            "span.number--notification",
+                        );
+                        notifCount.textContent = d.unread_count;
+                        if (items) {
+                            let c;
+                            do {
+                                c = items[i];
+                                if (!c) break;
+                                mThis.addNotificationItem(c, false);
+                                i++;
+                            } while (c);
+                        }
                     }
                 }
-            }
 
-            if(i==0){
-                let empty_item =`<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
-                mThis.top_right_menus.querySelector('div.main-notif-panel').innerHTML =  empty_item;
-            }
-        });
+                if (i == 0) {
+                    let empty_item = `<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
+                    mThis.top_right_menus.querySelector(
+                        "div.main-notif-panel",
+                    ).innerHTML = empty_item;
+                }
+            });
     };
 
     // mThis.setTaskCount = (c)=>{
@@ -389,10 +460,10 @@ mThis.init_vsapi = async () => {
     //     mThis.btnTasks.textContent = c;
     // }
 
-    mThis.setNotificationCount = (c)=>{
+    mThis.setNotificationCount = (c) => {
         mThis.btnNotif.dataset.count = c;
-        mThis.btnNotif.querySelector('.number--notification').textContent = c;
-    }
+        mThis.btnNotif.querySelector(".number--notification").textContent = c;
+    };
 
     // mThis.displayTasks =()=> {
     //     //let items =null;
@@ -429,25 +500,36 @@ mThis.init_vsapi = async () => {
     //     });
     // };
 
-    mThis.updateNotificationCount = ()=>{
-        vsapi.call(`${mThis.base_url}/api/user/unread-count`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
-            if(res.status_code ===200){
-                let d = res.data;
-                const span = mThis.btnNotif.querySelector('.number--notification');
-                if(d > 0) span.textContent =  d; else span.textContent = 0;
-                if(d > 0) mThis.btnNotif.dataset.count = d ; else mThis.btnNotif.dataset.count = 0;
-            }
-        });
-    }
+    mThis.updateNotificationCount = () => {
+        vsapi
+            .call(`${mThis.base_url}/api/user/unread-count`, null, {
+                useCache: false,
+                cacheTTL: 3000,
+            })
+            .then((res) => {
+                if (res.status_code === 200) {
+                    let d = res.data;
+                    const span = mThis.btnNotif.querySelector(
+                        ".number--notification",
+                    );
+                    if (d > 0) span.textContent = d;
+                    else span.textContent = 0;
+                    if (d > 0) mThis.btnNotif.dataset.count = d;
+                    else mThis.btnNotif.dataset.count = 0;
+                }
+            });
+    };
 
-    mThis.incrementNotificationCount = ()=>{
-        const notifCount_span = mThis.btnNotif.querySelector('span.number--notification');
+    mThis.incrementNotificationCount = () => {
+        const notifCount_span = mThis.btnNotif.querySelector(
+            "span.number--notification",
+        );
         let d = mThis.btnNotif.dataset.count;
-        d = d>=0?d:0;
+        d = d >= 0 ? d : 0;
         d++;
         notifCount_span.textContent = d;
         mThis.btnNotif.dataset.count = d;
-    }
+    };
 
     // mThis.incrementTaskCount = ()=>{
     //     let d = mThis.btnTasks.dataset.count;
@@ -462,8 +544,8 @@ mThis.init_vsapi = async () => {
 
         // Hide all siblings smoothly
         siblings.forEach((div) => {
-            if (div !== viewInstance && div.style.display !== 'none') {
-                div.style.display = 'none';
+            if (div !== viewInstance && div.style.display !== "none") {
+                div.style.display = "none";
             }
         });
 
@@ -478,7 +560,7 @@ mThis.init_vsapi = async () => {
         //     viewInstance.style.transition = 'opacity 200ms';
         //     viewInstance.style.opacity = 1;
         // });
-        viewInstance.style.display = 'block';
+        viewInstance.style.display = "block";
         // Set the title if provided
         if (title_prop) mThis.setTitle(title_prop);
     };
@@ -487,8 +569,8 @@ mThis.init_vsapi = async () => {
 })();
 //end::main_view module
 
-window.addEventListener('DOMContentLoaded',async()=>{
-     VSUtil.defaultStyle = 'material';
+window.addEventListener("DOMContentLoaded", async () => {
+    VSUtil.defaultStyle = "material";
     await main_view.init_vsapi();
     await VSMoney.init();
     main_view.init();
@@ -498,18 +580,20 @@ window.addEventListener('DOMContentLoaded',async()=>{
     const inputs = main_view.VSAppContent.querySelectorAll("input");
 
     DateTimePicker.destroyAll();
-    inputs.forEach(el =>{
-        const type = el.getAttribute('type') ?? el.dataset.select ?? '';
-        if(['date','daterange','datepicker'].indexOf(type.toLowerCase()) >= 0){
-            new DateTimePicker(el,null);
+    inputs.forEach((el) => {
+        const type = el.getAttribute("type") ?? el.dataset.select ?? "";
+        if (
+            ["date", "daterange", "datepicker"].indexOf(type.toLowerCase()) >= 0
+        ) {
+            new DateTimePicker(el, null);
         }
-        el.onselect = function(e){
+        el.onselect = function (e) {
             e.preventDefault();
-        }
+        };
 
-        el.onfocus = function(e){
+        el.onfocus = function (e) {
             e.preventDefault();
-        }
+        };
     });
 });
 
@@ -522,103 +606,116 @@ window.addEventListener('DOMContentLoaded',async()=>{
 //         return false;
 // }
 
-"use strict";
-class SearchWidget{
-    constructor(container, options = null){
+("use strict");
+class SearchWidget {
+    constructor(container, options = null) {
         const defaults = {
-            searchIcon:'fa fa-search',
-            inputClass: 'form-control border border-secondary rounded-3',
-            onkeyup:()=>{ return;}
-        }
+            searchIcon: "fa fa-search",
+            inputClass: "form-control border border-secondary rounded-3",
+            onkeyup: () => {
+                return;
+            },
+        };
 
-       options = options || defaults;
-       options.onkeyup = (typeof options.onkeyup ==='function')? options.onkeyup: defaults.onkeyup;
-       options.searchIcon =   options.searchIcon || defaults.searchIcon;
-       options.inputClass = options.inputClass || defaults.inputClass;
-       this.options = options;
-       this.container = container;
-       this.container.innerHTML = '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
-       this.state = 0; /** not in search mode */
-       const that = this;
-
-       this.container.dataset.state = 0;
-       this.container.addEventListener('click', e=>{
-          e.preventDefault();
-          let lnk = e.target.closest('.sw-search-lnk');
-          if (lnk){
-            that.setState(null);
-          }
-
-       });
-    }
-
-    setState(state=null){
-      if(state == 0){
-        this.container.innerHTML = '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
-      } else if (state==1){
-        this.container.innerHTML = ['<input class="sw-search-input ',this.options.inputClass,'" placeholder="',this.options.placeHolder,'">'].join('');
-        let el = this.container.querySelector('.sw-search-input');
+        options = options || defaults;
+        options.onkeyup =
+            typeof options.onkeyup === "function"
+                ? options.onkeyup
+                : defaults.onkeyup;
+        options.searchIcon = options.searchIcon || defaults.searchIcon;
+        options.inputClass = options.inputClass || defaults.inputClass;
+        this.options = options;
+        this.container = container;
+        this.container.innerHTML =
+            '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
+        this.state = 0; /** not in search mode */
         const that = this;
-        if(el){
-            el.focus();
-            el.select();
 
-             el.onkeyup = e=>{
-                 e.preventDefault();
-                 that.options.onkeyup(el.value, e);
-             }
-             el.onmouseenter = e=>{
-                el.dataset.isfocus =1;
-                clearTimeout(that.mTimeout);
-             }
-             el.onmouseleave = e=>{
-                e.preventDefault();
-                el.dataset.isfocus =0;
-                let tog_state = this.state ==1? 0 : 1;
-                if(!el.value || (tog_state + '').trim() ==''){
-                    that.mTimeout =  setTimeout(()=>{
-                        if (el.dataset.isfocus == 0) that.setState(0);
-                     },1000);
-                }
-             }
+        this.container.dataset.state = 0;
+        this.container.addEventListener("click", (e) => {
+            e.preventDefault();
+            let lnk = e.target.closest(".sw-search-lnk");
+            if (lnk) {
+                that.setState(null);
+            }
+        });
+    }
+
+    setState(state = null) {
+        if (state == 0) {
+            this.container.innerHTML =
+                '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
+        } else if (state == 1) {
+            this.container.innerHTML = [
+                '<input class="sw-search-input ',
+                this.options.inputClass,
+                '" placeholder="',
+                this.options.placeHolder,
+                '">',
+            ].join("");
+            let el = this.container.querySelector(".sw-search-input");
+            const that = this;
+            if (el) {
+                el.focus();
+                el.select();
+
+                el.onkeyup = (e) => {
+                    e.preventDefault();
+                    that.options.onkeyup(el.value, e);
+                };
+                el.onmouseenter = (e) => {
+                    el.dataset.isfocus = 1;
+                    clearTimeout(that.mTimeout);
+                };
+                el.onmouseleave = (e) => {
+                    e.preventDefault();
+                    el.dataset.isfocus = 0;
+                    let tog_state = this.state == 1 ? 0 : 1;
+                    if (!el.value || (tog_state + "").trim() == "") {
+                        that.mTimeout = setTimeout(() => {
+                            if (el.dataset.isfocus == 0) that.setState(0);
+                        }, 1000);
+                    }
+                };
+            }
+        } else {
+            let tog_state = this.state == 1 ? 0 : 1;
+            this.setState(tog_state);
         }
-
-      } else{
-         let tog_state = this.state ==1? 0 : 1;
-         this.setState(tog_state);
-      }
     }
 
-    getState(){
-      return this.state;
+    getState() {
+        return this.state;
     }
-    getValue(){
-       if(this.state ==1){
-         const el = this.container.querySelector('.sw-search-input');
-         return el? el.value: null;
-       }else return null;
+    getValue() {
+        if (this.state == 1) {
+            const el = this.container.querySelector(".sw-search-input");
+            return el ? el.value : null;
+        } else return null;
     }
 
-    setValue(value){
-        if(this.state ==1){
-          const el = this.container.querySelector('.sw-search-input');
-          el.value = value;
+    setValue(value) {
+        if (this.state == 1) {
+            const el = this.container.querySelector(".sw-search-input");
+            el.value = value;
         }
-     }
-
+    }
 }
 
-"use strict";
-const ChangePasswordDialog = (()=>{
-  const self = {};
-  let dialog = null;
+("use strict");
+const ChangePasswordDialog = (() => {
+    const self = {};
+    let dialog = null;
 
-  self.show = (op)=>{
-     dialog = dialog || new GeneralDialog({
-        title: LocaleManager.trans("Change Password",'titles'),
-        cssClass:null,
-        createContent:(me)=>{
-            return [`<div class="form-group">
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: LocaleManager.trans("Change Password", "titles"),
+                cssClass: null,
+                createContent: (me) => {
+                    return [
+                        `<div class="form-group">
                     <label for="old_password" class="form-label  " vslang="titles.Current Password">Current Password</label>
                     <div class="input-group flex-nowrap">
                         <input name="old_password" type="password" class="form-control data-input" data-field="old_password" autocomplete="off">
@@ -627,7 +724,7 @@ const ChangePasswordDialog = (()=>{
                         </div>
                     </div>
                 </div>`,
-                `<div class="form-group">
+                        `<div class="form-group">
                     <label for="new_password" class="form-label  " vslang="titles.New Password">New Password</label>
                     <div class="input-group flex-nowrap">
                         <input name="new_password" type="password" class="form-control data-input" data-field="new_password" autocomplete="off">
@@ -636,7 +733,7 @@ const ChangePasswordDialog = (()=>{
                         </div>
                     </div>
                 </div>`,
-            `<div class="form-group">
+                        `<div class="form-group">
             <label for="confirm_password" class="form-label  " vslang="titles.Confirm New Password">Confirm New Password</label>
             <div class="input-group flex-nowrap">
                 <input name="confirm_password" type="password" class="form-control data-input" data-field="confirm_password" autocomplete="off">
@@ -644,89 +741,105 @@ const ChangePasswordDialog = (()=>{
                     <i class="fa-regular fa-eye fs-5 text-muted"></i>
                 </div>
             </div>
-            </div>`
-            ].join('');
-        },
-        // afterInit:(me,divModal)=>{
-        //     me.fieldList.forEach(input=>{
-        //        input.onInput = function(){
-        //             if((me.controls.password.value === me.controls.confirm_password.value) && !(input.value == ''))
-        //             {
-        //                 input.classList.remove('border-danger');
-        //                 input.classList.remove('border-danger');
-        //             }
-        //             else
-        //             {
-        //                 input.classList.add('border-danger');
-        //                 input.classList.add('border-danger');
-        //             }
-        //        }
-        //        input.nextElementSibling.onclick = e=>{
-        //            let type = input.type ==='password' ? 'text' : 'password';
-        //            input.type = type;
-        //        }
-        //     });
-        // },
-        contentCreated:(me) => {
-            me.fieldList.forEach(input=>{
-               input.onInput = function(){
-                    if((me.controls.password.value === me.controls.confirm_password.value) && !(input.value == ''))
-                    {
-                        input.classList.remove('border-danger');
-                        input.classList.remove('border-danger');
-                    }
-                    else
-                    {
-                        input.classList.add('border-danger');
-                        input.classList.add('border-danger');
-                    }
-               }
-               input.nextElementSibling.onclick = e=>{
-                   let type = input.type ==='password' ? 'text' : 'password';
-                   input.type = type;
-               }
-            });
-        },
-        buttons:[
-            {
-                label:"<span>Cancel</span>",
-                cssClass:"btn-vs-cancel",
-                click:(me,btn)=>{
-                    me.hide(false);
-                }
-            },
-            {
-                label:"<span>Change</span>",
-                cssClass:"btn-vs-save",
-                click:(me,btn)=>{
-                    let p = me.getData();
-                    p.id = me.dataOptions.user_id || me.dataOptions.id;
-                    if(p.new_password !== p.confirm_password){
-                        cv_interact.warning(LocaleManager.trans('Password and confirmed password do not match!','titles'));
-                        return;
-                    }
-                    delete(p.confirm_password);
-
-                    let login_name = me.dataOptions.login_name ?? "";
-                    vsapi.call([main_view.base_url,'/api/user/password/change'].join(''),p,btn,false).then(res => {
-                        if(res.status_code === 200)
-                        {
-                            me.hide(true);
-                            let msg = LocaleManager.trans('Password has been changed successfully','titles');
-                            cv_interact.success(msg);
-                        }
-                        else cv_interact.error(res.error_message);
-
+            </div>`,
+                    ].join("");
+                },
+                // afterInit:(me,divModal)=>{
+                //     me.fieldList.forEach(input=>{
+                //        input.onInput = function(){
+                //             if((me.controls.password.value === me.controls.confirm_password.value) && !(input.value == ''))
+                //             {
+                //                 input.classList.remove('border-danger');
+                //                 input.classList.remove('border-danger');
+                //             }
+                //             else
+                //             {
+                //                 input.classList.add('border-danger');
+                //                 input.classList.add('border-danger');
+                //             }
+                //        }
+                //        input.nextElementSibling.onclick = e=>{
+                //            let type = input.type ==='password' ? 'text' : 'password';
+                //            input.type = type;
+                //        }
+                //     });
+                // },
+                contentCreated: (me) => {
+                    me.fieldList.forEach((input) => {
+                        input.onInput = function () {
+                            if (
+                                me.controls.password.value ===
+                                    me.controls.confirm_password.value &&
+                                !(input.value == "")
+                            ) {
+                                input.classList.remove("border-danger");
+                                input.classList.remove("border-danger");
+                            } else {
+                                input.classList.add("border-danger");
+                                input.classList.add("border-danger");
+                            }
+                        };
+                        input.nextElementSibling.onclick = (e) => {
+                            let type =
+                                input.type === "password" ? "text" : "password";
+                            input.type = type;
+                        };
                     });
-                }
-            }
-        ]
+                },
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn-vs-cancel",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Change</span>",
+                        cssClass: "btn-vs-save",
+                        click: (me, btn) => {
+                            let p = me.getData();
+                            p.id = me.dataOptions.user_id || me.dataOptions.id;
+                            if (p.new_password !== p.confirm_password) {
+                                cv_interact.warning(
+                                    LocaleManager.trans(
+                                        "Password and confirmed password do not match!",
+                                        "titles",
+                                    ),
+                                );
+                                return;
+                            }
+                            delete p.confirm_password;
 
-      });
-       dialog.show(op);
-  };
+                            let login_name = me.dataOptions.login_name ?? "";
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/api/user/password/change",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    false,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true);
+                                        let msg = LocaleManager.trans(
+                                            "Password has been changed successfully",
+                                            "titles",
+                                        );
+                                        cv_interact.success(msg);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
 
-  return self;
+    return self;
 })();
 /*!
  * Pusher JavaScript Library v8.0.1
@@ -735,468 +848,5398 @@ const ChangePasswordDialog = (()=>{
  * Copyright 2020, Pusher
  * Released under the MIT licence.
  */
-!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Pusher=e():t.Pusher=e()}(window,(function(){return function(t){var e={};function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var o in t)n.d(r,o,function(e){return t[e]}.bind(null,o));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=2)}([function(t,e,n){"use strict";var r,o=this&&this.__extends||(r=function(t,e){return(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(t,e)},function(t,e){function n(){this.constructor=t}r(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)});Object.defineProperty(e,"__esModule",{value:!0});var i=function(){function t(t){void 0===t&&(t="="),this._paddingCharacter=t}return t.prototype.encodedLength=function(t){return this._paddingCharacter?(t+2)/3*4|0:(8*t+5)/6|0},t.prototype.encode=function(t){for(var e="",n=0;n<t.length-2;n+=3){var r=t[n]<<16|t[n+1]<<8|t[n+2];e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=this._encodeByte(r>>>6&63),e+=this._encodeByte(r>>>0&63)}var o=t.length-n;if(o>0){r=t[n]<<16|(2===o?t[n+1]<<8:0);e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=2===o?this._encodeByte(r>>>6&63):this._paddingCharacter||"",e+=this._paddingCharacter||""}return e},t.prototype.maxDecodedLength=function(t){return this._paddingCharacter?t/4*3|0:(6*t+7)/8|0},t.prototype.decodedLength=function(t){return this.maxDecodedLength(t.length-this._getPaddingLength(t))},t.prototype.decode=function(t){if(0===t.length)return new Uint8Array(0);for(var e=this._getPaddingLength(t),n=t.length-e,r=new Uint8Array(this.maxDecodedLength(n)),o=0,i=0,s=0,c=0,a=0,u=0,h=0;i<n-4;i+=4)c=this._decodeChar(t.charCodeAt(i+0)),a=this._decodeChar(t.charCodeAt(i+1)),u=this._decodeChar(t.charCodeAt(i+2)),h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=c<<2|a>>>4,r[o++]=a<<4|u>>>2,r[o++]=u<<6|h,s|=256&c,s|=256&a,s|=256&u,s|=256&h;if(i<n-1&&(c=this._decodeChar(t.charCodeAt(i)),a=this._decodeChar(t.charCodeAt(i+1)),r[o++]=c<<2|a>>>4,s|=256&c,s|=256&a),i<n-2&&(u=this._decodeChar(t.charCodeAt(i+2)),r[o++]=a<<4|u>>>2,s|=256&u),i<n-3&&(h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=u<<6|h,s|=256&h),0!==s)throw new Error("Base64Coder: incorrect characters for decoding");return r},t.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-15,e+=62-t>>>8&3,String.fromCharCode(e)},t.prototype._decodeChar=function(t){var e=256;return e+=(42-t&t-44)>>>8&-256+t-43+62,e+=(46-t&t-48)>>>8&-256+t-47+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},t.prototype._getPaddingLength=function(t){var e=0;if(this._paddingCharacter){for(var n=t.length-1;n>=0&&t[n]===this._paddingCharacter;n--)e++;if(t.length<4||e>2)throw new Error("Base64Coder: incorrect padding")}return e},t}();e.Coder=i;var s=new i;e.encode=function(t){return s.encode(t)},e.decode=function(t){return s.decode(t)};var c=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return o(e,t),e.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-13,e+=62-t>>>8&49,String.fromCharCode(e)},e.prototype._decodeChar=function(t){var e=256;return e+=(44-t&t-46)>>>8&-256+t-45+62,e+=(94-t&t-96)>>>8&-256+t-95+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},e}(i);e.URLSafeCoder=c;var a=new c;e.encodeURLSafe=function(t){return a.encode(t)},e.decodeURLSafe=function(t){return a.decode(t)},e.encodedLength=function(t){return s.encodedLength(t)},e.maxDecodedLength=function(t){return s.maxDecodedLength(t)},e.decodedLength=function(t){return s.decodedLength(t)}},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r="utf8: invalid source encoding";function o(t){for(var e=0,n=0;n<t.length;n++){var r=t.charCodeAt(n);if(r<128)e+=1;else if(r<2048)e+=2;else if(r<55296)e+=3;else{if(!(r<=57343))throw new Error("utf8: invalid string");if(n>=t.length-1)throw new Error("utf8: invalid string");n++,e+=4}}return e}e.encode=function(t){for(var e=new Uint8Array(o(t)),n=0,r=0;r<t.length;r++){var i=t.charCodeAt(r);i<128?e[n++]=i:i<2048?(e[n++]=192|i>>6,e[n++]=128|63&i):i<55296?(e[n++]=224|i>>12,e[n++]=128|i>>6&63,e[n++]=128|63&i):(r++,i=(1023&i)<<10,i|=1023&t.charCodeAt(r),i+=65536,e[n++]=240|i>>18,e[n++]=128|i>>12&63,e[n++]=128|i>>6&63,e[n++]=128|63&i)}return e},e.encodedLength=o,e.decode=function(t){for(var e=[],n=0;n<t.length;n++){var o=t[n];if(128&o){var i=void 0;if(o<224){if(n>=t.length)throw new Error(r);if(128!=(192&(s=t[++n])))throw new Error(r);o=(31&o)<<6|63&s,i=128}else if(o<240){if(n>=t.length-1)throw new Error(r);var s=t[++n],c=t[++n];if(128!=(192&s)||128!=(192&c))throw new Error(r);o=(15&o)<<12|(63&s)<<6|63&c,i=2048}else{if(!(o<248))throw new Error(r);if(n>=t.length-2)throw new Error(r);s=t[++n],c=t[++n];var a=t[++n];if(128!=(192&s)||128!=(192&c)||128!=(192&a))throw new Error(r);o=(15&o)<<18|(63&s)<<12|(63&c)<<6|63&a,i=65536}if(o<i||o>=55296&&o<=57343)throw new Error(r);if(o>=65536){if(o>1114111)throw new Error(r);o-=65536,e.push(String.fromCharCode(55296|o>>10)),o=56320|1023&o}}e.push(String.fromCharCode(o))}return e.join("")}},function(t,e,n){t.exports=n(3).default},function(t,e,n){"use strict";n.r(e);var r,o=function(){function t(t,e){this.lastId=0,this.prefix=t,this.name=e}return t.prototype.create=function(t){this.lastId++;var e=this.lastId,n=this.prefix+e,r=this.name+"["+e+"]",o=!1,i=function(){o||(t.apply(null,arguments),o=!0)};return this[e]=i,{number:e,id:n,name:r,callback:i}},t.prototype.remove=function(t){delete this[t.number]},t}(),i=new o("_pusher_script_","Pusher.ScriptReceivers"),s={VERSION:"8.0.1",PROTOCOL:7,wsPort:80,wssPort:443,wsPath:"",httpHost:"sockjs.pusher.com",httpPort:80,httpsPort:443,httpPath:"/pusher",stats_host:"stats.pusher.com",authEndpoint:"/pusher/auth",authTransport:"ajax",activityTimeout:12e4,pongTimeout:3e4,unavailableTimeout:1e4,userAuthentication:{endpoint:"/pusher/user-auth",transport:"ajax"},channelAuthorization:{endpoint:"/pusher/auth",transport:"ajax"},cdn_http:"http://js.pusher.com",cdn_https:"https://js.pusher.com",dependency_suffix:""},c=function(){function t(t){this.options=t,this.receivers=t.receivers||i,this.loading={}}return t.prototype.load=function(t,e,n){var r=this;if(r.loading[t]&&r.loading[t].length>0)r.loading[t].push(n);else{r.loading[t]=[n];var o=Ce.createScriptRequest(r.getPath(t,e)),i=r.receivers.create((function(e){if(r.receivers.remove(i),r.loading[t]){var n=r.loading[t];delete r.loading[t];for(var s=function(t){t||o.cleanup()},c=0;c<n.length;c++)n[c](e,s)}}));o.send(i)}},t.prototype.getRoot=function(t){var e=Ce.getDocument().location.protocol;return(t&&t.useTLS||"https:"===e?this.options.cdn_https:this.options.cdn_http).replace(/\/*$/,"")+"/"+this.options.version},t.prototype.getPath=function(t,e){return this.getRoot(e)+"/"+t+this.options.suffix+".js"},t}(),a=new o("_pusher_dependencies","Pusher.DependenciesReceivers"),u=new c({cdn_http:s.cdn_http,cdn_https:s.cdn_https,version:s.VERSION,suffix:s.dependency_suffix,receivers:a}),h={baseUrl:"https://pusher.com",urls:{authenticationEndpoint:{path:"/docs/channels/server_api/authenticating_users"},authorizationEndpoint:{path:"/docs/channels/server_api/authorizing-users/"},javascriptQuickStart:{path:"/docs/javascript_quick_start"},triggeringClientEvents:{path:"/docs/client_api_guide/client_events#trigger-events"},encryptedChannelSupport:{fullUrl:"https://github.com/pusher/pusher-js/tree/cc491015371a4bde5743d1c87a0fbac0feb53195#encrypted-channel-support"}}},p=function(t){var e,n=h.urls[t];return n?(n.fullUrl?e=n.fullUrl:n.path&&(e=h.baseUrl+n.path),e?"See: "+e:""):""};!function(t){t.UserAuthentication="user-authentication",t.ChannelAuthorization="channel-authorization"}(r||(r={}));var l,f=(l=function(t,e){return(l=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(t,e)},function(t,e){function n(){this.constructor=t}l(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)}),d=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),y=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),v=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),g=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),b=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),m=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),_=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),w=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),S=function(t){function e(e,n){var r=this.constructor,o=t.call(this,n)||this;return o.status=e,Object.setPrototypeOf(o,r.prototype),o}return f(e,t),e}(Error),k=function(t,e,n,o,i){var s=Ce.createXHR();for(var c in s.open("POST",n.endpoint,!0),s.setRequestHeader("Content-Type","application/x-www-form-urlencoded"),n.headers)s.setRequestHeader(c,n.headers[c]);if(null!=n.headersProvider){var a=n.headersProvider();for(var c in a)s.setRequestHeader(c,a[c])}return s.onreadystatechange=function(){if(4===s.readyState)if(200===s.status){var t=void 0,e=!1;try{t=JSON.parse(s.responseText),e=!0}catch(t){i(new S(200,"JSON returned from "+o.toString()+" endpoint was invalid, yet status code was 200. Data was: "+s.responseText),null)}e&&i(null,t)}else{var c="";switch(o){case r.UserAuthentication:c=p("authenticationEndpoint");break;case r.ChannelAuthorization:c="Clients must be authorized to join private or presence channels. "+p("authorizationEndpoint")}i(new S(s.status,"Unable to retrieve auth string from "+o.toString()+" endpoint - received status: "+s.status+" from "+n.endpoint+". "+c),null)}},s.send(e),s};for(var C=String.fromCharCode,P="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",T={},O=0,E=P.length;O<E;O++)T[P.charAt(O)]=O;var A=function(t){var e=t.charCodeAt(0);return e<128?t:e<2048?C(192|e>>>6)+C(128|63&e):C(224|e>>>12&15)+C(128|e>>>6&63)+C(128|63&e)},x=function(t){return t.replace(/[^\x00-\x7F]/g,A)},L=function(t){var e=[0,2,1][t.length%3],n=t.charCodeAt(0)<<16|(t.length>1?t.charCodeAt(1):0)<<8|(t.length>2?t.charCodeAt(2):0);return[P.charAt(n>>>18),P.charAt(n>>>12&63),e>=2?"=":P.charAt(n>>>6&63),e>=1?"=":P.charAt(63&n)].join("")},R=window.btoa||function(t){return t.replace(/[\s\S]{1,3}/g,L)},j=function(){function t(t,e,n,r){var o=this;this.clear=e,this.timer=t((function(){o.timer&&(o.timer=r(o.timer))}),n)}return t.prototype.isRunning=function(){return null!==this.timer},t.prototype.ensureAborted=function(){this.timer&&(this.clear(this.timer),this.timer=null)},t}(),I=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}();function D(t){window.clearTimeout(t)}function N(t){window.clearInterval(t)}var H=function(t){function e(e,n){return t.call(this,setTimeout,D,e,(function(t){return n(),null}))||this}return I(e,t),e}(j),U=function(t){function e(e,n){return t.call(this,setInterval,N,e,(function(t){return n(),t}))||this}return I(e,t),e}(j),M={now:function(){return Date.now?Date.now():(new Date).valueOf()},defer:function(t){return new H(0,t)},method:function(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];var r=Array.prototype.slice.call(arguments,1);return function(e){return e[t].apply(e,r.concat(arguments))}}};function z(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];for(var r=0;r<e.length;r++){var o=e[r];for(var i in o)o[i]&&o[i].constructor&&o[i].constructor===Object?t[i]=z(t[i]||{},o[i]):t[i]=o[i]}return t}function q(){for(var t=["Pusher"],e=0;e<arguments.length;e++)"string"==typeof arguments[e]?t.push(arguments[e]):t.push(K(arguments[e]));return t.join(" : ")}function B(t,e){var n=Array.prototype.indexOf;if(null===t)return-1;if(n&&t.indexOf===n)return t.indexOf(e);for(var r=0,o=t.length;r<o;r++)if(t[r]===e)return r;return-1}function F(t,e){for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&e(t[n],n,t)}function X(t){var e=[];return F(t,(function(t,n){e.push(n)})),e}function J(t,e,n){for(var r=0;r<t.length;r++)e.call(n||window,t[r],r,t)}function W(t,e){for(var n=[],r=0;r<t.length;r++)n.push(e(t[r],r,t,n));return n}function G(t,e){e=e||function(t){return!!t};for(var n=[],r=0;r<t.length;r++)e(t[r],r,t,n)&&n.push(t[r]);return n}function V(t,e){var n={};return F(t,(function(r,o){(e&&e(r,o,t,n)||Boolean(r))&&(n[o]=r)})),n}function Y(t,e){for(var n=0;n<t.length;n++)if(e(t[n],n,t))return!0;return!1}function $(t){return e=function(t){return"object"==typeof t&&(t=K(t)),encodeURIComponent((e=t.toString(),R(x(e))));var e},n={},F(t,(function(t,r){n[r]=e(t)})),n;var e,n}function Q(t){var e,n,r=V(t,(function(t){return void 0!==t}));return W((e=$(r),n=[],F(e,(function(t,e){n.push([e,t])})),n),M.method("join","=")).join("&")}function K(t){try{return JSON.stringify(t)}catch(r){return JSON.stringify((e=[],n=[],function t(r,o){var i,s,c;switch(typeof r){case"object":if(!r)return null;for(i=0;i<e.length;i+=1)if(e[i]===r)return{$ref:n[i]};if(e.push(r),n.push(o),"[object Array]"===Object.prototype.toString.apply(r))for(c=[],i=0;i<r.length;i+=1)c[i]=t(r[i],o+"["+i+"]");else for(s in c={},r)Object.prototype.hasOwnProperty.call(r,s)&&(c[s]=t(r[s],o+"["+JSON.stringify(s)+"]"));return c;case"number":case"string":case"boolean":return r}}(t,"$")))}var e,n}var Z=new(function(){function t(){this.globalLog=function(t){window.console&&window.console.log&&window.console.log(t)}}return t.prototype.debug=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLog,t)},t.prototype.warn=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLogWarn,t)},t.prototype.error=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLogError,t)},t.prototype.globalLogWarn=function(t){window.console&&window.console.warn?window.console.warn(t):this.globalLog(t)},t.prototype.globalLogError=function(t){window.console&&window.console.error?window.console.error(t):this.globalLogWarn(t)},t.prototype.log=function(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];var r=q.apply(this,arguments);if(Ge.log)Ge.log(r);else if(Ge.logToConsole){var o=t.bind(this);o(r)}},t}()),tt=function(t,e,n,r,o){void 0===n.headers&&null==n.headersProvider||Z.warn("To send headers with the "+r.toString()+" request, you must use AJAX, rather than JSONP.");var i=t.nextAuthCallbackID.toString();t.nextAuthCallbackID++;var s=t.getDocument(),c=s.createElement("script");t.auth_callbacks[i]=function(t){o(null,t)};var a="Pusher.auth_callbacks['"+i+"']";c.src=n.endpoint+"?callback="+encodeURIComponent(a)+"&"+e;var u=s.getElementsByTagName("head")[0]||s.documentElement;u.insertBefore(c,u.firstChild)},et=function(){function t(t){this.src=t}return t.prototype.send=function(t){var e=this,n="Error loading "+e.src;e.script=document.createElement("script"),e.script.id=t.id,e.script.src=e.src,e.script.type="text/javascript",e.script.charset="UTF-8",e.script.addEventListener?(e.script.onerror=function(){t.callback(n)},e.script.onload=function(){t.callback(null)}):e.script.onreadystatechange=function(){"loaded"!==e.script.readyState&&"complete"!==e.script.readyState||t.callback(null)},void 0===e.script.async&&document.attachEvent&&/opera/i.test(navigator.userAgent)?(e.errorScript=document.createElement("script"),e.errorScript.id=t.id+"_error",e.errorScript.text=t.name+"('"+n+"');",e.script.async=e.errorScript.async=!1):e.script.async=!0;var r=document.getElementsByTagName("head")[0];r.insertBefore(e.script,r.firstChild),e.errorScript&&r.insertBefore(e.errorScript,e.script.nextSibling)},t.prototype.cleanup=function(){this.script&&(this.script.onload=this.script.onerror=null,this.script.onreadystatechange=null),this.script&&this.script.parentNode&&this.script.parentNode.removeChild(this.script),this.errorScript&&this.errorScript.parentNode&&this.errorScript.parentNode.removeChild(this.errorScript),this.script=null,this.errorScript=null},t}(),nt=function(){function t(t,e){this.url=t,this.data=e}return t.prototype.send=function(t){if(!this.request){var e=Q(this.data),n=this.url+"/"+t.number+"?"+e;this.request=Ce.createScriptRequest(n),this.request.send(t)}},t.prototype.cleanup=function(){this.request&&this.request.cleanup()},t}(),rt={name:"jsonp",getAgent:function(t,e){return function(n,r){var o="http"+(e?"s":"")+"://"+(t.host||t.options.host)+t.options.path,s=Ce.createJSONPRequest(o,n),c=Ce.ScriptReceivers.create((function(e,n){i.remove(c),s.cleanup(),n&&n.host&&(t.host=n.host),r&&r(e,n)}));s.send(c)}}};function ot(t,e,n){return t+(e.useTLS?"s":"")+"://"+(e.useTLS?e.hostTLS:e.hostNonTLS)+n}function it(t,e){return"/app/"+t+("?protocol="+s.PROTOCOL+"&client=js&version="+s.VERSION+(e?"&"+e:""))}var st={getInitial:function(t,e){return ot("ws",e,(e.httpPath||"")+it(t,"flash=false"))}},ct={getInitial:function(t,e){return ot("http",e,(e.httpPath||"/pusher")+it(t))}},at={getInitial:function(t,e){return ot("http",e,e.httpPath||"/pusher")},getPath:function(t,e){return it(t)}},ut=function(){function t(){this._callbacks={}}return t.prototype.get=function(t){return this._callbacks[ht(t)]},t.prototype.add=function(t,e,n){var r=ht(t);this._callbacks[r]=this._callbacks[r]||[],this._callbacks[r].push({fn:e,context:n})},t.prototype.remove=function(t,e,n){if(t||e||n){var r=t?[ht(t)]:X(this._callbacks);e||n?this.removeCallback(r,e,n):this.removeAllCallbacks(r)}else this._callbacks={}},t.prototype.removeCallback=function(t,e,n){J(t,(function(t){this._callbacks[t]=G(this._callbacks[t]||[],(function(t){return e&&e!==t.fn||n&&n!==t.context})),0===this._callbacks[t].length&&delete this._callbacks[t]}),this)},t.prototype.removeAllCallbacks=function(t){J(t,(function(t){delete this._callbacks[t]}),this)},t}();function ht(t){return"_"+t}var pt=function(){function t(t){this.callbacks=new ut,this.global_callbacks=[],this.failThrough=t}return t.prototype.bind=function(t,e,n){return this.callbacks.add(t,e,n),this},t.prototype.bind_global=function(t){return this.global_callbacks.push(t),this},t.prototype.unbind=function(t,e,n){return this.callbacks.remove(t,e,n),this},t.prototype.unbind_global=function(t){return t?(this.global_callbacks=G(this.global_callbacks||[],(function(e){return e!==t})),this):(this.global_callbacks=[],this)},t.prototype.unbind_all=function(){return this.unbind(),this.unbind_global(),this},t.prototype.emit=function(t,e,n){for(var r=0;r<this.global_callbacks.length;r++)this.global_callbacks[r](t,e);var o=this.callbacks.get(t),i=[];if(n?i.push(e,n):e&&i.push(e),o&&o.length>0)for(r=0;r<o.length;r++)o[r].fn.apply(o[r].context||window,i);else this.failThrough&&this.failThrough(t,e);return this},t}(),lt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),ft=function(t){function e(e,n,r,o,i){var s=t.call(this)||this;return s.initialize=Ce.transportConnectionInitializer,s.hooks=e,s.name=n,s.priority=r,s.key=o,s.options=i,s.state="new",s.timeline=i.timeline,s.activityTimeout=i.activityTimeout,s.id=s.timeline.generateUniqueID(),s}return lt(e,t),e.prototype.handlesActivityChecks=function(){return Boolean(this.hooks.handlesActivityChecks)},e.prototype.supportsPing=function(){return Boolean(this.hooks.supportsPing)},e.prototype.connect=function(){var t=this;if(this.socket||"initialized"!==this.state)return!1;var e=this.hooks.urls.getInitial(this.key,this.options);try{this.socket=this.hooks.getSocket(e,this.options)}catch(e){return M.defer((function(){t.onError(e),t.changeState("closed")})),!1}return this.bindListeners(),Z.debug("Connecting",{transport:this.name,url:e}),this.changeState("connecting"),!0},e.prototype.close=function(){return!!this.socket&&(this.socket.close(),!0)},e.prototype.send=function(t){var e=this;return"open"===this.state&&(M.defer((function(){e.socket&&e.socket.send(t)})),!0)},e.prototype.ping=function(){"open"===this.state&&this.supportsPing()&&this.socket.ping()},e.prototype.onOpen=function(){this.hooks.beforeOpen&&this.hooks.beforeOpen(this.socket,this.hooks.urls.getPath(this.key,this.options)),this.changeState("open"),this.socket.onopen=void 0},e.prototype.onError=function(t){this.emit("error",{type:"WebSocketError",error:t}),this.timeline.error(this.buildTimelineMessage({error:t.toString()}))},e.prototype.onClose=function(t){t?this.changeState("closed",{code:t.code,reason:t.reason,wasClean:t.wasClean}):this.changeState("closed"),this.unbindListeners(),this.socket=void 0},e.prototype.onMessage=function(t){this.emit("message",t)},e.prototype.onActivity=function(){this.emit("activity")},e.prototype.bindListeners=function(){var t=this;this.socket.onopen=function(){t.onOpen()},this.socket.onerror=function(e){t.onError(e)},this.socket.onclose=function(e){t.onClose(e)},this.socket.onmessage=function(e){t.onMessage(e)},this.supportsPing()&&(this.socket.onactivity=function(){t.onActivity()})},e.prototype.unbindListeners=function(){this.socket&&(this.socket.onopen=void 0,this.socket.onerror=void 0,this.socket.onclose=void 0,this.socket.onmessage=void 0,this.supportsPing()&&(this.socket.onactivity=void 0))},e.prototype.changeState=function(t,e){this.state=t,this.timeline.info(this.buildTimelineMessage({state:t,params:e})),this.emit(t,e)},e.prototype.buildTimelineMessage=function(t){return z({cid:this.id},t)},e}(pt),dt=function(){function t(t){this.hooks=t}return t.prototype.isSupported=function(t){return this.hooks.isSupported(t)},t.prototype.createConnection=function(t,e,n,r){return new ft(this.hooks,t,e,n,r)},t}(),yt=new dt({urls:st,handlesActivityChecks:!1,supportsPing:!1,isInitialized:function(){return Boolean(Ce.getWebSocketAPI())},isSupported:function(){return Boolean(Ce.getWebSocketAPI())},getSocket:function(t){return Ce.createWebSocket(t)}}),vt={urls:ct,handlesActivityChecks:!1,supportsPing:!0,isInitialized:function(){return!0}},gt=z({getSocket:function(t){return Ce.HTTPFactory.createStreamingSocket(t)}},vt),bt=z({getSocket:function(t){return Ce.HTTPFactory.createPollingSocket(t)}},vt),mt={isSupported:function(){return Ce.isXHRSupported()}},_t={ws:yt,xhr_streaming:new dt(z({},gt,mt)),xhr_polling:new dt(z({},bt,mt))},wt=new dt({file:"sockjs",urls:at,handlesActivityChecks:!0,supportsPing:!1,isSupported:function(){return!0},isInitialized:function(){return void 0!==window.SockJS},getSocket:function(t,e){return new window.SockJS(t,null,{js_path:u.getPath("sockjs",{useTLS:e.useTLS}),ignore_null_origin:e.ignoreNullOrigin})},beforeOpen:function(t,e){t.send(JSON.stringify({path:e}))}}),St={isSupported:function(t){return Ce.isXDRSupported(t.useTLS)}},kt=new dt(z({},gt,St)),Ct=new dt(z({},bt,St));_t.xdr_streaming=kt,_t.xdr_polling=Ct,_t.sockjs=wt;var Pt=_t,Tt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Ot=new(function(t){function e(){var e=t.call(this)||this,n=e;return void 0!==window.addEventListener&&(window.addEventListener("online",(function(){n.emit("online")}),!1),window.addEventListener("offline",(function(){n.emit("offline")}),!1)),e}return Tt(e,t),e.prototype.isOnline=function(){return void 0===window.navigator.onLine||window.navigator.onLine},e}(pt)),Et=function(){function t(t,e,n){this.manager=t,this.transport=e,this.minPingDelay=n.minPingDelay,this.maxPingDelay=n.maxPingDelay,this.pingDelay=void 0}return t.prototype.createConnection=function(t,e,n,r){var o=this;r=z({},r,{activityTimeout:this.pingDelay});var i=this.transport.createConnection(t,e,n,r),s=null,c=function(){i.unbind("open",c),i.bind("closed",a),s=M.now()},a=function(t){if(i.unbind("closed",a),1002===t.code||1003===t.code)o.manager.reportDeath();else if(!t.wasClean&&s){var e=M.now()-s;e<2*o.maxPingDelay&&(o.manager.reportDeath(),o.pingDelay=Math.max(e/2,o.minPingDelay))}};return i.bind("open",c),i},t.prototype.isSupported=function(t){return this.manager.isAlive()&&this.transport.isSupported(t)},t}(),At={decodeMessage:function(t){try{var e=JSON.parse(t.data),n=e.data;if("string"==typeof n)try{n=JSON.parse(e.data)}catch(t){}var r={event:e.event,channel:e.channel,data:n};return e.user_id&&(r.user_id=e.user_id),r}catch(e){throw{type:"MessageParseError",error:e,data:t.data}}},encodeMessage:function(t){return JSON.stringify(t)},processHandshake:function(t){var e=At.decodeMessage(t);if("pusher:connection_established"===e.event){if(!e.data.activity_timeout)throw"No activity timeout specified in handshake";return{action:"connected",id:e.data.socket_id,activityTimeout:1e3*e.data.activity_timeout}}if("pusher:error"===e.event)return{action:this.getCloseAction(e.data),error:this.getCloseError(e.data)};throw"Invalid handshake"},getCloseAction:function(t){return t.code<4e3?t.code>=1002&&t.code<=1004?"backoff":null:4e3===t.code?"tls_only":t.code<4100?"refused":t.code<4200?"backoff":t.code<4300?"retry":"refused"},getCloseError:function(t){return 1e3!==t.code&&1001!==t.code?{type:"PusherError",data:{code:t.code,message:t.reason||t.message}}:null}},xt=At,Lt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Rt=function(t){function e(e,n){var r=t.call(this)||this;return r.id=e,r.transport=n,r.activityTimeout=n.activityTimeout,r.bindListeners(),r}return Lt(e,t),e.prototype.handlesActivityChecks=function(){return this.transport.handlesActivityChecks()},e.prototype.send=function(t){return this.transport.send(t)},e.prototype.send_event=function(t,e,n){var r={event:t,data:e};return n&&(r.channel=n),Z.debug("Event sent",r),this.send(xt.encodeMessage(r))},e.prototype.ping=function(){this.transport.supportsPing()?this.transport.ping():this.send_event("pusher:ping",{})},e.prototype.close=function(){this.transport.close()},e.prototype.bindListeners=function(){var t=this,e={message:function(e){var n;try{n=xt.decodeMessage(e)}catch(n){t.emit("error",{type:"MessageParseError",error:n,data:e.data})}if(void 0!==n){switch(Z.debug("Event recd",n),n.event){case"pusher:error":t.emit("error",{type:"PusherError",data:n.data});break;case"pusher:ping":t.emit("ping");break;case"pusher:pong":t.emit("pong")}t.emit("message",n)}},activity:function(){t.emit("activity")},error:function(e){t.emit("error",e)},closed:function(e){n(),e&&e.code&&t.handleCloseEvent(e),t.transport=null,t.emit("closed")}},n=function(){F(e,(function(e,n){t.transport.unbind(n,e)}))};F(e,(function(e,n){t.transport.bind(n,e)}))},e.prototype.handleCloseEvent=function(t){var e=xt.getCloseAction(t),n=xt.getCloseError(t);n&&this.emit("error",n),e&&this.emit(e,{action:e,error:n})},e}(pt),jt=function(){function t(t,e){this.transport=t,this.callback=e,this.bindListeners()}return t.prototype.close=function(){this.unbindListeners(),this.transport.close()},t.prototype.bindListeners=function(){var t=this;this.onMessage=function(e){var n;t.unbindListeners();try{n=xt.processHandshake(e)}catch(e){return t.finish("error",{error:e}),void t.transport.close()}"connected"===n.action?t.finish("connected",{connection:new Rt(n.id,t.transport),activityTimeout:n.activityTimeout}):(t.finish(n.action,{error:n.error}),t.transport.close())},this.onClosed=function(e){t.unbindListeners();var n=xt.getCloseAction(e)||"backoff",r=xt.getCloseError(e);t.finish(n,{error:r})},this.transport.bind("message",this.onMessage),this.transport.bind("closed",this.onClosed)},t.prototype.unbindListeners=function(){this.transport.unbind("message",this.onMessage),this.transport.unbind("closed",this.onClosed)},t.prototype.finish=function(t,e){this.callback(z({transport:this.transport,action:t},e))},t}(),It=function(){function t(t,e){this.timeline=t,this.options=e||{}}return t.prototype.send=function(t,e){this.timeline.isEmpty()||this.timeline.send(Ce.TimelineTransport.getAgent(this,t),e)},t}(),Dt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Nt=function(t){function e(e,n){var r=t.call(this,(function(t,n){Z.debug("No callbacks on "+e+" for "+t)}))||this;return r.name=e,r.pusher=n,r.subscribed=!1,r.subscriptionPending=!1,r.subscriptionCancelled=!1,r}return Dt(e,t),e.prototype.authorize=function(t,e){return e(null,{auth:""})},e.prototype.trigger=function(t,e){if(0!==t.indexOf("client-"))throw new d("Event '"+t+"' does not start with 'client-'");if(!this.subscribed){var n=p("triggeringClientEvents");Z.warn("Client event triggered before channel 'subscription_succeeded' event . "+n)}return this.pusher.send_event(t,e,this.name)},e.prototype.disconnect=function(){this.subscribed=!1,this.subscriptionPending=!1},e.prototype.handleEvent=function(t){var e=t.event,n=t.data;if("pusher_internal:subscription_succeeded"===e)this.handleSubscriptionSucceededEvent(t);else if("pusher_internal:subscription_count"===e)this.handleSubscriptionCountEvent(t);else if(0!==e.indexOf("pusher_internal:")){this.emit(e,n,{})}},e.prototype.handleSubscriptionSucceededEvent=function(t){this.subscriptionPending=!1,this.subscribed=!0,this.subscriptionCancelled?this.pusher.unsubscribe(this.name):this.emit("pusher:subscription_succeeded",t.data)},e.prototype.handleSubscriptionCountEvent=function(t){t.data.subscription_count&&(this.subscriptionCount=t.data.subscription_count),this.emit("pusher:subscription_count",t.data)},e.prototype.subscribe=function(){var t=this;this.subscribed||(this.subscriptionPending=!0,this.subscriptionCancelled=!1,this.authorize(this.pusher.connection.socket_id,(function(e,n){e?(t.subscriptionPending=!1,Z.error(e.toString()),t.emit("pusher:subscription_error",Object.assign({},{type:"AuthError",error:e.message},e instanceof S?{status:e.status}:{}))):t.pusher.send_event("pusher:subscribe",{auth:n.auth,channel_data:n.channel_data,channel:t.name})})))},e.prototype.unsubscribe=function(){this.subscribed=!1,this.pusher.send_event("pusher:unsubscribe",{channel:this.name})},e.prototype.cancelSubscription=function(){this.subscriptionCancelled=!0},e.prototype.reinstateSubscription=function(){this.subscriptionCancelled=!1},e}(pt),Ht=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Ut=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return Ht(e,t),e.prototype.authorize=function(t,e){return this.pusher.config.channelAuthorizer({channelName:this.name,socketId:t},e)},e}(Nt),Mt=function(){function t(){this.reset()}return t.prototype.get=function(t){return Object.prototype.hasOwnProperty.call(this.members,t)?{id:t,info:this.members[t]}:null},t.prototype.each=function(t){var e=this;F(this.members,(function(n,r){t(e.get(r))}))},t.prototype.setMyID=function(t){this.myID=t},t.prototype.onSubscription=function(t){this.members=t.presence.hash,this.count=t.presence.count,this.me=this.get(this.myID)},t.prototype.addMember=function(t){return null===this.get(t.user_id)&&this.count++,this.members[t.user_id]=t.user_info,this.get(t.user_id)},t.prototype.removeMember=function(t){var e=this.get(t.user_id);return e&&(delete this.members[t.user_id],this.count--),e},t.prototype.reset=function(){this.members={},this.count=0,this.myID=null,this.me=null},t}(),zt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),qt=function(t,e,n,r){return new(n||(n=Promise))((function(o,i){function s(t){try{a(r.next(t))}catch(t){i(t)}}function c(t){try{a(r.throw(t))}catch(t){i(t)}}function a(t){var e;t.done?o(t.value):(e=t.value,e instanceof n?e:new n((function(t){t(e)}))).then(s,c)}a((r=r.apply(t,e||[])).next())}))},Bt=function(t,e){var n,r,o,i,s={label:0,sent:function(){if(1&o[0])throw o[1];return o[1]},trys:[],ops:[]};return i={next:c(0),throw:c(1),return:c(2)},"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function c(i){return function(c){return function(i){if(n)throw new TypeError("Generator is already executing.");for(;s;)try{if(n=1,r&&(o=2&i[0]?r.return:i[0]?r.throw||((o=r.return)&&o.call(r),0):r.next)&&!(o=o.call(r,i[1])).done)return o;switch(r=0,o&&(i=[2&i[0],o.value]),i[0]){case 0:case 1:o=i;break;case 4:return s.label++,{value:i[1],done:!1};case 5:s.label++,r=i[1],i=[0];continue;case 7:i=s.ops.pop(),s.trys.pop();continue;default:if(!(o=s.trys,(o=o.length>0&&o[o.length-1])||6!==i[0]&&2!==i[0])){s=0;continue}if(3===i[0]&&(!o||i[1]>o[0]&&i[1]<o[3])){s.label=i[1];break}if(6===i[0]&&s.label<o[1]){s.label=o[1],o=i;break}if(o&&s.label<o[2]){s.label=o[2],s.ops.push(i);break}o[2]&&s.ops.pop(),s.trys.pop();continue}i=e.call(t,s)}catch(t){i=[6,t],r=0}finally{n=o=0}if(5&i[0])throw i[1];return{value:i[0]?i[1]:void 0,done:!0}}([i,c])}}},Ft=function(t){function e(e,n){var r=t.call(this,e,n)||this;return r.members=new Mt,r}return zt(e,t),e.prototype.authorize=function(e,n){var r=this;t.prototype.authorize.call(this,e,(function(t,e){return qt(r,void 0,void 0,(function(){var r,o;return Bt(this,(function(i){switch(i.label){case 0:return t?[3,3]:null==(e=e).channel_data?[3,1]:(r=JSON.parse(e.channel_data),this.members.setMyID(r.user_id),[3,3]);case 1:return[4,this.pusher.user.signinDonePromise];case 2:if(i.sent(),null==this.pusher.user.user_data)return o=p("authorizationEndpoint"),Z.error("Invalid auth response for channel '"+this.name+"', expected 'channel_data' field. "+o+", or the user should be signed in."),n("Invalid auth response"),[2];this.members.setMyID(this.pusher.user.user_data.id),i.label=3;case 3:return n(t,e),[2]}}))}))}))},e.prototype.handleEvent=function(t){var e=t.event;if(0===e.indexOf("pusher_internal:"))this.handleInternalEvent(t);else{var n=t.data,r={};t.user_id&&(r.user_id=t.user_id),this.emit(e,n,r)}},e.prototype.handleInternalEvent=function(t){var e=t.event,n=t.data;switch(e){case"pusher_internal:subscription_succeeded":this.handleSubscriptionSucceededEvent(t);break;case"pusher_internal:subscription_count":this.handleSubscriptionCountEvent(t);break;case"pusher_internal:member_added":var r=this.members.addMember(n);this.emit("pusher:member_added",r);break;case"pusher_internal:member_removed":var o=this.members.removeMember(n);o&&this.emit("pusher:member_removed",o)}},e.prototype.handleSubscriptionSucceededEvent=function(t){this.subscriptionPending=!1,this.subscribed=!0,this.subscriptionCancelled?this.pusher.unsubscribe(this.name):(this.members.onSubscription(t.data),this.emit("pusher:subscription_succeeded",this.members))},e.prototype.disconnect=function(){this.members.reset(),t.prototype.disconnect.call(this)},e}(Ut),Xt=n(1),Jt=n(0),Wt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Gt=function(t){function e(e,n,r){var o=t.call(this,e,n)||this;return o.key=null,o.nacl=r,o}return Wt(e,t),e.prototype.authorize=function(e,n){var r=this;t.prototype.authorize.call(this,e,(function(t,e){if(t)n(t,e);else{var o=e.shared_secret;o?(r.key=Object(Jt.decode)(o),delete e.shared_secret,n(null,e)):n(new Error("No shared_secret key in auth payload for encrypted channel: "+r.name),null)}}))},e.prototype.trigger=function(t,e){throw new m("Client events are not currently supported for encrypted channels")},e.prototype.handleEvent=function(e){var n=e.event,r=e.data;0!==n.indexOf("pusher_internal:")&&0!==n.indexOf("pusher:")?this.handleEncryptedEvent(n,r):t.prototype.handleEvent.call(this,e)},e.prototype.handleEncryptedEvent=function(t,e){var n=this;if(this.key)if(e.ciphertext&&e.nonce){var r=Object(Jt.decode)(e.ciphertext);if(r.length<this.nacl.secretbox.overheadLength)Z.error("Expected encrypted event ciphertext length to be "+this.nacl.secretbox.overheadLength+", got: "+r.length);else{var o=Object(Jt.decode)(e.nonce);if(o.length<this.nacl.secretbox.nonceLength)Z.error("Expected encrypted event nonce length to be "+this.nacl.secretbox.nonceLength+", got: "+o.length);else{var i=this.nacl.secretbox.open(r,o,this.key);if(null===i)return Z.debug("Failed to decrypt an event, probably because it was encrypted with a different key. Fetching a new key from the authEndpoint..."),void this.authorize(this.pusher.connection.socket_id,(function(e,s){e?Z.error("Failed to make a request to the authEndpoint: "+s+". Unable to fetch new key, so dropping encrypted event"):null!==(i=n.nacl.secretbox.open(r,o,n.key))?n.emit(t,n.getDataToEmit(i)):Z.error("Failed to decrypt event with new key. Dropping encrypted event")}));this.emit(t,this.getDataToEmit(i))}}}else Z.error("Unexpected format for encrypted event, expected object with `ciphertext` and `nonce` fields, got: "+e);else Z.debug("Received encrypted event before key has been retrieved from the authEndpoint")},e.prototype.getDataToEmit=function(t){var e=Object(Xt.decode)(t);try{return JSON.parse(e)}catch(t){return e}},e}(Ut),Vt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Yt=function(t){function e(e,n){var r=t.call(this)||this;r.state="initialized",r.connection=null,r.key=e,r.options=n,r.timeline=r.options.timeline,r.usingTLS=r.options.useTLS,r.errorCallbacks=r.buildErrorCallbacks(),r.connectionCallbacks=r.buildConnectionCallbacks(r.errorCallbacks),r.handshakeCallbacks=r.buildHandshakeCallbacks(r.errorCallbacks);var o=Ce.getNetwork();return o.bind("online",(function(){r.timeline.info({netinfo:"online"}),"connecting"!==r.state&&"unavailable"!==r.state||r.retryIn(0)})),o.bind("offline",(function(){r.timeline.info({netinfo:"offline"}),r.connection&&r.sendActivityCheck()})),r.updateStrategy(),r}return Vt(e,t),e.prototype.connect=function(){this.connection||this.runner||(this.strategy.isSupported()?(this.updateState("connecting"),this.startConnecting(),this.setUnavailableTimer()):this.updateState("failed"))},e.prototype.send=function(t){return!!this.connection&&this.connection.send(t)},e.prototype.send_event=function(t,e,n){return!!this.connection&&this.connection.send_event(t,e,n)},e.prototype.disconnect=function(){this.disconnectInternally(),this.updateState("disconnected")},e.prototype.isUsingTLS=function(){return this.usingTLS},e.prototype.startConnecting=function(){var t=this,e=function(n,r){n?t.runner=t.strategy.connect(0,e):"error"===r.action?(t.emit("error",{type:"HandshakeError",error:r.error}),t.timeline.error({handshakeError:r.error})):(t.abortConnecting(),t.handshakeCallbacks[r.action](r))};this.runner=this.strategy.connect(0,e)},e.prototype.abortConnecting=function(){this.runner&&(this.runner.abort(),this.runner=null)},e.prototype.disconnectInternally=function(){(this.abortConnecting(),this.clearRetryTimer(),this.clearUnavailableTimer(),this.connection)&&this.abandonConnection().close()},e.prototype.updateStrategy=function(){this.strategy=this.options.getStrategy({key:this.key,timeline:this.timeline,useTLS:this.usingTLS})},e.prototype.retryIn=function(t){var e=this;this.timeline.info({action:"retry",delay:t}),t>0&&this.emit("connecting_in",Math.round(t/1e3)),this.retryTimer=new H(t||0,(function(){e.disconnectInternally(),e.connect()}))},e.prototype.clearRetryTimer=function(){this.retryTimer&&(this.retryTimer.ensureAborted(),this.retryTimer=null)},e.prototype.setUnavailableTimer=function(){var t=this;this.unavailableTimer=new H(this.options.unavailableTimeout,(function(){t.updateState("unavailable")}))},e.prototype.clearUnavailableTimer=function(){this.unavailableTimer&&this.unavailableTimer.ensureAborted()},e.prototype.sendActivityCheck=function(){var t=this;this.stopActivityCheck(),this.connection.ping(),this.activityTimer=new H(this.options.pongTimeout,(function(){t.timeline.error({pong_timed_out:t.options.pongTimeout}),t.retryIn(0)}))},e.prototype.resetActivityCheck=function(){var t=this;this.stopActivityCheck(),this.connection&&!this.connection.handlesActivityChecks()&&(this.activityTimer=new H(this.activityTimeout,(function(){t.sendActivityCheck()})))},e.prototype.stopActivityCheck=function(){this.activityTimer&&this.activityTimer.ensureAborted()},e.prototype.buildConnectionCallbacks=function(t){var e=this;return z({},t,{message:function(t){e.resetActivityCheck(),e.emit("message",t)},ping:function(){e.send_event("pusher:pong",{})},activity:function(){e.resetActivityCheck()},error:function(t){e.emit("error",t)},closed:function(){e.abandonConnection(),e.shouldRetry()&&e.retryIn(1e3)}})},e.prototype.buildHandshakeCallbacks=function(t){var e=this;return z({},t,{connected:function(t){e.activityTimeout=Math.min(e.options.activityTimeout,t.activityTimeout,t.connection.activityTimeout||1/0),e.clearUnavailableTimer(),e.setConnection(t.connection),e.socket_id=e.connection.id,e.updateState("connected",{socket_id:e.socket_id})}})},e.prototype.buildErrorCallbacks=function(){var t=this,e=function(e){return function(n){n.error&&t.emit("error",{type:"WebSocketError",error:n.error}),e(n)}};return{tls_only:e((function(){t.usingTLS=!0,t.updateStrategy(),t.retryIn(0)})),refused:e((function(){t.disconnect()})),backoff:e((function(){t.retryIn(1e3)})),retry:e((function(){t.retryIn(0)}))}},e.prototype.setConnection=function(t){for(var e in this.connection=t,this.connectionCallbacks)this.connection.bind(e,this.connectionCallbacks[e]);this.resetActivityCheck()},e.prototype.abandonConnection=function(){if(this.connection){for(var t in this.stopActivityCheck(),this.connectionCallbacks)this.connection.unbind(t,this.connectionCallbacks[t]);var e=this.connection;return this.connection=null,e}},e.prototype.updateState=function(t,e){var n=this.state;if(this.state=t,n!==t){var r=t;"connected"===r&&(r+=" with new socket ID "+e.socket_id),Z.debug("State changed",n+" -> "+r),this.timeline.info({state:t,params:e}),this.emit("state_change",{previous:n,current:t}),this.emit(t,e)}},e.prototype.shouldRetry=function(){return"connecting"===this.state||"connected"===this.state},e}(pt),$t=function(){function t(){this.channels={}}return t.prototype.add=function(t,e){return this.channels[t]||(this.channels[t]=function(t,e){if(0===t.indexOf("private-encrypted-")){if(e.config.nacl)return Qt.createEncryptedChannel(t,e,e.config.nacl);var n=p("encryptedChannelSupport");throw new m("Tried to subscribe to a private-encrypted- channel but no nacl implementation available. "+n)}if(0===t.indexOf("private-"))return Qt.createPrivateChannel(t,e);if(0===t.indexOf("presence-"))return Qt.createPresenceChannel(t,e);if(0===t.indexOf("#"))throw new y('Cannot create a channel with name "'+t+'".');return Qt.createChannel(t,e)}(t,e)),this.channels[t]},t.prototype.all=function(){return function(t){var e=[];return F(t,(function(t){e.push(t)})),e}(this.channels)},t.prototype.find=function(t){return this.channels[t]},t.prototype.remove=function(t){var e=this.channels[t];return delete this.channels[t],e},t.prototype.disconnect=function(){F(this.channels,(function(t){t.disconnect()}))},t}();var Qt={createChannels:function(){return new $t},createConnectionManager:function(t,e){return new Yt(t,e)},createChannel:function(t,e){return new Nt(t,e)},createPrivateChannel:function(t,e){return new Ut(t,e)},createPresenceChannel:function(t,e){return new Ft(t,e)},createEncryptedChannel:function(t,e,n){return new Gt(t,e,n)},createTimelineSender:function(t,e){return new It(t,e)},createHandshake:function(t,e){return new jt(t,e)},createAssistantToTheTransportManager:function(t,e,n){return new Et(t,e,n)}},Kt=function(){function t(t){this.options=t||{},this.livesLeft=this.options.lives||1/0}return t.prototype.getAssistant=function(t){return Qt.createAssistantToTheTransportManager(this,t,{minPingDelay:this.options.minPingDelay,maxPingDelay:this.options.maxPingDelay})},t.prototype.isAlive=function(){return this.livesLeft>0},t.prototype.reportDeath=function(){this.livesLeft-=1},t}(),Zt=function(){function t(t,e){this.strategies=t,this.loop=Boolean(e.loop),this.failFast=Boolean(e.failFast),this.timeout=e.timeout,this.timeoutLimit=e.timeoutLimit}return t.prototype.isSupported=function(){return Y(this.strategies,M.method("isSupported"))},t.prototype.connect=function(t,e){var n=this,r=this.strategies,o=0,i=this.timeout,s=null,c=function(a,u){u?e(null,u):(o+=1,n.loop&&(o%=r.length),o<r.length?(i&&(i*=2,n.timeoutLimit&&(i=Math.min(i,n.timeoutLimit))),s=n.tryStrategy(r[o],t,{timeout:i,failFast:n.failFast},c)):e(!0))};return s=this.tryStrategy(r[o],t,{timeout:i,failFast:this.failFast},c),{abort:function(){s.abort()},forceMinPriority:function(e){t=e,s&&s.forceMinPriority(e)}}},t.prototype.tryStrategy=function(t,e,n,r){var o=null,i=null;return n.timeout>0&&(o=new H(n.timeout,(function(){i.abort(),r(!0)}))),i=t.connect(e,(function(t,e){t&&o&&o.isRunning()&&!n.failFast||(o&&o.ensureAborted(),r(t,e))})),{abort:function(){o&&o.ensureAborted(),i.abort()},forceMinPriority:function(t){i.forceMinPriority(t)}}},t}(),te=function(){function t(t){this.strategies=t}return t.prototype.isSupported=function(){return Y(this.strategies,M.method("isSupported"))},t.prototype.connect=function(t,e){return function(t,e,n){var r=W(t,(function(t,r,o,i){return t.connect(e,n(r,i))}));return{abort:function(){J(r,ee)},forceMinPriority:function(t){J(r,(function(e){e.forceMinPriority(t)}))}}}(this.strategies,t,(function(t,n){return function(r,o){n[t].error=r,r?function(t){return function(t,e){for(var n=0;n<t.length;n++)if(!e(t[n],n,t))return!1;return!0}(t,(function(t){return Boolean(t.error)}))}(n)&&e(!0):(J(n,(function(t){t.forceMinPriority(o.transport.priority)})),e(null,o))}}))},t}();function ee(t){t.error||t.aborted||(t.abort(),t.aborted=!0)}var ne=function(){function t(t,e,n){this.strategy=t,this.transports=e,this.ttl=n.ttl||18e5,this.usingTLS=n.useTLS,this.timeline=n.timeline}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n=this.usingTLS,r=function(t){var e=Ce.getLocalStorage();if(e)try{var n=e[re(t)];if(n)return JSON.parse(n)}catch(e){oe(t)}return null}(n),o=[this.strategy];if(r&&r.timestamp+this.ttl>=M.now()){var i=this.transports[r.transport];i&&(this.timeline.info({cached:!0,transport:r.transport,latency:r.latency}),o.push(new Zt([i],{timeout:2*r.latency+1e3,failFast:!0})))}var s=M.now(),c=o.pop().connect(t,(function r(i,a){i?(oe(n),o.length>0?(s=M.now(),c=o.pop().connect(t,r)):e(i)):(!function(t,e,n){var r=Ce.getLocalStorage();if(r)try{r[re(t)]=K({timestamp:M.now(),transport:e,latency:n})}catch(t){}}(n,a.transport.name,M.now()-s),e(null,a))}));return{abort:function(){c.abort()},forceMinPriority:function(e){t=e,c&&c.forceMinPriority(e)}}},t}();function re(t){return"pusherTransport"+(t?"TLS":"NonTLS")}function oe(t){var e=Ce.getLocalStorage();if(e)try{delete e[re(t)]}catch(t){}}var ie=function(){function t(t,e){var n=e.delay;this.strategy=t,this.options={delay:n}}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n,r=this.strategy,o=new H(this.options.delay,(function(){n=r.connect(t,e)}));return{abort:function(){o.ensureAborted(),n&&n.abort()},forceMinPriority:function(e){t=e,n&&n.forceMinPriority(e)}}},t}(),se=function(){function t(t,e,n){this.test=t,this.trueBranch=e,this.falseBranch=n}return t.prototype.isSupported=function(){return(this.test()?this.trueBranch:this.falseBranch).isSupported()},t.prototype.connect=function(t,e){return(this.test()?this.trueBranch:this.falseBranch).connect(t,e)},t}(),ce=function(){function t(t){this.strategy=t}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n=this.strategy.connect(t,(function(t,r){r&&n.abort(),e(t,r)}));return n},t}();function ae(t){return function(){return t.isSupported()}}var ue,he=function(t,e,n){var r={};function o(e,o,i,s,c){var a=n(t,e,o,i,s,c);return r[e]=a,a}var i,s=Object.assign({},e,{hostNonTLS:t.wsHost+":"+t.wsPort,hostTLS:t.wsHost+":"+t.wssPort,httpPath:t.wsPath}),c=Object.assign({},s,{useTLS:!0}),a=Object.assign({},e,{hostNonTLS:t.httpHost+":"+t.httpPort,hostTLS:t.httpHost+":"+t.httpsPort,httpPath:t.httpPath}),u={loop:!0,timeout:15e3,timeoutLimit:6e4},h=new Kt({lives:2,minPingDelay:1e4,maxPingDelay:t.activityTimeout}),p=new Kt({lives:2,minPingDelay:1e4,maxPingDelay:t.activityTimeout}),l=o("ws","ws",3,s,h),f=o("wss","ws",3,c,h),d=o("sockjs","sockjs",1,a),y=o("xhr_streaming","xhr_streaming",1,a,p),v=o("xdr_streaming","xdr_streaming",1,a,p),g=o("xhr_polling","xhr_polling",1,a),b=o("xdr_polling","xdr_polling",1,a),m=new Zt([l],u),_=new Zt([f],u),w=new Zt([d],u),S=new Zt([new se(ae(y),y,v)],u),k=new Zt([new se(ae(g),g,b)],u),C=new Zt([new se(ae(S),new te([S,new ie(k,{delay:4e3})]),k)],u),P=new se(ae(C),C,w);return i=e.useTLS?new te([m,new ie(P,{delay:2e3})]):new te([m,new ie(_,{delay:2e3}),new ie(P,{delay:5e3})]),new ne(new ce(new se(ae(l),i,P)),r,{ttl:18e5,timeline:e.timeline,useTLS:e.useTLS})},pe={getRequest:function(t){var e=new window.XDomainRequest;return e.ontimeout=function(){t.emit("error",new v),t.close()},e.onerror=function(e){t.emit("error",e),t.close()},e.onprogress=function(){e.responseText&&e.responseText.length>0&&t.onChunk(200,e.responseText)},e.onload=function(){e.responseText&&e.responseText.length>0&&t.onChunk(200,e.responseText),t.emit("finished",200),t.close()},e},abortRequest:function(t){t.ontimeout=t.onerror=t.onprogress=t.onload=null,t.abort()}},le=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),fe=function(t){function e(e,n,r){var o=t.call(this)||this;return o.hooks=e,o.method=n,o.url=r,o}return le(e,t),e.prototype.start=function(t){var e=this;this.position=0,this.xhr=this.hooks.getRequest(this),this.unloader=function(){e.close()},Ce.addUnloadListener(this.unloader),this.xhr.open(this.method,this.url,!0),this.xhr.setRequestHeader&&this.xhr.setRequestHeader("Content-Type","application/json"),this.xhr.send(t)},e.prototype.close=function(){this.unloader&&(Ce.removeUnloadListener(this.unloader),this.unloader=null),this.xhr&&(this.hooks.abortRequest(this.xhr),this.xhr=null)},e.prototype.onChunk=function(t,e){for(;;){var n=this.advanceBuffer(e);if(!n)break;this.emit("chunk",{status:t,data:n})}this.isBufferTooLong(e)&&this.emit("buffer_too_long")},e.prototype.advanceBuffer=function(t){var e=t.slice(this.position),n=e.indexOf("\n");return-1!==n?(this.position+=n+1,e.slice(0,n)):null},e.prototype.isBufferTooLong=function(t){return this.position===t.length&&t.length>262144},e}(pt);!function(t){t[t.CONNECTING=0]="CONNECTING",t[t.OPEN=1]="OPEN",t[t.CLOSED=3]="CLOSED"}(ue||(ue={}));var de=ue,ye=1;function ve(t){var e=-1===t.indexOf("?")?"?":"&";return t+e+"t="+ +new Date+"&n="+ye++}function ge(t){return Ce.randomInt(t)}var be,me=function(){function t(t,e){this.hooks=t,this.session=ge(1e3)+"/"+function(t){for(var e=[],n=0;n<t;n++)e.push(ge(32).toString(32));return e.join("")}(8),this.location=function(t){var e=/([^\?]*)\/*(\??.*)/.exec(t);return{base:e[1],queryString:e[2]}}(e),this.readyState=de.CONNECTING,this.openStream()}return t.prototype.send=function(t){return this.sendRaw(JSON.stringify([t]))},t.prototype.ping=function(){this.hooks.sendHeartbeat(this)},t.prototype.close=function(t,e){this.onClose(t,e,!0)},t.prototype.sendRaw=function(t){if(this.readyState!==de.OPEN)return!1;try{return Ce.createSocketRequest("POST",ve((e=this.location,n=this.session,e.base+"/"+n+"/xhr_send"))).start(t),!0}catch(t){return!1}var e,n},t.prototype.reconnect=function(){this.closeStream(),this.openStream()},t.prototype.onClose=function(t,e,n){this.closeStream(),this.readyState=de.CLOSED,this.onclose&&this.onclose({code:t,reason:e,wasClean:n})},t.prototype.onChunk=function(t){var e;if(200===t.status)switch(this.readyState===de.OPEN&&this.onActivity(),t.data.slice(0,1)){case"o":e=JSON.parse(t.data.slice(1)||"{}"),this.onOpen(e);break;case"a":e=JSON.parse(t.data.slice(1)||"[]");for(var n=0;n<e.length;n++)this.onEvent(e[n]);break;case"m":e=JSON.parse(t.data.slice(1)||"null"),this.onEvent(e);break;case"h":this.hooks.onHeartbeat(this);break;case"c":e=JSON.parse(t.data.slice(1)||"[]"),this.onClose(e[0],e[1],!0)}},t.prototype.onOpen=function(t){var e,n,r;this.readyState===de.CONNECTING?(t&&t.hostname&&(this.location.base=(e=this.location.base,n=t.hostname,(r=/(https?:\/\/)([^\/:]+)((\/|:)?.*)/.exec(e))[1]+n+r[3])),this.readyState=de.OPEN,this.onopen&&this.onopen()):this.onClose(1006,"Server lost session",!0)},t.prototype.onEvent=function(t){this.readyState===de.OPEN&&this.onmessage&&this.onmessage({data:t})},t.prototype.onActivity=function(){this.onactivity&&this.onactivity()},t.prototype.onError=function(t){this.onerror&&this.onerror(t)},t.prototype.openStream=function(){var t=this;this.stream=Ce.createSocketRequest("POST",ve(this.hooks.getReceiveURL(this.location,this.session))),this.stream.bind("chunk",(function(e){t.onChunk(e)})),this.stream.bind("finished",(function(e){t.hooks.onFinished(t,e)})),this.stream.bind("buffer_too_long",(function(){t.reconnect()}));try{this.stream.start()}catch(e){M.defer((function(){t.onError(e),t.onClose(1006,"Could not start streaming",!1)}))}},t.prototype.closeStream=function(){this.stream&&(this.stream.unbind_all(),this.stream.close(),this.stream=null)},t}(),_e={getReceiveURL:function(t,e){return t.base+"/"+e+"/xhr_streaming"+t.queryString},onHeartbeat:function(t){t.sendRaw("[]")},sendHeartbeat:function(t){t.sendRaw("[]")},onFinished:function(t,e){t.onClose(1006,"Connection interrupted ("+e+")",!1)}},we={getReceiveURL:function(t,e){return t.base+"/"+e+"/xhr"+t.queryString},onHeartbeat:function(){},sendHeartbeat:function(t){t.sendRaw("[]")},onFinished:function(t,e){200===e?t.reconnect():t.onClose(1006,"Connection interrupted ("+e+")",!1)}},Se={getRequest:function(t){var e=new(Ce.getXHRAPI());return e.onreadystatechange=e.onprogress=function(){switch(e.readyState){case 3:e.responseText&&e.responseText.length>0&&t.onChunk(e.status,e.responseText);break;case 4:e.responseText&&e.responseText.length>0&&t.onChunk(e.status,e.responseText),t.emit("finished",e.status),t.close()}},e},abortRequest:function(t){t.onreadystatechange=null,t.abort()}},ke={createStreamingSocket:function(t){return this.createSocket(_e,t)},createPollingSocket:function(t){return this.createSocket(we,t)},createSocket:function(t,e){return new me(t,e)},createXHR:function(t,e){return this.createRequest(Se,t,e)},createRequest:function(t,e,n){return new fe(t,e,n)},createXDR:function(t,e){return this.createRequest(pe,t,e)}},Ce={nextAuthCallbackID:1,auth_callbacks:{},ScriptReceivers:i,DependenciesReceivers:a,getDefaultStrategy:he,Transports:Pt,transportConnectionInitializer:function(){var t=this;t.timeline.info(t.buildTimelineMessage({transport:t.name+(t.options.useTLS?"s":"")})),t.hooks.isInitialized()?t.changeState("initialized"):t.hooks.file?(t.changeState("initializing"),u.load(t.hooks.file,{useTLS:t.options.useTLS},(function(e,n){t.hooks.isInitialized()?(t.changeState("initialized"),n(!0)):(e&&t.onError(e),t.onClose(),n(!1))}))):t.onClose()},HTTPFactory:ke,TimelineTransport:rt,getXHRAPI:function(){return window.XMLHttpRequest},getWebSocketAPI:function(){return window.WebSocket||window.MozWebSocket},setup:function(t){var e=this;window.Pusher=t;var n=function(){e.onDocumentBody(t.ready)};window.JSON?n():u.load("json2",{},n)},getDocument:function(){return document},getProtocol:function(){return this.getDocument().location.protocol},getAuthorizers:function(){return{ajax:k,jsonp:tt}},onDocumentBody:function(t){var e=this;document.body?t():setTimeout((function(){e.onDocumentBody(t)}),0)},createJSONPRequest:function(t,e){return new nt(t,e)},createScriptRequest:function(t){return new et(t)},getLocalStorage:function(){try{return window.localStorage}catch(t){return}},createXHR:function(){return this.getXHRAPI()?this.createXMLHttpRequest():this.createMicrosoftXHR()},createXMLHttpRequest:function(){return new(this.getXHRAPI())},createMicrosoftXHR:function(){return new ActiveXObject("Microsoft.XMLHTTP")},getNetwork:function(){return Ot},createWebSocket:function(t){return new(this.getWebSocketAPI())(t)},createSocketRequest:function(t,e){if(this.isXHRSupported())return this.HTTPFactory.createXHR(t,e);if(this.isXDRSupported(0===e.indexOf("https:")))return this.HTTPFactory.createXDR(t,e);throw"Cross-origin HTTP requests are not supported"},isXHRSupported:function(){var t=this.getXHRAPI();return Boolean(t)&&void 0!==(new t).withCredentials},isXDRSupported:function(t){var e=t?"https:":"http:",n=this.getProtocol();return Boolean(window.XDomainRequest)&&n===e},addUnloadListener:function(t){void 0!==window.addEventListener?window.addEventListener("unload",t,!1):void 0!==window.attachEvent&&window.attachEvent("onunload",t)},removeUnloadListener:function(t){void 0!==window.addEventListener?window.removeEventListener("unload",t,!1):void 0!==window.detachEvent&&window.detachEvent("onunload",t)},randomInt:function(t){return Math.floor((window.crypto||window.msCrypto).getRandomValues(new Uint32Array(1))[0]/Math.pow(2,32)*t)}};!function(t){t[t.ERROR=3]="ERROR",t[t.INFO=6]="INFO",t[t.DEBUG=7]="DEBUG"}(be||(be={}));var Pe=be,Te=function(){function t(t,e,n){this.key=t,this.session=e,this.events=[],this.options=n||{},this.sent=0,this.uniqueID=0}return t.prototype.log=function(t,e){t<=this.options.level&&(this.events.push(z({},e,{timestamp:M.now()})),this.options.limit&&this.events.length>this.options.limit&&this.events.shift())},t.prototype.error=function(t){this.log(Pe.ERROR,t)},t.prototype.info=function(t){this.log(Pe.INFO,t)},t.prototype.debug=function(t){this.log(Pe.DEBUG,t)},t.prototype.isEmpty=function(){return 0===this.events.length},t.prototype.send=function(t,e){var n=this,r=z({session:this.session,bundle:this.sent+1,key:this.key,lib:"js",version:this.options.version,cluster:this.options.cluster,features:this.options.features,timeline:this.events},this.options.params);return this.events=[],t(r,(function(t,r){t||n.sent++,e&&e(t,r)})),!0},t.prototype.generateUniqueID=function(){return this.uniqueID++,this.uniqueID},t}(),Oe=function(){function t(t,e,n,r){this.name=t,this.priority=e,this.transport=n,this.options=r||{}}return t.prototype.isSupported=function(){return this.transport.isSupported({useTLS:this.options.useTLS})},t.prototype.connect=function(t,e){var n=this;if(!this.isSupported())return Ee(new w,e);if(this.priority<t)return Ee(new g,e);var r=!1,o=this.transport.createConnection(this.name,this.priority,this.options.key,this.options),i=null,s=function(){o.unbind("initialized",s),o.connect()},c=function(){i=Qt.createHandshake(o,(function(t){r=!0,h(),e(null,t)}))},a=function(t){h(),e(t)},u=function(){var t;h(),t=K(o),e(new b(t))},h=function(){o.unbind("initialized",s),o.unbind("open",c),o.unbind("error",a),o.unbind("closed",u)};return o.bind("initialized",s),o.bind("open",c),o.bind("error",a),o.bind("closed",u),o.initialize(),{abort:function(){r||(h(),i?i.close():o.close())},forceMinPriority:function(t){r||n.priority<t&&(i?i.close():o.close())}}},t}();function Ee(t,e){return M.defer((function(){e(t)})),{abort:function(){},forceMinPriority:function(){}}}var Ae=Ce.Transports,xe=function(t,e,n,r,o,i){var s,c=Ae[n];if(!c)throw new _(n);return!(t.enabledTransports&&-1===B(t.enabledTransports,e)||t.disabledTransports&&-1!==B(t.disabledTransports,e))?(o=Object.assign({ignoreNullOrigin:t.ignoreNullOrigin},o),s=new Oe(e,r,i?i.getAssistant(c):c,o)):s=Le,s},Le={isSupported:function(){return!1},connect:function(t,e){var n=M.defer((function(){e(new w)}));return{abort:function(){n.ensureAborted()},forceMinPriority:function(){}}}};var Re=function(t){if(void 0===Ce.getAuthorizers()[t.transport])throw"'"+t.transport+"' is not a recognized auth transport";return function(e,n){var o=function(t,e){var n="socket_id="+encodeURIComponent(t.socketId);for(var r in e.params)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(e.params[r]);if(null!=e.paramsProvider){var o=e.paramsProvider();for(var r in o)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(o[r])}return n}(e,t);Ce.getAuthorizers()[t.transport](Ce,o,t,r.UserAuthentication,n)}},je=function(t){if(void 0===Ce.getAuthorizers()[t.transport])throw"'"+t.transport+"' is not a recognized auth transport";return function(e,n){var o=function(t,e){var n="socket_id="+encodeURIComponent(t.socketId);for(var r in n+="&channel_name="+encodeURIComponent(t.channelName),e.params)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(e.params[r]);if(null!=e.paramsProvider){var o=e.paramsProvider();for(var r in o)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(o[r])}return n}(e,t);Ce.getAuthorizers()[t.transport](Ce,o,t,r.ChannelAuthorization,n)}},Ie=function(){return(Ie=Object.assign||function(t){for(var e,n=1,r=arguments.length;n<r;n++)for(var o in e=arguments[n])Object.prototype.hasOwnProperty.call(e,o)&&(t[o]=e[o]);return t}).apply(this,arguments)};function De(t){return t.httpHost?t.httpHost:t.cluster?"sockjs-"+t.cluster+".pusher.com":s.httpHost}function Ne(t){return t.wsHost?t.wsHost:"ws-"+t.cluster+".pusher.com"}function He(t){return"https:"===Ce.getProtocol()||!1!==t.forceTLS}function Ue(t){return"enableStats"in t?t.enableStats:"disableStats"in t&&!t.disableStats}function Me(t){var e=Ie(Ie({},s.userAuthentication),t.userAuthentication);return"customHandler"in e&&null!=e.customHandler?e.customHandler:Re(e)}function ze(t,e){var n=function(t,e){var n;return"channelAuthorization"in t?n=Ie(Ie({},s.channelAuthorization),t.channelAuthorization):(n={transport:t.authTransport||s.authTransport,endpoint:t.authEndpoint||s.authEndpoint},"auth"in t&&("params"in t.auth&&(n.params=t.auth.params),"headers"in t.auth&&(n.headers=t.auth.headers)),"authorizer"in t&&(n.customHandler=function(t,e,n){var r={authTransport:e.transport,authEndpoint:e.endpoint,auth:{params:e.params,headers:e.headers}};return function(e,o){var i=t.channel(e.channelName);n(i,r).authorize(e.socketId,o)}}(e,n,t.authorizer))),n}(t,e);return"customHandler"in n&&null!=n.customHandler?n.customHandler:je(n)}var qe=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Be=function(t){function e(e){var n=t.call(this,(function(t,e){Z.debug("No callbacks on watchlist events for "+t)}))||this;return n.pusher=e,n.bindWatchlistInternalEvent(),n}return qe(e,t),e.prototype.handleEvent=function(t){var e=this;t.data.events.forEach((function(t){e.emit(t.name,t)}))},e.prototype.bindWatchlistInternalEvent=function(){var t=this;this.pusher.connection.bind("message",(function(e){"pusher_internal:watchlist_events"===e.event&&t.handleEvent(e)}))},e}(pt);var Fe=function(){var t,e;return{promise:new Promise((function(n,r){t=n,e=r})),resolve:t,reject:e}},Xe=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Je=function(t){function e(e){var n=t.call(this,(function(t,e){Z.debug("No callbacks on user for "+t)}))||this;return n.signin_requested=!1,n.user_data=null,n.serverToUserChannel=null,n.signinDonePromise=null,n._signinDoneResolve=null,n._onAuthorize=function(t,e){if(t)return Z.warn("Error during signin: "+t),void n._cleanup();n.pusher.send_event("pusher:signin",{auth:e.auth,user_data:e.user_data})},n.pusher=e,n.pusher.connection.bind("state_change",(function(t){var e=t.previous,r=t.current;"connected"!==e&&"connected"===r&&n._signin(),"connected"===e&&"connected"!==r&&(n._cleanup(),n._newSigninPromiseIfNeeded())})),n.watchlist=new Be(e),n.pusher.connection.bind("message",(function(t){"pusher:signin_success"===t.event&&n._onSigninSuccess(t.data),n.serverToUserChannel&&n.serverToUserChannel.name===t.channel&&n.serverToUserChannel.handleEvent(t)})),n}return Xe(e,t),e.prototype.signin=function(){this.signin_requested||(this.signin_requested=!0,this._signin())},e.prototype._signin=function(){this.signin_requested&&(this._newSigninPromiseIfNeeded(),"connected"===this.pusher.connection.state&&this.pusher.config.userAuthenticator({socketId:this.pusher.connection.socket_id},this._onAuthorize))},e.prototype._onSigninSuccess=function(t){try{this.user_data=JSON.parse(t.user_data)}catch(e){return Z.error("Failed parsing user data after signin: "+t.user_data),void this._cleanup()}if("string"!=typeof this.user_data.id||""===this.user_data.id)return Z.error("user_data doesn't contain an id. user_data: "+this.user_data),void this._cleanup();this._signinDoneResolve(),this._subscribeChannels()},e.prototype._subscribeChannels=function(){var t,e=this;this.serverToUserChannel=new Nt("#server-to-user-"+this.user_data.id,this.pusher),this.serverToUserChannel.bind_global((function(t,n){0!==t.indexOf("pusher_internal:")&&0!==t.indexOf("pusher:")&&e.emit(t,n)})),(t=this.serverToUserChannel).subscriptionPending&&t.subscriptionCancelled?t.reinstateSubscription():t.subscriptionPending||"connected"!==e.pusher.connection.state||t.subscribe()},e.prototype._cleanup=function(){this.user_data=null,this.serverToUserChannel&&(this.serverToUserChannel.unbind_all(),this.serverToUserChannel.disconnect(),this.serverToUserChannel=null),this.signin_requested&&this._signinDoneResolve()},e.prototype._newSigninPromiseIfNeeded=function(){if(this.signin_requested&&(!this.signinDonePromise||this.signinDonePromise.done)){var t=Fe(),e=t.promise,n=t.resolve;t.reject;e.done=!1;var r=function(){e.done=!0};e.then(r).catch(r),this.signinDonePromise=e,this._signinDoneResolve=n}},e}(pt),We=function(){function t(e,n){var r,o,i,c=this;!function(t){if(null==t)throw"You must pass your app key when you instantiate Pusher."}(e),function(t){if(null==t)throw"You must pass an options object";if(null==t.cluster)throw"Options object must provide a cluster";"disableStats"in t&&Z.warn("The disableStats option is deprecated in favor of enableStats")}(n),this.key=e,this.config=(o=this,i={activityTimeout:(r=n).activityTimeout||s.activityTimeout,cluster:r.cluster,httpPath:r.httpPath||s.httpPath,httpPort:r.httpPort||s.httpPort,httpsPort:r.httpsPort||s.httpsPort,pongTimeout:r.pongTimeout||s.pongTimeout,statsHost:r.statsHost||s.stats_host,unavailableTimeout:r.unavailableTimeout||s.unavailableTimeout,wsPath:r.wsPath||s.wsPath,wsPort:r.wsPort||s.wsPort,wssPort:r.wssPort||s.wssPort,enableStats:Ue(r),httpHost:De(r),useTLS:He(r),wsHost:Ne(r),userAuthenticator:Me(r),channelAuthorizer:ze(r,o)},"disabledTransports"in r&&(i.disabledTransports=r.disabledTransports),"enabledTransports"in r&&(i.enabledTransports=r.enabledTransports),"ignoreNullOrigin"in r&&(i.ignoreNullOrigin=r.ignoreNullOrigin),"timelineParams"in r&&(i.timelineParams=r.timelineParams),"nacl"in r&&(i.nacl=r.nacl),i),this.channels=Qt.createChannels(),this.global_emitter=new pt,this.sessionID=Ce.randomInt(1e9),this.timeline=new Te(this.key,this.sessionID,{cluster:this.config.cluster,features:t.getClientFeatures(),params:this.config.timelineParams||{},limit:50,level:Pe.INFO,version:s.VERSION}),this.config.enableStats&&(this.timelineSender=Qt.createTimelineSender(this.timeline,{host:this.config.statsHost,path:"/timeline/v2/"+Ce.TimelineTransport.name}));this.connection=Qt.createConnectionManager(this.key,{getStrategy:function(t){return Ce.getDefaultStrategy(c.config,t,xe)},timeline:this.timeline,activityTimeout:this.config.activityTimeout,pongTimeout:this.config.pongTimeout,unavailableTimeout:this.config.unavailableTimeout,useTLS:Boolean(this.config.useTLS)}),this.connection.bind("connected",(function(){c.subscribeAll(),c.timelineSender&&c.timelineSender.send(c.connection.isUsingTLS())})),this.connection.bind("message",(function(t){var e=0===t.event.indexOf("pusher_internal:");if(t.channel){var n=c.channel(t.channel);n&&n.handleEvent(t)}e||c.global_emitter.emit(t.event,t.data)})),this.connection.bind("connecting",(function(){c.channels.disconnect()})),this.connection.bind("disconnected",(function(){c.channels.disconnect()})),this.connection.bind("error",(function(t){Z.warn(t)})),t.instances.push(this),this.timeline.info({instances:t.instances.length}),this.user=new Je(this),t.isReady&&this.connect()}return t.ready=function(){t.isReady=!0;for(var e=0,n=t.instances.length;e<n;e++)t.instances[e].connect()},t.getClientFeatures=function(){return X(V({ws:Ce.Transports.ws},(function(t){return t.isSupported({})})))},t.prototype.channel=function(t){return this.channels.find(t)},t.prototype.allChannels=function(){return this.channels.all()},t.prototype.connect=function(){if(this.connection.connect(),this.timelineSender&&!this.timelineSenderTimer){var t=this.connection.isUsingTLS(),e=this.timelineSender;this.timelineSenderTimer=new U(6e4,(function(){e.send(t)}))}},t.prototype.disconnect=function(){this.connection.disconnect(),this.timelineSenderTimer&&(this.timelineSenderTimer.ensureAborted(),this.timelineSenderTimer=null)},t.prototype.bind=function(t,e,n){return this.global_emitter.bind(t,e,n),this},t.prototype.unbind=function(t,e,n){return this.global_emitter.unbind(t,e,n),this},t.prototype.bind_global=function(t){return this.global_emitter.bind_global(t),this},t.prototype.unbind_global=function(t){return this.global_emitter.unbind_global(t),this},t.prototype.unbind_all=function(t){return this.global_emitter.unbind_all(),this},t.prototype.subscribeAll=function(){var t;for(t in this.channels.channels)this.channels.channels.hasOwnProperty(t)&&this.subscribe(t)},t.prototype.subscribe=function(t){var e=this.channels.add(t,this);return e.subscriptionPending&&e.subscriptionCancelled?e.reinstateSubscription():e.subscriptionPending||"connected"!==this.connection.state||e.subscribe(),e},t.prototype.unsubscribe=function(t){var e=this.channels.find(t);e&&e.subscriptionPending?e.cancelSubscription():(e=this.channels.remove(t))&&e.subscribed&&e.unsubscribe()},t.prototype.send_event=function(t,e,n){return this.connection.send_event(t,e,n)},t.prototype.shouldUseTLS=function(){return this.config.useTLS},t.prototype.signin=function(){this.user.signin()},t.instances=[],t.isReady=!1,t.logToConsole=!1,t.Runtime=Ce,t.ScriptReceivers=Ce.ScriptReceivers,t.DependenciesReceivers=Ce.DependenciesReceivers,t.auth_callbacks=Ce.auth_callbacks,t}(),Ge=e.default=We;Ce.setup(We)}])}));
+!(function (t, e) {
+    "object" == typeof exports && "object" == typeof module
+        ? (module.exports = e())
+        : "function" == typeof define && define.amd
+          ? define([], e)
+          : "object" == typeof exports
+            ? (exports.Pusher = e())
+            : (t.Pusher = e());
+})(window, function () {
+    return (function (t) {
+        var e = {};
+        function n(r) {
+            if (e[r]) return e[r].exports;
+            var o = (e[r] = { i: r, l: !1, exports: {} });
+            return (
+                t[r].call(o.exports, o, o.exports, n),
+                (o.l = !0),
+                o.exports
+            );
+        }
+        return (
+            (n.m = t),
+            (n.c = e),
+            (n.d = function (t, e, r) {
+                n.o(t, e) ||
+                    Object.defineProperty(t, e, { enumerable: !0, get: r });
+            }),
+            (n.r = function (t) {
+                ("undefined" != typeof Symbol &&
+                    Symbol.toStringTag &&
+                    Object.defineProperty(t, Symbol.toStringTag, {
+                        value: "Module",
+                    }),
+                    Object.defineProperty(t, "__esModule", { value: !0 }));
+            }),
+            (n.t = function (t, e) {
+                if ((1 & e && (t = n(t)), 8 & e)) return t;
+                if (4 & e && "object" == typeof t && t && t.__esModule)
+                    return t;
+                var r = Object.create(null);
+                if (
+                    (n.r(r),
+                    Object.defineProperty(r, "default", {
+                        enumerable: !0,
+                        value: t,
+                    }),
+                    2 & e && "string" != typeof t)
+                )
+                    for (var o in t)
+                        n.d(
+                            r,
+                            o,
+                            function (e) {
+                                return t[e];
+                            }.bind(null, o),
+                        );
+                return r;
+            }),
+            (n.n = function (t) {
+                var e =
+                    t && t.__esModule
+                        ? function () {
+                              return t.default;
+                          }
+                        : function () {
+                              return t;
+                          };
+                return (n.d(e, "a", e), e);
+            }),
+            (n.o = function (t, e) {
+                return Object.prototype.hasOwnProperty.call(t, e);
+            }),
+            (n.p = ""),
+            n((n.s = 2))
+        );
+    })([
+        function (t, e, n) {
+            "use strict";
+            var r,
+                o =
+                    (this && this.__extends) ||
+                    ((r = function (t, e) {
+                        return (r =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(t, e);
+                    }),
+                    function (t, e) {
+                        function n() {
+                            this.constructor = t;
+                        }
+                        (r(t, e),
+                            (t.prototype =
+                                null === e
+                                    ? Object.create(e)
+                                    : ((n.prototype = e.prototype), new n())));
+                    });
+            Object.defineProperty(e, "__esModule", { value: !0 });
+            var i = (function () {
+                function t(t) {
+                    (void 0 === t && (t = "="), (this._paddingCharacter = t));
+                }
+                return (
+                    (t.prototype.encodedLength = function (t) {
+                        return this._paddingCharacter
+                            ? (((t + 2) / 3) * 4) | 0
+                            : ((8 * t + 5) / 6) | 0;
+                    }),
+                    (t.prototype.encode = function (t) {
+                        for (var e = "", n = 0; n < t.length - 2; n += 3) {
+                            var r = (t[n] << 16) | (t[n + 1] << 8) | t[n + 2];
+                            ((e += this._encodeByte((r >>> 18) & 63)),
+                                (e += this._encodeByte((r >>> 12) & 63)),
+                                (e += this._encodeByte((r >>> 6) & 63)),
+                                (e += this._encodeByte((r >>> 0) & 63)));
+                        }
+                        var o = t.length - n;
+                        if (o > 0) {
+                            r = (t[n] << 16) | (2 === o ? t[n + 1] << 8 : 0);
+                            ((e += this._encodeByte((r >>> 18) & 63)),
+                                (e += this._encodeByte((r >>> 12) & 63)),
+                                (e +=
+                                    2 === o
+                                        ? this._encodeByte((r >>> 6) & 63)
+                                        : this._paddingCharacter || ""),
+                                (e += this._paddingCharacter || ""));
+                        }
+                        return e;
+                    }),
+                    (t.prototype.maxDecodedLength = function (t) {
+                        return this._paddingCharacter
+                            ? ((t / 4) * 3) | 0
+                            : ((6 * t + 7) / 8) | 0;
+                    }),
+                    (t.prototype.decodedLength = function (t) {
+                        return this.maxDecodedLength(
+                            t.length - this._getPaddingLength(t),
+                        );
+                    }),
+                    (t.prototype.decode = function (t) {
+                        if (0 === t.length) return new Uint8Array(0);
+                        for (
+                            var e = this._getPaddingLength(t),
+                                n = t.length - e,
+                                r = new Uint8Array(this.maxDecodedLength(n)),
+                                o = 0,
+                                i = 0,
+                                s = 0,
+                                c = 0,
+                                a = 0,
+                                u = 0,
+                                h = 0;
+                            i < n - 4;
+                            i += 4
+                        )
+                            ((c = this._decodeChar(t.charCodeAt(i + 0))),
+                                (a = this._decodeChar(t.charCodeAt(i + 1))),
+                                (u = this._decodeChar(t.charCodeAt(i + 2))),
+                                (h = this._decodeChar(t.charCodeAt(i + 3))),
+                                (r[o++] = (c << 2) | (a >>> 4)),
+                                (r[o++] = (a << 4) | (u >>> 2)),
+                                (r[o++] = (u << 6) | h),
+                                (s |= 256 & c),
+                                (s |= 256 & a),
+                                (s |= 256 & u),
+                                (s |= 256 & h));
+                        if (
+                            (i < n - 1 &&
+                                ((c = this._decodeChar(t.charCodeAt(i))),
+                                (a = this._decodeChar(t.charCodeAt(i + 1))),
+                                (r[o++] = (c << 2) | (a >>> 4)),
+                                (s |= 256 & c),
+                                (s |= 256 & a)),
+                            i < n - 2 &&
+                                ((u = this._decodeChar(t.charCodeAt(i + 2))),
+                                (r[o++] = (a << 4) | (u >>> 2)),
+                                (s |= 256 & u)),
+                            i < n - 3 &&
+                                ((h = this._decodeChar(t.charCodeAt(i + 3))),
+                                (r[o++] = (u << 6) | h),
+                                (s |= 256 & h)),
+                            0 !== s)
+                        )
+                            throw new Error(
+                                "Base64Coder: incorrect characters for decoding",
+                            );
+                        return r;
+                    }),
+                    (t.prototype._encodeByte = function (t) {
+                        var e = t;
+                        return (
+                            (e += 65),
+                            (e += ((25 - t) >>> 8) & 6),
+                            (e += ((51 - t) >>> 8) & -75),
+                            (e += ((61 - t) >>> 8) & -15),
+                            (e += ((62 - t) >>> 8) & 3),
+                            String.fromCharCode(e)
+                        );
+                    }),
+                    (t.prototype._decodeChar = function (t) {
+                        var e = 256;
+                        return (
+                            (e +=
+                                (((42 - t) & (t - 44)) >>> 8) &
+                                (-256 + t - 43 + 62)),
+                            (e +=
+                                (((46 - t) & (t - 48)) >>> 8) &
+                                (-256 + t - 47 + 63)),
+                            (e +=
+                                (((47 - t) & (t - 58)) >>> 8) &
+                                (-256 + t - 48 + 52)),
+                            (e +=
+                                (((64 - t) & (t - 91)) >>> 8) &
+                                (-256 + t - 65 + 0)),
+                            (e +=
+                                (((96 - t) & (t - 123)) >>> 8) &
+                                (-256 + t - 97 + 26))
+                        );
+                    }),
+                    (t.prototype._getPaddingLength = function (t) {
+                        var e = 0;
+                        if (this._paddingCharacter) {
+                            for (
+                                var n = t.length - 1;
+                                n >= 0 && t[n] === this._paddingCharacter;
+                                n--
+                            )
+                                e++;
+                            if (t.length < 4 || e > 2)
+                                throw new Error(
+                                    "Base64Coder: incorrect padding",
+                                );
+                        }
+                        return e;
+                    }),
+                    t
+                );
+            })();
+            e.Coder = i;
+            var s = new i();
+            ((e.encode = function (t) {
+                return s.encode(t);
+            }),
+                (e.decode = function (t) {
+                    return s.decode(t);
+                }));
+            var c = (function (t) {
+                function e() {
+                    return (null !== t && t.apply(this, arguments)) || this;
+                }
+                return (
+                    o(e, t),
+                    (e.prototype._encodeByte = function (t) {
+                        var e = t;
+                        return (
+                            (e += 65),
+                            (e += ((25 - t) >>> 8) & 6),
+                            (e += ((51 - t) >>> 8) & -75),
+                            (e += ((61 - t) >>> 8) & -13),
+                            (e += ((62 - t) >>> 8) & 49),
+                            String.fromCharCode(e)
+                        );
+                    }),
+                    (e.prototype._decodeChar = function (t) {
+                        var e = 256;
+                        return (
+                            (e +=
+                                (((44 - t) & (t - 46)) >>> 8) &
+                                (-256 + t - 45 + 62)),
+                            (e +=
+                                (((94 - t) & (t - 96)) >>> 8) &
+                                (-256 + t - 95 + 63)),
+                            (e +=
+                                (((47 - t) & (t - 58)) >>> 8) &
+                                (-256 + t - 48 + 52)),
+                            (e +=
+                                (((64 - t) & (t - 91)) >>> 8) &
+                                (-256 + t - 65 + 0)),
+                            (e +=
+                                (((96 - t) & (t - 123)) >>> 8) &
+                                (-256 + t - 97 + 26))
+                        );
+                    }),
+                    e
+                );
+            })(i);
+            e.URLSafeCoder = c;
+            var a = new c();
+            ((e.encodeURLSafe = function (t) {
+                return a.encode(t);
+            }),
+                (e.decodeURLSafe = function (t) {
+                    return a.decode(t);
+                }),
+                (e.encodedLength = function (t) {
+                    return s.encodedLength(t);
+                }),
+                (e.maxDecodedLength = function (t) {
+                    return s.maxDecodedLength(t);
+                }),
+                (e.decodedLength = function (t) {
+                    return s.decodedLength(t);
+                }));
+        },
+        function (t, e, n) {
+            "use strict";
+            Object.defineProperty(e, "__esModule", { value: !0 });
+            var r = "utf8: invalid source encoding";
+            function o(t) {
+                for (var e = 0, n = 0; n < t.length; n++) {
+                    var r = t.charCodeAt(n);
+                    if (r < 128) e += 1;
+                    else if (r < 2048) e += 2;
+                    else if (r < 55296) e += 3;
+                    else {
+                        if (!(r <= 57343))
+                            throw new Error("utf8: invalid string");
+                        if (n >= t.length - 1)
+                            throw new Error("utf8: invalid string");
+                        (n++, (e += 4));
+                    }
+                }
+                return e;
+            }
+            ((e.encode = function (t) {
+                for (
+                    var e = new Uint8Array(o(t)), n = 0, r = 0;
+                    r < t.length;
+                    r++
+                ) {
+                    var i = t.charCodeAt(r);
+                    i < 128
+                        ? (e[n++] = i)
+                        : i < 2048
+                          ? ((e[n++] = 192 | (i >> 6)),
+                            (e[n++] = 128 | (63 & i)))
+                          : i < 55296
+                            ? ((e[n++] = 224 | (i >> 12)),
+                              (e[n++] = 128 | ((i >> 6) & 63)),
+                              (e[n++] = 128 | (63 & i)))
+                            : (r++,
+                              (i = (1023 & i) << 10),
+                              (i |= 1023 & t.charCodeAt(r)),
+                              (i += 65536),
+                              (e[n++] = 240 | (i >> 18)),
+                              (e[n++] = 128 | ((i >> 12) & 63)),
+                              (e[n++] = 128 | ((i >> 6) & 63)),
+                              (e[n++] = 128 | (63 & i)));
+                }
+                return e;
+            }),
+                (e.encodedLength = o),
+                (e.decode = function (t) {
+                    for (var e = [], n = 0; n < t.length; n++) {
+                        var o = t[n];
+                        if (128 & o) {
+                            var i = void 0;
+                            if (o < 224) {
+                                if (n >= t.length) throw new Error(r);
+                                if (128 != (192 & (s = t[++n])))
+                                    throw new Error(r);
+                                ((o = ((31 & o) << 6) | (63 & s)), (i = 128));
+                            } else if (o < 240) {
+                                if (n >= t.length - 1) throw new Error(r);
+                                var s = t[++n],
+                                    c = t[++n];
+                                if (128 != (192 & s) || 128 != (192 & c))
+                                    throw new Error(r);
+                                ((o =
+                                    ((15 & o) << 12) |
+                                    ((63 & s) << 6) |
+                                    (63 & c)),
+                                    (i = 2048));
+                            } else {
+                                if (!(o < 248)) throw new Error(r);
+                                if (n >= t.length - 2) throw new Error(r);
+                                ((s = t[++n]), (c = t[++n]));
+                                var a = t[++n];
+                                if (
+                                    128 != (192 & s) ||
+                                    128 != (192 & c) ||
+                                    128 != (192 & a)
+                                )
+                                    throw new Error(r);
+                                ((o =
+                                    ((15 & o) << 18) |
+                                    ((63 & s) << 12) |
+                                    ((63 & c) << 6) |
+                                    (63 & a)),
+                                    (i = 65536));
+                            }
+                            if (o < i || (o >= 55296 && o <= 57343))
+                                throw new Error(r);
+                            if (o >= 65536) {
+                                if (o > 1114111) throw new Error(r);
+                                ((o -= 65536),
+                                    e.push(
+                                        String.fromCharCode(55296 | (o >> 10)),
+                                    ),
+                                    (o = 56320 | (1023 & o)));
+                            }
+                        }
+                        e.push(String.fromCharCode(o));
+                    }
+                    return e.join("");
+                }));
+        },
+        function (t, e, n) {
+            t.exports = n(3).default;
+        },
+        function (t, e, n) {
+            "use strict";
+            n.r(e);
+            var r,
+                o = (function () {
+                    function t(t, e) {
+                        ((this.lastId = 0), (this.prefix = t), (this.name = e));
+                    }
+                    return (
+                        (t.prototype.create = function (t) {
+                            this.lastId++;
+                            var e = this.lastId,
+                                n = this.prefix + e,
+                                r = this.name + "[" + e + "]",
+                                o = !1,
+                                i = function () {
+                                    o || (t.apply(null, arguments), (o = !0));
+                                };
+                            return (
+                                (this[e] = i),
+                                { number: e, id: n, name: r, callback: i }
+                            );
+                        }),
+                        (t.prototype.remove = function (t) {
+                            delete this[t.number];
+                        }),
+                        t
+                    );
+                })(),
+                i = new o("_pusher_script_", "Pusher.ScriptReceivers"),
+                s = {
+                    VERSION: "8.0.1",
+                    PROTOCOL: 7,
+                    wsPort: 80,
+                    wssPort: 443,
+                    wsPath: "",
+                    httpHost: "sockjs.pusher.com",
+                    httpPort: 80,
+                    httpsPort: 443,
+                    httpPath: "/pusher",
+                    stats_host: "stats.pusher.com",
+                    authEndpoint: "/pusher/auth",
+                    authTransport: "ajax",
+                    activityTimeout: 12e4,
+                    pongTimeout: 3e4,
+                    unavailableTimeout: 1e4,
+                    userAuthentication: {
+                        endpoint: "/pusher/user-auth",
+                        transport: "ajax",
+                    },
+                    channelAuthorization: {
+                        endpoint: "/pusher/auth",
+                        transport: "ajax",
+                    },
+                    cdn_http: "http://js.pusher.com",
+                    cdn_https: "https://js.pusher.com",
+                    dependency_suffix: "",
+                },
+                c = (function () {
+                    function t(t) {
+                        ((this.options = t),
+                            (this.receivers = t.receivers || i),
+                            (this.loading = {}));
+                    }
+                    return (
+                        (t.prototype.load = function (t, e, n) {
+                            var r = this;
+                            if (r.loading[t] && r.loading[t].length > 0)
+                                r.loading[t].push(n);
+                            else {
+                                r.loading[t] = [n];
+                                var o = Ce.createScriptRequest(r.getPath(t, e)),
+                                    i = r.receivers.create(function (e) {
+                                        if (
+                                            (r.receivers.remove(i),
+                                            r.loading[t])
+                                        ) {
+                                            var n = r.loading[t];
+                                            delete r.loading[t];
+                                            for (
+                                                var s = function (t) {
+                                                        t || o.cleanup();
+                                                    },
+                                                    c = 0;
+                                                c < n.length;
+                                                c++
+                                            )
+                                                n[c](e, s);
+                                        }
+                                    });
+                                o.send(i);
+                            }
+                        }),
+                        (t.prototype.getRoot = function (t) {
+                            var e = Ce.getDocument().location.protocol;
+                            return (
+                                ((t && t.useTLS) || "https:" === e
+                                    ? this.options.cdn_https
+                                    : this.options.cdn_http
+                                ).replace(/\/*$/, "") +
+                                "/" +
+                                this.options.version
+                            );
+                        }),
+                        (t.prototype.getPath = function (t, e) {
+                            return (
+                                this.getRoot(e) +
+                                "/" +
+                                t +
+                                this.options.suffix +
+                                ".js"
+                            );
+                        }),
+                        t
+                    );
+                })(),
+                a = new o(
+                    "_pusher_dependencies",
+                    "Pusher.DependenciesReceivers",
+                ),
+                u = new c({
+                    cdn_http: s.cdn_http,
+                    cdn_https: s.cdn_https,
+                    version: s.VERSION,
+                    suffix: s.dependency_suffix,
+                    receivers: a,
+                }),
+                h = {
+                    baseUrl: "https://pusher.com",
+                    urls: {
+                        authenticationEndpoint: {
+                            path: "/docs/channels/server_api/authenticating_users",
+                        },
+                        authorizationEndpoint: {
+                            path: "/docs/channels/server_api/authorizing-users/",
+                        },
+                        javascriptQuickStart: {
+                            path: "/docs/javascript_quick_start",
+                        },
+                        triggeringClientEvents: {
+                            path: "/docs/client_api_guide/client_events#trigger-events",
+                        },
+                        encryptedChannelSupport: {
+                            fullUrl:
+                                "https://github.com/pusher/pusher-js/tree/cc491015371a4bde5743d1c87a0fbac0feb53195#encrypted-channel-support",
+                        },
+                    },
+                },
+                p = function (t) {
+                    var e,
+                        n = h.urls[t];
+                    return n
+                        ? (n.fullUrl
+                              ? (e = n.fullUrl)
+                              : n.path && (e = h.baseUrl + n.path),
+                          e ? "See: " + e : "")
+                        : "";
+                };
+            !(function (t) {
+                ((t.UserAuthentication = "user-authentication"),
+                    (t.ChannelAuthorization = "channel-authorization"));
+            })(r || (r = {}));
+            var l,
+                f =
+                    ((l = function (t, e) {
+                        return (l =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(t, e);
+                    }),
+                    function (t, e) {
+                        function n() {
+                            this.constructor = t;
+                        }
+                        (l(t, e),
+                            (t.prototype =
+                                null === e
+                                    ? Object.create(e)
+                                    : ((n.prototype = e.prototype), new n())));
+                    }),
+                d = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                y = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                v = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                g = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                b = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                m = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                _ = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                w = (function (t) {
+                    function e(e) {
+                        var n = this.constructor,
+                            r = t.call(this, e) || this;
+                        return (Object.setPrototypeOf(r, n.prototype), r);
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                S = (function (t) {
+                    function e(e, n) {
+                        var r = this.constructor,
+                            o = t.call(this, n) || this;
+                        return (
+                            (o.status = e),
+                            Object.setPrototypeOf(o, r.prototype),
+                            o
+                        );
+                    }
+                    return (f(e, t), e);
+                })(Error),
+                k = function (t, e, n, o, i) {
+                    var s = Ce.createXHR();
+                    for (var c in (s.open("POST", n.endpoint, !0),
+                    s.setRequestHeader(
+                        "Content-Type",
+                        "application/x-www-form-urlencoded",
+                    ),
+                    n.headers))
+                        s.setRequestHeader(c, n.headers[c]);
+                    if (null != n.headersProvider) {
+                        var a = n.headersProvider();
+                        for (var c in a) s.setRequestHeader(c, a[c]);
+                    }
+                    return (
+                        (s.onreadystatechange = function () {
+                            if (4 === s.readyState)
+                                if (200 === s.status) {
+                                    var t = void 0,
+                                        e = !1;
+                                    try {
+                                        ((t = JSON.parse(s.responseText)),
+                                            (e = !0));
+                                    } catch (t) {
+                                        i(
+                                            new S(
+                                                200,
+                                                "JSON returned from " +
+                                                    o.toString() +
+                                                    " endpoint was invalid, yet status code was 200. Data was: " +
+                                                    s.responseText,
+                                            ),
+                                            null,
+                                        );
+                                    }
+                                    e && i(null, t);
+                                } else {
+                                    var c = "";
+                                    switch (o) {
+                                        case r.UserAuthentication:
+                                            c = p("authenticationEndpoint");
+                                            break;
+                                        case r.ChannelAuthorization:
+                                            c =
+                                                "Clients must be authorized to join private or presence channels. " +
+                                                p("authorizationEndpoint");
+                                    }
+                                    i(
+                                        new S(
+                                            s.status,
+                                            "Unable to retrieve auth string from " +
+                                                o.toString() +
+                                                " endpoint - received status: " +
+                                                s.status +
+                                                " from " +
+                                                n.endpoint +
+                                                ". " +
+                                                c,
+                                        ),
+                                        null,
+                                    );
+                                }
+                        }),
+                        s.send(e),
+                        s
+                    );
+                };
+            for (
+                var C = String.fromCharCode,
+                    P =
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+                    T = {},
+                    O = 0,
+                    E = P.length;
+                O < E;
+                O++
+            )
+                T[P.charAt(O)] = O;
+            var A = function (t) {
+                    var e = t.charCodeAt(0);
+                    return e < 128
+                        ? t
+                        : e < 2048
+                          ? C(192 | (e >>> 6)) + C(128 | (63 & e))
+                          : C(224 | ((e >>> 12) & 15)) +
+                            C(128 | ((e >>> 6) & 63)) +
+                            C(128 | (63 & e));
+                },
+                x = function (t) {
+                    return t.replace(/[^\x00-\x7F]/g, A);
+                },
+                L = function (t) {
+                    var e = [0, 2, 1][t.length % 3],
+                        n =
+                            (t.charCodeAt(0) << 16) |
+                            ((t.length > 1 ? t.charCodeAt(1) : 0) << 8) |
+                            (t.length > 2 ? t.charCodeAt(2) : 0);
+                    return [
+                        P.charAt(n >>> 18),
+                        P.charAt((n >>> 12) & 63),
+                        e >= 2 ? "=" : P.charAt((n >>> 6) & 63),
+                        e >= 1 ? "=" : P.charAt(63 & n),
+                    ].join("");
+                },
+                R =
+                    window.btoa ||
+                    function (t) {
+                        return t.replace(/[\s\S]{1,3}/g, L);
+                    },
+                j = (function () {
+                    function t(t, e, n, r) {
+                        var o = this;
+                        ((this.clear = e),
+                            (this.timer = t(function () {
+                                o.timer && (o.timer = r(o.timer));
+                            }, n)));
+                    }
+                    return (
+                        (t.prototype.isRunning = function () {
+                            return null !== this.timer;
+                        }),
+                        (t.prototype.ensureAborted = function () {
+                            this.timer &&
+                                (this.clear(this.timer), (this.timer = null));
+                        }),
+                        t
+                    );
+                })(),
+                I = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })();
+            function D(t) {
+                window.clearTimeout(t);
+            }
+            function N(t) {
+                window.clearInterval(t);
+            }
+            var H = (function (t) {
+                    function e(e, n) {
+                        return (
+                            t.call(this, setTimeout, D, e, function (t) {
+                                return (n(), null);
+                            }) || this
+                        );
+                    }
+                    return (I(e, t), e);
+                })(j),
+                U = (function (t) {
+                    function e(e, n) {
+                        return (
+                            t.call(this, setInterval, N, e, function (t) {
+                                return (n(), t);
+                            }) || this
+                        );
+                    }
+                    return (I(e, t), e);
+                })(j),
+                M = {
+                    now: function () {
+                        return Date.now ? Date.now() : new Date().valueOf();
+                    },
+                    defer: function (t) {
+                        return new H(0, t);
+                    },
+                    method: function (t) {
+                        for (var e = [], n = 1; n < arguments.length; n++)
+                            e[n - 1] = arguments[n];
+                        var r = Array.prototype.slice.call(arguments, 1);
+                        return function (e) {
+                            return e[t].apply(e, r.concat(arguments));
+                        };
+                    },
+                };
+            function z(t) {
+                for (var e = [], n = 1; n < arguments.length; n++)
+                    e[n - 1] = arguments[n];
+                for (var r = 0; r < e.length; r++) {
+                    var o = e[r];
+                    for (var i in o)
+                        o[i] && o[i].constructor && o[i].constructor === Object
+                            ? (t[i] = z(t[i] || {}, o[i]))
+                            : (t[i] = o[i]);
+                }
+                return t;
+            }
+            function q() {
+                for (var t = ["Pusher"], e = 0; e < arguments.length; e++)
+                    "string" == typeof arguments[e]
+                        ? t.push(arguments[e])
+                        : t.push(K(arguments[e]));
+                return t.join(" : ");
+            }
+            function B(t, e) {
+                var n = Array.prototype.indexOf;
+                if (null === t) return -1;
+                if (n && t.indexOf === n) return t.indexOf(e);
+                for (var r = 0, o = t.length; r < o; r++)
+                    if (t[r] === e) return r;
+                return -1;
+            }
+            function F(t, e) {
+                for (var n in t)
+                    Object.prototype.hasOwnProperty.call(t, n) && e(t[n], n, t);
+            }
+            function X(t) {
+                var e = [];
+                return (
+                    F(t, function (t, n) {
+                        e.push(n);
+                    }),
+                    e
+                );
+            }
+            function J(t, e, n) {
+                for (var r = 0; r < t.length; r++)
+                    e.call(n || window, t[r], r, t);
+            }
+            function W(t, e) {
+                for (var n = [], r = 0; r < t.length; r++)
+                    n.push(e(t[r], r, t, n));
+                return n;
+            }
+            function G(t, e) {
+                e =
+                    e ||
+                    function (t) {
+                        return !!t;
+                    };
+                for (var n = [], r = 0; r < t.length; r++)
+                    e(t[r], r, t, n) && n.push(t[r]);
+                return n;
+            }
+            function V(t, e) {
+                var n = {};
+                return (
+                    F(t, function (r, o) {
+                        ((e && e(r, o, t, n)) || Boolean(r)) && (n[o] = r);
+                    }),
+                    n
+                );
+            }
+            function Y(t, e) {
+                for (var n = 0; n < t.length; n++) if (e(t[n], n, t)) return !0;
+                return !1;
+            }
+            function $(t) {
+                return (
+                    (e = function (t) {
+                        return (
+                            "object" == typeof t && (t = K(t)),
+                            encodeURIComponent(((e = t.toString()), R(x(e))))
+                        );
+                        var e;
+                    }),
+                    (n = {}),
+                    F(t, function (t, r) {
+                        n[r] = e(t);
+                    }),
+                    n
+                );
+                var e, n;
+            }
+            function Q(t) {
+                var e,
+                    n,
+                    r = V(t, function (t) {
+                        return void 0 !== t;
+                    });
+                return W(
+                    ((e = $(r)),
+                    (n = []),
+                    F(e, function (t, e) {
+                        n.push([e, t]);
+                    }),
+                    n),
+                    M.method("join", "="),
+                ).join("&");
+            }
+            function K(t) {
+                try {
+                    return JSON.stringify(t);
+                } catch (r) {
+                    return JSON.stringify(
+                        ((e = []),
+                        (n = []),
+                        (function t(r, o) {
+                            var i, s, c;
+                            switch (typeof r) {
+                                case "object":
+                                    if (!r) return null;
+                                    for (i = 0; i < e.length; i += 1)
+                                        if (e[i] === r) return { $ref: n[i] };
+                                    if (
+                                        (e.push(r),
+                                        n.push(o),
+                                        "[object Array]" ===
+                                            Object.prototype.toString.apply(r))
+                                    )
+                                        for (
+                                            c = [], i = 0;
+                                            i < r.length;
+                                            i += 1
+                                        )
+                                            c[i] = t(r[i], o + "[" + i + "]");
+                                    else
+                                        for (s in ((c = {}), r))
+                                            Object.prototype.hasOwnProperty.call(
+                                                r,
+                                                s,
+                                            ) &&
+                                                (c[s] = t(
+                                                    r[s],
+                                                    o +
+                                                        "[" +
+                                                        JSON.stringify(s) +
+                                                        "]",
+                                                ));
+                                    return c;
+                                case "number":
+                                case "string":
+                                case "boolean":
+                                    return r;
+                            }
+                        })(t, "$")),
+                    );
+                }
+                var e, n;
+            }
+            var Z = new ((function () {
+                    function t() {
+                        this.globalLog = function (t) {
+                            window.console &&
+                                window.console.log &&
+                                window.console.log(t);
+                        };
+                    }
+                    return (
+                        (t.prototype.debug = function () {
+                            for (var t = [], e = 0; e < arguments.length; e++)
+                                t[e] = arguments[e];
+                            this.log(this.globalLog, t);
+                        }),
+                        (t.prototype.warn = function () {
+                            for (var t = [], e = 0; e < arguments.length; e++)
+                                t[e] = arguments[e];
+                            this.log(this.globalLogWarn, t);
+                        }),
+                        (t.prototype.error = function () {
+                            for (var t = [], e = 0; e < arguments.length; e++)
+                                t[e] = arguments[e];
+                            this.log(this.globalLogError, t);
+                        }),
+                        (t.prototype.globalLogWarn = function (t) {
+                            window.console && window.console.warn
+                                ? window.console.warn(t)
+                                : this.globalLog(t);
+                        }),
+                        (t.prototype.globalLogError = function (t) {
+                            window.console && window.console.error
+                                ? window.console.error(t)
+                                : this.globalLogWarn(t);
+                        }),
+                        (t.prototype.log = function (t) {
+                            for (var e = [], n = 1; n < arguments.length; n++)
+                                e[n - 1] = arguments[n];
+                            var r = q.apply(this, arguments);
+                            if (Ge.log) Ge.log(r);
+                            else if (Ge.logToConsole) {
+                                var o = t.bind(this);
+                                o(r);
+                            }
+                        }),
+                        t
+                    );
+                })())(),
+                tt = function (t, e, n, r, o) {
+                    (void 0 === n.headers && null == n.headersProvider) ||
+                        Z.warn(
+                            "To send headers with the " +
+                                r.toString() +
+                                " request, you must use AJAX, rather than JSONP.",
+                        );
+                    var i = t.nextAuthCallbackID.toString();
+                    t.nextAuthCallbackID++;
+                    var s = t.getDocument(),
+                        c = s.createElement("script");
+                    t.auth_callbacks[i] = function (t) {
+                        o(null, t);
+                    };
+                    var a = "Pusher.auth_callbacks['" + i + "']";
+                    c.src =
+                        n.endpoint +
+                        "?callback=" +
+                        encodeURIComponent(a) +
+                        "&" +
+                        e;
+                    var u =
+                        s.getElementsByTagName("head")[0] || s.documentElement;
+                    u.insertBefore(c, u.firstChild);
+                },
+                et = (function () {
+                    function t(t) {
+                        this.src = t;
+                    }
+                    return (
+                        (t.prototype.send = function (t) {
+                            var e = this,
+                                n = "Error loading " + e.src;
+                            ((e.script = document.createElement("script")),
+                                (e.script.id = t.id),
+                                (e.script.src = e.src),
+                                (e.script.type = "text/javascript"),
+                                (e.script.charset = "UTF-8"),
+                                e.script.addEventListener
+                                    ? ((e.script.onerror = function () {
+                                          t.callback(n);
+                                      }),
+                                      (e.script.onload = function () {
+                                          t.callback(null);
+                                      }))
+                                    : (e.script.onreadystatechange =
+                                          function () {
+                                              ("loaded" !==
+                                                  e.script.readyState &&
+                                                  "complete" !==
+                                                      e.script.readyState) ||
+                                                  t.callback(null);
+                                          }),
+                                void 0 === e.script.async &&
+                                document.attachEvent &&
+                                /opera/i.test(navigator.userAgent)
+                                    ? ((e.errorScript =
+                                          document.createElement("script")),
+                                      (e.errorScript.id = t.id + "_error"),
+                                      (e.errorScript.text =
+                                          t.name + "('" + n + "');"),
+                                      (e.script.async = e.errorScript.async =
+                                          !1))
+                                    : (e.script.async = !0));
+                            var r = document.getElementsByTagName("head")[0];
+                            (r.insertBefore(e.script, r.firstChild),
+                                e.errorScript &&
+                                    r.insertBefore(
+                                        e.errorScript,
+                                        e.script.nextSibling,
+                                    ));
+                        }),
+                        (t.prototype.cleanup = function () {
+                            (this.script &&
+                                ((this.script.onload = this.script.onerror =
+                                    null),
+                                (this.script.onreadystatechange = null)),
+                                this.script &&
+                                    this.script.parentNode &&
+                                    this.script.parentNode.removeChild(
+                                        this.script,
+                                    ),
+                                this.errorScript &&
+                                    this.errorScript.parentNode &&
+                                    this.errorScript.parentNode.removeChild(
+                                        this.errorScript,
+                                    ),
+                                (this.script = null),
+                                (this.errorScript = null));
+                        }),
+                        t
+                    );
+                })(),
+                nt = (function () {
+                    function t(t, e) {
+                        ((this.url = t), (this.data = e));
+                    }
+                    return (
+                        (t.prototype.send = function (t) {
+                            if (!this.request) {
+                                var e = Q(this.data),
+                                    n = this.url + "/" + t.number + "?" + e;
+                                ((this.request = Ce.createScriptRequest(n)),
+                                    this.request.send(t));
+                            }
+                        }),
+                        (t.prototype.cleanup = function () {
+                            this.request && this.request.cleanup();
+                        }),
+                        t
+                    );
+                })(),
+                rt = {
+                    name: "jsonp",
+                    getAgent: function (t, e) {
+                        return function (n, r) {
+                            var o =
+                                    "http" +
+                                    (e ? "s" : "") +
+                                    "://" +
+                                    (t.host || t.options.host) +
+                                    t.options.path,
+                                s = Ce.createJSONPRequest(o, n),
+                                c = Ce.ScriptReceivers.create(function (e, n) {
+                                    (i.remove(c),
+                                        s.cleanup(),
+                                        n && n.host && (t.host = n.host),
+                                        r && r(e, n));
+                                });
+                            s.send(c);
+                        };
+                    },
+                };
+            function ot(t, e, n) {
+                return (
+                    t +
+                    (e.useTLS ? "s" : "") +
+                    "://" +
+                    (e.useTLS ? e.hostTLS : e.hostNonTLS) +
+                    n
+                );
+            }
+            function it(t, e) {
+                return (
+                    "/app/" +
+                    t +
+                    ("?protocol=" +
+                        s.PROTOCOL +
+                        "&client=js&version=" +
+                        s.VERSION +
+                        (e ? "&" + e : ""))
+                );
+            }
+            var st = {
+                    getInitial: function (t, e) {
+                        return ot(
+                            "ws",
+                            e,
+                            (e.httpPath || "") + it(t, "flash=false"),
+                        );
+                    },
+                },
+                ct = {
+                    getInitial: function (t, e) {
+                        return ot("http", e, (e.httpPath || "/pusher") + it(t));
+                    },
+                },
+                at = {
+                    getInitial: function (t, e) {
+                        return ot("http", e, e.httpPath || "/pusher");
+                    },
+                    getPath: function (t, e) {
+                        return it(t);
+                    },
+                },
+                ut = (function () {
+                    function t() {
+                        this._callbacks = {};
+                    }
+                    return (
+                        (t.prototype.get = function (t) {
+                            return this._callbacks[ht(t)];
+                        }),
+                        (t.prototype.add = function (t, e, n) {
+                            var r = ht(t);
+                            ((this._callbacks[r] = this._callbacks[r] || []),
+                                this._callbacks[r].push({ fn: e, context: n }));
+                        }),
+                        (t.prototype.remove = function (t, e, n) {
+                            if (t || e || n) {
+                                var r = t ? [ht(t)] : X(this._callbacks);
+                                e || n
+                                    ? this.removeCallback(r, e, n)
+                                    : this.removeAllCallbacks(r);
+                            } else this._callbacks = {};
+                        }),
+                        (t.prototype.removeCallback = function (t, e, n) {
+                            J(
+                                t,
+                                function (t) {
+                                    ((this._callbacks[t] = G(
+                                        this._callbacks[t] || [],
+                                        function (t) {
+                                            return (
+                                                (e && e !== t.fn) ||
+                                                (n && n !== t.context)
+                                            );
+                                        },
+                                    )),
+                                        0 === this._callbacks[t].length &&
+                                            delete this._callbacks[t]);
+                                },
+                                this,
+                            );
+                        }),
+                        (t.prototype.removeAllCallbacks = function (t) {
+                            J(
+                                t,
+                                function (t) {
+                                    delete this._callbacks[t];
+                                },
+                                this,
+                            );
+                        }),
+                        t
+                    );
+                })();
+            function ht(t) {
+                return "_" + t;
+            }
+            var pt = (function () {
+                    function t(t) {
+                        ((this.callbacks = new ut()),
+                            (this.global_callbacks = []),
+                            (this.failThrough = t));
+                    }
+                    return (
+                        (t.prototype.bind = function (t, e, n) {
+                            return (this.callbacks.add(t, e, n), this);
+                        }),
+                        (t.prototype.bind_global = function (t) {
+                            return (this.global_callbacks.push(t), this);
+                        }),
+                        (t.prototype.unbind = function (t, e, n) {
+                            return (this.callbacks.remove(t, e, n), this);
+                        }),
+                        (t.prototype.unbind_global = function (t) {
+                            return t
+                                ? ((this.global_callbacks = G(
+                                      this.global_callbacks || [],
+                                      function (e) {
+                                          return e !== t;
+                                      },
+                                  )),
+                                  this)
+                                : ((this.global_callbacks = []), this);
+                        }),
+                        (t.prototype.unbind_all = function () {
+                            return (this.unbind(), this.unbind_global(), this);
+                        }),
+                        (t.prototype.emit = function (t, e, n) {
+                            for (
+                                var r = 0;
+                                r < this.global_callbacks.length;
+                                r++
+                            )
+                                this.global_callbacks[r](t, e);
+                            var o = this.callbacks.get(t),
+                                i = [];
+                            if (
+                                (n ? i.push(e, n) : e && i.push(e),
+                                o && o.length > 0)
+                            )
+                                for (r = 0; r < o.length; r++)
+                                    o[r].fn.apply(o[r].context || window, i);
+                            else this.failThrough && this.failThrough(t, e);
+                            return this;
+                        }),
+                        t
+                    );
+                })(),
+                lt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                ft = (function (t) {
+                    function e(e, n, r, o, i) {
+                        var s = t.call(this) || this;
+                        return (
+                            (s.initialize = Ce.transportConnectionInitializer),
+                            (s.hooks = e),
+                            (s.name = n),
+                            (s.priority = r),
+                            (s.key = o),
+                            (s.options = i),
+                            (s.state = "new"),
+                            (s.timeline = i.timeline),
+                            (s.activityTimeout = i.activityTimeout),
+                            (s.id = s.timeline.generateUniqueID()),
+                            s
+                        );
+                    }
+                    return (
+                        lt(e, t),
+                        (e.prototype.handlesActivityChecks = function () {
+                            return Boolean(this.hooks.handlesActivityChecks);
+                        }),
+                        (e.prototype.supportsPing = function () {
+                            return Boolean(this.hooks.supportsPing);
+                        }),
+                        (e.prototype.connect = function () {
+                            var t = this;
+                            if (this.socket || "initialized" !== this.state)
+                                return !1;
+                            var e = this.hooks.urls.getInitial(
+                                this.key,
+                                this.options,
+                            );
+                            try {
+                                this.socket = this.hooks.getSocket(
+                                    e,
+                                    this.options,
+                                );
+                            } catch (e) {
+                                return (
+                                    M.defer(function () {
+                                        (t.onError(e), t.changeState("closed"));
+                                    }),
+                                    !1
+                                );
+                            }
+                            return (
+                                this.bindListeners(),
+                                Z.debug("Connecting", {
+                                    transport: this.name,
+                                    url: e,
+                                }),
+                                this.changeState("connecting"),
+                                !0
+                            );
+                        }),
+                        (e.prototype.close = function () {
+                            return !!this.socket && (this.socket.close(), !0);
+                        }),
+                        (e.prototype.send = function (t) {
+                            var e = this;
+                            return (
+                                "open" === this.state &&
+                                (M.defer(function () {
+                                    e.socket && e.socket.send(t);
+                                }),
+                                !0)
+                            );
+                        }),
+                        (e.prototype.ping = function () {
+                            "open" === this.state &&
+                                this.supportsPing() &&
+                                this.socket.ping();
+                        }),
+                        (e.prototype.onOpen = function () {
+                            (this.hooks.beforeOpen &&
+                                this.hooks.beforeOpen(
+                                    this.socket,
+                                    this.hooks.urls.getPath(
+                                        this.key,
+                                        this.options,
+                                    ),
+                                ),
+                                this.changeState("open"),
+                                (this.socket.onopen = void 0));
+                        }),
+                        (e.prototype.onError = function (t) {
+                            (this.emit("error", {
+                                type: "WebSocketError",
+                                error: t,
+                            }),
+                                this.timeline.error(
+                                    this.buildTimelineMessage({
+                                        error: t.toString(),
+                                    }),
+                                ));
+                        }),
+                        (e.prototype.onClose = function (t) {
+                            (t
+                                ? this.changeState("closed", {
+                                      code: t.code,
+                                      reason: t.reason,
+                                      wasClean: t.wasClean,
+                                  })
+                                : this.changeState("closed"),
+                                this.unbindListeners(),
+                                (this.socket = void 0));
+                        }),
+                        (e.prototype.onMessage = function (t) {
+                            this.emit("message", t);
+                        }),
+                        (e.prototype.onActivity = function () {
+                            this.emit("activity");
+                        }),
+                        (e.prototype.bindListeners = function () {
+                            var t = this;
+                            ((this.socket.onopen = function () {
+                                t.onOpen();
+                            }),
+                                (this.socket.onerror = function (e) {
+                                    t.onError(e);
+                                }),
+                                (this.socket.onclose = function (e) {
+                                    t.onClose(e);
+                                }),
+                                (this.socket.onmessage = function (e) {
+                                    t.onMessage(e);
+                                }),
+                                this.supportsPing() &&
+                                    (this.socket.onactivity = function () {
+                                        t.onActivity();
+                                    }));
+                        }),
+                        (e.prototype.unbindListeners = function () {
+                            this.socket &&
+                                ((this.socket.onopen = void 0),
+                                (this.socket.onerror = void 0),
+                                (this.socket.onclose = void 0),
+                                (this.socket.onmessage = void 0),
+                                this.supportsPing() &&
+                                    (this.socket.onactivity = void 0));
+                        }),
+                        (e.prototype.changeState = function (t, e) {
+                            ((this.state = t),
+                                this.timeline.info(
+                                    this.buildTimelineMessage({
+                                        state: t,
+                                        params: e,
+                                    }),
+                                ),
+                                this.emit(t, e));
+                        }),
+                        (e.prototype.buildTimelineMessage = function (t) {
+                            return z({ cid: this.id }, t);
+                        }),
+                        e
+                    );
+                })(pt),
+                dt = (function () {
+                    function t(t) {
+                        this.hooks = t;
+                    }
+                    return (
+                        (t.prototype.isSupported = function (t) {
+                            return this.hooks.isSupported(t);
+                        }),
+                        (t.prototype.createConnection = function (t, e, n, r) {
+                            return new ft(this.hooks, t, e, n, r);
+                        }),
+                        t
+                    );
+                })(),
+                yt = new dt({
+                    urls: st,
+                    handlesActivityChecks: !1,
+                    supportsPing: !1,
+                    isInitialized: function () {
+                        return Boolean(Ce.getWebSocketAPI());
+                    },
+                    isSupported: function () {
+                        return Boolean(Ce.getWebSocketAPI());
+                    },
+                    getSocket: function (t) {
+                        return Ce.createWebSocket(t);
+                    },
+                }),
+                vt = {
+                    urls: ct,
+                    handlesActivityChecks: !1,
+                    supportsPing: !0,
+                    isInitialized: function () {
+                        return !0;
+                    },
+                },
+                gt = z(
+                    {
+                        getSocket: function (t) {
+                            return Ce.HTTPFactory.createStreamingSocket(t);
+                        },
+                    },
+                    vt,
+                ),
+                bt = z(
+                    {
+                        getSocket: function (t) {
+                            return Ce.HTTPFactory.createPollingSocket(t);
+                        },
+                    },
+                    vt,
+                ),
+                mt = {
+                    isSupported: function () {
+                        return Ce.isXHRSupported();
+                    },
+                },
+                _t = {
+                    ws: yt,
+                    xhr_streaming: new dt(z({}, gt, mt)),
+                    xhr_polling: new dt(z({}, bt, mt)),
+                },
+                wt = new dt({
+                    file: "sockjs",
+                    urls: at,
+                    handlesActivityChecks: !0,
+                    supportsPing: !1,
+                    isSupported: function () {
+                        return !0;
+                    },
+                    isInitialized: function () {
+                        return void 0 !== window.SockJS;
+                    },
+                    getSocket: function (t, e) {
+                        return new window.SockJS(t, null, {
+                            js_path: u.getPath("sockjs", { useTLS: e.useTLS }),
+                            ignore_null_origin: e.ignoreNullOrigin,
+                        });
+                    },
+                    beforeOpen: function (t, e) {
+                        t.send(JSON.stringify({ path: e }));
+                    },
+                }),
+                St = {
+                    isSupported: function (t) {
+                        return Ce.isXDRSupported(t.useTLS);
+                    },
+                },
+                kt = new dt(z({}, gt, St)),
+                Ct = new dt(z({}, bt, St));
+            ((_t.xdr_streaming = kt), (_t.xdr_polling = Ct), (_t.sockjs = wt));
+            var Pt = _t,
+                Tt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Ot = new ((function (t) {
+                    function e() {
+                        var e = t.call(this) || this,
+                            n = e;
+                        return (
+                            void 0 !== window.addEventListener &&
+                                (window.addEventListener(
+                                    "online",
+                                    function () {
+                                        n.emit("online");
+                                    },
+                                    !1,
+                                ),
+                                window.addEventListener(
+                                    "offline",
+                                    function () {
+                                        n.emit("offline");
+                                    },
+                                    !1,
+                                )),
+                            e
+                        );
+                    }
+                    return (
+                        Tt(e, t),
+                        (e.prototype.isOnline = function () {
+                            return (
+                                void 0 === window.navigator.onLine ||
+                                window.navigator.onLine
+                            );
+                        }),
+                        e
+                    );
+                })(pt))(),
+                Et = (function () {
+                    function t(t, e, n) {
+                        ((this.manager = t),
+                            (this.transport = e),
+                            (this.minPingDelay = n.minPingDelay),
+                            (this.maxPingDelay = n.maxPingDelay),
+                            (this.pingDelay = void 0));
+                    }
+                    return (
+                        (t.prototype.createConnection = function (t, e, n, r) {
+                            var o = this;
+                            r = z({}, r, { activityTimeout: this.pingDelay });
+                            var i = this.transport.createConnection(t, e, n, r),
+                                s = null,
+                                c = function () {
+                                    (i.unbind("open", c),
+                                        i.bind("closed", a),
+                                        (s = M.now()));
+                                },
+                                a = function (t) {
+                                    if (
+                                        (i.unbind("closed", a),
+                                        1002 === t.code || 1003 === t.code)
+                                    )
+                                        o.manager.reportDeath();
+                                    else if (!t.wasClean && s) {
+                                        var e = M.now() - s;
+                                        e < 2 * o.maxPingDelay &&
+                                            (o.manager.reportDeath(),
+                                            (o.pingDelay = Math.max(
+                                                e / 2,
+                                                o.minPingDelay,
+                                            )));
+                                    }
+                                };
+                            return (i.bind("open", c), i);
+                        }),
+                        (t.prototype.isSupported = function (t) {
+                            return (
+                                this.manager.isAlive() &&
+                                this.transport.isSupported(t)
+                            );
+                        }),
+                        t
+                    );
+                })(),
+                At = {
+                    decodeMessage: function (t) {
+                        try {
+                            var e = JSON.parse(t.data),
+                                n = e.data;
+                            if ("string" == typeof n)
+                                try {
+                                    n = JSON.parse(e.data);
+                                } catch (t) {}
+                            var r = {
+                                event: e.event,
+                                channel: e.channel,
+                                data: n,
+                            };
+                            return (e.user_id && (r.user_id = e.user_id), r);
+                        } catch (e) {
+                            throw {
+                                type: "MessageParseError",
+                                error: e,
+                                data: t.data,
+                            };
+                        }
+                    },
+                    encodeMessage: function (t) {
+                        return JSON.stringify(t);
+                    },
+                    processHandshake: function (t) {
+                        var e = At.decodeMessage(t);
+                        if ("pusher:connection_established" === e.event) {
+                            if (!e.data.activity_timeout)
+                                throw "No activity timeout specified in handshake";
+                            return {
+                                action: "connected",
+                                id: e.data.socket_id,
+                                activityTimeout: 1e3 * e.data.activity_timeout,
+                            };
+                        }
+                        if ("pusher:error" === e.event)
+                            return {
+                                action: this.getCloseAction(e.data),
+                                error: this.getCloseError(e.data),
+                            };
+                        throw "Invalid handshake";
+                    },
+                    getCloseAction: function (t) {
+                        return t.code < 4e3
+                            ? t.code >= 1002 && t.code <= 1004
+                                ? "backoff"
+                                : null
+                            : 4e3 === t.code
+                              ? "tls_only"
+                              : t.code < 4100
+                                ? "refused"
+                                : t.code < 4200
+                                  ? "backoff"
+                                  : t.code < 4300
+                                    ? "retry"
+                                    : "refused";
+                    },
+                    getCloseError: function (t) {
+                        return 1e3 !== t.code && 1001 !== t.code
+                            ? {
+                                  type: "PusherError",
+                                  data: {
+                                      code: t.code,
+                                      message: t.reason || t.message,
+                                  },
+                              }
+                            : null;
+                    },
+                },
+                xt = At,
+                Lt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Rt = (function (t) {
+                    function e(e, n) {
+                        var r = t.call(this) || this;
+                        return (
+                            (r.id = e),
+                            (r.transport = n),
+                            (r.activityTimeout = n.activityTimeout),
+                            r.bindListeners(),
+                            r
+                        );
+                    }
+                    return (
+                        Lt(e, t),
+                        (e.prototype.handlesActivityChecks = function () {
+                            return this.transport.handlesActivityChecks();
+                        }),
+                        (e.prototype.send = function (t) {
+                            return this.transport.send(t);
+                        }),
+                        (e.prototype.send_event = function (t, e, n) {
+                            var r = { event: t, data: e };
+                            return (
+                                n && (r.channel = n),
+                                Z.debug("Event sent", r),
+                                this.send(xt.encodeMessage(r))
+                            );
+                        }),
+                        (e.prototype.ping = function () {
+                            this.transport.supportsPing()
+                                ? this.transport.ping()
+                                : this.send_event("pusher:ping", {});
+                        }),
+                        (e.prototype.close = function () {
+                            this.transport.close();
+                        }),
+                        (e.prototype.bindListeners = function () {
+                            var t = this,
+                                e = {
+                                    message: function (e) {
+                                        var n;
+                                        try {
+                                            n = xt.decodeMessage(e);
+                                        } catch (n) {
+                                            t.emit("error", {
+                                                type: "MessageParseError",
+                                                error: n,
+                                                data: e.data,
+                                            });
+                                        }
+                                        if (void 0 !== n) {
+                                            switch (
+                                                (Z.debug("Event recd", n),
+                                                n.event)
+                                            ) {
+                                                case "pusher:error":
+                                                    t.emit("error", {
+                                                        type: "PusherError",
+                                                        data: n.data,
+                                                    });
+                                                    break;
+                                                case "pusher:ping":
+                                                    t.emit("ping");
+                                                    break;
+                                                case "pusher:pong":
+                                                    t.emit("pong");
+                                            }
+                                            t.emit("message", n);
+                                        }
+                                    },
+                                    activity: function () {
+                                        t.emit("activity");
+                                    },
+                                    error: function (e) {
+                                        t.emit("error", e);
+                                    },
+                                    closed: function (e) {
+                                        (n(),
+                                            e &&
+                                                e.code &&
+                                                t.handleCloseEvent(e),
+                                            (t.transport = null),
+                                            t.emit("closed"));
+                                    },
+                                },
+                                n = function () {
+                                    F(e, function (e, n) {
+                                        t.transport.unbind(n, e);
+                                    });
+                                };
+                            F(e, function (e, n) {
+                                t.transport.bind(n, e);
+                            });
+                        }),
+                        (e.prototype.handleCloseEvent = function (t) {
+                            var e = xt.getCloseAction(t),
+                                n = xt.getCloseError(t);
+                            (n && this.emit("error", n),
+                                e && this.emit(e, { action: e, error: n }));
+                        }),
+                        e
+                    );
+                })(pt),
+                jt = (function () {
+                    function t(t, e) {
+                        ((this.transport = t),
+                            (this.callback = e),
+                            this.bindListeners());
+                    }
+                    return (
+                        (t.prototype.close = function () {
+                            (this.unbindListeners(), this.transport.close());
+                        }),
+                        (t.prototype.bindListeners = function () {
+                            var t = this;
+                            ((this.onMessage = function (e) {
+                                var n;
+                                t.unbindListeners();
+                                try {
+                                    n = xt.processHandshake(e);
+                                } catch (e) {
+                                    return (
+                                        t.finish("error", { error: e }),
+                                        void t.transport.close()
+                                    );
+                                }
+                                "connected" === n.action
+                                    ? t.finish("connected", {
+                                          connection: new Rt(n.id, t.transport),
+                                          activityTimeout: n.activityTimeout,
+                                      })
+                                    : (t.finish(n.action, { error: n.error }),
+                                      t.transport.close());
+                            }),
+                                (this.onClosed = function (e) {
+                                    t.unbindListeners();
+                                    var n = xt.getCloseAction(e) || "backoff",
+                                        r = xt.getCloseError(e);
+                                    t.finish(n, { error: r });
+                                }),
+                                this.transport.bind("message", this.onMessage),
+                                this.transport.bind("closed", this.onClosed));
+                        }),
+                        (t.prototype.unbindListeners = function () {
+                            (this.transport.unbind("message", this.onMessage),
+                                this.transport.unbind("closed", this.onClosed));
+                        }),
+                        (t.prototype.finish = function (t, e) {
+                            this.callback(
+                                z({ transport: this.transport, action: t }, e),
+                            );
+                        }),
+                        t
+                    );
+                })(),
+                It = (function () {
+                    function t(t, e) {
+                        ((this.timeline = t), (this.options = e || {}));
+                    }
+                    return (
+                        (t.prototype.send = function (t, e) {
+                            this.timeline.isEmpty() ||
+                                this.timeline.send(
+                                    Ce.TimelineTransport.getAgent(this, t),
+                                    e,
+                                );
+                        }),
+                        t
+                    );
+                })(),
+                Dt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Nt = (function (t) {
+                    function e(e, n) {
+                        var r =
+                            t.call(this, function (t, n) {
+                                Z.debug("No callbacks on " + e + " for " + t);
+                            }) || this;
+                        return (
+                            (r.name = e),
+                            (r.pusher = n),
+                            (r.subscribed = !1),
+                            (r.subscriptionPending = !1),
+                            (r.subscriptionCancelled = !1),
+                            r
+                        );
+                    }
+                    return (
+                        Dt(e, t),
+                        (e.prototype.authorize = function (t, e) {
+                            return e(null, { auth: "" });
+                        }),
+                        (e.prototype.trigger = function (t, e) {
+                            if (0 !== t.indexOf("client-"))
+                                throw new d(
+                                    "Event '" +
+                                        t +
+                                        "' does not start with 'client-'",
+                                );
+                            if (!this.subscribed) {
+                                var n = p("triggeringClientEvents");
+                                Z.warn(
+                                    "Client event triggered before channel 'subscription_succeeded' event . " +
+                                        n,
+                                );
+                            }
+                            return this.pusher.send_event(t, e, this.name);
+                        }),
+                        (e.prototype.disconnect = function () {
+                            ((this.subscribed = !1),
+                                (this.subscriptionPending = !1));
+                        }),
+                        (e.prototype.handleEvent = function (t) {
+                            var e = t.event,
+                                n = t.data;
+                            if ("pusher_internal:subscription_succeeded" === e)
+                                this.handleSubscriptionSucceededEvent(t);
+                            else if ("pusher_internal:subscription_count" === e)
+                                this.handleSubscriptionCountEvent(t);
+                            else if (0 !== e.indexOf("pusher_internal:")) {
+                                this.emit(e, n, {});
+                            }
+                        }),
+                        (e.prototype.handleSubscriptionSucceededEvent =
+                            function (t) {
+                                ((this.subscriptionPending = !1),
+                                    (this.subscribed = !0),
+                                    this.subscriptionCancelled
+                                        ? this.pusher.unsubscribe(this.name)
+                                        : this.emit(
+                                              "pusher:subscription_succeeded",
+                                              t.data,
+                                          ));
+                            }),
+                        (e.prototype.handleSubscriptionCountEvent = function (
+                            t,
+                        ) {
+                            (t.data.subscription_count &&
+                                (this.subscriptionCount =
+                                    t.data.subscription_count),
+                                this.emit("pusher:subscription_count", t.data));
+                        }),
+                        (e.prototype.subscribe = function () {
+                            var t = this;
+                            this.subscribed ||
+                                ((this.subscriptionPending = !0),
+                                (this.subscriptionCancelled = !1),
+                                this.authorize(
+                                    this.pusher.connection.socket_id,
+                                    function (e, n) {
+                                        e
+                                            ? ((t.subscriptionPending = !1),
+                                              Z.error(e.toString()),
+                                              t.emit(
+                                                  "pusher:subscription_error",
+                                                  Object.assign(
+                                                      {},
+                                                      {
+                                                          type: "AuthError",
+                                                          error: e.message,
+                                                      },
+                                                      e instanceof S
+                                                          ? { status: e.status }
+                                                          : {},
+                                                  ),
+                                              ))
+                                            : t.pusher.send_event(
+                                                  "pusher:subscribe",
+                                                  {
+                                                      auth: n.auth,
+                                                      channel_data:
+                                                          n.channel_data,
+                                                      channel: t.name,
+                                                  },
+                                              );
+                                    },
+                                ));
+                        }),
+                        (e.prototype.unsubscribe = function () {
+                            ((this.subscribed = !1),
+                                this.pusher.send_event("pusher:unsubscribe", {
+                                    channel: this.name,
+                                }));
+                        }),
+                        (e.prototype.cancelSubscription = function () {
+                            this.subscriptionCancelled = !0;
+                        }),
+                        (e.prototype.reinstateSubscription = function () {
+                            this.subscriptionCancelled = !1;
+                        }),
+                        e
+                    );
+                })(pt),
+                Ht = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Ut = (function (t) {
+                    function e() {
+                        return (null !== t && t.apply(this, arguments)) || this;
+                    }
+                    return (
+                        Ht(e, t),
+                        (e.prototype.authorize = function (t, e) {
+                            return this.pusher.config.channelAuthorizer(
+                                { channelName: this.name, socketId: t },
+                                e,
+                            );
+                        }),
+                        e
+                    );
+                })(Nt),
+                Mt = (function () {
+                    function t() {
+                        this.reset();
+                    }
+                    return (
+                        (t.prototype.get = function (t) {
+                            return Object.prototype.hasOwnProperty.call(
+                                this.members,
+                                t,
+                            )
+                                ? { id: t, info: this.members[t] }
+                                : null;
+                        }),
+                        (t.prototype.each = function (t) {
+                            var e = this;
+                            F(this.members, function (n, r) {
+                                t(e.get(r));
+                            });
+                        }),
+                        (t.prototype.setMyID = function (t) {
+                            this.myID = t;
+                        }),
+                        (t.prototype.onSubscription = function (t) {
+                            ((this.members = t.presence.hash),
+                                (this.count = t.presence.count),
+                                (this.me = this.get(this.myID)));
+                        }),
+                        (t.prototype.addMember = function (t) {
+                            return (
+                                null === this.get(t.user_id) && this.count++,
+                                (this.members[t.user_id] = t.user_info),
+                                this.get(t.user_id)
+                            );
+                        }),
+                        (t.prototype.removeMember = function (t) {
+                            var e = this.get(t.user_id);
+                            return (
+                                e &&
+                                    (delete this.members[t.user_id],
+                                    this.count--),
+                                e
+                            );
+                        }),
+                        (t.prototype.reset = function () {
+                            ((this.members = {}),
+                                (this.count = 0),
+                                (this.myID = null),
+                                (this.me = null));
+                        }),
+                        t
+                    );
+                })(),
+                zt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                qt = function (t, e, n, r) {
+                    return new (n || (n = Promise))(function (o, i) {
+                        function s(t) {
+                            try {
+                                a(r.next(t));
+                            } catch (t) {
+                                i(t);
+                            }
+                        }
+                        function c(t) {
+                            try {
+                                a(r.throw(t));
+                            } catch (t) {
+                                i(t);
+                            }
+                        }
+                        function a(t) {
+                            var e;
+                            t.done
+                                ? o(t.value)
+                                : ((e = t.value),
+                                  e instanceof n
+                                      ? e
+                                      : new n(function (t) {
+                                            t(e);
+                                        })).then(s, c);
+                        }
+                        a((r = r.apply(t, e || [])).next());
+                    });
+                },
+                Bt = function (t, e) {
+                    var n,
+                        r,
+                        o,
+                        i,
+                        s = {
+                            label: 0,
+                            sent: function () {
+                                if (1 & o[0]) throw o[1];
+                                return o[1];
+                            },
+                            trys: [],
+                            ops: [],
+                        };
+                    return (
+                        (i = { next: c(0), throw: c(1), return: c(2) }),
+                        "function" == typeof Symbol &&
+                            (i[Symbol.iterator] = function () {
+                                return this;
+                            }),
+                        i
+                    );
+                    function c(i) {
+                        return function (c) {
+                            return (function (i) {
+                                if (n)
+                                    throw new TypeError(
+                                        "Generator is already executing.",
+                                    );
+                                for (; s; )
+                                    try {
+                                        if (
+                                            ((n = 1),
+                                            r &&
+                                                (o =
+                                                    2 & i[0]
+                                                        ? r.return
+                                                        : i[0]
+                                                          ? r.throw ||
+                                                            ((o = r.return) &&
+                                                                o.call(r),
+                                                            0)
+                                                          : r.next) &&
+                                                !(o = o.call(r, i[1])).done)
+                                        )
+                                            return o;
+                                        switch (
+                                            ((r = 0),
+                                            o && (i = [2 & i[0], o.value]),
+                                            i[0])
+                                        ) {
+                                            case 0:
+                                            case 1:
+                                                o = i;
+                                                break;
+                                            case 4:
+                                                return (
+                                                    s.label++,
+                                                    { value: i[1], done: !1 }
+                                                );
+                                            case 5:
+                                                (s.label++,
+                                                    (r = i[1]),
+                                                    (i = [0]));
+                                                continue;
+                                            case 7:
+                                                ((i = s.ops.pop()),
+                                                    s.trys.pop());
+                                                continue;
+                                            default:
+                                                if (
+                                                    !((o = s.trys),
+                                                    (o =
+                                                        o.length > 0 &&
+                                                        o[o.length - 1]) ||
+                                                        (6 !== i[0] &&
+                                                            2 !== i[0]))
+                                                ) {
+                                                    s = 0;
+                                                    continue;
+                                                }
+                                                if (
+                                                    3 === i[0] &&
+                                                    (!o ||
+                                                        (i[1] > o[0] &&
+                                                            i[1] < o[3]))
+                                                ) {
+                                                    s.label = i[1];
+                                                    break;
+                                                }
+                                                if (
+                                                    6 === i[0] &&
+                                                    s.label < o[1]
+                                                ) {
+                                                    ((s.label = o[1]), (o = i));
+                                                    break;
+                                                }
+                                                if (o && s.label < o[2]) {
+                                                    ((s.label = o[2]),
+                                                        s.ops.push(i));
+                                                    break;
+                                                }
+                                                (o[2] && s.ops.pop(),
+                                                    s.trys.pop());
+                                                continue;
+                                        }
+                                        i = e.call(t, s);
+                                    } catch (t) {
+                                        ((i = [6, t]), (r = 0));
+                                    } finally {
+                                        n = o = 0;
+                                    }
+                                if (5 & i[0]) throw i[1];
+                                return {
+                                    value: i[0] ? i[1] : void 0,
+                                    done: !0,
+                                };
+                            })([i, c]);
+                        };
+                    }
+                },
+                Ft = (function (t) {
+                    function e(e, n) {
+                        var r = t.call(this, e, n) || this;
+                        return ((r.members = new Mt()), r);
+                    }
+                    return (
+                        zt(e, t),
+                        (e.prototype.authorize = function (e, n) {
+                            var r = this;
+                            t.prototype.authorize.call(
+                                this,
+                                e,
+                                function (t, e) {
+                                    return qt(r, void 0, void 0, function () {
+                                        var r, o;
+                                        return Bt(this, function (i) {
+                                            switch (i.label) {
+                                                case 0:
+                                                    return t
+                                                        ? [3, 3]
+                                                        : null ==
+                                                            (e = e).channel_data
+                                                          ? [3, 1]
+                                                          : ((r = JSON.parse(
+                                                                e.channel_data,
+                                                            )),
+                                                            this.members.setMyID(
+                                                                r.user_id,
+                                                            ),
+                                                            [3, 3]);
+                                                case 1:
+                                                    return [
+                                                        4,
+                                                        this.pusher.user
+                                                            .signinDonePromise,
+                                                    ];
+                                                case 2:
+                                                    if (
+                                                        (i.sent(),
+                                                        null ==
+                                                            this.pusher.user
+                                                                .user_data)
+                                                    )
+                                                        return (
+                                                            (o = p(
+                                                                "authorizationEndpoint",
+                                                            )),
+                                                            Z.error(
+                                                                "Invalid auth response for channel '" +
+                                                                    this.name +
+                                                                    "', expected 'channel_data' field. " +
+                                                                    o +
+                                                                    ", or the user should be signed in.",
+                                                            ),
+                                                            n(
+                                                                "Invalid auth response",
+                                                            ),
+                                                            [2]
+                                                        );
+                                                    (this.members.setMyID(
+                                                        this.pusher.user
+                                                            .user_data.id,
+                                                    ),
+                                                        (i.label = 3));
+                                                case 3:
+                                                    return (n(t, e), [2]);
+                                            }
+                                        });
+                                    });
+                                },
+                            );
+                        }),
+                        (e.prototype.handleEvent = function (t) {
+                            var e = t.event;
+                            if (0 === e.indexOf("pusher_internal:"))
+                                this.handleInternalEvent(t);
+                            else {
+                                var n = t.data,
+                                    r = {};
+                                (t.user_id && (r.user_id = t.user_id),
+                                    this.emit(e, n, r));
+                            }
+                        }),
+                        (e.prototype.handleInternalEvent = function (t) {
+                            var e = t.event,
+                                n = t.data;
+                            switch (e) {
+                                case "pusher_internal:subscription_succeeded":
+                                    this.handleSubscriptionSucceededEvent(t);
+                                    break;
+                                case "pusher_internal:subscription_count":
+                                    this.handleSubscriptionCountEvent(t);
+                                    break;
+                                case "pusher_internal:member_added":
+                                    var r = this.members.addMember(n);
+                                    this.emit("pusher:member_added", r);
+                                    break;
+                                case "pusher_internal:member_removed":
+                                    var o = this.members.removeMember(n);
+                                    o && this.emit("pusher:member_removed", o);
+                            }
+                        }),
+                        (e.prototype.handleSubscriptionSucceededEvent =
+                            function (t) {
+                                ((this.subscriptionPending = !1),
+                                    (this.subscribed = !0),
+                                    this.subscriptionCancelled
+                                        ? this.pusher.unsubscribe(this.name)
+                                        : (this.members.onSubscription(t.data),
+                                          this.emit(
+                                              "pusher:subscription_succeeded",
+                                              this.members,
+                                          )));
+                            }),
+                        (e.prototype.disconnect = function () {
+                            (this.members.reset(),
+                                t.prototype.disconnect.call(this));
+                        }),
+                        e
+                    );
+                })(Ut),
+                Xt = n(1),
+                Jt = n(0),
+                Wt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Gt = (function (t) {
+                    function e(e, n, r) {
+                        var o = t.call(this, e, n) || this;
+                        return ((o.key = null), (o.nacl = r), o);
+                    }
+                    return (
+                        Wt(e, t),
+                        (e.prototype.authorize = function (e, n) {
+                            var r = this;
+                            t.prototype.authorize.call(
+                                this,
+                                e,
+                                function (t, e) {
+                                    if (t) n(t, e);
+                                    else {
+                                        var o = e.shared_secret;
+                                        o
+                                            ? ((r.key = Object(Jt.decode)(o)),
+                                              delete e.shared_secret,
+                                              n(null, e))
+                                            : n(
+                                                  new Error(
+                                                      "No shared_secret key in auth payload for encrypted channel: " +
+                                                          r.name,
+                                                  ),
+                                                  null,
+                                              );
+                                    }
+                                },
+                            );
+                        }),
+                        (e.prototype.trigger = function (t, e) {
+                            throw new m(
+                                "Client events are not currently supported for encrypted channels",
+                            );
+                        }),
+                        (e.prototype.handleEvent = function (e) {
+                            var n = e.event,
+                                r = e.data;
+                            0 !== n.indexOf("pusher_internal:") &&
+                            0 !== n.indexOf("pusher:")
+                                ? this.handleEncryptedEvent(n, r)
+                                : t.prototype.handleEvent.call(this, e);
+                        }),
+                        (e.prototype.handleEncryptedEvent = function (t, e) {
+                            var n = this;
+                            if (this.key)
+                                if (e.ciphertext && e.nonce) {
+                                    var r = Object(Jt.decode)(e.ciphertext);
+                                    if (
+                                        r.length <
+                                        this.nacl.secretbox.overheadLength
+                                    )
+                                        Z.error(
+                                            "Expected encrypted event ciphertext length to be " +
+                                                this.nacl.secretbox
+                                                    .overheadLength +
+                                                ", got: " +
+                                                r.length,
+                                        );
+                                    else {
+                                        var o = Object(Jt.decode)(e.nonce);
+                                        if (
+                                            o.length <
+                                            this.nacl.secretbox.nonceLength
+                                        )
+                                            Z.error(
+                                                "Expected encrypted event nonce length to be " +
+                                                    this.nacl.secretbox
+                                                        .nonceLength +
+                                                    ", got: " +
+                                                    o.length,
+                                            );
+                                        else {
+                                            var i = this.nacl.secretbox.open(
+                                                r,
+                                                o,
+                                                this.key,
+                                            );
+                                            if (null === i)
+                                                return (
+                                                    Z.debug(
+                                                        "Failed to decrypt an event, probably because it was encrypted with a different key. Fetching a new key from the authEndpoint...",
+                                                    ),
+                                                    void this.authorize(
+                                                        this.pusher.connection
+                                                            .socket_id,
+                                                        function (e, s) {
+                                                            e
+                                                                ? Z.error(
+                                                                      "Failed to make a request to the authEndpoint: " +
+                                                                          s +
+                                                                          ". Unable to fetch new key, so dropping encrypted event",
+                                                                  )
+                                                                : null !==
+                                                                    (i =
+                                                                        n.nacl.secretbox.open(
+                                                                            r,
+                                                                            o,
+                                                                            n.key,
+                                                                        ))
+                                                                  ? n.emit(
+                                                                        t,
+                                                                        n.getDataToEmit(
+                                                                            i,
+                                                                        ),
+                                                                    )
+                                                                  : Z.error(
+                                                                        "Failed to decrypt event with new key. Dropping encrypted event",
+                                                                    );
+                                                        },
+                                                    )
+                                                );
+                                            this.emit(t, this.getDataToEmit(i));
+                                        }
+                                    }
+                                } else
+                                    Z.error(
+                                        "Unexpected format for encrypted event, expected object with `ciphertext` and `nonce` fields, got: " +
+                                            e,
+                                    );
+                            else
+                                Z.debug(
+                                    "Received encrypted event before key has been retrieved from the authEndpoint",
+                                );
+                        }),
+                        (e.prototype.getDataToEmit = function (t) {
+                            var e = Object(Xt.decode)(t);
+                            try {
+                                return JSON.parse(e);
+                            } catch (t) {
+                                return e;
+                            }
+                        }),
+                        e
+                    );
+                })(Ut),
+                Vt = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Yt = (function (t) {
+                    function e(e, n) {
+                        var r = t.call(this) || this;
+                        ((r.state = "initialized"),
+                            (r.connection = null),
+                            (r.key = e),
+                            (r.options = n),
+                            (r.timeline = r.options.timeline),
+                            (r.usingTLS = r.options.useTLS),
+                            (r.errorCallbacks = r.buildErrorCallbacks()),
+                            (r.connectionCallbacks = r.buildConnectionCallbacks(
+                                r.errorCallbacks,
+                            )),
+                            (r.handshakeCallbacks = r.buildHandshakeCallbacks(
+                                r.errorCallbacks,
+                            )));
+                        var o = Ce.getNetwork();
+                        return (
+                            o.bind("online", function () {
+                                (r.timeline.info({ netinfo: "online" }),
+                                    ("connecting" !== r.state &&
+                                        "unavailable" !== r.state) ||
+                                        r.retryIn(0));
+                            }),
+                            o.bind("offline", function () {
+                                (r.timeline.info({ netinfo: "offline" }),
+                                    r.connection && r.sendActivityCheck());
+                            }),
+                            r.updateStrategy(),
+                            r
+                        );
+                    }
+                    return (
+                        Vt(e, t),
+                        (e.prototype.connect = function () {
+                            this.connection ||
+                                this.runner ||
+                                (this.strategy.isSupported()
+                                    ? (this.updateState("connecting"),
+                                      this.startConnecting(),
+                                      this.setUnavailableTimer())
+                                    : this.updateState("failed"));
+                        }),
+                        (e.prototype.send = function (t) {
+                            return !!this.connection && this.connection.send(t);
+                        }),
+                        (e.prototype.send_event = function (t, e, n) {
+                            return (
+                                !!this.connection &&
+                                this.connection.send_event(t, e, n)
+                            );
+                        }),
+                        (e.prototype.disconnect = function () {
+                            (this.disconnectInternally(),
+                                this.updateState("disconnected"));
+                        }),
+                        (e.prototype.isUsingTLS = function () {
+                            return this.usingTLS;
+                        }),
+                        (e.prototype.startConnecting = function () {
+                            var t = this,
+                                e = function (n, r) {
+                                    n
+                                        ? (t.runner = t.strategy.connect(0, e))
+                                        : "error" === r.action
+                                          ? (t.emit("error", {
+                                                type: "HandshakeError",
+                                                error: r.error,
+                                            }),
+                                            t.timeline.error({
+                                                handshakeError: r.error,
+                                            }))
+                                          : (t.abortConnecting(),
+                                            t.handshakeCallbacks[r.action](r));
+                                };
+                            this.runner = this.strategy.connect(0, e);
+                        }),
+                        (e.prototype.abortConnecting = function () {
+                            this.runner &&
+                                (this.runner.abort(), (this.runner = null));
+                        }),
+                        (e.prototype.disconnectInternally = function () {
+                            (this.abortConnecting(),
+                            this.clearRetryTimer(),
+                            this.clearUnavailableTimer(),
+                            this.connection) &&
+                                this.abandonConnection().close();
+                        }),
+                        (e.prototype.updateStrategy = function () {
+                            this.strategy = this.options.getStrategy({
+                                key: this.key,
+                                timeline: this.timeline,
+                                useTLS: this.usingTLS,
+                            });
+                        }),
+                        (e.prototype.retryIn = function (t) {
+                            var e = this;
+                            (this.timeline.info({ action: "retry", delay: t }),
+                                t > 0 &&
+                                    this.emit(
+                                        "connecting_in",
+                                        Math.round(t / 1e3),
+                                    ),
+                                (this.retryTimer = new H(t || 0, function () {
+                                    (e.disconnectInternally(), e.connect());
+                                })));
+                        }),
+                        (e.prototype.clearRetryTimer = function () {
+                            this.retryTimer &&
+                                (this.retryTimer.ensureAborted(),
+                                (this.retryTimer = null));
+                        }),
+                        (e.prototype.setUnavailableTimer = function () {
+                            var t = this;
+                            this.unavailableTimer = new H(
+                                this.options.unavailableTimeout,
+                                function () {
+                                    t.updateState("unavailable");
+                                },
+                            );
+                        }),
+                        (e.prototype.clearUnavailableTimer = function () {
+                            this.unavailableTimer &&
+                                this.unavailableTimer.ensureAborted();
+                        }),
+                        (e.prototype.sendActivityCheck = function () {
+                            var t = this;
+                            (this.stopActivityCheck(),
+                                this.connection.ping(),
+                                (this.activityTimer = new H(
+                                    this.options.pongTimeout,
+                                    function () {
+                                        (t.timeline.error({
+                                            pong_timed_out:
+                                                t.options.pongTimeout,
+                                        }),
+                                            t.retryIn(0));
+                                    },
+                                )));
+                        }),
+                        (e.prototype.resetActivityCheck = function () {
+                            var t = this;
+                            (this.stopActivityCheck(),
+                                this.connection &&
+                                    !this.connection.handlesActivityChecks() &&
+                                    (this.activityTimer = new H(
+                                        this.activityTimeout,
+                                        function () {
+                                            t.sendActivityCheck();
+                                        },
+                                    )));
+                        }),
+                        (e.prototype.stopActivityCheck = function () {
+                            this.activityTimer &&
+                                this.activityTimer.ensureAborted();
+                        }),
+                        (e.prototype.buildConnectionCallbacks = function (t) {
+                            var e = this;
+                            return z({}, t, {
+                                message: function (t) {
+                                    (e.resetActivityCheck(),
+                                        e.emit("message", t));
+                                },
+                                ping: function () {
+                                    e.send_event("pusher:pong", {});
+                                },
+                                activity: function () {
+                                    e.resetActivityCheck();
+                                },
+                                error: function (t) {
+                                    e.emit("error", t);
+                                },
+                                closed: function () {
+                                    (e.abandonConnection(),
+                                        e.shouldRetry() && e.retryIn(1e3));
+                                },
+                            });
+                        }),
+                        (e.prototype.buildHandshakeCallbacks = function (t) {
+                            var e = this;
+                            return z({}, t, {
+                                connected: function (t) {
+                                    ((e.activityTimeout = Math.min(
+                                        e.options.activityTimeout,
+                                        t.activityTimeout,
+                                        t.connection.activityTimeout || 1 / 0,
+                                    )),
+                                        e.clearUnavailableTimer(),
+                                        e.setConnection(t.connection),
+                                        (e.socket_id = e.connection.id),
+                                        e.updateState("connected", {
+                                            socket_id: e.socket_id,
+                                        }));
+                                },
+                            });
+                        }),
+                        (e.prototype.buildErrorCallbacks = function () {
+                            var t = this,
+                                e = function (e) {
+                                    return function (n) {
+                                        (n.error &&
+                                            t.emit("error", {
+                                                type: "WebSocketError",
+                                                error: n.error,
+                                            }),
+                                            e(n));
+                                    };
+                                };
+                            return {
+                                tls_only: e(function () {
+                                    ((t.usingTLS = !0),
+                                        t.updateStrategy(),
+                                        t.retryIn(0));
+                                }),
+                                refused: e(function () {
+                                    t.disconnect();
+                                }),
+                                backoff: e(function () {
+                                    t.retryIn(1e3);
+                                }),
+                                retry: e(function () {
+                                    t.retryIn(0);
+                                }),
+                            };
+                        }),
+                        (e.prototype.setConnection = function (t) {
+                            for (var e in ((this.connection = t),
+                            this.connectionCallbacks))
+                                this.connection.bind(
+                                    e,
+                                    this.connectionCallbacks[e],
+                                );
+                            this.resetActivityCheck();
+                        }),
+                        (e.prototype.abandonConnection = function () {
+                            if (this.connection) {
+                                for (var t in (this.stopActivityCheck(),
+                                this.connectionCallbacks))
+                                    this.connection.unbind(
+                                        t,
+                                        this.connectionCallbacks[t],
+                                    );
+                                var e = this.connection;
+                                return ((this.connection = null), e);
+                            }
+                        }),
+                        (e.prototype.updateState = function (t, e) {
+                            var n = this.state;
+                            if (((this.state = t), n !== t)) {
+                                var r = t;
+                                ("connected" === r &&
+                                    (r += " with new socket ID " + e.socket_id),
+                                    Z.debug("State changed", n + " -> " + r),
+                                    this.timeline.info({ state: t, params: e }),
+                                    this.emit("state_change", {
+                                        previous: n,
+                                        current: t,
+                                    }),
+                                    this.emit(t, e));
+                            }
+                        }),
+                        (e.prototype.shouldRetry = function () {
+                            return (
+                                "connecting" === this.state ||
+                                "connected" === this.state
+                            );
+                        }),
+                        e
+                    );
+                })(pt),
+                $t = (function () {
+                    function t() {
+                        this.channels = {};
+                    }
+                    return (
+                        (t.prototype.add = function (t, e) {
+                            return (
+                                this.channels[t] ||
+                                    (this.channels[t] = (function (t, e) {
+                                        if (
+                                            0 ===
+                                            t.indexOf("private-encrypted-")
+                                        ) {
+                                            if (e.config.nacl)
+                                                return Qt.createEncryptedChannel(
+                                                    t,
+                                                    e,
+                                                    e.config.nacl,
+                                                );
+                                            var n = p(
+                                                "encryptedChannelSupport",
+                                            );
+                                            throw new m(
+                                                "Tried to subscribe to a private-encrypted- channel but no nacl implementation available. " +
+                                                    n,
+                                            );
+                                        }
+                                        if (0 === t.indexOf("private-"))
+                                            return Qt.createPrivateChannel(
+                                                t,
+                                                e,
+                                            );
+                                        if (0 === t.indexOf("presence-"))
+                                            return Qt.createPresenceChannel(
+                                                t,
+                                                e,
+                                            );
+                                        if (0 === t.indexOf("#"))
+                                            throw new y(
+                                                'Cannot create a channel with name "' +
+                                                    t +
+                                                    '".',
+                                            );
+                                        return Qt.createChannel(t, e);
+                                    })(t, e)),
+                                this.channels[t]
+                            );
+                        }),
+                        (t.prototype.all = function () {
+                            return (function (t) {
+                                var e = [];
+                                return (
+                                    F(t, function (t) {
+                                        e.push(t);
+                                    }),
+                                    e
+                                );
+                            })(this.channels);
+                        }),
+                        (t.prototype.find = function (t) {
+                            return this.channels[t];
+                        }),
+                        (t.prototype.remove = function (t) {
+                            var e = this.channels[t];
+                            return (delete this.channels[t], e);
+                        }),
+                        (t.prototype.disconnect = function () {
+                            F(this.channels, function (t) {
+                                t.disconnect();
+                            });
+                        }),
+                        t
+                    );
+                })();
+            var Qt = {
+                    createChannels: function () {
+                        return new $t();
+                    },
+                    createConnectionManager: function (t, e) {
+                        return new Yt(t, e);
+                    },
+                    createChannel: function (t, e) {
+                        return new Nt(t, e);
+                    },
+                    createPrivateChannel: function (t, e) {
+                        return new Ut(t, e);
+                    },
+                    createPresenceChannel: function (t, e) {
+                        return new Ft(t, e);
+                    },
+                    createEncryptedChannel: function (t, e, n) {
+                        return new Gt(t, e, n);
+                    },
+                    createTimelineSender: function (t, e) {
+                        return new It(t, e);
+                    },
+                    createHandshake: function (t, e) {
+                        return new jt(t, e);
+                    },
+                    createAssistantToTheTransportManager: function (t, e, n) {
+                        return new Et(t, e, n);
+                    },
+                },
+                Kt = (function () {
+                    function t(t) {
+                        ((this.options = t || {}),
+                            (this.livesLeft = this.options.lives || 1 / 0));
+                    }
+                    return (
+                        (t.prototype.getAssistant = function (t) {
+                            return Qt.createAssistantToTheTransportManager(
+                                this,
+                                t,
+                                {
+                                    minPingDelay: this.options.minPingDelay,
+                                    maxPingDelay: this.options.maxPingDelay,
+                                },
+                            );
+                        }),
+                        (t.prototype.isAlive = function () {
+                            return this.livesLeft > 0;
+                        }),
+                        (t.prototype.reportDeath = function () {
+                            this.livesLeft -= 1;
+                        }),
+                        t
+                    );
+                })(),
+                Zt = (function () {
+                    function t(t, e) {
+                        ((this.strategies = t),
+                            (this.loop = Boolean(e.loop)),
+                            (this.failFast = Boolean(e.failFast)),
+                            (this.timeout = e.timeout),
+                            (this.timeoutLimit = e.timeoutLimit));
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return Y(this.strategies, M.method("isSupported"));
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            var n = this,
+                                r = this.strategies,
+                                o = 0,
+                                i = this.timeout,
+                                s = null,
+                                c = function (a, u) {
+                                    u
+                                        ? e(null, u)
+                                        : ((o += 1),
+                                          n.loop && (o %= r.length),
+                                          o < r.length
+                                              ? (i &&
+                                                    ((i *= 2),
+                                                    n.timeoutLimit &&
+                                                        (i = Math.min(
+                                                            i,
+                                                            n.timeoutLimit,
+                                                        ))),
+                                                (s = n.tryStrategy(
+                                                    r[o],
+                                                    t,
+                                                    {
+                                                        timeout: i,
+                                                        failFast: n.failFast,
+                                                    },
+                                                    c,
+                                                )))
+                                              : e(!0));
+                                };
+                            return (
+                                (s = this.tryStrategy(
+                                    r[o],
+                                    t,
+                                    { timeout: i, failFast: this.failFast },
+                                    c,
+                                )),
+                                {
+                                    abort: function () {
+                                        s.abort();
+                                    },
+                                    forceMinPriority: function (e) {
+                                        ((t = e), s && s.forceMinPriority(e));
+                                    },
+                                }
+                            );
+                        }),
+                        (t.prototype.tryStrategy = function (t, e, n, r) {
+                            var o = null,
+                                i = null;
+                            return (
+                                n.timeout > 0 &&
+                                    (o = new H(n.timeout, function () {
+                                        (i.abort(), r(!0));
+                                    })),
+                                (i = t.connect(e, function (t, e) {
+                                    (t && o && o.isRunning() && !n.failFast) ||
+                                        (o && o.ensureAborted(), r(t, e));
+                                })),
+                                {
+                                    abort: function () {
+                                        (o && o.ensureAborted(), i.abort());
+                                    },
+                                    forceMinPriority: function (t) {
+                                        i.forceMinPriority(t);
+                                    },
+                                }
+                            );
+                        }),
+                        t
+                    );
+                })(),
+                te = (function () {
+                    function t(t) {
+                        this.strategies = t;
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return Y(this.strategies, M.method("isSupported"));
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            return (function (t, e, n) {
+                                var r = W(t, function (t, r, o, i) {
+                                    return t.connect(e, n(r, i));
+                                });
+                                return {
+                                    abort: function () {
+                                        J(r, ee);
+                                    },
+                                    forceMinPriority: function (t) {
+                                        J(r, function (e) {
+                                            e.forceMinPriority(t);
+                                        });
+                                    },
+                                };
+                            })(this.strategies, t, function (t, n) {
+                                return function (r, o) {
+                                    ((n[t].error = r),
+                                        r
+                                            ? (function (t) {
+                                                  return (function (t, e) {
+                                                      for (
+                                                          var n = 0;
+                                                          n < t.length;
+                                                          n++
+                                                      )
+                                                          if (!e(t[n], n, t))
+                                                              return !1;
+                                                      return !0;
+                                                  })(t, function (t) {
+                                                      return Boolean(t.error);
+                                                  });
+                                              })(n) && e(!0)
+                                            : (J(n, function (t) {
+                                                  t.forceMinPriority(
+                                                      o.transport.priority,
+                                                  );
+                                              }),
+                                              e(null, o)));
+                                };
+                            });
+                        }),
+                        t
+                    );
+                })();
+            function ee(t) {
+                t.error || t.aborted || (t.abort(), (t.aborted = !0));
+            }
+            var ne = (function () {
+                function t(t, e, n) {
+                    ((this.strategy = t),
+                        (this.transports = e),
+                        (this.ttl = n.ttl || 18e5),
+                        (this.usingTLS = n.useTLS),
+                        (this.timeline = n.timeline));
+                }
+                return (
+                    (t.prototype.isSupported = function () {
+                        return this.strategy.isSupported();
+                    }),
+                    (t.prototype.connect = function (t, e) {
+                        var n = this.usingTLS,
+                            r = (function (t) {
+                                var e = Ce.getLocalStorage();
+                                if (e)
+                                    try {
+                                        var n = e[re(t)];
+                                        if (n) return JSON.parse(n);
+                                    } catch (e) {
+                                        oe(t);
+                                    }
+                                return null;
+                            })(n),
+                            o = [this.strategy];
+                        if (r && r.timestamp + this.ttl >= M.now()) {
+                            var i = this.transports[r.transport];
+                            i &&
+                                (this.timeline.info({
+                                    cached: !0,
+                                    transport: r.transport,
+                                    latency: r.latency,
+                                }),
+                                o.push(
+                                    new Zt([i], {
+                                        timeout: 2 * r.latency + 1e3,
+                                        failFast: !0,
+                                    }),
+                                ));
+                        }
+                        var s = M.now(),
+                            c = o.pop().connect(t, function r(i, a) {
+                                i
+                                    ? (oe(n),
+                                      o.length > 0
+                                          ? ((s = M.now()),
+                                            (c = o.pop().connect(t, r)))
+                                          : e(i))
+                                    : (!(function (t, e, n) {
+                                          var r = Ce.getLocalStorage();
+                                          if (r)
+                                              try {
+                                                  r[re(t)] = K({
+                                                      timestamp: M.now(),
+                                                      transport: e,
+                                                      latency: n,
+                                                  });
+                                              } catch (t) {}
+                                      })(n, a.transport.name, M.now() - s),
+                                      e(null, a));
+                            });
+                        return {
+                            abort: function () {
+                                c.abort();
+                            },
+                            forceMinPriority: function (e) {
+                                ((t = e), c && c.forceMinPriority(e));
+                            },
+                        };
+                    }),
+                    t
+                );
+            })();
+            function re(t) {
+                return "pusherTransport" + (t ? "TLS" : "NonTLS");
+            }
+            function oe(t) {
+                var e = Ce.getLocalStorage();
+                if (e)
+                    try {
+                        delete e[re(t)];
+                    } catch (t) {}
+            }
+            var ie = (function () {
+                    function t(t, e) {
+                        var n = e.delay;
+                        ((this.strategy = t), (this.options = { delay: n }));
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return this.strategy.isSupported();
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            var n,
+                                r = this.strategy,
+                                o = new H(this.options.delay, function () {
+                                    n = r.connect(t, e);
+                                });
+                            return {
+                                abort: function () {
+                                    (o.ensureAborted(), n && n.abort());
+                                },
+                                forceMinPriority: function (e) {
+                                    ((t = e), n && n.forceMinPriority(e));
+                                },
+                            };
+                        }),
+                        t
+                    );
+                })(),
+                se = (function () {
+                    function t(t, e, n) {
+                        ((this.test = t),
+                            (this.trueBranch = e),
+                            (this.falseBranch = n));
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return (
+                                this.test() ? this.trueBranch : this.falseBranch
+                            ).isSupported();
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            return (
+                                this.test() ? this.trueBranch : this.falseBranch
+                            ).connect(t, e);
+                        }),
+                        t
+                    );
+                })(),
+                ce = (function () {
+                    function t(t) {
+                        this.strategy = t;
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return this.strategy.isSupported();
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            var n = this.strategy.connect(t, function (t, r) {
+                                (r && n.abort(), e(t, r));
+                            });
+                            return n;
+                        }),
+                        t
+                    );
+                })();
+            function ae(t) {
+                return function () {
+                    return t.isSupported();
+                };
+            }
+            var ue,
+                he = function (t, e, n) {
+                    var r = {};
+                    function o(e, o, i, s, c) {
+                        var a = n(t, e, o, i, s, c);
+                        return ((r[e] = a), a);
+                    }
+                    var i,
+                        s = Object.assign({}, e, {
+                            hostNonTLS: t.wsHost + ":" + t.wsPort,
+                            hostTLS: t.wsHost + ":" + t.wssPort,
+                            httpPath: t.wsPath,
+                        }),
+                        c = Object.assign({}, s, { useTLS: !0 }),
+                        a = Object.assign({}, e, {
+                            hostNonTLS: t.httpHost + ":" + t.httpPort,
+                            hostTLS: t.httpHost + ":" + t.httpsPort,
+                            httpPath: t.httpPath,
+                        }),
+                        u = { loop: !0, timeout: 15e3, timeoutLimit: 6e4 },
+                        h = new Kt({
+                            lives: 2,
+                            minPingDelay: 1e4,
+                            maxPingDelay: t.activityTimeout,
+                        }),
+                        p = new Kt({
+                            lives: 2,
+                            minPingDelay: 1e4,
+                            maxPingDelay: t.activityTimeout,
+                        }),
+                        l = o("ws", "ws", 3, s, h),
+                        f = o("wss", "ws", 3, c, h),
+                        d = o("sockjs", "sockjs", 1, a),
+                        y = o("xhr_streaming", "xhr_streaming", 1, a, p),
+                        v = o("xdr_streaming", "xdr_streaming", 1, a, p),
+                        g = o("xhr_polling", "xhr_polling", 1, a),
+                        b = o("xdr_polling", "xdr_polling", 1, a),
+                        m = new Zt([l], u),
+                        _ = new Zt([f], u),
+                        w = new Zt([d], u),
+                        S = new Zt([new se(ae(y), y, v)], u),
+                        k = new Zt([new se(ae(g), g, b)], u),
+                        C = new Zt(
+                            [
+                                new se(
+                                    ae(S),
+                                    new te([S, new ie(k, { delay: 4e3 })]),
+                                    k,
+                                ),
+                            ],
+                            u,
+                        ),
+                        P = new se(ae(C), C, w);
+                    return (
+                        (i = e.useTLS
+                            ? new te([m, new ie(P, { delay: 2e3 })])
+                            : new te([
+                                  m,
+                                  new ie(_, { delay: 2e3 }),
+                                  new ie(P, { delay: 5e3 }),
+                              ])),
+                        new ne(new ce(new se(ae(l), i, P)), r, {
+                            ttl: 18e5,
+                            timeline: e.timeline,
+                            useTLS: e.useTLS,
+                        })
+                    );
+                },
+                pe = {
+                    getRequest: function (t) {
+                        var e = new window.XDomainRequest();
+                        return (
+                            (e.ontimeout = function () {
+                                (t.emit("error", new v()), t.close());
+                            }),
+                            (e.onerror = function (e) {
+                                (t.emit("error", e), t.close());
+                            }),
+                            (e.onprogress = function () {
+                                e.responseText &&
+                                    e.responseText.length > 0 &&
+                                    t.onChunk(200, e.responseText);
+                            }),
+                            (e.onload = function () {
+                                (e.responseText &&
+                                    e.responseText.length > 0 &&
+                                    t.onChunk(200, e.responseText),
+                                    t.emit("finished", 200),
+                                    t.close());
+                            }),
+                            e
+                        );
+                    },
+                    abortRequest: function (t) {
+                        ((t.ontimeout =
+                            t.onerror =
+                            t.onprogress =
+                            t.onload =
+                                null),
+                            t.abort());
+                    },
+                },
+                le = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                fe = (function (t) {
+                    function e(e, n, r) {
+                        var o = t.call(this) || this;
+                        return ((o.hooks = e), (o.method = n), (o.url = r), o);
+                    }
+                    return (
+                        le(e, t),
+                        (e.prototype.start = function (t) {
+                            var e = this;
+                            ((this.position = 0),
+                                (this.xhr = this.hooks.getRequest(this)),
+                                (this.unloader = function () {
+                                    e.close();
+                                }),
+                                Ce.addUnloadListener(this.unloader),
+                                this.xhr.open(this.method, this.url, !0),
+                                this.xhr.setRequestHeader &&
+                                    this.xhr.setRequestHeader(
+                                        "Content-Type",
+                                        "application/json",
+                                    ),
+                                this.xhr.send(t));
+                        }),
+                        (e.prototype.close = function () {
+                            (this.unloader &&
+                                (Ce.removeUnloadListener(this.unloader),
+                                (this.unloader = null)),
+                                this.xhr &&
+                                    (this.hooks.abortRequest(this.xhr),
+                                    (this.xhr = null)));
+                        }),
+                        (e.prototype.onChunk = function (t, e) {
+                            for (;;) {
+                                var n = this.advanceBuffer(e);
+                                if (!n) break;
+                                this.emit("chunk", { status: t, data: n });
+                            }
+                            this.isBufferTooLong(e) &&
+                                this.emit("buffer_too_long");
+                        }),
+                        (e.prototype.advanceBuffer = function (t) {
+                            var e = t.slice(this.position),
+                                n = e.indexOf("\n");
+                            return -1 !== n
+                                ? ((this.position += n + 1), e.slice(0, n))
+                                : null;
+                        }),
+                        (e.prototype.isBufferTooLong = function (t) {
+                            return (
+                                this.position === t.length && t.length > 262144
+                            );
+                        }),
+                        e
+                    );
+                })(pt);
+            !(function (t) {
+                ((t[(t.CONNECTING = 0)] = "CONNECTING"),
+                    (t[(t.OPEN = 1)] = "OPEN"),
+                    (t[(t.CLOSED = 3)] = "CLOSED"));
+            })(ue || (ue = {}));
+            var de = ue,
+                ye = 1;
+            function ve(t) {
+                var e = -1 === t.indexOf("?") ? "?" : "&";
+                return t + e + "t=" + +new Date() + "&n=" + ye++;
+            }
+            function ge(t) {
+                return Ce.randomInt(t);
+            }
+            var be,
+                me = (function () {
+                    function t(t, e) {
+                        ((this.hooks = t),
+                            (this.session =
+                                ge(1e3) +
+                                "/" +
+                                (function (t) {
+                                    for (var e = [], n = 0; n < t; n++)
+                                        e.push(ge(32).toString(32));
+                                    return e.join("");
+                                })(8)),
+                            (this.location = (function (t) {
+                                var e = /([^\?]*)\/*(\??.*)/.exec(t);
+                                return { base: e[1], queryString: e[2] };
+                            })(e)),
+                            (this.readyState = de.CONNECTING),
+                            this.openStream());
+                    }
+                    return (
+                        (t.prototype.send = function (t) {
+                            return this.sendRaw(JSON.stringify([t]));
+                        }),
+                        (t.prototype.ping = function () {
+                            this.hooks.sendHeartbeat(this);
+                        }),
+                        (t.prototype.close = function (t, e) {
+                            this.onClose(t, e, !0);
+                        }),
+                        (t.prototype.sendRaw = function (t) {
+                            if (this.readyState !== de.OPEN) return !1;
+                            try {
+                                return (
+                                    Ce.createSocketRequest(
+                                        "POST",
+                                        ve(
+                                            ((e = this.location),
+                                            (n = this.session),
+                                            e.base + "/" + n + "/xhr_send"),
+                                        ),
+                                    ).start(t),
+                                    !0
+                                );
+                            } catch (t) {
+                                return !1;
+                            }
+                            var e, n;
+                        }),
+                        (t.prototype.reconnect = function () {
+                            (this.closeStream(), this.openStream());
+                        }),
+                        (t.prototype.onClose = function (t, e, n) {
+                            (this.closeStream(),
+                                (this.readyState = de.CLOSED),
+                                this.onclose &&
+                                    this.onclose({
+                                        code: t,
+                                        reason: e,
+                                        wasClean: n,
+                                    }));
+                        }),
+                        (t.prototype.onChunk = function (t) {
+                            var e;
+                            if (200 === t.status)
+                                switch (
+                                    (this.readyState === de.OPEN &&
+                                        this.onActivity(),
+                                    t.data.slice(0, 1))
+                                ) {
+                                    case "o":
+                                        ((e = JSON.parse(
+                                            t.data.slice(1) || "{}",
+                                        )),
+                                            this.onOpen(e));
+                                        break;
+                                    case "a":
+                                        e = JSON.parse(t.data.slice(1) || "[]");
+                                        for (var n = 0; n < e.length; n++)
+                                            this.onEvent(e[n]);
+                                        break;
+                                    case "m":
+                                        ((e = JSON.parse(
+                                            t.data.slice(1) || "null",
+                                        )),
+                                            this.onEvent(e));
+                                        break;
+                                    case "h":
+                                        this.hooks.onHeartbeat(this);
+                                        break;
+                                    case "c":
+                                        ((e = JSON.parse(
+                                            t.data.slice(1) || "[]",
+                                        )),
+                                            this.onClose(e[0], e[1], !0));
+                                }
+                        }),
+                        (t.prototype.onOpen = function (t) {
+                            var e, n, r;
+                            this.readyState === de.CONNECTING
+                                ? (t &&
+                                      t.hostname &&
+                                      (this.location.base =
+                                          ((e = this.location.base),
+                                          (n = t.hostname),
+                                          (r =
+                                              /(https?:\/\/)([^\/:]+)((\/|:)?.*)/.exec(
+                                                  e,
+                                              ))[1] +
+                                              n +
+                                              r[3])),
+                                  (this.readyState = de.OPEN),
+                                  this.onopen && this.onopen())
+                                : this.onClose(1006, "Server lost session", !0);
+                        }),
+                        (t.prototype.onEvent = function (t) {
+                            this.readyState === de.OPEN &&
+                                this.onmessage &&
+                                this.onmessage({ data: t });
+                        }),
+                        (t.prototype.onActivity = function () {
+                            this.onactivity && this.onactivity();
+                        }),
+                        (t.prototype.onError = function (t) {
+                            this.onerror && this.onerror(t);
+                        }),
+                        (t.prototype.openStream = function () {
+                            var t = this;
+                            ((this.stream = Ce.createSocketRequest(
+                                "POST",
+                                ve(
+                                    this.hooks.getReceiveURL(
+                                        this.location,
+                                        this.session,
+                                    ),
+                                ),
+                            )),
+                                this.stream.bind("chunk", function (e) {
+                                    t.onChunk(e);
+                                }),
+                                this.stream.bind("finished", function (e) {
+                                    t.hooks.onFinished(t, e);
+                                }),
+                                this.stream.bind(
+                                    "buffer_too_long",
+                                    function () {
+                                        t.reconnect();
+                                    },
+                                ));
+                            try {
+                                this.stream.start();
+                            } catch (e) {
+                                M.defer(function () {
+                                    (t.onError(e),
+                                        t.onClose(
+                                            1006,
+                                            "Could not start streaming",
+                                            !1,
+                                        ));
+                                });
+                            }
+                        }),
+                        (t.prototype.closeStream = function () {
+                            this.stream &&
+                                (this.stream.unbind_all(),
+                                this.stream.close(),
+                                (this.stream = null));
+                        }),
+                        t
+                    );
+                })(),
+                _e = {
+                    getReceiveURL: function (t, e) {
+                        return (
+                            t.base + "/" + e + "/xhr_streaming" + t.queryString
+                        );
+                    },
+                    onHeartbeat: function (t) {
+                        t.sendRaw("[]");
+                    },
+                    sendHeartbeat: function (t) {
+                        t.sendRaw("[]");
+                    },
+                    onFinished: function (t, e) {
+                        t.onClose(
+                            1006,
+                            "Connection interrupted (" + e + ")",
+                            !1,
+                        );
+                    },
+                },
+                we = {
+                    getReceiveURL: function (t, e) {
+                        return t.base + "/" + e + "/xhr" + t.queryString;
+                    },
+                    onHeartbeat: function () {},
+                    sendHeartbeat: function (t) {
+                        t.sendRaw("[]");
+                    },
+                    onFinished: function (t, e) {
+                        200 === e
+                            ? t.reconnect()
+                            : t.onClose(
+                                  1006,
+                                  "Connection interrupted (" + e + ")",
+                                  !1,
+                              );
+                    },
+                },
+                Se = {
+                    getRequest: function (t) {
+                        var e = new (Ce.getXHRAPI())();
+                        return (
+                            (e.onreadystatechange = e.onprogress =
+                                function () {
+                                    switch (e.readyState) {
+                                        case 3:
+                                            e.responseText &&
+                                                e.responseText.length > 0 &&
+                                                t.onChunk(
+                                                    e.status,
+                                                    e.responseText,
+                                                );
+                                            break;
+                                        case 4:
+                                            (e.responseText &&
+                                                e.responseText.length > 0 &&
+                                                t.onChunk(
+                                                    e.status,
+                                                    e.responseText,
+                                                ),
+                                                t.emit("finished", e.status),
+                                                t.close());
+                                    }
+                                }),
+                            e
+                        );
+                    },
+                    abortRequest: function (t) {
+                        ((t.onreadystatechange = null), t.abort());
+                    },
+                },
+                ke = {
+                    createStreamingSocket: function (t) {
+                        return this.createSocket(_e, t);
+                    },
+                    createPollingSocket: function (t) {
+                        return this.createSocket(we, t);
+                    },
+                    createSocket: function (t, e) {
+                        return new me(t, e);
+                    },
+                    createXHR: function (t, e) {
+                        return this.createRequest(Se, t, e);
+                    },
+                    createRequest: function (t, e, n) {
+                        return new fe(t, e, n);
+                    },
+                    createXDR: function (t, e) {
+                        return this.createRequest(pe, t, e);
+                    },
+                },
+                Ce = {
+                    nextAuthCallbackID: 1,
+                    auth_callbacks: {},
+                    ScriptReceivers: i,
+                    DependenciesReceivers: a,
+                    getDefaultStrategy: he,
+                    Transports: Pt,
+                    transportConnectionInitializer: function () {
+                        var t = this;
+                        (t.timeline.info(
+                            t.buildTimelineMessage({
+                                transport:
+                                    t.name + (t.options.useTLS ? "s" : ""),
+                            }),
+                        ),
+                            t.hooks.isInitialized()
+                                ? t.changeState("initialized")
+                                : t.hooks.file
+                                  ? (t.changeState("initializing"),
+                                    u.load(
+                                        t.hooks.file,
+                                        { useTLS: t.options.useTLS },
+                                        function (e, n) {
+                                            t.hooks.isInitialized()
+                                                ? (t.changeState("initialized"),
+                                                  n(!0))
+                                                : (e && t.onError(e),
+                                                  t.onClose(),
+                                                  n(!1));
+                                        },
+                                    ))
+                                  : t.onClose());
+                    },
+                    HTTPFactory: ke,
+                    TimelineTransport: rt,
+                    getXHRAPI: function () {
+                        return window.XMLHttpRequest;
+                    },
+                    getWebSocketAPI: function () {
+                        return window.WebSocket || window.MozWebSocket;
+                    },
+                    setup: function (t) {
+                        var e = this;
+                        window.Pusher = t;
+                        var n = function () {
+                            e.onDocumentBody(t.ready);
+                        };
+                        window.JSON ? n() : u.load("json2", {}, n);
+                    },
+                    getDocument: function () {
+                        return document;
+                    },
+                    getProtocol: function () {
+                        return this.getDocument().location.protocol;
+                    },
+                    getAuthorizers: function () {
+                        return { ajax: k, jsonp: tt };
+                    },
+                    onDocumentBody: function (t) {
+                        var e = this;
+                        document.body
+                            ? t()
+                            : setTimeout(function () {
+                                  e.onDocumentBody(t);
+                              }, 0);
+                    },
+                    createJSONPRequest: function (t, e) {
+                        return new nt(t, e);
+                    },
+                    createScriptRequest: function (t) {
+                        return new et(t);
+                    },
+                    getLocalStorage: function () {
+                        try {
+                            return window.localStorage;
+                        } catch (t) {
+                            return;
+                        }
+                    },
+                    createXHR: function () {
+                        return this.getXHRAPI()
+                            ? this.createXMLHttpRequest()
+                            : this.createMicrosoftXHR();
+                    },
+                    createXMLHttpRequest: function () {
+                        return new (this.getXHRAPI())();
+                    },
+                    createMicrosoftXHR: function () {
+                        return new ActiveXObject("Microsoft.XMLHTTP");
+                    },
+                    getNetwork: function () {
+                        return Ot;
+                    },
+                    createWebSocket: function (t) {
+                        return new (this.getWebSocketAPI())(t);
+                    },
+                    createSocketRequest: function (t, e) {
+                        if (this.isXHRSupported())
+                            return this.HTTPFactory.createXHR(t, e);
+                        if (this.isXDRSupported(0 === e.indexOf("https:")))
+                            return this.HTTPFactory.createXDR(t, e);
+                        throw "Cross-origin HTTP requests are not supported";
+                    },
+                    isXHRSupported: function () {
+                        var t = this.getXHRAPI();
+                        return Boolean(t) && void 0 !== new t().withCredentials;
+                    },
+                    isXDRSupported: function (t) {
+                        var e = t ? "https:" : "http:",
+                            n = this.getProtocol();
+                        return Boolean(window.XDomainRequest) && n === e;
+                    },
+                    addUnloadListener: function (t) {
+                        void 0 !== window.addEventListener
+                            ? window.addEventListener("unload", t, !1)
+                            : void 0 !== window.attachEvent &&
+                              window.attachEvent("onunload", t);
+                    },
+                    removeUnloadListener: function (t) {
+                        void 0 !== window.addEventListener
+                            ? window.removeEventListener("unload", t, !1)
+                            : void 0 !== window.detachEvent &&
+                              window.detachEvent("onunload", t);
+                    },
+                    randomInt: function (t) {
+                        return Math.floor(
+                            ((window.crypto || window.msCrypto).getRandomValues(
+                                new Uint32Array(1),
+                            )[0] /
+                                Math.pow(2, 32)) *
+                                t,
+                        );
+                    },
+                };
+            !(function (t) {
+                ((t[(t.ERROR = 3)] = "ERROR"),
+                    (t[(t.INFO = 6)] = "INFO"),
+                    (t[(t.DEBUG = 7)] = "DEBUG"));
+            })(be || (be = {}));
+            var Pe = be,
+                Te = (function () {
+                    function t(t, e, n) {
+                        ((this.key = t),
+                            (this.session = e),
+                            (this.events = []),
+                            (this.options = n || {}),
+                            (this.sent = 0),
+                            (this.uniqueID = 0));
+                    }
+                    return (
+                        (t.prototype.log = function (t, e) {
+                            t <= this.options.level &&
+                                (this.events.push(
+                                    z({}, e, { timestamp: M.now() }),
+                                ),
+                                this.options.limit &&
+                                    this.events.length > this.options.limit &&
+                                    this.events.shift());
+                        }),
+                        (t.prototype.error = function (t) {
+                            this.log(Pe.ERROR, t);
+                        }),
+                        (t.prototype.info = function (t) {
+                            this.log(Pe.INFO, t);
+                        }),
+                        (t.prototype.debug = function (t) {
+                            this.log(Pe.DEBUG, t);
+                        }),
+                        (t.prototype.isEmpty = function () {
+                            return 0 === this.events.length;
+                        }),
+                        (t.prototype.send = function (t, e) {
+                            var n = this,
+                                r = z(
+                                    {
+                                        session: this.session,
+                                        bundle: this.sent + 1,
+                                        key: this.key,
+                                        lib: "js",
+                                        version: this.options.version,
+                                        cluster: this.options.cluster,
+                                        features: this.options.features,
+                                        timeline: this.events,
+                                    },
+                                    this.options.params,
+                                );
+                            return (
+                                (this.events = []),
+                                t(r, function (t, r) {
+                                    (t || n.sent++, e && e(t, r));
+                                }),
+                                !0
+                            );
+                        }),
+                        (t.prototype.generateUniqueID = function () {
+                            return (this.uniqueID++, this.uniqueID);
+                        }),
+                        t
+                    );
+                })(),
+                Oe = (function () {
+                    function t(t, e, n, r) {
+                        ((this.name = t),
+                            (this.priority = e),
+                            (this.transport = n),
+                            (this.options = r || {}));
+                    }
+                    return (
+                        (t.prototype.isSupported = function () {
+                            return this.transport.isSupported({
+                                useTLS: this.options.useTLS,
+                            });
+                        }),
+                        (t.prototype.connect = function (t, e) {
+                            var n = this;
+                            if (!this.isSupported()) return Ee(new w(), e);
+                            if (this.priority < t) return Ee(new g(), e);
+                            var r = !1,
+                                o = this.transport.createConnection(
+                                    this.name,
+                                    this.priority,
+                                    this.options.key,
+                                    this.options,
+                                ),
+                                i = null,
+                                s = function () {
+                                    (o.unbind("initialized", s), o.connect());
+                                },
+                                c = function () {
+                                    i = Qt.createHandshake(o, function (t) {
+                                        ((r = !0), h(), e(null, t));
+                                    });
+                                },
+                                a = function (t) {
+                                    (h(), e(t));
+                                },
+                                u = function () {
+                                    var t;
+                                    (h(), (t = K(o)), e(new b(t)));
+                                },
+                                h = function () {
+                                    (o.unbind("initialized", s),
+                                        o.unbind("open", c),
+                                        o.unbind("error", a),
+                                        o.unbind("closed", u));
+                                };
+                            return (
+                                o.bind("initialized", s),
+                                o.bind("open", c),
+                                o.bind("error", a),
+                                o.bind("closed", u),
+                                o.initialize(),
+                                {
+                                    abort: function () {
+                                        r || (h(), i ? i.close() : o.close());
+                                    },
+                                    forceMinPriority: function (t) {
+                                        r ||
+                                            (n.priority < t &&
+                                                (i ? i.close() : o.close()));
+                                    },
+                                }
+                            );
+                        }),
+                        t
+                    );
+                })();
+            function Ee(t, e) {
+                return (
+                    M.defer(function () {
+                        e(t);
+                    }),
+                    { abort: function () {}, forceMinPriority: function () {} }
+                );
+            }
+            var Ae = Ce.Transports,
+                xe = function (t, e, n, r, o, i) {
+                    var s,
+                        c = Ae[n];
+                    if (!c) throw new _(n);
+                    return (
+                        !(
+                            (t.enabledTransports &&
+                                -1 === B(t.enabledTransports, e)) ||
+                            (t.disabledTransports &&
+                                -1 !== B(t.disabledTransports, e))
+                        )
+                            ? ((o = Object.assign(
+                                  { ignoreNullOrigin: t.ignoreNullOrigin },
+                                  o,
+                              )),
+                              (s = new Oe(e, r, i ? i.getAssistant(c) : c, o)))
+                            : (s = Le),
+                        s
+                    );
+                },
+                Le = {
+                    isSupported: function () {
+                        return !1;
+                    },
+                    connect: function (t, e) {
+                        var n = M.defer(function () {
+                            e(new w());
+                        });
+                        return {
+                            abort: function () {
+                                n.ensureAborted();
+                            },
+                            forceMinPriority: function () {},
+                        };
+                    },
+                };
+            var Re = function (t) {
+                    if (void 0 === Ce.getAuthorizers()[t.transport])
+                        throw (
+                            "'" +
+                            t.transport +
+                            "' is not a recognized auth transport"
+                        );
+                    return function (e, n) {
+                        var o = (function (t, e) {
+                            var n =
+                                "socket_id=" + encodeURIComponent(t.socketId);
+                            for (var r in e.params)
+                                n +=
+                                    "&" +
+                                    encodeURIComponent(r) +
+                                    "=" +
+                                    encodeURIComponent(e.params[r]);
+                            if (null != e.paramsProvider) {
+                                var o = e.paramsProvider();
+                                for (var r in o)
+                                    n +=
+                                        "&" +
+                                        encodeURIComponent(r) +
+                                        "=" +
+                                        encodeURIComponent(o[r]);
+                            }
+                            return n;
+                        })(e, t);
+                        Ce.getAuthorizers()[t.transport](
+                            Ce,
+                            o,
+                            t,
+                            r.UserAuthentication,
+                            n,
+                        );
+                    };
+                },
+                je = function (t) {
+                    if (void 0 === Ce.getAuthorizers()[t.transport])
+                        throw (
+                            "'" +
+                            t.transport +
+                            "' is not a recognized auth transport"
+                        );
+                    return function (e, n) {
+                        var o = (function (t, e) {
+                            var n =
+                                "socket_id=" + encodeURIComponent(t.socketId);
+                            for (var r in ((n +=
+                                "&channel_name=" +
+                                encodeURIComponent(t.channelName)),
+                            e.params))
+                                n +=
+                                    "&" +
+                                    encodeURIComponent(r) +
+                                    "=" +
+                                    encodeURIComponent(e.params[r]);
+                            if (null != e.paramsProvider) {
+                                var o = e.paramsProvider();
+                                for (var r in o)
+                                    n +=
+                                        "&" +
+                                        encodeURIComponent(r) +
+                                        "=" +
+                                        encodeURIComponent(o[r]);
+                            }
+                            return n;
+                        })(e, t);
+                        Ce.getAuthorizers()[t.transport](
+                            Ce,
+                            o,
+                            t,
+                            r.ChannelAuthorization,
+                            n,
+                        );
+                    };
+                },
+                Ie = function () {
+                    return (Ie =
+                        Object.assign ||
+                        function (t) {
+                            for (var e, n = 1, r = arguments.length; n < r; n++)
+                                for (var o in (e = arguments[n]))
+                                    Object.prototype.hasOwnProperty.call(
+                                        e,
+                                        o,
+                                    ) && (t[o] = e[o]);
+                            return t;
+                        }).apply(this, arguments);
+                };
+            function De(t) {
+                return t.httpHost
+                    ? t.httpHost
+                    : t.cluster
+                      ? "sockjs-" + t.cluster + ".pusher.com"
+                      : s.httpHost;
+            }
+            function Ne(t) {
+                return t.wsHost ? t.wsHost : "ws-" + t.cluster + ".pusher.com";
+            }
+            function He(t) {
+                return "https:" === Ce.getProtocol() || !1 !== t.forceTLS;
+            }
+            function Ue(t) {
+                return "enableStats" in t
+                    ? t.enableStats
+                    : "disableStats" in t && !t.disableStats;
+            }
+            function Me(t) {
+                var e = Ie(Ie({}, s.userAuthentication), t.userAuthentication);
+                return "customHandler" in e && null != e.customHandler
+                    ? e.customHandler
+                    : Re(e);
+            }
+            function ze(t, e) {
+                var n = (function (t, e) {
+                    var n;
+                    return (
+                        "channelAuthorization" in t
+                            ? (n = Ie(
+                                  Ie({}, s.channelAuthorization),
+                                  t.channelAuthorization,
+                              ))
+                            : ((n = {
+                                  transport: t.authTransport || s.authTransport,
+                                  endpoint: t.authEndpoint || s.authEndpoint,
+                              }),
+                              "auth" in t &&
+                                  ("params" in t.auth &&
+                                      (n.params = t.auth.params),
+                                  "headers" in t.auth &&
+                                      (n.headers = t.auth.headers)),
+                              "authorizer" in t &&
+                                  (n.customHandler = (function (t, e, n) {
+                                      var r = {
+                                          authTransport: e.transport,
+                                          authEndpoint: e.endpoint,
+                                          auth: {
+                                              params: e.params,
+                                              headers: e.headers,
+                                          },
+                                      };
+                                      return function (e, o) {
+                                          var i = t.channel(e.channelName);
+                                          n(i, r).authorize(e.socketId, o);
+                                      };
+                                  })(e, n, t.authorizer))),
+                        n
+                    );
+                })(t, e);
+                return "customHandler" in n && null != n.customHandler
+                    ? n.customHandler
+                    : je(n);
+            }
+            var qe = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Be = (function (t) {
+                    function e(e) {
+                        var n =
+                            t.call(this, function (t, e) {
+                                Z.debug(
+                                    "No callbacks on watchlist events for " + t,
+                                );
+                            }) || this;
+                        return (
+                            (n.pusher = e),
+                            n.bindWatchlistInternalEvent(),
+                            n
+                        );
+                    }
+                    return (
+                        qe(e, t),
+                        (e.prototype.handleEvent = function (t) {
+                            var e = this;
+                            t.data.events.forEach(function (t) {
+                                e.emit(t.name, t);
+                            });
+                        }),
+                        (e.prototype.bindWatchlistInternalEvent = function () {
+                            var t = this;
+                            this.pusher.connection.bind(
+                                "message",
+                                function (e) {
+                                    "pusher_internal:watchlist_events" ===
+                                        e.event && t.handleEvent(e);
+                                },
+                            );
+                        }),
+                        e
+                    );
+                })(pt);
+            var Fe = function () {
+                    var t, e;
+                    return {
+                        promise: new Promise(function (n, r) {
+                            ((t = n), (e = r));
+                        }),
+                        resolve: t,
+                        reject: e,
+                    };
+                },
+                Xe = (function () {
+                    var t = function (e, n) {
+                        return (t =
+                            Object.setPrototypeOf ||
+                            ({ __proto__: [] } instanceof Array &&
+                                function (t, e) {
+                                    t.__proto__ = e;
+                                }) ||
+                            function (t, e) {
+                                for (var n in e)
+                                    e.hasOwnProperty(n) && (t[n] = e[n]);
+                            })(e, n);
+                    };
+                    return function (e, n) {
+                        function r() {
+                            this.constructor = e;
+                        }
+                        (t(e, n),
+                            (e.prototype =
+                                null === n
+                                    ? Object.create(n)
+                                    : ((r.prototype = n.prototype), new r())));
+                    };
+                })(),
+                Je = (function (t) {
+                    function e(e) {
+                        var n =
+                            t.call(this, function (t, e) {
+                                Z.debug("No callbacks on user for " + t);
+                            }) || this;
+                        return (
+                            (n.signin_requested = !1),
+                            (n.user_data = null),
+                            (n.serverToUserChannel = null),
+                            (n.signinDonePromise = null),
+                            (n._signinDoneResolve = null),
+                            (n._onAuthorize = function (t, e) {
+                                if (t)
+                                    return (
+                                        Z.warn("Error during signin: " + t),
+                                        void n._cleanup()
+                                    );
+                                n.pusher.send_event("pusher:signin", {
+                                    auth: e.auth,
+                                    user_data: e.user_data,
+                                });
+                            }),
+                            (n.pusher = e),
+                            n.pusher.connection.bind(
+                                "state_change",
+                                function (t) {
+                                    var e = t.previous,
+                                        r = t.current;
+                                    ("connected" !== e &&
+                                        "connected" === r &&
+                                        n._signin(),
+                                        "connected" === e &&
+                                            "connected" !== r &&
+                                            (n._cleanup(),
+                                            n._newSigninPromiseIfNeeded()));
+                                },
+                            ),
+                            (n.watchlist = new Be(e)),
+                            n.pusher.connection.bind("message", function (t) {
+                                ("pusher:signin_success" === t.event &&
+                                    n._onSigninSuccess(t.data),
+                                    n.serverToUserChannel &&
+                                        n.serverToUserChannel.name ===
+                                            t.channel &&
+                                        n.serverToUserChannel.handleEvent(t));
+                            }),
+                            n
+                        );
+                    }
+                    return (
+                        Xe(e, t),
+                        (e.prototype.signin = function () {
+                            this.signin_requested ||
+                                ((this.signin_requested = !0), this._signin());
+                        }),
+                        (e.prototype._signin = function () {
+                            this.signin_requested &&
+                                (this._newSigninPromiseIfNeeded(),
+                                "connected" === this.pusher.connection.state &&
+                                    this.pusher.config.userAuthenticator(
+                                        {
+                                            socketId:
+                                                this.pusher.connection
+                                                    .socket_id,
+                                        },
+                                        this._onAuthorize,
+                                    ));
+                        }),
+                        (e.prototype._onSigninSuccess = function (t) {
+                            try {
+                                this.user_data = JSON.parse(t.user_data);
+                            } catch (e) {
+                                return (
+                                    Z.error(
+                                        "Failed parsing user data after signin: " +
+                                            t.user_data,
+                                    ),
+                                    void this._cleanup()
+                                );
+                            }
+                            if (
+                                "string" != typeof this.user_data.id ||
+                                "" === this.user_data.id
+                            )
+                                return (
+                                    Z.error(
+                                        "user_data doesn't contain an id. user_data: " +
+                                            this.user_data,
+                                    ),
+                                    void this._cleanup()
+                                );
+                            (this._signinDoneResolve(),
+                                this._subscribeChannels());
+                        }),
+                        (e.prototype._subscribeChannels = function () {
+                            var t,
+                                e = this;
+                            ((this.serverToUserChannel = new Nt(
+                                "#server-to-user-" + this.user_data.id,
+                                this.pusher,
+                            )),
+                                this.serverToUserChannel.bind_global(
+                                    function (t, n) {
+                                        0 !== t.indexOf("pusher_internal:") &&
+                                            0 !== t.indexOf("pusher:") &&
+                                            e.emit(t, n);
+                                    },
+                                ),
+                                (t = this.serverToUserChannel)
+                                    .subscriptionPending &&
+                                t.subscriptionCancelled
+                                    ? t.reinstateSubscription()
+                                    : t.subscriptionPending ||
+                                      "connected" !==
+                                          e.pusher.connection.state ||
+                                      t.subscribe());
+                        }),
+                        (e.prototype._cleanup = function () {
+                            ((this.user_data = null),
+                                this.serverToUserChannel &&
+                                    (this.serverToUserChannel.unbind_all(),
+                                    this.serverToUserChannel.disconnect(),
+                                    (this.serverToUserChannel = null)),
+                                this.signin_requested &&
+                                    this._signinDoneResolve());
+                        }),
+                        (e.prototype._newSigninPromiseIfNeeded = function () {
+                            if (
+                                this.signin_requested &&
+                                (!this.signinDonePromise ||
+                                    this.signinDonePromise.done)
+                            ) {
+                                var t = Fe(),
+                                    e = t.promise,
+                                    n = t.resolve;
+                                t.reject;
+                                e.done = !1;
+                                var r = function () {
+                                    e.done = !0;
+                                };
+                                (e.then(r).catch(r),
+                                    (this.signinDonePromise = e),
+                                    (this._signinDoneResolve = n));
+                            }
+                        }),
+                        e
+                    );
+                })(pt),
+                We = (function () {
+                    function t(e, n) {
+                        var r,
+                            o,
+                            i,
+                            c = this;
+                        (!(function (t) {
+                            if (null == t)
+                                throw "You must pass your app key when you instantiate Pusher.";
+                        })(e),
+                            (function (t) {
+                                if (null == t)
+                                    throw "You must pass an options object";
+                                if (null == t.cluster)
+                                    throw "Options object must provide a cluster";
+                                "disableStats" in t &&
+                                    Z.warn(
+                                        "The disableStats option is deprecated in favor of enableStats",
+                                    );
+                            })(n),
+                            (this.key = e),
+                            (this.config =
+                                ((o = this),
+                                (i = {
+                                    activityTimeout:
+                                        (r = n).activityTimeout ||
+                                        s.activityTimeout,
+                                    cluster: r.cluster,
+                                    httpPath: r.httpPath || s.httpPath,
+                                    httpPort: r.httpPort || s.httpPort,
+                                    httpsPort: r.httpsPort || s.httpsPort,
+                                    pongTimeout: r.pongTimeout || s.pongTimeout,
+                                    statsHost: r.statsHost || s.stats_host,
+                                    unavailableTimeout:
+                                        r.unavailableTimeout ||
+                                        s.unavailableTimeout,
+                                    wsPath: r.wsPath || s.wsPath,
+                                    wsPort: r.wsPort || s.wsPort,
+                                    wssPort: r.wssPort || s.wssPort,
+                                    enableStats: Ue(r),
+                                    httpHost: De(r),
+                                    useTLS: He(r),
+                                    wsHost: Ne(r),
+                                    userAuthenticator: Me(r),
+                                    channelAuthorizer: ze(r, o),
+                                }),
+                                "disabledTransports" in r &&
+                                    (i.disabledTransports =
+                                        r.disabledTransports),
+                                "enabledTransports" in r &&
+                                    (i.enabledTransports = r.enabledTransports),
+                                "ignoreNullOrigin" in r &&
+                                    (i.ignoreNullOrigin = r.ignoreNullOrigin),
+                                "timelineParams" in r &&
+                                    (i.timelineParams = r.timelineParams),
+                                "nacl" in r && (i.nacl = r.nacl),
+                                i)),
+                            (this.channels = Qt.createChannels()),
+                            (this.global_emitter = new pt()),
+                            (this.sessionID = Ce.randomInt(1e9)),
+                            (this.timeline = new Te(this.key, this.sessionID, {
+                                cluster: this.config.cluster,
+                                features: t.getClientFeatures(),
+                                params: this.config.timelineParams || {},
+                                limit: 50,
+                                level: Pe.INFO,
+                                version: s.VERSION,
+                            })),
+                            this.config.enableStats &&
+                                (this.timelineSender = Qt.createTimelineSender(
+                                    this.timeline,
+                                    {
+                                        host: this.config.statsHost,
+                                        path:
+                                            "/timeline/v2/" +
+                                            Ce.TimelineTransport.name,
+                                    },
+                                )));
+                        ((this.connection = Qt.createConnectionManager(
+                            this.key,
+                            {
+                                getStrategy: function (t) {
+                                    return Ce.getDefaultStrategy(
+                                        c.config,
+                                        t,
+                                        xe,
+                                    );
+                                },
+                                timeline: this.timeline,
+                                activityTimeout: this.config.activityTimeout,
+                                pongTimeout: this.config.pongTimeout,
+                                unavailableTimeout:
+                                    this.config.unavailableTimeout,
+                                useTLS: Boolean(this.config.useTLS),
+                            },
+                        )),
+                            this.connection.bind("connected", function () {
+                                (c.subscribeAll(),
+                                    c.timelineSender &&
+                                        c.timelineSender.send(
+                                            c.connection.isUsingTLS(),
+                                        ));
+                            }),
+                            this.connection.bind("message", function (t) {
+                                var e =
+                                    0 === t.event.indexOf("pusher_internal:");
+                                if (t.channel) {
+                                    var n = c.channel(t.channel);
+                                    n && n.handleEvent(t);
+                                }
+                                e || c.global_emitter.emit(t.event, t.data);
+                            }),
+                            this.connection.bind("connecting", function () {
+                                c.channels.disconnect();
+                            }),
+                            this.connection.bind("disconnected", function () {
+                                c.channels.disconnect();
+                            }),
+                            this.connection.bind("error", function (t) {
+                                Z.warn(t);
+                            }),
+                            t.instances.push(this),
+                            this.timeline.info({
+                                instances: t.instances.length,
+                            }),
+                            (this.user = new Je(this)),
+                            t.isReady && this.connect());
+                    }
+                    return (
+                        (t.ready = function () {
+                            t.isReady = !0;
+                            for (var e = 0, n = t.instances.length; e < n; e++)
+                                t.instances[e].connect();
+                        }),
+                        (t.getClientFeatures = function () {
+                            return X(
+                                V({ ws: Ce.Transports.ws }, function (t) {
+                                    return t.isSupported({});
+                                }),
+                            );
+                        }),
+                        (t.prototype.channel = function (t) {
+                            return this.channels.find(t);
+                        }),
+                        (t.prototype.allChannels = function () {
+                            return this.channels.all();
+                        }),
+                        (t.prototype.connect = function () {
+                            if (
+                                (this.connection.connect(),
+                                this.timelineSender &&
+                                    !this.timelineSenderTimer)
+                            ) {
+                                var t = this.connection.isUsingTLS(),
+                                    e = this.timelineSender;
+                                this.timelineSenderTimer = new U(
+                                    6e4,
+                                    function () {
+                                        e.send(t);
+                                    },
+                                );
+                            }
+                        }),
+                        (t.prototype.disconnect = function () {
+                            (this.connection.disconnect(),
+                                this.timelineSenderTimer &&
+                                    (this.timelineSenderTimer.ensureAborted(),
+                                    (this.timelineSenderTimer = null)));
+                        }),
+                        (t.prototype.bind = function (t, e, n) {
+                            return (this.global_emitter.bind(t, e, n), this);
+                        }),
+                        (t.prototype.unbind = function (t, e, n) {
+                            return (this.global_emitter.unbind(t, e, n), this);
+                        }),
+                        (t.prototype.bind_global = function (t) {
+                            return (this.global_emitter.bind_global(t), this);
+                        }),
+                        (t.prototype.unbind_global = function (t) {
+                            return (this.global_emitter.unbind_global(t), this);
+                        }),
+                        (t.prototype.unbind_all = function (t) {
+                            return (this.global_emitter.unbind_all(), this);
+                        }),
+                        (t.prototype.subscribeAll = function () {
+                            var t;
+                            for (t in this.channels.channels)
+                                this.channels.channels.hasOwnProperty(t) &&
+                                    this.subscribe(t);
+                        }),
+                        (t.prototype.subscribe = function (t) {
+                            var e = this.channels.add(t, this);
+                            return (
+                                e.subscriptionPending && e.subscriptionCancelled
+                                    ? e.reinstateSubscription()
+                                    : e.subscriptionPending ||
+                                      "connected" !== this.connection.state ||
+                                      e.subscribe(),
+                                e
+                            );
+                        }),
+                        (t.prototype.unsubscribe = function (t) {
+                            var e = this.channels.find(t);
+                            e && e.subscriptionPending
+                                ? e.cancelSubscription()
+                                : (e = this.channels.remove(t)) &&
+                                  e.subscribed &&
+                                  e.unsubscribe();
+                        }),
+                        (t.prototype.send_event = function (t, e, n) {
+                            return this.connection.send_event(t, e, n);
+                        }),
+                        (t.prototype.shouldUseTLS = function () {
+                            return this.config.useTLS;
+                        }),
+                        (t.prototype.signin = function () {
+                            this.user.signin();
+                        }),
+                        (t.instances = []),
+                        (t.isReady = !1),
+                        (t.logToConsole = !1),
+                        (t.Runtime = Ce),
+                        (t.ScriptReceivers = Ce.ScriptReceivers),
+                        (t.DependenciesReceivers = Ce.DependenciesReceivers),
+                        (t.auth_callbacks = Ce.auth_callbacks),
+                        t
+                    );
+                })(),
+                Ge = (e.default = We);
+            Ce.setup(We);
+        },
+    ]);
+});
 //# sourceMappingURL=pusher.min.js.map
-"use strict";
-const FindContext = (()=>{
-   const self = {};
+("use strict");
+const FindContext = (() => {
+    const self = {};
 
     self.fetchApis = {
-        "staff":`${main_view.base_url}/api/employee/find`,
-        "employee":`${main_view.base_url}/ypg/employee/list`,
+        staff: `${main_view.base_url}/api/employee/find`,
+        employee: `${main_view.base_url}/ypg/employee/list`,
         // "parent":`${main_view.base_url}/api/guardian/find`,
         //"user":`${main_view.base_url}/api/user/find`
     };
 
-    self.getTitle = (role)=>{
-       switch(role){
-          case  'sfaff':
-          case 'employee':
-            return "Find Staff";
-          default:{
-            return 'Find Someone'
-          }
-       }
+    self.getTitle = (role) => {
+        switch (role) {
+            case "sfaff":
+            case "employee":
+                return "Find Staff";
+            default: {
+                return "Find Someone";
+            }
+        }
     };
 
-    self.getColumns = (role)=>{
-        switch(role){
-            case 'staff':
-            case 'employee':
-               {
-                   return [
-                     {
-                        title:"Emp_ID",
-                        data:"id"
-                     },
-                    {
-                        title:"ID",
-                        data:"code"
-                     },
-                     {
-                        title:"Name",
-                        data:"name"
-                     },
-                     {
-                        title:"Sex",
-                        data:"sex"
-                     },
-                     {
-                        title:"Email",
-                        data:"email"
-                     },
-                     {
-                        title:"Position",
-                        name:"position",
-                        data:(data,index,tr)=>{
-                           return [`<span class="text-primary">`,data.position_id,` </span>`].join('');
-                        }
-                     },
-                   ];
-
-               }
-
-            case 'user':
-            case 'login':{
+    self.getColumns = (role) => {
+        switch (role) {
+            case "staff":
+            case "employee": {
                 return [
-                     {
-                        title:"Login",
-                        data:"login_name"
-                     },
-                     {
-                        title:"Full Name",
-                        data:"full_name"
-                     },
-                     {
-                        title:"Type",
-                        data:"user_class"
-                     },
-                     {
-                        title:"Role",
-                        data:"role"
-                     },
-                     {
-                        title:"email",
-                        data:"email"
-                     },
-                     {
-                        title:"Phone",
-                        data:"phone_number"
-                     }
-                   ];
+                    {
+                        title: "Emp_ID",
+                        data: "id",
+                    },
+                    {
+                        title: "ID",
+                        data: "code",
+                    },
+                    {
+                        title: "Name",
+                        data: "name",
+                    },
+                    {
+                        title: "Sex",
+                        data: "sex",
+                    },
+                    {
+                        title: "Email",
+                        data: "email",
+                    },
+                    {
+                        title: "Position",
+                        name: "position",
+                        data: (data, index, tr) => {
+                            return [
+                                `<span class="text-primary">`,
+                                data.position_id,
+                                ` </span>`,
+                            ].join("");
+                        },
+                    },
+                ];
             }
-            default:{
-               return [];
+
+            case "user":
+            case "login": {
+                return [
+                    {
+                        title: "Login",
+                        data: "login_name",
+                    },
+                    {
+                        title: "Full Name",
+                        data: "full_name",
+                    },
+                    {
+                        title: "Type",
+                        data: "user_class",
+                    },
+                    {
+                        title: "Role",
+                        data: "role",
+                    },
+                    {
+                        title: "email",
+                        data: "email",
+                    },
+                    {
+                        title: "Phone",
+                        data: "phone_number",
+                    },
+                ];
             }
-         }
+            default: {
+                return [];
+            }
+        }
     };
 
-
-    self.getContext = (role)=>{
+    self.getContext = (role) => {
         return {
-            "title": self.getTitle(role),
-            "columns": self.getColumns(role),
-            "fetchApi":self.fetchApis[role],
+            title: self.getTitle(role),
+            columns: self.getColumns(role),
+            fetchApi: self.fetchApis[role],
         };
     };
 
     return self;
 })();
 
-const FindPersonDialog = (()=>{
-   const self = {};
-   let dialog = null;
-     self.show = (op)=>{
+const FindPersonDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
         //let dTitle = 'Find Someone';
-        dialog = dialog || new GeneralDialog({
-            cssClass:"modal-lg",
-            createContent:(me)=>{
-                return [
-                  `<div class="d-flex flex-column">`,
-                      `<div class="d-flex">`,
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                createContent: (me) => {
+                    return [
+                        `<div class="d-flex flex-column">`,
+                        `<div class="d-flex">`,
                         `<input name="search_value" class="form-control" placeholder="Search" />`,
-                      `</div>`,
-                      `<div class="w-100">`,
-                         `<table name="tblPersons" id="tblPersons" class="table mt-3">`,
+                        `</div>`,
+                        `<div class="w-100">`,
+                        `<table name="tblPersons" id="tblPersons" class="table mt-3">`,
 
-                         `<thead></thead><tbody></tbody>`,
-                         `</table>`,
-                       `</div>`,
-                   `</div>`,
-               ].join('');
-            },
-            contentCreated:(me)=>{
-                me.renderColumns = (tbl, cols) => {
+                        `<thead></thead><tbody></tbody>`,
+                        `</table>`,
+                        `</div>`,
+                        `</div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    me.renderColumns = (tbl, cols) => {
+                        const thead = tbl.querySelector("thead");
+                        const tbody = tbl.querySelector("tbody");
+                        thead.innerHTML = "";
+                        tbody.innerHTML = "";
+                        let rows = ``;
+                        let html = "";
+                        cols.map((c) => {
+                            html = [html, "<th>", c.title, "</th>"].join("");
+                        });
+                        thead.innerHTML = ["<tr>", html, "</tr>"].join("");
 
-                    const thead = tbl.querySelector('thead');
-                    const tbody = tbl.querySelector('tbody');
-                    thead.innerHTML = '';
-                    tbody.innerHTML = '';
-                    let rows =``;
-                    let html = '';
-                    cols.map(c =>{
-                        html = [html, '<th>',c.title,'</th>'].join('');
-                    });
-                    thead.innerHTML = ['<tr>',html,'</tr>'].join('');
-
-                    rows = [rows ,`<tr>
+                        rows = [
+                            rows,
+                            `<tr>
                                  <td colspan="100%" >
                                     <span class="d-flex align-items-center justify-content-center">Search for someone here</span>
                                  </td>
-                              </tr>`].join('');
-                    tbody.innerHTML = rows;
-                    // tbody.addEventListener('click', function(event)
-                    tbody.onclick = (event) =>{
-                     let tr = VSUtil.closestLimited(event.target,'tr');
-                     if (tr) {
-                        tr.classList.toggle('row-selected');
-                        if(me.dataOptions.singleSelect && tr.classList.contains('row-selected')){
-                           if(me.prev_selected_tr) me.prev_selected_tr.classList.remove('row-selected');
-                        }
-                        me.prev_selected_tr = tr;
-                     }
-                  };
-                };
+                              </tr>`,
+                        ].join("");
+                        tbody.innerHTML = rows;
+                        // tbody.addEventListener('click', function(event)
+                        tbody.onclick = (event) => {
+                            let tr = VSUtil.closestLimited(event.target, "tr");
+                            if (tr) {
+                                tr.classList.toggle("row-selected");
+                                if (
+                                    me.dataOptions.singleSelect &&
+                                    tr.classList.contains("row-selected")
+                                ) {
+                                    if (me.prev_selected_tr)
+                                        me.prev_selected_tr.classList.remove(
+                                            "row-selected",
+                                        );
+                                }
+                                me.prev_selected_tr = tr;
+                            }
+                        };
+                    };
 
-               me.getSelection = (tbl, cols)=>{
-                 //const tbl = me.controls.tblPersons;
-                 //const context = FindContext.getColumns(me.dataOptions.role);`
-                 let tbody = tbl.querySelector('tbody');
-                 let ps = [];
-                 let tds = null;
-                 tbody.querySelectorAll('tr').forEach(tr =>{
-                     if(tr.classList.contains('row-selected')){
-                        tds = tds||tr.querySelectorAll('td')
-                        let item = {};
-                        tds.forEach(td=>{
-                           item[td.dataset.name] = td.textContent;
+                    me.getSelection = (tbl, cols) => {
+                        //const tbl = me.controls.tblPersons;
+                        //const context = FindContext.getColumns(me.dataOptions.role);`
+                        let tbody = tbl.querySelector("tbody");
+                        let ps = [];
+                        let tds = null;
+                        tbody.querySelectorAll("tr").forEach((tr) => {
+                            if (tr.classList.contains("row-selected")) {
+                                tds = tds || tr.querySelectorAll("td");
+                                let item = {};
+                                tds.forEach((td) => {
+                                    item[td.dataset.name] = td.textContent;
+                                });
+                                item.emp_id = tr.dataset.id;
+                                item.id = tr.dataset.id;
+                                ps.push(item);
+                            }
                         });
-                        item.emp_id = tr.dataset.id;
-                        item.id = tr.dataset.id;
-                        ps.push(item);
-                     }
-                 });
-                 return ps;
-               }
+                        return ps;
+                    };
 
-               me.beginSearch = (search_value,tbl,context) =>{
-                   let p = {"search_value":search_value};
-                   vsapi.call(context.fetchApi,p,false,false).then(res =>{
-                     let data = res.status_code ==200 ? res.data : [];
-                     me.renderItems(data,tbl,context.columns);
-                   });
-               }
+                    me.beginSearch = (search_value, tbl, context) => {
+                        let p = { search_value: search_value };
+                        vsapi
+                            .call(context.fetchApi, p, false, false)
+                            .then((res) => {
+                                let data =
+                                    res.status_code == 200 ? res.data : [];
+                                me.renderItems(data, tbl, context.columns);
+                            });
+                    };
 
-               me.renderItems = (data,tbl,cols)=>{
-                  const tbody = tbl.querySelector('tbody');
-                   tbody.innerHTML = '';
-                   let index =0;
-                   let html = '';
-                   data.map(item =>{
-                     let row_html ='';
-                        cols.map(c =>{
-                           let name = c.name;
-                           let val = typeof c.data == 'function' ? c.data(item,index) : (item[c.data || c.name]);
+                    me.renderItems = (data, tbl, cols) => {
+                        const tbody = tbl.querySelector("tbody");
+                        tbody.innerHTML = "";
+                        let index = 0;
+                        let html = "";
+                        data.map((item) => {
+                            let row_html = "";
+                            cols.map((c) => {
+                                let name = c.name;
+                                let val =
+                                    typeof c.data == "function"
+                                        ? c.data(item, index)
+                                        : item[c.data || c.name];
 
-                           row_html = [row_html,'<td data-name="',name,'">',val,'</td>'].join('');
+                                row_html = [
+                                    row_html,
+                                    '<td data-name="',
+                                    name,
+                                    '">',
+                                    val,
+                                    "</td>",
+                                ].join("");
+                            });
+                            html += [
+                                '<tr data-id="',
+                                item.id,
+                                '">',
+                                row_html,
+                                "</tr>",
+                            ].join("");
+                            index++;
                         });
-                        html += ['<tr data-id="',item.id,'">',row_html,'</tr>'].join('');
-                        index++;
-                   });
-                   tbody.innerHTML = html;
-               }
+                        tbody.innerHTML = html;
+                    };
 
-               me.controls.search_value.onkeyup = e =>{
-                  setTimeout(()=>{
-                     me.beginSearch(e.target.value,me.controls.tblPersons,me.context);
-                  },300);
-               };
-            },
-            // extendMethods:{
-            //     "getData":(me,dataOptions)=>{
-            //        return {"photo":me.controls.userImageBox.getImage()};
-            //     }
-            // },
-            prepareFormOptions:{
-               createTitle: "Find Someone",
-            },
-            onPrepareForm:(me,data,fields,divModal)=>{
-               me.controls.search_value.value = '';
-               const context = FindContext.getContext(me.dataOptions.role);
-               me.context = context;
-               divModal.querySelector('.modal-header').classList.add('border-0','pb-0');
-               divModal.querySelector('.modal-footer').classList.add('border-0','pt-0');
-               me.renderColumns(me.controls.tblPersons, context.columns);
-               const elTitle = divModal.querySelector('.modal-content .modal-title');
-               if(elTitle){
-                  elTitle.textContent = context.title;
-               }
-               LocaleManager.translateZone(me.divModal);
-            },
-            buttons:[
-               {
-                 label:"<span>Cancel</span>",
-                 cssClass:"btn btn-warning",
-                 click:(me)=>{
-                    me.hide(false);
-                 }
-               },
-               {
-                label:'<span vslang="DataTransferItemList.OK"></span>',
-                cssClass:'btn btn-primary',
-                click:(me)=>{
-                  me.context = me.context || FindContext.getContext(me.dataOptions.role);
-                  const p = me.getSelection(me.controls.tblPersons,me.context.columns);
-                  if (!p || !p[0]){
-                     cv_interact.warning('No one is selected!');
-                     return;
-                  }
-                  const d = me.dataOptions.singleSelect ? p[0]: p;
-                  me.hide(true,d);
-                }
-              }
-            ],
-
-         });
+                    me.controls.search_value.onkeyup = (e) => {
+                        setTimeout(() => {
+                            me.beginSearch(
+                                e.target.value,
+                                me.controls.tblPersons,
+                                me.context,
+                            );
+                        }, 300);
+                    };
+                },
+                // extendMethods:{
+                //     "getData":(me,dataOptions)=>{
+                //        return {"photo":me.controls.userImageBox.getImage()};
+                //     }
+                // },
+                prepareFormOptions: {
+                    createTitle: "Find Someone",
+                },
+                onPrepareForm: (me, data, fields, divModal) => {
+                    me.controls.search_value.value = "";
+                    const context = FindContext.getContext(me.dataOptions.role);
+                    me.context = context;
+                    divModal
+                        .querySelector(".modal-header")
+                        .classList.add("border-0", "pb-0");
+                    divModal
+                        .querySelector(".modal-footer")
+                        .classList.add("border-0", "pt-0");
+                    me.renderColumns(me.controls.tblPersons, context.columns);
+                    const elTitle = divModal.querySelector(
+                        ".modal-content .modal-title",
+                    );
+                    if (elTitle) {
+                        elTitle.textContent = context.title;
+                    }
+                    LocaleManager.translateZone(me.divModal);
+                },
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn btn-warning",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="DataTransferItemList.OK"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me) => {
+                            me.context =
+                                me.context ||
+                                FindContext.getContext(me.dataOptions.role);
+                            const p = me.getSelection(
+                                me.controls.tblPersons,
+                                me.context.columns,
+                            );
+                            if (!p || !p[0]) {
+                                cv_interact.warning("No one is selected!");
+                                return;
+                            }
+                            const d = me.dataOptions.singleSelect ? p[0] : p;
+                            me.hide(true, d);
+                        },
+                    },
+                ],
+            });
         dialog.show(op);
-     }
+    };
 
-   return self;
+    return self;
 })();
-"use strict";
-const PusherClient = new function(){
+("use strict");
+const PusherClient = new (function () {
     const mThis = this;
 
-    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
-    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    this.branch_id = document
+        .querySelector('meta[name="sess_branch_id"]')
+        .getAttribute("content");
+    this.user_id = document
+        .querySelector('meta[name="sess_user_id"]')
+        .getAttribute("content");
     // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
     // this.user_id = $('meta[name="sess_user_id"]').attr('content');
-    this.base_url = main_view.base_url || document.querySelector('meta[name="base_url"]').getAttribute('content');
-    this.current_view_name = '';
+    this.base_url =
+        main_view.base_url ||
+        document.querySelector('meta[name="base_url"]').getAttribute("content");
+    this.current_view_name = "";
 
-       //*** For Demo DMS */
-    this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
+    //*** For Demo DMS */
+    this.backend_channel_name = ["dms.backend.", this.branch_id].join("");
     //*** FOr HouExpress */
-   // this.backend_channel_name = ['houex.backend.',this.branch_id].join('');
+    // this.backend_channel_name = ['houex.backend.',this.branch_id].join('');
 
-    this.pusher_channel = {'bind':()=>{ return;}};
+    this.pusher_channel = {
+        bind: () => {
+            return;
+        },
+    };
 
     //pusher_app_key are in .env file, and in main.js
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php"
 
     //*** For Demo DMS */
-    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY
+    const pusher_app_key = "e71b395ef6f9326086ca"; //process.env.PUSHER_APP_KEY
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
 
-    const pusher = new Pusher(pusher_app_key,{
-        cluster: 'ap1',
-        useTLS:true,
-        disableStats:true,
+    const pusher = new Pusher(pusher_app_key, {
+        cluster: "ap1",
+        useTLS: true,
+        disableStats: true,
         // authEndpoint:"/dms/broadcast/auth",
         //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
-        authorizer: function authorizer(channel, options){
+        authorizer: function authorizer(channel, options) {
             return {
                 authorize: function authorize(socketId, callback) {
-                    const p = {"socket_id":socketId,"channel_name":channel.name};
-                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p,false,false).then(d =>{
-                        const auth_data = d.data || d;
-                        //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
-                        if(auth_data){
-                             callback(null, auth_data);
-                             //console.log('Pusher authorization succeeded!');
-                        }else{
-                            console.error('Pusher authorization failed. This can happen when token expired!');
-                        }
-
-                    });
-                }
+                    const p = {
+                        socket_id: socketId,
+                        channel_name: channel.name,
+                    };
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/api/broadcast/auth`,
+                            p,
+                            false,
+                            false,
+                        )
+                        .then((d) => {
+                            const auth_data = d.data || d;
+                            //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
+                            if (auth_data) {
+                                callback(null, auth_data);
+                                //console.log('Pusher authorization succeeded!');
+                            } else {
+                                console.error(
+                                    "Pusher authorization failed. This can happen when token expired!",
+                                );
+                            }
+                        });
+                },
             };
-        }
+        },
     });
 
-    pusher.connection.bind('error', function(err) {
+    pusher.connection.bind("error", function (err) {
         console.error("Pusher error:", err);
     });
 
-    pusher.connection.bind('connected',(payload)=>{
-        console.info('Web socket connection successful :)');
+    pusher.connection.bind("connected", (payload) => {
+        console.info("Web socket connection successful :)");
     });
 
-    mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);
+    mThis.pusher_channel = pusher.subscribe(
+        `private-${mThis.backend_channel_name}`,
+    );
 
-    mThis.pusher_channel.bind('pusher:subscription_succeeded',(d)=>{
+    mThis.pusher_channel.bind("pusher:subscription_succeeded", (d) => {
         console.info("Channel subscription succeeded");
     });
 
-    mThis.pusher_channel.bind('pusher:subscription_error',(d)=>{
-        console.error("Channel subscription error: "+d);
+    mThis.pusher_channel.bind("pusher:subscription_error", (d) => {
+        console.error("Channel subscription error: " + d);
     });
 
-    mThis.pusher_channel.bind('order_image_created',d=>{
+    mThis.pusher_channel.bind("order_image_created", (d) => {
         let data = d.data;
         Swal.fire({
-            position: 'top-end',
-            icon: 'success',
+            position: "top-end",
+            icon: "success",
             title: data.message,
-            toast:true,
+            toast: true,
             showConfirmButton: false,
-            timer:2000,
+            timer: 2000,
             showClass: {
-                popup: 'animate__animated animate__fadeInDown'
+                popup: "animate__animated animate__fadeInDown",
             },
         });
 
-        let order_id = data.order?data.order.id:0;
+        let order_id = data.order ? data.order.id : 0;
         let image_count = (data.order || {}).image_count;
-        OrderImagesComponent.addImage(order_id,data.img,image_count);
+        OrderImagesComponent.addImage(order_id, data.img, image_count);
     });
 
-    mThis.pusher_channel.bind('order_image_deleted',d=>{
+    mThis.pusher_channel.bind("order_image_deleted", (d) => {
         let data = d.data;
         Swal.fire({
-            position: 'top-end',
-            icon: 'success',
+            position: "top-end",
+            icon: "success",
             title: data.message,
-            toast:true,
+            toast: true,
             showConfirmButton: false,
-            timer:2000,
+            timer: 2000,
             showClass: {
-                popup: 'animate__animated animate__fadeInDown'
+                popup: "animate__animated animate__fadeInDown",
             },
         });
 
         let order_id = data.order_id;
-        OrderImagesComponent.removeImage(order_id,data.image_id,data.image_count);
+        OrderImagesComponent.removeImage(
+            order_id,
+            data.image_id,
+            data.image_count,
+        );
     });
 
-    mThis.pusher_channel.bind('package_status_changed',(d) =>{
+    mThis.pusher_channel.bind("package_status_changed", (d) => {
         let data = d.data;
         //Add new notification to the notif list
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
         let msg = DUtil.escapeHtml(data.message);
-        if (data.status_id==8) toastr.success(msg,data.title);
-        else if (data.status_id==9) toastr.warning(msg,data.title);
-        else toastr.info(msg,data.title);
+        if (data.status_id == 8) toastr.success(msg, data.title);
+        else if (data.status_id == 9) toastr.warning(msg, data.title);
+        else toastr.info(msg, data.title);
 
-        if(PackageListComponent.self.is(':visible')){
-            let tr = PackageListComponent.findRowByBarcode(data.barcode || data.bar_code);
-            PackageListComponent.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
+        if (PackageListComponent.self.is(":visible")) {
+            let tr = PackageListComponent.findRowByBarcode(
+                data.barcode || data.bar_code,
+            );
+            PackageListComponent.displayDriverData(tr, {
+                driver_id: data.driver_id,
+                driver_name: data.driver_name,
+                status: data.status,
+                status_id: data.status_id,
+            });
         }
-        if (TripListComponent.self.is(':visible')){
+        if (TripListComponent.self.is(":visible")) {
             TripListComponent.packageStatusChanged_eventHandler(data);
         }
-
     });
 
     // mThis.pusher_channel.bind('package_status_changed', (d)=>{
     //     TripListComponent.packageStatusChanged_eventHandler(d);
     // });
 
-    mThis.pusher_channel.bind('order_created', (d)=>{
-        toastr.info(d.data.message, 'Order Created');
-        main_view.addNotificationItem({'title':d.data.title,'message':d.data.message});
+    mThis.pusher_channel.bind("order_created", (d) => {
+        toastr.info(d.data.message, "Order Created");
+        main_view.addNotificationItem({
+            title: d.data.title,
+            message: d.data.message,
+        });
         const tr = PickupListComponent.getExpandedRow_tr();
         //Automatically prepend new Order Row (TR), only when there is no expanded row being opened
-        if(!tr) PickupListComponent.orderCreated_eventHandler(d);
+        if (!tr) PickupListComponent.orderCreated_eventHandler(d);
     });
 
-    mThis.pusher_channel.bind('driver_accepted_order',(d) =>{
+    mThis.pusher_channel.bind("driver_accepted_order", (d) => {
         let data = d.data;
-        toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Accepted');
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        toastr.success(
+            DUtil.escapeHtml(data.message),
+            data.title ? data.title : "Order Accepted",
+        );
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
 
-        if(PickupListComponent.tblOrders){
-            if(PickupListComponent.tblOrders.style.display !== 'none'){
+        if (PickupListComponent.tblOrders) {
+            if (PickupListComponent.tblOrders.style.display !== "none") {
                 let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-                PickupListComponent.updatePickupStatus(tr,data);
+                PickupListComponent.updatePickupStatus(tr, data);
             }
         }
     });
 
-    mThis.pusher_channel.bind( 'driver_canceled_order',(d) =>{
+    mThis.pusher_channel.bind("driver_canceled_order", (d) => {
         let data = d.data;
-        toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Canceled');
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        toastr.success(
+            DUtil.escapeHtml(data.message),
+            data.title ? data.title : "Order Canceled",
+        );
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
 
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            PickupListComponent.updatePickupStatus(tr,data);
+            PickupListComponent.updatePickupStatus(tr, data);
         }
     });
 
-    mThis.pusher_channel.bind('pickup_driver_changed',(d) =>{
+    mThis.pusher_channel.bind("pickup_driver_changed", (d) => {
         let data = d.data;
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            toastr.success(DUtil.escapeHtml(data.message),'Pickup Driver Changed',data.title?data.title:'Pickup Driver Changed');
-            main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
+            toastr.success(
+                DUtil.escapeHtml(data.message),
+                "Pickup Driver Changed",
+                data.title ? data.title : "Pickup Driver Changed",
+            );
+            main_view.addNotificationItem({
+                title: data.title,
+                message: data.message,
+            });
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            PickupListComponent.updatePickupStatus(tr,data);
+            PickupListComponent.updatePickupStatus(tr, data);
         }
     });
 
-    mThis.pusher_channel.bind( 'order_status_changed',(d) =>{
+    mThis.pusher_channel.bind("order_status_changed", (d) => {
         let data = d.data;
 
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            main_view.addNotificationItem({'title':data.title,'message':data.message});
-            toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Status');
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
+            main_view.addNotificationItem({
+                title: data.title,
+                message: data.message,
+            });
+            toastr.success(
+                DUtil.escapeHtml(data.message),
+                data.title ? data.title : "Order Status",
+            );
 
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            PickupListComponent.updatePickupStatus(tr,data);
+            PickupListComponent.updatePickupStatus(tr, data);
         }
     });
 
-    mThis.pusher_channel.bind('order_deleted',(d) =>{
+    mThis.pusher_channel.bind("order_deleted", (d) => {
         let data = d.data;
-        toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted');
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+        toastr.error(
+            DUtil.escapeHtml(data.message),
+            "Order Deleted",
+            data.title ? data.title : "Order Deleted",
+        );
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            if(tr){
+            if (tr) {
                 const detail_tr = tr.nextElementSibling;
-                if (detail_tr && detail_tr.classList.contains('detail-row')){
+                if (detail_tr && detail_tr.classList.contains("detail-row")) {
                     detail_tr.remove();
                 }
                 tr.remove();
@@ -1204,48 +6247,67 @@ const PusherClient = new function(){
         }
     });
 
-    mThis.pusher_channel.bind('package_photo_picked',(d) =>{
+    mThis.pusher_channel.bind("package_photo_picked", (d) => {
         let data = d.data;
-        data.title = data.title || 'Photo Picked';
-        toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title);
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count);
+        data.title = data.title || "Photo Picked";
+        toastr.info(DUtil.escapeHtml(data.message), "Photo Picked", data.title);
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
+            PickupListComponent.setImageCount(data.order_id, data.img_count);
         }
     });
 
-    mThis.pusher_channel.bind('package_photo_deleted',(d) =>{
+    mThis.pusher_channel.bind("package_photo_deleted", (d) => {
         let data = d.data;
-        data.title = data.title || 'Photo Deleted';
-        toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title);
-        main_view.addNotificationItem({'title':data.title,'message':data.message});
-        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count);
+        data.title = data.title || "Photo Deleted";
+        toastr.warning(
+            DUtil.escapeHtml(data.message),
+            "Photo Deleted",
+            data.title,
+        );
+        main_view.addNotificationItem({
+            title: data.title,
+            message: data.message,
+        });
+        if (
+            PickupListComponent.tblOrders &&
+            PickupListComponent.tblOrders.style.display !== "none"
+        ) {
+            PickupListComponent.setImageCount(data.order_id, data.img_count);
         }
     });
 
-    mThis.pusher_channel.bind('message_received', function(data) {
+    mThis.pusher_channel.bind("message_received", function (data) {
         Swal.fire({
-            position: 'top-end',
-            icon: 'success',
+            position: "top-end",
+            icon: "success",
             title: JSON.stringify(data),
-            toast:true,
+            toast: true,
             showConfirmButton: false,
-            timer:2000,
+            timer: 2000,
             showClass: {
-                popup: 'animate__animated animate__fadeInDown'
+                popup: "animate__animated animate__fadeInDown",
             },
         });
     });
-}
-"use strict";
+})();
+("use strict");
 
-var DashboardComponent =  (function () {
+var DashboardComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Dashboard";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
-    main_view.divTitle = main_view.divTitle || document.querySelector('#screen_title_wrapper');
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_dashboardComponent",
+    );
+    main_view.divTitle =
+        main_view.divTitle || document.querySelector("#screen_title_wrapper");
 
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     // mThis.onShow = (options) => {
@@ -1263,18 +6325,19 @@ var DashboardComponent =  (function () {
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     mThis.onHide = (options) => {
-
-    if (!AuthManager.allowed(254,true)) return;
+        if (!AuthManager.allowed(254, true)) return;
         mThis.removeFilterButton();
     };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        if(AuthManager.allowed(254,true)){
+        if (AuthManager.allowed(254, true)) {
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
-            mThis.dashboard_Bottom_left = mThis.self.querySelector("#_dashboard_bottom_left");
+            mThis.dashboard_Bottom_left = mThis.self.querySelector(
+                "#_dashboard_bottom_left",
+            );
             mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
         }
         mThis.initAlready = true;
@@ -1324,10 +6387,8 @@ var DashboardComponent =  (function () {
             //         '</div>',
             //     ].join('');
             // },
-            contentCreated: (me) => {
-            },
-            onSelect: (me, data) => {
-            },
+            contentCreated: (me) => {},
+            onSelect: (me, data) => {},
         });
     };
 
@@ -1336,13 +6397,13 @@ var DashboardComponent =  (function () {
         let html = [
             `<div class="chart-row py-3">`,
             `<div class="col-md-3">`,
-                    '<div class="chart-container dashboard_chart ">',
-                        '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
-                            data.doughnutChart.title,
-                        '</span>',
-                        '<canvas id="doughnutChart"></canvas>',
-                    '</div>',
-                `</div>`,
+            '<div class="chart-container dashboard_chart ">',
+            '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
+            data.doughnutChart.title,
+            "</span>",
+            '<canvas id="doughnutChart"></canvas>',
+            "</div>",
+            `</div>`,
             `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
@@ -1357,11 +6418,15 @@ var DashboardComponent =  (function () {
             `<div class="d-flex align-items-center p-2 mb-1">`,
 
             `<div class="bg--icon">`,
-            `<img class="img--size" src="`,main_view.base_url,`/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
+            `<img class="img--size" src="`,
+            main_view.base_url,
+            `/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
             `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1" style="">`,data.cards.new_staff_count.title,`</div>`,
+            `<div class="text-primary mt-1" style="">`,
+            data.cards.new_staff_count.title,
+            `</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -1405,7 +6470,7 @@ var DashboardComponent =  (function () {
             `</div>`,
             `</div>`,
 
-            `</div>`
+            `</div>`,
         ].join("");
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
@@ -1703,7 +6768,7 @@ var DashboardComponent =  (function () {
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                     <p class="fs-6" style="color: #2b3991;">
-                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.payrolls.total_balance || 0)}
+                                        ${VSMoney.symbol("KHR") + VSMoney.formatAmount(data.accounts.payrolls.total_balance || 0)}
 
                                     </p>
                                 </div>
@@ -1736,7 +6801,7 @@ var DashboardComponent =  (function () {
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                     <p class="fs-6" style="color: #2b3991;">
-                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.wallets.total_balance || 0)}
+                                        ${VSMoney.symbol("KHR") + VSMoney.formatAmount(data.accounts.wallets.total_balance || 0)}
                                     </p>
                                 </div>
                             </div>
@@ -1779,7 +6844,7 @@ var DashboardComponent =  (function () {
                         </span>
                     </td>
                 </tr>
-            `
+            `,
             )
             .join("");
 
@@ -1821,7 +6886,7 @@ var DashboardComponent =  (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                             ${VSMoney.symbol('KHR') + VSMoney.formatAmount(item.total_amount || 0.0)}
+                             ${VSMoney.symbol("KHR") + VSMoney.formatAmount(item.total_amount || 0.0)}
                         </span>
                     </td>
                     <td class="align-middle">
@@ -1830,7 +6895,7 @@ var DashboardComponent =  (function () {
                         </span>
                     </td>
                 </tr>
-            `
+            `,
             )
             .join("");
 
@@ -1864,7 +6929,7 @@ var DashboardComponent =  (function () {
                 p,
                 null,
                 false,
-                false
+                false,
             )
             .then((res) => {
                 const data = res.status_code === 200 ? res.data : {};
@@ -1891,7 +6956,7 @@ var DashboardComponent =  (function () {
     };
 
     mThis.show = (options) => {
-        if (!AuthManager.allowed(254,true)){
+        if (!AuthManager.allowed(254, true)) {
             mThis.self.innerHTML = renderUserHome();
             main_view.setContentView(mThis.self, mThis.title_prop);
             return;
@@ -1902,11 +6967,10 @@ var DashboardComponent =  (function () {
         options = options || {};
         mThis.prepareFormOptions(null, (d) => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-
         });
     };
 
-    const renderUserHome = ()=>{
+    const renderUserHome = () => {
         return [
             `<div class="user_home_page">
                 <img src="../../../assets/images/default/default-dashboard.jpg" >
@@ -1923,12 +6987,11 @@ var DashboardComponent =  (function () {
                 }
             </style>`,
         ].join("");
-
-     };
+    };
     return mThis;
 })();
 
-"use strict";
+("use strict");
 
 var EmployeeSkillComponent = (function () {
     const mThis = {};
@@ -1948,8 +7011,7 @@ var EmployeeSkillComponent = (function () {
     mThis._progressBar = (rate) => {
         const num = Math.max(0, Math.min(100, Number(rate) || 0));
         const display = num.toFixed(2);
-        const level =
-            num >= 75 ? "high" : num >= 40 ? "mid" : "low";
+        const level = num >= 75 ? "high" : num >= 40 ? "mid" : "low";
         return `
             <div class="emp-skill-col-rate">
                 <div class="emp-skill-rate-row">
@@ -1988,63 +7050,70 @@ var EmployeeSkillComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-skill-action-btn-edit").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const skillId = btn.dataset.skillId;
-                const skill = skillList.find(
-                    (s) => String(s.id) === String(skillId),
-                );
-                SkillDialog.show({
-                    id: skillId,
-                    emp_id: empId,
-                    skill,
-                    onClose: refresh,
-                });
-            };
-        });
+        container
+            .querySelectorAll(".emp-skill-action-btn-edit")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const skillId = btn.dataset.skillId;
+                    const skill = skillList.find(
+                        (s) => String(s.id) === String(skillId),
+                    );
+                    SkillDialog.show({
+                        id: skillId,
+                        emp_id: empId,
+                        skill,
+                        onClose: refresh,
+                    });
+                };
+            });
 
-        container.querySelectorAll(".emp-skill-action-btn-delete").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const skillId = btn.dataset.skillId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this skill?",
-                        "message_box_default",
-                    ),
-                    {
-                        title: LocaleManager.trans("Delete Skill", "titles"),
-                        context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
+        container
+            .querySelectorAll(".emp-skill-action-btn-delete")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const skillId = btn.dataset.skillId;
+                    cv_interact.confirm(
+                        LocaleManager.trans(
+                            "Delete this skill?",
+                            "message_box_default",
                         ),
-                    },
-                    (confirmed) => {
-                        if (!confirmed) return;
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/mhr/employee/skills/delete`,
-                                { id: skillId },
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
-                                    refresh();
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    },
-                );
-            };
-        });
+                        {
+                            title: LocaleManager.trans(
+                                "Delete Skill",
+                                "titles",
+                            ),
+                            context: "delete",
+                            confirmButtonText: LocaleManager.trans(
+                                "Delete",
+                                "buttons",
+                            ),
+                        },
+                        (confirmed) => {
+                            if (!confirmed) return;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/skills/delete`,
+                                    { id: skillId },
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success(
+                                            LocaleManager.trans(
+                                                "Deleted successfully",
+                                                "message_box_default",
+                                            ),
+                                        );
+                                        refresh();
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    );
+                };
+            });
     };
 
     mThis.render = (container, skills, empId, onRefresh) => {
@@ -2208,7 +7277,9 @@ const SkillDialog = (() => {
             })
             .then((res) => {
                 if (res.status_code !== 200) {
-                    cv_interact.error(res.error_message || "Failed to load skills");
+                    cv_interact.error(
+                        res.error_message || "Failed to load skills",
+                    );
                     return;
                 }
 
@@ -2219,7 +7290,7 @@ const SkillDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var EmployeeEducationComponent = (function () {
     const mThis = {};
@@ -2270,58 +7341,65 @@ var EmployeeEducationComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-edu-action-btn--edit").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                EducationDialog.show({
-                    id: btn.dataset.eduId,
-                    emp_id: empId,
-                    onClose: refresh,
-                });
-            };
-        });
+        container
+            .querySelectorAll(".emp-edu-action-btn--edit")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    EducationDialog.show({
+                        id: btn.dataset.eduId,
+                        emp_id: empId,
+                        onClose: refresh,
+                    });
+                };
+            });
 
-        container.querySelectorAll(".emp-edu-action-btn--delete").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const eduId = btn.dataset.eduId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this education?",
-                        "message_box_default",
-                    ),
-                    {
-                        title: LocaleManager.trans("Delete Education", "titles"),
-                        context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
+        container
+            .querySelectorAll(".emp-edu-action-btn--delete")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const eduId = btn.dataset.eduId;
+                    cv_interact.confirm(
+                        LocaleManager.trans(
+                            "Delete this education?",
+                            "message_box_default",
                         ),
-                    },
-                    (confirmed) => {
-                        if (!confirmed) return;
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/mhr/employee/educations/delete`,
-                                { id: eduId },
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
-                                    refresh();
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    },
-                );
-            };
-        });
+                        {
+                            title: LocaleManager.trans(
+                                "Delete Education",
+                                "titles",
+                            ),
+                            context: "delete",
+                            confirmButtonText: LocaleManager.trans(
+                                "Delete",
+                                "buttons",
+                            ),
+                        },
+                        (confirmed) => {
+                            if (!confirmed) return;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/educations/delete`,
+                                    { id: eduId },
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success(
+                                            LocaleManager.trans(
+                                                "Deleted successfully",
+                                                "message_box_default",
+                                            ),
+                                        );
+                                        refresh();
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    );
+                };
+            });
     };
 
     mThis.render = (container, educations, empId, onRefresh) => {
@@ -2507,18 +7585,25 @@ const EducationDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
                                             me.dataOptions.onClose();
                                         }
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success");
+                                            cv_interact.success(
+                                                "update_success",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success");
+                                            cv_interact.success(
+                                                "create_success",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -2540,8 +7625,7 @@ const EducationDialog = (() => {
                     },
                 },
 
-                onPrepareForm: (me, data) => {
-                },
+                onPrepareForm: (me, data) => {},
             });
 
         dialog.show(op);
@@ -2550,7 +7634,7 @@ const EducationDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var EmployeeExperienceComponent = (function () {
     const mThis = {};
@@ -2565,10 +7649,7 @@ var EmployeeExperienceComponent = (function () {
     };
 
     mThis._periodLabel = (exp) => {
-        const period =
-            exp.period_display ||
-            exp.period ||
-            "";
+        const period = exp.period_display || exp.period || "";
         return period !== "" ? period : "";
     };
 
@@ -2615,58 +7696,65 @@ var EmployeeExperienceComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-exp-action-btn--edit").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                ExperienceDialog.show({
-                    id: btn.dataset.expId,
-                    emp_id: empId,
-                    onClose: refresh,
-                });
-            };
-        });
+        container
+            .querySelectorAll(".emp-exp-action-btn--edit")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    ExperienceDialog.show({
+                        id: btn.dataset.expId,
+                        emp_id: empId,
+                        onClose: refresh,
+                    });
+                };
+            });
 
-        container.querySelectorAll(".emp-exp-action-btn--delete").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const expId = btn.dataset.expId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this experience?",
-                        "message_box_default",
-                    ),
-                    {
-                        title: LocaleManager.trans("Delete Experience", "titles"),
-                        context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
+        container
+            .querySelectorAll(".emp-exp-action-btn--delete")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const expId = btn.dataset.expId;
+                    cv_interact.confirm(
+                        LocaleManager.trans(
+                            "Delete this experience?",
+                            "message_box_default",
                         ),
-                    },
-                    (confirmed) => {
-                        if (!confirmed) return;
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/mhr/employee/experiences/delete`,
-                                { id: expId },
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
-                                    refresh();
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    },
-                );
-            };
-        });
+                        {
+                            title: LocaleManager.trans(
+                                "Delete Experience",
+                                "titles",
+                            ),
+                            context: "delete",
+                            confirmButtonText: LocaleManager.trans(
+                                "Delete",
+                                "buttons",
+                            ),
+                        },
+                        (confirmed) => {
+                            if (!confirmed) return;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/experiences/delete`,
+                                    { id: expId },
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success(
+                                            LocaleManager.trans(
+                                                "Deleted successfully",
+                                                "message_box_default",
+                                            ),
+                                        );
+                                        refresh();
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    );
+                };
+            });
     };
 
     mThis.render = (container, experiences, empId, onRefresh) => {
@@ -2847,18 +7935,25 @@ const ExperienceDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
                                             me.dataOptions.onClose();
                                         }
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success");
+                                            cv_interact.success(
+                                                "update_success",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success");
+                                            cv_interact.success(
+                                                "create_success",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -2880,8 +7975,7 @@ const ExperienceDialog = (() => {
                     },
                 },
 
-                onPrepareForm: (me, data) => {
-                },
+                onPrepareForm: (me, data) => {},
             });
 
         dialog.show(op);
@@ -2890,7 +7984,7 @@ const ExperienceDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var EmployeeDocumentComponent = (function () {
     const mThis = {};
@@ -2929,10 +8023,9 @@ var EmployeeDocumentComponent = (function () {
 
     mThis._download = (docId) => {
         vsapi
-            .call(
-                `${main_view.base_url}/mhr/employee/documents/download`,
-                { id: docId },
-            )
+            .call(`${main_view.base_url}/mhr/employee/documents/download`, {
+                id: docId,
+            })
             .then((res) => {
                 if (res.status_code !== 200) {
                     cv_interact.error(
@@ -2970,54 +8063,61 @@ var EmployeeDocumentComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".emp-doc-action-btn--download").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                mThis._download(btn.dataset.docId);
-            };
-        });
+        container
+            .querySelectorAll(".emp-doc-action-btn--download")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    mThis._download(btn.dataset.docId);
+                };
+            });
 
-        container.querySelectorAll(".emp-doc-action-btn--delete").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const docId = btn.dataset.docId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this document?",
-                        "message_box_default",
-                    ),
-                    {
-                        title: LocaleManager.trans("Delete Document", "titles"),
-                        context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
+        container
+            .querySelectorAll(".emp-doc-action-btn--delete")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const docId = btn.dataset.docId;
+                    cv_interact.confirm(
+                        LocaleManager.trans(
+                            "Delete this document?",
+                            "message_box_default",
                         ),
-                    },
-                    (confirmed) => {
-                        if (!confirmed) return;
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/mhr/employee/documents/delete`,
-                                { id: docId },
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
-                                    refresh();
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    },
-                );
-            };
-        });
+                        {
+                            title: LocaleManager.trans(
+                                "Delete Document",
+                                "titles",
+                            ),
+                            context: "delete",
+                            confirmButtonText: LocaleManager.trans(
+                                "Delete",
+                                "buttons",
+                            ),
+                        },
+                        (confirmed) => {
+                            if (!confirmed) return;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/documents/delete`,
+                                    { id: docId },
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success(
+                                            LocaleManager.trans(
+                                                "Deleted successfully",
+                                                "message_box_default",
+                                            ),
+                                        );
+                                        refresh();
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    );
+                };
+            });
     };
 
     mThis.render = (container, documents, empId, onRefresh) => {
@@ -3029,7 +8129,11 @@ var EmployeeDocumentComponent = (function () {
             ? documentList
                   .map((doc, index) => {
                       const ext = mThis._fileExt(doc);
-                      const description = (doc.description || doc.remarks || "").trim();
+                      const description = (
+                          doc.description ||
+                          doc.remarks ||
+                          ""
+                      ).trim();
                       return `
                 <div class="emp-doc-item" data-doc-id="${doc.id}">
                     <div class="emp-doc-item-card${index === 0 ? "" : " emp-doc-item-card--muted"}">
@@ -3191,18 +8295,25 @@ const DocumentDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
                                             me.dataOptions.onClose();
                                         }
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("Updated document successfully");
+                                            cv_interact.success(
+                                                "Updated document successfully",
+                                            );
                                         } else {
-                                            cv_interact.success("Set document successfully");
+                                            cv_interact.success(
+                                                "Set document successfully",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -3222,11 +8333,9 @@ const DocumentDialog = (() => {
                             return { id: op.id };
                         },
                     },
-
                 },
 
-                onPrepareForm: (me, data) => {
-                },
+                onPrepareForm: (me, data) => {},
             });
 
         dialog.show(op);
@@ -3235,14 +8344,14 @@ const DocumentDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
 var EmployeeManagementComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Employee";
-    mThis.defaultPage = 'employee_list';
+    mThis.defaultPage = "employee_list";
 
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_employee_management_component",
@@ -3252,16 +8361,28 @@ var EmployeeManagementComponent = (function () {
     mThis.elEmpType = mThis.self.querySelector("#_emp_type_id");
     mThis.elStatus = mThis.self.querySelector("#_emp_status_id");
     mThis.elSearch = mThis.self.querySelector("#_search_employee");
-    mThis.divListContainer = mThis.self.querySelector("#_employee_list_container");
+    mThis.divListContainer = mThis.self.querySelector(
+        "#_employee_list_container",
+    );
     mThis.divProfileView = mThis.self.querySelector("#_emp_profile_view");
     mThis.divlistView = mThis.self.querySelector("#_employee_list");
-    mThis.paginationContainer = mThis.self.querySelector("#container_pagination");
+    mThis.paginationContainer = mThis.self.querySelector(
+        "#container_pagination",
+    );
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
     mThis.btnBack = mThis.divProfileView.querySelector("#_btn_back_employee");
-    mThis.btnPrintCv = mThis.divProfileView.querySelector("#_btn_print_employee_cv");
-    mThis.btnEditProfile = mThis.divProfileView.querySelector("#_btn_edit_employee_profile");
-    mThis.profileInfoEmployee = mThis.divProfileView.querySelector("#profile_info_employee");
-    mThis.profileCardsEmployee = mThis.divProfileView.querySelector("#profile_cards_employee");
+    mThis.btnPrintCv = mThis.divProfileView.querySelector(
+        "#_btn_print_employee_cv",
+    );
+    mThis.btnEditProfile = mThis.divProfileView.querySelector(
+        "#_btn_edit_employee_profile",
+    );
+    mThis.profileInfoEmployee = mThis.divProfileView.querySelector(
+        "#profile_info_employee",
+    );
+    mThis.profileCardsEmployee = mThis.divProfileView.querySelector(
+        "#profile_cards_employee",
+    );
     mThis.pages = {
         employee_list: mThis.divListContainer,
         profile_view: mThis.divProfileView,
@@ -3280,7 +8401,7 @@ var EmployeeManagementComponent = (function () {
             },
             listContainerClass: null,
         });
-         mThis.btnAdd.onclick = function (e) {
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
             const op = {
@@ -3327,17 +8448,18 @@ var EmployeeManagementComponent = (function () {
 
         mThis.initAlready = true;
     };
-      mThis.getFilterData = () => {
-        const p = {"search_value":mThis.elSearch.value};
-        const elements =  mThis.div_filter_fields.querySelectorAll(".filter-field");
+    mThis.getFilterData = () => {
+        const p = { search_value: mThis.elSearch.value };
+        const elements =
+            mThis.div_filter_fields.querySelectorAll(".filter-field");
         elements.forEach((el) => {
-                const f = el.dataset.field;
-                p[f] = el.value;
-            });
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
 
         return p;
     };
-    mThis.getPageContainer =(pageName)=>{
+    mThis.getPageContainer = (pageName) => {
         return mThis.pages[pageName];
     };
 
@@ -3401,7 +8523,8 @@ var EmployeeManagementComponent = (function () {
         const s = String(status || "").toLowerCase();
         if (s.includes("active")) return "is-active";
         if (s.includes("pending") || s.includes("leave")) return "is-pending";
-        if (s.includes("inactive") || s.includes("resign")) return "is-inactive";
+        if (s.includes("inactive") || s.includes("resign"))
+            return "is-inactive";
         return "is-active";
     };
 
@@ -3425,7 +8548,11 @@ var EmployeeManagementComponent = (function () {
         return salary;
     };
 
-    mThis._profileLine = (label, rawValue, { gold = false, muted = false, capitalize = false } = {}) => {
+    mThis._profileLine = (
+        label,
+        rawValue,
+        { gold = false, muted = false, capitalize = false } = {},
+    ) => {
         let valueClass = "emp-profile-field-value";
         let display = "";
 
@@ -3766,7 +8893,9 @@ var EmployeeManagementComponent = (function () {
             EmployeeDialog.show({
                 id: mThis.currentEmployeeId,
                 onClose: () => {
-                    mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
+                    mThis.showPage("profile_view", {
+                        id: mThis.currentEmployeeId,
+                    });
                 },
             });
         };
@@ -3778,7 +8907,9 @@ var EmployeeManagementComponent = (function () {
             };
         }
 
-        const inlineEditBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_edit");
+        const inlineEditBtn = mThis.profileInfoEmployee.querySelector(
+            "#_emp_profile_btn_edit",
+        );
         if (inlineEditBtn) {
             inlineEditBtn.onclick = (e) => {
                 e.preventDefault();
@@ -3786,7 +8917,9 @@ var EmployeeManagementComponent = (function () {
             };
         }
 
-        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector("#_emp_profile_btn_movement");
+        const inlineMovementBtn = mThis.profileInfoEmployee.querySelector(
+            "#_emp_profile_btn_movement",
+        );
         if (inlineMovementBtn) {
             inlineMovementBtn.onclick = (e) => {
                 e.preventDefault();
@@ -3797,7 +8930,9 @@ var EmployeeManagementComponent = (function () {
                     employee: mThis.currentEmployeeProfile || null,
                     btn: e.currentTarget,
                     onClose: () => {
-                        mThis.showPage("profile_view", { id: mThis.currentEmployeeId });
+                        mThis.showPage("profile_view", {
+                            id: mThis.currentEmployeeId,
+                        });
                     },
                 });
             };
@@ -3807,7 +8942,10 @@ var EmployeeManagementComponent = (function () {
             mThis.btnPrintCv.onclick = (e) => {
                 e.preventDefault();
                 cv_interact.info(
-                    LocaleManager.trans("Print CV feature is coming soon.", "message_box_default"),
+                    LocaleManager.trans(
+                        "Print CV feature is coming soon.",
+                        "message_box_default",
+                    ),
                 );
             };
         }
@@ -3818,8 +8956,24 @@ var EmployeeManagementComponent = (function () {
             .call(`${main_view.base_url}/mhr/employee/form-options`, null)
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',"",LocaleManager.trans("All Statuses", "titles"),"");
-                VSUtil.setComboItems(mThis.elEmpType,d.types,'id','name',"",LocaleManager.trans("All Types", "titles"),"");
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.status,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elEmpType,
+                    d.types,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Types", "titles"),
+                    "",
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -3846,7 +9000,10 @@ var EmployeeManagementComponent = (function () {
                 if (res.status_code !== 200 || !res.data) {
                     cv_interact.error(
                         res.error_message ||
-                            LocaleManager.trans("Employee not found", "message_box_default"),
+                            LocaleManager.trans(
+                                "Employee not found",
+                                "message_box_default",
+                            ),
                     );
                     mThis.showPage("employee_list", mThis.getFilterData());
                     return;
@@ -3879,7 +9036,7 @@ var EmployeeManagementComponent = (function () {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
-            mThis.showPage(mThis.defaultPage,mThis.getFilterData());
+            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
         });
     };
 
@@ -4207,25 +9364,27 @@ const EmployeeDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
-"use strict";
+("use strict");
 
 var MovementComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Employee Movements";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_employeeMovementComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_employeeMovementComponent",
+    );
 
     // mThis.btnAdd = mThis.self.querySelector("#_btnAddMovement");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -4283,13 +9442,16 @@ var MovementComponent = (() => {
                 let bg_color = "";
 
                 if ((data.impact || "").toLowerCase() === "positive") {
-                    cls_class = "text-white text-center border border-success rounded-5 p-1";
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
                     bg_color = "#28a745";
                 } else if ((data.impact || "").toLowerCase() === "neutral") {
-                    cls_class = "text-white text-center border border-warning rounded-5 p-1";
+                    cls_class =
+                        "text-white text-center border border-warning rounded-5 p-1";
                     bg_color = "#ffc107";
                 } else if ((data.impact || "").toLowerCase() === "negative") {
-                    cls_class = "text-white text-center border border-danger rounded-5 p-1";
+                    cls_class =
+                        "text-white text-center border border-danger rounded-5 p-1";
                     bg_color = "#dc3545";
                 } else {
                     bg_color = "#6c757d";
@@ -4326,7 +9488,8 @@ var MovementComponent = (() => {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white overflow-hidden rounded-3 header-uppercase",
+            tableClass:
+                "table table--white overflow-hidden rounded-3 header-uppercase",
             listContainerClass: null,
         });
 
@@ -4454,7 +9617,13 @@ var MovementComponent = (() => {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${main_view.base_url}/mhr/emp-event/delete`, op, false, false, false)
+                        .call(
+                            `${main_view.base_url}/mhr/emp-event/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
@@ -4470,11 +9639,32 @@ var MovementComponent = (() => {
 
     mThis.prepareFormOptions = () => {
         vsapi
-            .call(`${main_view.base_url}/mhr/emp-event/form-options`, null, null, null)
+            .call(
+                `${main_view.base_url}/mhr/emp-event/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elEvent, d.events, "id", "name", true, "All Movements", null);
-                VSUtil.setComboItems(mThis.elEmployee, d.employees, "id", "name", true, "All Employee", null);
+                VSUtil.setComboItems(
+                    mThis.elEvent,
+                    d.events,
+                    "id",
+                    "name",
+                    true,
+                    "All Movements",
+                    null,
+                );
+                VSUtil.setComboItems(
+                    mThis.elEmployee,
+                    d.employees,
+                    "id",
+                    "name",
+                    true,
+                    "All Employee",
+                    null,
+                );
             });
     };
 
@@ -4561,7 +9751,10 @@ const MovementDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/emp-event/save"].join(""),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/emp-event/save",
+                                    ].join(""),
                                     p,
                                     btn,
                                     null,
@@ -4581,7 +9774,10 @@ const MovementDialog = (() => {
                     modifyTitle: "Edit Employee Movement",
                     targetProp: "emp_event",
                     api: {
-                        endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/emp-event/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -4617,15 +9813,18 @@ const ProfileMovementDialog = (() => {
 
         const branchName =
             emp.branch_name ||
-            branches.find((b) => String(b.id) === String(emp.branch_id))?.branch_name ||
-            branches.find((b) => String(b.id) === String(emp.branch_id))?.name ||
+            branches.find((b) => String(b.id) === String(emp.branch_id))
+                ?.branch_name ||
+            branches.find((b) => String(b.id) === String(emp.branch_id))
+                ?.name ||
             "";
 
         if (me.controls.current_branch) {
             me.controls.current_branch.value = branchName;
         }
         if (me.controls.current_position) {
-            me.controls.current_position.value = emp.position || emp.position_title || "";
+            me.controls.current_position.value =
+                emp.position || emp.position_title || "";
         }
         if (me.controls.original_salary) {
             me.controls.original_salary.value =
@@ -4638,7 +9837,12 @@ const ProfileMovementDialog = (() => {
 
     self.show = (op) => {
         if (!op.emp_id && !op.employee?.id) {
-            cv_interact.error(LocaleManager.trans("Employee is required", "message_box_default"));
+            cv_interact.error(
+                LocaleManager.trans(
+                    "Employee is required",
+                    "message_box_default",
+                ),
+            );
             return;
         }
 
@@ -4738,28 +9942,38 @@ const ProfileMovementDialog = (() => {
                 },
                 contentCreated: (me) => {
                     me.syncMovementSections = () => {
-                        me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
-                            const key = chk.dataset.section;
-                            const row = me.divModal.querySelector(`[data-section-row="${key}"]`);
-                            if (!row) return;
-                            row.classList.toggle("is-open", chk.checked);
-                            row.querySelectorAll(
-                                "input:not([type=checkbox]), select, textarea",
-                            ).forEach((el) => {
-                                el.disabled = false;
-                                el.removeAttribute("disabled");
-                                if (el.classList.contains("movement-readonly")) {
-                                    el.readOnly = true;
-                                }
+                        me.divModal
+                            .querySelectorAll(".movement-toggle")
+                            .forEach((chk) => {
+                                const key = chk.dataset.section;
+                                const row = me.divModal.querySelector(
+                                    `[data-section-row="${key}"]`,
+                                );
+                                if (!row) return;
+                                row.classList.toggle("is-open", chk.checked);
+                                row.querySelectorAll(
+                                    "input:not([type=checkbox]), select, textarea",
+                                ).forEach((el) => {
+                                    el.disabled = false;
+                                    el.removeAttribute("disabled");
+                                    if (
+                                        el.classList.contains(
+                                            "movement-readonly",
+                                        )
+                                    ) {
+                                        el.readOnly = true;
+                                    }
+                                });
+                            });
+                    };
+                    me.divModal
+                        .querySelectorAll(".movement-toggle")
+                        .forEach((chk) => {
+                            chk.addEventListener("change", () => {
+                                me.syncMovementSections();
+                                fillCurrentValues(me, me._formData || {});
                             });
                         });
-                    };
-                    me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
-                        chk.addEventListener("change", () => {
-                            me.syncMovementSections();
-                            fillCurrentValues(me, me._formData || {});
-                        });
-                    });
                     me.syncMovementSections();
                 },
                 configSelect: [
@@ -4795,11 +10009,21 @@ const ProfileMovementDialog = (() => {
                             const p = me.getData();
 
                             p.emp_id =
-                                me.dataOptions.emp_id || me.dataOptions.employee?.id || p.emp_id;
-                            p.change_branch = isChecked(p.change_branch) ? 1 : 0;
-                            p.change_position = isChecked(p.change_position) ? 1 : 0;
-                            p.change_salary = isChecked(p.change_salary) ? 1 : 0;
-                            p.change_work_shift = isChecked(p.change_work_shift) ? 1 : 0;
+                                me.dataOptions.emp_id ||
+                                me.dataOptions.employee?.id ||
+                                p.emp_id;
+                            p.change_branch = isChecked(p.change_branch)
+                                ? 1
+                                : 0;
+                            p.change_position = isChecked(p.change_position)
+                                ? 1
+                                : 0;
+                            p.change_salary = isChecked(p.change_salary)
+                                ? 1
+                                : 0;
+                            p.change_work_shift = isChecked(p.change_work_shift)
+                                ? 1
+                                : 0;
 
                             if (
                                 !p.change_branch &&
@@ -4817,19 +10041,31 @@ const ProfileMovementDialog = (() => {
                             }
                             if (p.change_branch && !p.to_branch_id) {
                                 cv_interact.warning(
-                                    LocaleManager.trans("To Branch is required", "message_box_default"),
+                                    LocaleManager.trans(
+                                        "To Branch is required",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
                             if (p.change_position && !p.to_position_id) {
                                 cv_interact.warning(
-                                    LocaleManager.trans("To Position is required", "message_box_default"),
+                                    LocaleManager.trans(
+                                        "To Position is required",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
-                            if (p.change_salary && (p.new_salary === "" || p.new_salary == null)) {
+                            if (
+                                p.change_salary &&
+                                (p.new_salary === "" || p.new_salary == null)
+                            ) {
                                 cv_interact.warning(
-                                    LocaleManager.trans("New Salary is required", "message_box_default"),
+                                    LocaleManager.trans(
+                                        "New Salary is required",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
@@ -4845,7 +10081,10 @@ const ProfileMovementDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/emp-event/save"].join(""),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/emp-event/save",
+                                    ].join(""),
                                     p,
                                     btn,
                                     null,
@@ -4853,10 +10092,15 @@ const ProfileMovementDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
                                             me.dataOptions.onClose(p);
                                         }
-                                        cv_interact.success("Set movement successfully");
+                                        cv_interact.success(
+                                            "Set movement successfully",
+                                        );
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
@@ -4869,7 +10113,10 @@ const ProfileMovementDialog = (() => {
                     modifyTitle: "Movement",
                     targetProp: "employee",
                     api: {
-                        endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/emp-event/form-options",
+                        ].join(""),
                         params: (op) => {
                             return {
                                 id: op.id || null,
@@ -4898,26 +10145,28 @@ var LeaveComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Leaves";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_emp_leave_component",
+    );
 
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_leave");
 
     mThis.cols = [
         {
             transTitle: "",
-            className: 'align-middle',
+            className: "align-middle",
         },
         {
             transTitle: "titles.Employee ID",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span>${data.emp_code ?? '-'}</span>`;
-             }
+                return `<span>${data.emp_code ?? "-"}</span>`;
+            },
         },
 
         {
@@ -4936,8 +10185,8 @@ var LeaveComponent = (function () {
             transTitle: "titles.Leave Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
-            }
+                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ""}</span>`;
+            },
         },
         {
             transTitle: "titles.Start Date",
@@ -4974,7 +10223,7 @@ var LeaveComponent = (function () {
                         ${days} ${days === 1 ? "Day" : "Days"}
                     </span>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Remark",
@@ -5010,7 +10259,8 @@ var LeaveComponent = (function () {
                 const byName = {
                     pending:
                         "bg-warning-subtle text-warning border border-warning",
-                    approved: "bg-success-subtle text-success border border-success",
+                    approved:
+                        "bg-success-subtle text-success border border-success",
                     rejected:
                         "bg-danger-subtle text-danger border border-danger",
                 };
@@ -5036,38 +10286,37 @@ var LeaveComponent = (function () {
             },
         },
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
                     </div>
                 `;
-            }
+            },
         },
-
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.LeaveRequestListView = new ListView('_leave_request_list',{
-            fetchApi : `${main_view.base_url}/mhr/leave/list-paginate`,
+        mThis.LeaveRequestListView = new ListView("_leave_request_list", {
+            fetchApi: `${main_view.base_url}/mhr/leave/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated:(data,index,tr)=>{
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('leave');
-              tr.setAttribute('id',['leave_id',data.id].join(''));
-
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            rowCreated: (data, index, tr) => {
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add("leave");
+                tr.setAttribute("id", ["leave_id", data.id].join(""));
             },
-            listContainerClass: null
+            listContainerClass: null,
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -5078,7 +10327,7 @@ var LeaveComponent = (function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-                }
+                },
             };
             // if (!AuthManager.allowed(240)) return;
             LeaveRequestDialog.show(op);
@@ -5089,21 +10338,20 @@ var LeaveComponent = (function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         mThis.pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
+        sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            };
+        });
 
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
-       });
-
-        mThis.elSearch.addEventListener('keyup', (e) => {
+        mThis.elSearch.addEventListener("keyup", (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -5121,73 +10369,70 @@ var LeaveComponent = (function () {
             search_value: mThis.elSearch.value,
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-                const f = el.dataset.field;
-                p[f] = el.value;
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
         });
 
         return p;
     };
 
-    mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_leave_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_leave"
+                    html: '<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_leave",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_leave"
+                    html: '<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_leave",
                 },
             ],
-        //     adjustPosition:{
-        //         top:-200 ,
-        //         left:-300
-        //    },
+            //     adjustPosition:{
+            //         top:-200 ,
+            //         left:-300
+            //    },
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'edit_leave':{
-                      mThis.editLeave(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_leave": {
+                        mThis.editLeave(id, menuLink);
+                        break;
                     }
-                    case 'delete_leave':{
+                    case "delete_leave": {
                         mThis.deleteLeave(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
-
-
+    };
 
     mThis.editLeave = (id, menuLink) => {
-
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(241)) return;
         LeaveRequestDialog.show(op);
-    }
+    };
 
     mThis.deleteLeave = (id, menuLink) => {
         let op = {
@@ -5195,54 +10440,85 @@ var LeaveComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this leave request?',{
-            title: 'Delete Leave Request',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/leave/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
-                        mThis.LeaveRequestListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
-    }
+        cv_interact.confirm(
+            "Delete this leave request?",
+            {
+                title: "Delete Leave Request",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/leave/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.LeaveRequestListView.showPage();
+                            }
+                        });
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            },
+        );
+    };
 
     mThis.prepareFormOptions = () => {
-        vsapi.call(`${main_view.base_url}/mhr/leave/form-options`, null, null, null)
-            .then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',"",LocaleManager.trans("All Statuses", "titles"),"");
-            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',"",LocaleManager.trans("All Types", "titles"),"");
-        })
-    }
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/leave/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.status,
+                    "id",
+                    "leave_status",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elLeaveType,
+                    d.leave_types,
+                    "id",
+                    "leave_type",
+                    "",
+                    LocaleManager.trans("All Types", "titles"),
+                    "",
+                );
+            });
+    };
 
     mThis.show = function () {
         mThis.init();
 
         mThis.prepareFormOptions();
-        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
-           main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
         });
-    }
+    };
     return mThis;
 })();
 
-const LeaveRequestDialog = (()=>{
-
+const LeaveRequestDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
-
+    self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -5276,10 +10552,10 @@ const LeaveRequestDialog = (()=>{
                                     <label>Remarks</label>
                                 </div>
                             </div>
-                        </div>`,].join("");
+                        </div>`,
+                    ].join("");
                 },
-                contentCreated: (me) => {
-                },
+                contentCreated: (me) => {},
                 configSelect: [
                     {
                         name: "employee",
@@ -5312,23 +10588,25 @@ const LeaveRequestDialog = (()=>{
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/leave/save"].join(
-                                        ""
-                                    ),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/leave/save",
+                                    ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("Updated set leave successfully");
-                                        }
-                                        else
-                                        {
-                                            cv_interact.success("Set leave successfully");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated set leave successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Set leave successfully",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -5348,25 +10626,25 @@ const LeaveRequestDialog = (()=>{
                             return { id: op.id };
                         },
                     },
-
                 },
 
-                onPrepareForm: (me, data) => {
-                },
+                onPrepareForm: (me, data) => {},
             });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();
 //end:: LeaveRequestDialog
 
-"use strict";
+("use strict");
 var PayrollComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_payrollComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_payrollComponent",
+    );
 
     mThis.title_prop = "Payroll";
     mThis.elAuthorized = mThis.self.querySelector("#el_authorized");
@@ -5408,8 +10686,8 @@ var PayrollComponent = new (function () {
                                     ? data.p_number == 1
                                         ? "(First)"
                                         : data.p_number == 2
-                                        ? "(Second)"
-                                        : "Other"
+                                          ? "(Second)"
+                                          : "Other"
                                     : ""
                             }</small>
 
@@ -5438,7 +10716,7 @@ var PayrollComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.total,
-                    data.currency_code ?? 'USD'
+                    data.currency_code ?? "USD",
                 )}</p>`;
             },
         },
@@ -5482,13 +10760,14 @@ var PayrollComponent = new (function () {
                     cls_class =
                         "text-white text-center border border-success rounded-2 p-1";
                     bg_color = "#28a745";
-                    cls_icon = "fa fa-check text-center align-center justify-content-center";
+                    cls_icon =
+                        "fa fa-check text-center align-center justify-content-center";
                 } else if (data.authorized === 0) {
                     cls_class =
                         "text-white text-center align-center border border-warning rounded-2 p-1";
                     bg_color = "#ffc107";
-                    cls_icon = "fa fa-times text-center align-center justify-content-center";
-
+                    cls_icon =
+                        "fa fa-times text-center align-center justify-content-center";
                 }
 
                 return `<div><a class="d-block" data-authorized="${
@@ -5513,12 +10792,14 @@ var PayrollComponent = new (function () {
                     cls_class =
                         "text-white text-center border border-success rounded-2 p-1";
                     bg_color = "#28a745";
-                    cls_icon = "fa fa-check text-center align-center justify-content-center";
+                    cls_icon =
+                        "fa fa-check text-center align-center justify-content-center";
                 } else if (data.disbursed === 0) {
                     cls_class =
                         "text-white text-center border border-warning rounded-2 p-1";
                     bg_color = "#ffc107";
-                    cls_icon = "fa fa-times text-center align-center justify-content-center";
+                    cls_icon =
+                        "fa fa-times text-center align-center justify-content-center";
                 }
 
                 return `<div><a class="d-block" data-status="${
@@ -5538,15 +10819,15 @@ var PayrollComponent = new (function () {
                 `<div class="d-flex align-items-center gap-1">
                     <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnAuthorized">
-                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Authorize','titles')}</span></i>
+                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Authorize", "titles")}</span></i>
                     </button>
                     <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnReset">
-                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Reset','titles')}</span></i>
+                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Reset", "titles")}</span></i>
                     </button>
                     <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnDisburse">
-                            <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Disburse','titles')}</span></i>
+                            <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Disburse", "titles")}</span></i>
                     </button>
                 </div>`,
         },
@@ -5576,7 +10857,6 @@ var PayrollComponent = new (function () {
                 "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.classList.add("tr_action");
-
             },
         });
 
@@ -5696,7 +10976,15 @@ var PayrollComponent = new (function () {
                 if (authorized == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = menu[item].dataset.mnuaction === "edit_payroll" || menu[item].dataset.mnuaction === "delete_payroll" ||menu[item].dataset.mnuaction === "change_authorize"? "none": "block";
+                            menu[item].style.display =
+                                menu[item].dataset.mnuaction ===
+                                    "edit_payroll" ||
+                                menu[item].dataset.mnuaction ===
+                                    "delete_payroll" ||
+                                menu[item].dataset.mnuaction ===
+                                    "change_authorize"
+                                    ? "none"
+                                    : "block";
                         }
                     }
                 }
@@ -5769,7 +11057,7 @@ var PayrollComponent = new (function () {
                             } else cv_interact.error(res.error_message);
                         });
                 }
-            }
+            },
         );
     };
     mThis.resetPayroll = (id, menuLink) => {
@@ -5795,18 +11083,19 @@ var PayrollComponent = new (function () {
                             `${mThis.base_url}/mhr/payroll/reset`,
                             p,
                             false,
-                            null
+                            null,
                         )
 
                         .then((res) => {
-
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
-                                mThis.PayrollListView.showPage(mThis.getFilterData());
+                                mThis.PayrollListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else cv_interact.error(res.error_message);
                         });
                 }
-            }
+            },
         );
     };
     mThis.disbursePayroll_all = (id, menuLink) => {
@@ -5828,15 +11117,21 @@ var PayrollComponent = new (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${mThis.base_url}/mhr/payroll/disburse-all`, p,false)
+                        .call(
+                            `${mThis.base_url}/mhr/payroll/disburse-all`,
+                            p,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Payroll disbursement was successful!");
+                                cv_interact.success(
+                                    "Payroll disbursement was successful!",
+                                );
                                 mThis.PayrollListView.showPage();
                             } else cv_interact.error(res.error_message);
                         });
                 }
-            }
+            },
         );
     };
 
@@ -5854,7 +11149,7 @@ var PayrollComponent = new (function () {
     mThis.deletePayroll = (id, menuLink) => {
         const op = {
             id: id,
-            btn: menuLink
+            btn: menuLink,
         };
         if (!AuthManager.allowed(478)) return;
         cv_interact.confirm(
@@ -5872,18 +11167,22 @@ var PayrollComponent = new (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Payroll has been deleted!");
-                                mThis.PayrollListView.showPage(mThis.getFilterData());
+                                cv_interact.success(
+                                    "Payroll has been deleted!",
+                                );
+                                mThis.PayrollListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else cv_interact.error(res.error_message);
                         });
                 } else {
                     cv_interact.error(res.error_message);
                 }
-            }
+            },
         );
     };
 
@@ -5902,7 +11201,7 @@ var PayrollComponent = new (function () {
                 `${main_view.base_url}/mhr/payroll/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
@@ -5913,7 +11212,7 @@ var PayrollComponent = new (function () {
                     "name",
                     true,
                     "All",
-                    null
+                    null,
                 );
                 VSUtil.setComboItems(
                     mThis.elDisbursed,
@@ -5922,7 +11221,7 @@ var PayrollComponent = new (function () {
                     "name",
                     true,
                     "All",
-                    null
+                    null,
                 );
             });
     };
@@ -5966,7 +11265,7 @@ const AddPayRollListDialog = (() => {
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
                         { length: 11 },
-                        (_, i) => currentYear + i
+                        (_, i) => currentYear + i,
                     );
 
                     return [
@@ -5977,7 +11276,7 @@ const AddPayRollListDialog = (() => {
                                 ${months
                                     .map(
                                         (month) =>
-                                            `<option value="${month.value}">${month.name}</option>`
+                                            `<option value="${month.value}">${month.name}</option>`,
                                     )
                                     .join("")}
                             </select>
@@ -5989,7 +11288,7 @@ const AddPayRollListDialog = (() => {
                                 ${years
                                     .map(
                                         (year) =>
-                                            `<option value="${year}">${year}</option>`
+                                            `<option value="${year}">${year}</option>`,
                                     )
                                     .join("")}
                             </select>
@@ -6041,7 +11340,7 @@ const AddPayRollListDialog = (() => {
                         data: "currency_codes",
                         textField: "code",
                         valueField: "code",
-                    }
+                    },
                 ],
 
                 buttons: [
@@ -6066,18 +11365,18 @@ const AddPayRollListDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Payroll is updated successfully"
+                                                "Payroll is updated successfully",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New payroll is created successfully"
+                                                "New payroll is created successfully",
                                             );
                                         }
                                     } else {
@@ -6101,11 +11400,11 @@ const AddPayRollListDialog = (() => {
                             return { id: op.id };
                         },
                     },
-
                 },
 
                 onPrepareForm: (me, data) => {
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    me.controls.currency_code.value =
+                        VSMoney.getCurrency().code;
                     const { payrolls } = data;
                     if (payrolls) {
                         me.controls.name.value = payrolls.name;
@@ -6113,7 +11412,8 @@ const AddPayRollListDialog = (() => {
                         me.controls.year.value = payrolls.year;
                         me.controls.start_date.value = payrolls.start_date;
                         me.controls.end_date.value = payrolls.end_date;
-                        me.controls.exchange_rate.value = payrolls.exchange_rate;
+                        me.controls.exchange_rate.value =
+                            payrolls.exchange_rate;
                         me.controls.p_number.value = payrolls.p_number;
                         // me.controls.total.value = payrolls.total;
                     } else {
@@ -6125,7 +11425,7 @@ const AddPayRollListDialog = (() => {
                                 ].join(""),
                                 null,
                                 null,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
@@ -6158,7 +11458,6 @@ const AddPayRollListDialog = (() => {
 
                     LocaleManager.translateZone(me.divModal);
                 },
-
             });
 
         dialogAdd.show(op);
@@ -6184,16 +11483,18 @@ const AddPayRollListDialog = (() => {
 //     });
 // });
 
-"use strict";
+("use strict");
 
 var PayrollListComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_payrollListComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_payrollListComponent",
+    );
 
     mThis.title_prop = "Payroll List";
-    mThis.elFilter = mThis.self.querySelector('#el_filter_payrollList');
-    mThis.elFilterBranch = mThis.self.querySelector('#el_filter_branch');
+    mThis.elFilter = mThis.self.querySelector("#el_filter_payrollList");
+    mThis.elFilterBranch = mThis.self.querySelector("#el_filter_branch");
     mThis.btnImport = mThis.self.querySelector("#_btnImport");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_payroll_list");
@@ -6205,17 +11506,15 @@ var PayrollListComponent = new (function () {
     mThis.payment_info = mThis.self.querySelector("#payment_info");
     mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
     mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
-    mThis.div_payrollList = mThis.self.querySelector('#_payrollList_list');
+    mThis.div_payrollList = mThis.self.querySelector("#_payrollList_list");
     mThis.btnIssues = mThis.self.querySelector("#_btn_issues");
     mThis.issues_list = mThis.self.querySelector("#_issues_list");
 
     mThis.cols = [
-
         {
             title: "",
-            className: 'align-middle text-capitalize text-nowrap',
+            className: "align-middle text-capitalize text-nowrap",
             // data: (data, index, i) => { return (index + 1) },
-
         },
 
         {
@@ -6223,7 +11522,7 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-start w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
                                 <span class="text-nowrap">${
                                     data.emp_name ?? ""
@@ -6234,7 +11533,7 @@ var PayrollListComponent = new (function () {
                                 }</small>
                             </div>
                         </div>`;
-            }
+            },
         },
 
         {
@@ -6243,39 +11542,45 @@ var PayrollListComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
                 //return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
-            }
+            },
         },
         {
             title: "Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_taxable), data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.taxable_benefit || data.benefit_taxable, data.currency_code)}</p>`;
+            },
         },
         {
             title: "Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.nontaxable_benefit || data.benefit_non_tax, data.currency_code)}</p>`;
+            },
         },
         {
             title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                if (!data.used_amount || Object.keys(data.used_amount).length === 0) {
+                if (
+                    !data.used_amount ||
+                    Object.keys(data.used_amount).length === 0
+                ) {
                     return `<p class="p-0 m-0">${VSMoney.formatAmount(0, data.currency_code)}</p>`;
                 }
 
                 const flatTaxDetails = Object.entries(data.used_amount)
                     .map(([taxRate, amount]) => {
-                        const formattedAmount = VSMoney.formatAmount(amount, data.currency_code);
+                        const formattedAmount = VSMoney.formatAmount(
+                            amount,
+                            data.currency_code,
+                        );
                         return `${formattedAmount} (${taxRate}%)`;
                     })
-                    .join('<br>');
+                    .join("<br>");
 
                 return `<p class="p-0 m-0">${flatTaxDetails}</p>`;
-            }
+            },
         },
 
         {
@@ -6283,28 +11588,28 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.deduction, data.currency_code)}</p>`;
-            }
+            },
         },
         {
             title: "Allowance",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.allowance, data.currency_code)}</p>`;
-            }
+            },
         },
         {
             title: "Tax Rate",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
-            }
+                return `<p class="p-0 m-0">${data.tax_rate ?? ""} %</p>`;
+            },
         },
         {
             title: "Bias",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
-            }
+            },
         },
 
         {
@@ -6312,7 +11617,7 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</p>`;
-            }
+            },
         },
         // {
         //     title: "Benefit Tax Flat Rate",
@@ -6325,110 +11630,131 @@ var PayrollListComponent = new (function () {
             title: "Benefit Tax",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_tax), data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.taxable_benefit || data.benefit_tax, data.currency_code)}</p>`;
+            },
         },
         {
             title: "Total",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0 ${data.disbursed == '1' ? 'text-success' : ''}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0 ${data.disbursed == "1" ? "text-success" : ""}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
+            },
         },
         {
-            title:"Action",
+            title: "Action",
             className: "col_action align-middle",
-            data: (data,index,tr) => {
+            data: (data, index, tr) => {
                 return [
-                `<div class="d-flex justify-content-center align-items-center">`,
+                    `<div class="d-flex justify-content-center align-items-center">`,
                     `<div class="text-center gap-2 d-flex flex-wrap">`,
-                        `<a href="javascript:void(0)"`,
-                           `class="btn_payroll_list_action"`,
-                           `data-id="${data.id}"`,
-                           `data-empid="${data.emp_id}"`,
-                           `data-payrollid="${data.payroll_id}"`,
-                           `data-disbursed="${data.disbursed || 0}"`,
-                           `aria-haspopup="true"`,
-                           `aria-expanded="false">`,
-                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
-                            `<i class="fa-solid fa-ellipsis-vertical tool-tip fs-3 " style="color:#2b3991;"><span class="tool-tiptext fs-6 ">Action</span></i>`,
-                        `</a>`,
+                    `<a href="javascript:void(0)"`,
+                    `class="btn_payroll_list_action"`,
+                    `data-id="${data.id}"`,
+                    `data-empid="${data.emp_id}"`,
+                    `data-payrollid="${data.payroll_id}"`,
+                    `data-disbursed="${data.disbursed || 0}"`,
+                    `aria-haspopup="true"`,
+                    `aria-expanded="false">`,
+                    //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
+                    `<i class="fa-solid fa-ellipsis-vertical tool-tip fs-3 " style="color:#2b3991;"><span class="tool-tiptext fs-6 ">Action</span></i>`,
+                    `</a>`,
                     `</div>`,
-                `</div>`].join('');
-            }
+                    `</div>`,
+                ].join("");
+            },
         },
-
-
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PayrollList_ListView = new ListView(mThis.div_payrollList,{
-            fetchApi : `${main_view.base_url}/mhr/payroll/staff/list`,
+        mThis.PayrollList_ListView = new ListView(mThis.div_payrollList, {
+            fetchApi: `${main_view.base_url}/mhr/payroll/staff/list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            rowCreated:(data,index,tr)=>{
-               tr.dataset.id = data.id;
-               tr.dataset.payrollid = data.payroll_id;
-               tr.dataset.empid = data.emp_id;
+            rowCreated: (data, index, tr) => {
+                tr.dataset.id = data.id;
+                tr.dataset.payrollid = data.payroll_id;
+                tr.dataset.empid = data.emp_id;
             },
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            listContainerClass: null
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
         });
 
         mThis.btnCalculate.onclick = function (e) {
             e.preventDefault();
             const op = {
-                payroll_id: mThis.getFilterData().payroll_id
+                payroll_id: mThis.getFilterData().payroll_id,
             };
             if (!AuthManager.allowed(480)) return;
-            cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
-                title: 'Calculate Payroll List',
-                context: 'calculate',
-                confirmButtonText: "Calculate"
-            }, function (confirmation) {
-                if (confirmation) {
-                    vsapi.call([main_view.base_url, '/mhr/payroll/calculate'].join(''), op, false, null).then(res => {
-                        if (res.status_code === 200) {
-                            const d = res.data || {};
-                            const error_count = d.error_count || 0;
-                            const error_message = error_count > 0 ? `${error_count} cases failed`:'';
-                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases affected! ${d.issues_count}`].join(''));
-                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            mThis.showIssues(d);
-
-                        } else {
-                            cv_interact.warning(res.error_message);
-                        }
-                    });
-                }
-            });
+            cv_interact.confirm(
+                'html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>',
+                {
+                    title: "Calculate Payroll List",
+                    context: "calculate",
+                    confirmButtonText: "Calculate",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/payroll/calculate",
+                                ].join(""),
+                                op,
+                                false,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    const d = res.data || {};
+                                    const error_count = d.error_count || 0;
+                                    const error_message =
+                                        error_count > 0
+                                            ? `${error_count} cases failed`
+                                            : "";
+                                    cv_interact.success(
+                                        [
+                                            `Payroll has been calculated : ${d.success_count || 0} cases affected! ${d.issues_count}`,
+                                        ].join(""),
+                                    );
+                                    mThis.PayrollList_ListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                    mThis.showIssues(d);
+                                } else {
+                                    cv_interact.warning(res.error_message);
+                                }
+                            });
+                    }
+                },
+            );
         };
 
         mThis.showIssues = function (d) {
             let issues_count = d.issues_count || 0;
             if (issues_count > 0) {
-                mThis.btnIssues.classList.remove('d-none');
+                mThis.btnIssues.classList.remove("d-none");
 
-                let html = '';
+                let html = "";
                 d.issues.forEach((issue) => {
                     html += `
                     <div class="d-flex flex-wrap gap-2">
-                        <span>Name: ${issue.name ?? 'N/A'}</span>
-                        <span>Issue: ${issue.issue ?? 'N/A'}</span>
+                        <span>Name: ${issue.name ?? "N/A"}</span>
+                        <span>Issue: ${issue.issue ?? "N/A"}</span>
                         <div class="border w-100"></div>
                     </div>`;
                 });
                 mThis.issues_list.innerHTML = html;
             } else {
-                mThis.btnIssues.classList.add('d-none');
+                mThis.btnIssues.classList.add("d-none");
                 mThis.issues_list.innerHTML = null;
-                mThis.issues_list.parentElement.classList.remove('show');
+                mThis.issues_list.parentElement.classList.remove("show");
             }
-
-        }
+        };
         mThis.btnBackToPayroll.onclick = function (e) {
             e.preventDefault();
             let lnk = VSUtil.closestLimited(e.target, "#_btnBackToPayroll");
@@ -6436,81 +11762,117 @@ var PayrollListComponent = new (function () {
                 VSRoute.showComponent("PayrollComponent");
                 return;
             }
-        }
+        };
         mThis.btnDisburse.onclick = function (e) {
             e.preventDefault();
 
             const op = {
-                payroll_id: mThis.elFilter.value
+                payroll_id: mThis.elFilter.value,
             };
             if (!AuthManager.allowed(481)) return;
-            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
-                title: 'Disburse Payroll List',
-                context: 'update',
-                confirmButtonText: "Disburse"
-            }, function (confirmation) {
-                if (confirmation) {
-                    vsapi.call([main_view.base_url, '/mhr/payroll/disburse-all'].join(''), op, false, null).then(res => {
-                        if (res.status_code === 200) {
-                            cv_interact.success('Salary disbursements were successful!');
-                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                        } else cv_interact.error(res.error_message);
-                    });
-                }
-            });
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>',
+                {
+                    title: "Disburse Payroll List",
+                    context: "update",
+                    confirmButtonText: "Disburse",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/payroll/disburse-all",
+                                ].join(""),
+                                op,
+                                false,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(
+                                        "Salary disbursements were successful!",
+                                    );
+                                    mThis.PayrollList_ListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
+                },
+            );
         };
 
         mThis.btnAuthorized.onclick = function (e) {
             e.preventDefault();
             const op = {
-                id: mThis.elFilter.value
+                id: mThis.elFilter.value,
             };
             if (!AuthManager.allowed(474)) return;
 
-             cv_interact.confirm(
-                 'html:<span class="d-block fw-semibold text-success">Authorize this payroll list? </span><small>This process will authorize payroll list</small>',
-                 {
-                     title: "Authorize Payroll",
-                     context: "authorize",
-                     confirmButtonText: "Authorize",
-                 },
-                 function (e) {
-                     if (e) {
-                         vsapi
-                             .call(`${mThis.base_url}/mhr/payroll/authorize`, op)
-                             .then((res) => {
-                                 if (res.status_code === 200) {
-                                     cv_interact.success(
-                                         "Payroll is now authorized successfully"
-                                     );
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Authorize this payroll list? </span><small>This process will authorize payroll list</small>',
+                {
+                    title: "Authorize Payroll",
+                    context: "authorize",
+                    confirmButtonText: "Authorize",
+                },
+                function (e) {
+                    if (e) {
+                        vsapi
+                            .call(`${mThis.base_url}/mhr/payroll/authorize`, op)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(
+                                        "Payroll is now authorized successfully",
+                                    );
                                     //  mThis.PayrollList_ListView.showPage();
-                                 } else cv_interact.error(res.error_message);
-                             });
-                     }
-                 }
-             );
-        }
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
+                },
+            );
+        };
         mThis.btnReverse.onclick = function (e) {
             e.preventDefault();
 
             const op = {
-                payroll_id: mThis.elFilter.value
+                payroll_id: mThis.elFilter.value,
             };
             if (!AuthManager.allowed(482)) return;
-            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>', {
-                title: 'Reverse Payroll List',
-                context: 'update',
-                confirmButtonText: "Reverse Payroll List?"
-            }, function (confirmation) {
-                if (confirmation) {
-                    vsapi.call([main_view.base_url, '/mhr/payroll/reverse'].join(''), op, false, null).then(res => {
-                        if (res.status_code === 200) {
-                            cv_interact.success('Salary reverse to master account successfully!');
-                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                        } else cv_interact.error(res.error_message);
-                    });
-                }
-            });
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>',
+                {
+                    title: "Reverse Payroll List",
+                    context: "update",
+                    confirmButtonText: "Reverse Payroll List?",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/payroll/reverse",
+                                ].join(""),
+                                op,
+                                false,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(
+                                        "Salary reverse to master account successfully!",
+                                    );
+                                    mThis.PayrollList_ListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
+                },
+            );
         };
 
         mThis.btnImport.onclick = function (e) {
@@ -6522,7 +11884,7 @@ var PayrollListComponent = new (function () {
                 // btn: e.target,
                 onClose: () => {
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                }
+                },
             };
             if (!AuthManager.allowed(213)) return;
             PayRollImportDialog.show(op);
@@ -6537,41 +11899,40 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 230) + 'px';
+        sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
 
-        mThis.initDropdownMenus(pr_tbl);///
+        mThis.initDropdownMenus(pr_tbl); ///
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            }
-       });
-       let timeOut = null;
-       mThis.elSearch.onkeyup = function (e) {
-        e.preventDefault();
-        clearTimeout(timeOut);
-        timeOut = setTimeout(() => {
-            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-        }, 250);
-    };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            };
+        });
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            }, 250);
+        };
 
         mThis.initAlready = true;
-
     };
 
-    mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_payroll_list_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_payroll_list_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
                     html: '<span class="ps-2 " vslang="titles.View Pay Slip">View Pay Slip</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
@@ -6585,87 +11946,91 @@ var PayrollListComponent = new (function () {
                 //     name:"disburse_payroll_list"
                 // },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"add_deduction"
+                    html: '<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "add_deduction",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_payroll_list"
+                    html: '<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_payroll_list",
                 },
-
             ],
             onShow: (me, container) => {
-
                 const menu = me.getActiveMenus(container);
                 const disburse = container.dataset.disbursed;
-
 
                 if (disburse == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = (menu[item].dataset.mnuaction === 'delete_payroll_list' || menu[item].dataset.mnuaction === 'add_deduction' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
+                            menu[item].style.display =
+                                menu[item].dataset.mnuaction ===
+                                    "delete_payroll_list" ||
+                                menu[item].dataset.mnuaction ===
+                                    "add_deduction" ||
+                                menu[item].dataset.mnuaction ===
+                                    "disburse_payroll_list"
+                                    ? "none"
+                                    : "block";
                         }
-
                     }
                 }
-
             },
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'pay_slip':{
-                      mThis.viewPayment(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "pay_slip": {
+                        mThis.viewPayment(id, menuLink);
+                        break;
                     }
-                    case 'add_deduction':{
-                      mThis.addDeduction(id, menuLink);
-                      break;
+                    case "add_deduction": {
+                        mThis.addDeduction(id, menuLink);
+                        break;
                     }
 
-                    case 'disburse_payroll_list':{
-                      const id = menuLink.dataset.id;
-                      //const payroll_id = menuLink.dataset.payrollid;
-                      mThis.disburseOne(id, null, null, menuLink);
-                      break;
+                    case "disburse_payroll_list": {
+                        const id = menuLink.dataset.id;
+                        //const payroll_id = menuLink.dataset.payrollid;
+                        mThis.disburseOne(id, null, null, menuLink);
+                        break;
                     }
-                    case 'delete_payroll_list':{
+                    case "delete_payroll_list": {
                         mThis.deletePayrollList(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
+    };
 
     mThis.renderPayment = (data) => {
-       let html = '';
-       let benefit_flat_rate = null;
-       let div_BFT  = '';
+        let html = "";
+        let benefit_flat_rate = null;
+        let div_BFT = "";
 
-       if (data.benefit_flat_rate != null) {
-            const parts = data.benefit_flat_rate.split('|').filter(part => part);
+        if (data.benefit_flat_rate != null) {
+            const parts = data.benefit_flat_rate
+                .split("|")
+                .filter((part) => part);
 
-            benefit_flat_rate = parts.map(part => {
-                const [bft, bftr] = part.split('@');
+            benefit_flat_rate = parts.map((part) => {
+                const [bft, bftr] = part.split("@");
                 return { BFT: bft, BFTR: bftr };
             });
 
             div_BFT = benefit_flat_rate
-            .map(value => {
-                return `${VSMoney.formatAmount(value.BFT,data.currency_code)} (${value.BFTR} %)`;
-            })
-            .join(' & ');
-
+                .map((value) => {
+                    return `${VSMoney.formatAmount(value.BFT, data.currency_code)} (${value.BFTR} %)`;
+                })
+                .join(" & ");
         }
-         html += `
+        html += `
         <style>
             .payment_card {
 
@@ -6739,7 +12104,7 @@ var PayrollListComponent = new (function () {
                         <div class="row cols-2 mb-0">
                         <div class="col-2">
                         <div class="payment_img" data-id="" data-imageurl="">
-                        <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;"/>
+                        <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;"/>
                             </div>
                         </div>
                         <div class="col-5 p_profile_left">
@@ -6753,7 +12118,7 @@ var PayrollListComponent = new (function () {
                                 <p class="text-nowrap text-muted width-p">Sex</p>
                                 <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">
-                                    ${data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other'}
+                                    ${data.sex === "M" ? "Male" : data.sex === "F" ? "Female" : "Other"}
                                 </p>
                             </div>
 
@@ -6796,7 +12161,7 @@ var PayrollListComponent = new (function () {
                         <tbody>
                             <tr>
                                 <td> Salary </td>
-                                <td>${VSMoney.formatAmount(data.p_salary,data.currency_code)}</td>
+                                <td>${VSMoney.formatAmount(data.p_salary, data.currency_code)}</td>
                             </tr>
                              <tr>
                                 <td>Period</td>
@@ -6808,7 +12173,7 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>Other Benefits</td>
-                                <td class="text-success">${div_BFT || 0.00}</td>
+                                <td class="text-success">${div_BFT || 0.0}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
@@ -6836,15 +12201,15 @@ var PayrollListComponent = new (function () {
 
                              <tr>
                                 <td>Tax Rate</td>
-                                <td>${data.tax_rate }%</td>
+                                <td>${data.tax_rate}%</td>
                             </tr>
                             <tr>
                                 <td>Nontaxable Benefits</td>
-                                <td class="text-success">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</td>
+                                <td class="text-success">${VSMoney.formatAmount(data.nontaxable_benefit || data.benefit_non_tax, data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>Benefit Tax</td>
-                                <td class="text-danger">${VSMoney.formatAmount( (data.taxable_benefits || data.benefit_tax), data.currency_code)}</td>
+                                <td class="text-danger">${VSMoney.formatAmount(data.taxable_benefits || data.benefit_tax, data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>Tax Base</td>
@@ -6864,29 +12229,34 @@ var PayrollListComponent = new (function () {
         mThis.payment_info.innerHTML = html;
     };
 
-    mThis.btnPrint.addEventListener('click', () => {
+    mThis.btnPrint.addEventListener("click", () => {
         windowPrintPayrollList(mThis.payment_info.innerHTML);
         // window.print();
-    })
-
+    });
 
     mThis.viewPayment = (id, menuLink) => {
-
         const sub_content = mThis.self.querySelector("#sub_content");
         sub_content.classList.add("d-none");
         const pay_slip = mThis.self.querySelector("#pay_slip");
         pay_slip.classList.remove("d-none");
         let op = {
             id: id,
-        }
-        vsapi.call(`${main_view.base_url}/mhr/payroll/staff/pay-slip`,op,false,false,false).then(res => {
-            if(res.status_code == 200){
-                let d = res.data;
-                mThis.renderPayment(d);
-            }
-        })
-
-    }
+        };
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/payroll/staff/pay-slip`,
+                op,
+                false,
+                false,
+                false,
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                    let d = res.data;
+                    mThis.renderPayment(d);
+                }
+            });
+    };
     mThis.addDeduction = (id, menuLink) => {
         if (!AuthManager.allowed(214)) return;
 
@@ -6895,14 +12265,13 @@ var PayrollListComponent = new (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-
-            }
+            },
         };
 
         AddDeductionDialog.show(op);
-    }
+    };
 
-    mThis.disburseOne = (id, emp_id,payroll_id, menuLink) => {
+    mThis.disburseOne = (id, emp_id, payroll_id, menuLink) => {
         const p = {
             id: id,
             //emp_id:emp_id,
@@ -6912,26 +12281,37 @@ var PayrollListComponent = new (function () {
             //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             // }
         };
-        cv_interact.confirm('Disburse this payroll ?',{
-            title: 'Disburse Payroll List',
-            context: 'disburse',
-            confirmButtonText:"Disburse"
-        }, e =>{
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/payroll/disburse-one`, p, false, false, false).then(res => {
-
-                    if(res.status_code == 200){
-                        cv_interact.success('Disbursed successfully');
-                        mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                    }
-                    else{
-                        cv_interact.error(res.error_message);
-                    }
-                })
-            }
-        });
-
-    }
+        cv_interact.confirm(
+            "Disburse this payroll ?",
+            {
+                title: "Disburse Payroll List",
+                context: "disburse",
+                confirmButtonText: "Disburse",
+            },
+            (e) => {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/payroll/disburse-one`,
+                            p,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Disbursed successfully");
+                                mThis.PayrollList_ListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            },
+        );
+    };
 
     mThis.deletePayrollList = (id, menuLink) => {
         let op = {
@@ -6939,39 +12319,52 @@ var PayrollListComponent = new (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         if (!AuthManager.allowed(215)) return;
-        cv_interact.confirm('Remove this staff from payroll?',{
-            title: 'Remove Staff from Payroll',
-            context: 'delete',
-            confirmButtonText:"Remove"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/payroll/staff/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.info('The staff has been removed from payroll!');
-                        mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
-
-    }
+        cv_interact.confirm(
+            "Remove this staff from payroll?",
+            {
+                title: "Remove Staff from Payroll",
+                context: "delete",
+                confirmButtonText: "Remove",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/payroll/staff/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.info(
+                                    "The staff has been removed from payroll!",
+                                );
+                                mThis.PayrollList_ListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            }
+                        });
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            },
+        );
+    };
 
     mThis.getFilterData = () => {
-
         let p = {};
 
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
         // p.disbursed = mThis.elFilterDisburse.value;
         p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
@@ -6980,28 +12373,50 @@ var PayrollListComponent = new (function () {
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/mhr/payroll/staff/form-options`, null, null, null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            let payroll_id = null;
-            const today = new Date();
-            const currentMonth = today.getMonth() + 1;
-            const currentYear = today.getFullYear();
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/payroll/staff/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                let payroll_id = null;
+                const today = new Date();
+                const currentMonth = today.getMonth() + 1;
+                const currentYear = today.getFullYear();
 
-            d.payrolls.forEach(payroll => {
-                if (payroll.month === currentMonth && payroll.year === currentYear) {
-                    payroll_id = payroll.id;
+                d.payrolls.forEach((payroll) => {
+                    if (
+                        payroll.month === currentMonth &&
+                        payroll.year === currentYear
+                    ) {
+                        payroll_id = payroll.id;
+                    }
+                });
 
-                }
-
-
+                VSUtil.setComboItems(
+                    mThis.elFilter,
+                    d.payrolls,
+                    "id",
+                    "payroll_name",
+                    false,
+                    null,
+                    payroll_id,
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilterBranch,
+                    d.branches,
+                    "id",
+                    "branch_name",
+                    true,
+                    "All Branches",
+                    null,
+                );
+                // VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
+                onFinish(d);
             });
-
-
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
-            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
-            // VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
-            onFinish(d);
-        });
     };
 
     mThis.show = function (option) {
@@ -7010,30 +12425,32 @@ var PayrollListComponent = new (function () {
 
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
-            mThis.elFilter.dispatchEvent(new Event('change'));
+            mThis.elFilter.dispatchEvent(new Event("change"));
             main_view.setContentView(mThis.self, mThis.title_prop);
         });
     };
     return mThis;
-});
+})();
 
 const AddDeductionDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: 'modal-lg vs-modal',
-            backdrop: 'static',
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row g-3">
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" disabled placeholder="${LocaleManager.trans('Name', 'labels')}">
+                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" disabled placeholder="${LocaleManager.trans("Name", "labels")}">
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="payroll_name" class="data-input form-control" data-field="payroll_id" disabled placeholder="${LocaleManager.trans('Payroll Name', 'labels')}">
+                            <select data-style="material" name="payroll_name" class="data-input form-control" data-field="payroll_id" disabled placeholder="${LocaleManager.trans("Payroll Name", "labels")}">
                             </select>
                         </div>
                         <div class="col-6">
@@ -7043,168 +12460,206 @@ const AddDeductionDialog = (() => {
                             </div>
                         </div>
                     </div>`,
-                ].join("");
-            },
-            contentCreated: (me) => {
-            },
-            prepareFormOptions: {
-                createTitle: 'Add Deduction',
-                modifyTitle: 'Edit Deduction ',
-                targetProp: 'payroll_list',
-                api: {
-                    endpoint: [main_view.base_url, '/mhr/payroll/staff/form-options'].join(''),
-                    params: (op) => {
-                        return { 'id': op.id };
-                    }
+                    ].join("");
                 },
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            },
-
-            configSelect: [
-                {
-                    name: "employee",
-                    data: 'employees',
-                    textField: "name",
-                    valueField: 'id'
+                contentCreated: (me) => {},
+                prepareFormOptions: {
+                    createTitle: "Add Deduction",
+                    modifyTitle: "Edit Deduction ",
+                    targetProp: "payroll_list",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/payroll/staff/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
                 },
-                {
-                    name: "payroll_name",
-                    data: 'payrolls',
-                    textField: "payroll_name",
-                    valueField: 'id'
-                }
-            ],
 
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: 'btn btn-default',
-                    click: (me, btn) => {
-                        // Close with Cancel button
-                        me.hide(false);
-                    }
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
-                {
-                    label: '<span>Save</span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const p = me.getData();
-                        p.id = me.dataOptions.id; // Get "id" from op
-                        if (!AuthManager.allowed(214)) return;
 
-                        vsapi.call([main_view.base_url, '/mhr/payroll/staff/add-deduction'].join(''), p, btn, null)
-                            .then(res => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, p);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Added deduction successfully");
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "payroll_name",
+                        data: "payrolls",
+                        textField: "payroll_name",
+                        valueField: "id",
+                    },
+                ],
+
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            // Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id; // Get "id" from op
+                            if (!AuthManager.allowed(214)) return;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/payroll/staff/add-deduction",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Added deduction successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Added deduction successfully",
+                                            );
+                                        }
                                     } else {
-                                        cv_interact.success("Added deduction successfully");
+                                        cv_interact.error(res.error_message);
                                     }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                    }
-                }
-            ],
-        });
+                                });
+                        },
+                    },
+                ],
+            });
         dialog.show(op);
     };
 
     return self;
 })();
 
-
-const PayRollImportDialog = (()=>{
+const PayRollImportDialog = (() => {
     const self = {};
     let dialogImport = null;
-     self.show = (op)=>{
-
-        dialogImport = dialogImport || new GeneralDialog({
-            cssClass:'modal-md',
-            backdrop: 'static',
-            keyboard:true,
-            createContent:()=>{
-                 return [`<div class="row">
+    self.show = (op) => {
+        dialogImport =
+            dialogImport ||
+            new GeneralDialog({
+                cssClass: "modal-md",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
                  <div class="form-group col-12">
                      <label for="payroll_name" class="form-label" vslang="titles.Payroll"></label>
                      <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
 
-              </div>`].join('');
-            },
-            configSelect:[
-               {
-                 name:"payroll_name",
-                 data:'payrolls',
-                 textField:"payroll_name",
-                 valueField:'id'
-               },
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Import</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
+              </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "payroll_name",
+                        data: "payrolls",
+                        textField: "payroll_name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Import</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-                    p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/mhr/payroll/import-staff'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         const successCount = res.data.success_count ?? 0;
-                          if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
-                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles');
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Import Staff List',
-               modifyTitle:'Edit',
-               targetProp: 'payroll_list',
-               api:{
-                 endpoint: [main_view.base_url,'/mhr/payroll/staff/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            },
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/payroll/import-staff",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        const successCount =
+                                            res.data.success_count ?? 0;
+                                        if (successCount > 0)
+                                            cv_interact.success(
+                                                [
+                                                    successCount,
+                                                    " staff have been enlisted to this payroll",
+                                                ].join(""),
+                                            );
+                                        else
+                                            cv_interact.warning(
+                                                "No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles",
+                                            );
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Import Staff List",
+                    modifyTitle: "Edit",
+                    targetProp: "payroll_list",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/payroll/staff/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
 
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-                 me.controls.payroll_name.value = me.dataOptions.payroll_id;
-                 me.controls.payroll_name.setAttribute('disabled',true);
-            }
-        });
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    me.controls.payroll_name.value = me.dataOptions.payroll_id;
+                    me.controls.payroll_name.setAttribute("disabled", true);
+                },
+            });
 
         dialogImport.show(op);
-     }
+    };
 
     return self;
 })();
 
-function windowPrintPayrollList(html=null)
-{
+function windowPrintPayrollList(html = null) {
     let HtmlString = null;
     HtmlString = html ? html : HtmlString;
-    if(HtmlString)
-    {
-        let myWindow = window.open('','PRINT');
+    if (HtmlString) {
+        let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
@@ -7233,18 +12688,18 @@ function windowPrintPayrollList(html=null)
             myWindow.focus();
             myWindow.print();
             myWindow.close();
-        },500);
-    }
-    else
-        cv_interact.warning('Select run report before print!');
+        }, 500);
+    } else cv_interact.warning("Select run report before print!");
 }
 
-"use strict";
+("use strict");
 
-var BenefitComponent =  (function () {
+var BenefitComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_benefit_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_benefit_component",
+    );
 
     mThis.title_prop = "Benefit List";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
@@ -7258,32 +12713,34 @@ var BenefitComponent =  (function () {
         },
         {
             transTitle: "titles.Name",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
                     </div>
                 `;
-             }
+            },
         },
         {
             transTitle: "titles.Type",
-            className: 'type text-nowrap',
+            className: "type text-nowrap",
             data: function (data, index, tr) {
                 let cls_class = "text-info";
                 if (data.type_id == 1) {
-                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
+                    cls_class =
+                        "badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis";
                 } else if (data.type_id == 2) {
-                    cls_class = 'badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis';
+                    cls_class =
+                        "badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis";
                 }
 
                 return `<div class="text-primary-custom" style="width:80px;">
                             <span class="${cls_class} text-capitalize d-inline-block text-center" style="min-width:70px">
-                                ${data.type_id == 1 ? 'Remuneration' : 'Fringe Benefit'}
+                                ${data.type_id == 1 ? "Remuneration" : "Fringe Benefit"}
                             </span>
                         </div>`;
-            }
+            },
         },
         {
             transTitle: "titles.Last Updated",
@@ -7340,12 +12797,12 @@ var BenefitComponent =  (function () {
         };
         mThis.pr_tbl = mThis.BenefitListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -7378,7 +12835,12 @@ var BenefitComponent =  (function () {
 
     mThis.editBenefit = (id, btn) => {
         if (!AuthManager.allowed(271)) return;
-        BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getFilterData()),});
+        BenefitDialog.show({
+            id,
+            btn,
+            onClose: () =>
+                mThis.BenefitListView.showPage(mThis.getFilterData()),
+        });
     };
 
     mThis.deleteBenefit = (id, menuLink) => {
@@ -7400,18 +12862,23 @@ var BenefitComponent =  (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call( `${main_view.base_url}/mhr/benefit/delete`, op, false, false, false)
+                        .call(
+                            `${main_view.base_url}/mhr/benefit/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("delete_success_benefit");
                                 mThis.BenefitListView.showPage();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -7419,34 +12886,43 @@ var BenefitComponent =  (function () {
         let p = {
             search_value: mThis.elSearch.value,
             type_id: mThis.elBenefitType.value,
-
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
-
         });
 
         return p;
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/mhr/benefit/form-options`,null,null,null)
+            .call(
+                `${main_view.base_url}/mhr/benefit/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name","",LocaleManager.trans("All Types", "titles"),"");
+                VSUtil.setComboItems(
+                    mThis.elBenefitType,
+                    d.benefit_types,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Types", "titles"),
+                    "",
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
-    mThis.show =  (options) => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.BenefitListView.showPage(mThis.getFilterData());
-
         });
-
     };
     return mThis;
 })();
@@ -7471,7 +12947,7 @@ const BenefitDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="type_id" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
+                                <select data-style="material" name="type_id" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans("Type", "labels")}">
                                     <option value="1" >Remuneration</option>
                                     <option value="2">Fringe Benefit</option>
                                 </select>
@@ -7505,17 +12981,19 @@ const BenefitDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("update_success_benefit");
-                                        }
-                                        else{
-                                        cv_interact.success("create_success_benefit");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_benefit",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_benefit",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -7551,12 +13029,14 @@ const BenefitDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var EmployeeBenefitComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_employee_benefit_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_employee_benefit_component",
+    );
 
     mThis.title_prop = "Employee Benefits";
 
@@ -7585,10 +13065,10 @@ var EmployeeBenefitComponent = new (function () {
         },
         {
             transTitle: "titles.Benefit",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span>${data.benefit_name ?? '-'}</span>`;
-             }
+                return `<span>${data.benefit_name ?? "-"}</span>`;
+            },
         },
         {
             transTitle: "titles.Issue Date",
@@ -7605,7 +13085,7 @@ var EmployeeBenefitComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.amount,
-                    data.currency_code
+                    data.currency_code,
                 )}</p>`;
             },
         },
@@ -7615,7 +13095,7 @@ var EmployeeBenefitComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.balance,
-                    data.currency_code
+                    data.currency_code,
                 )}</p>`;
             },
         },
@@ -7682,47 +13162,59 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+                    mThis.EmployeeBenefitListView.showPage(
+                        mThis.getFilterData(),
+                    );
                 },
             });
         };
         mThis.btnImport.onclick = (e) => {
             e.preventDefault();
             if (!AuthManager.allowed(325)) return;
-            FileChooser.chooseFile({
-                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            },(d) => {
-                if(d){
-                    vsapi.call(`${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,{
-                        file: d.dataUrl
-                    },false).then(res => {
-
-                        if(res.status_code === 200){
-                            mThis.EmployeeBenefitListView.showPage(null);
-                            cv_interact.success('Employees Benefit Were Import Successfully!');
-                        }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-                }
-            });
-
+            FileChooser.chooseFile(
+                {
+                    accept: "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                },
+                (d) => {
+                    if (d) {
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,
+                                {
+                                    file: d.dataUrl,
+                                },
+                                false,
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    mThis.EmployeeBenefitListView.showPage(
+                                        null,
+                                    );
+                                    cv_interact.success(
+                                        "Employees Benefit Were Import Successfully!",
+                                    );
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    }
+                },
+            );
         };
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 235 + "px";
+        };
         mThis.elSearch.addEventListener(
             "keyup",
             mThis.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
-            }, 300)
+            }, 300),
         );
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -7763,7 +13255,8 @@ var EmployeeBenefitComponent = new (function () {
         EmployeeBenefitDialog.show({
             id,
             btn,
-            onClose: () => mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
+            onClose: () =>
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -7791,21 +13284,22 @@ var EmployeeBenefitComponent = new (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_employee_benefit");
-                                mThis.EmployeeBenefitListView.showPage(
-                                    mThis.getFilterData()
+                                cv_interact.success(
+                                    "delete_success_employee_benefit",
                                 );
-                            }
-                            else {
+                                mThis.EmployeeBenefitListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -7815,13 +13309,28 @@ var EmployeeBenefitComponent = new (function () {
                 `${main_view.base_url}/mhr/emp-benefit/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "",LocaleManager.trans("All Benefits", "titles"), "");
-                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "",LocaleManager.trans("All Tax Options", "titles"), "");
-
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Benefits", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elTaxOption,
+                    d.tax_options,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Tax Options", "titles"),
+                    "",
+                );
             });
     };
 
@@ -7836,8 +13345,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.init();
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
-         main_view.setContentView(mThis.self, mThis.title_prop);
-
+        main_view.setContentView(mThis.self, mThis.title_prop);
     };
     return mThis;
 })();
@@ -7854,16 +13362,16 @@ const EmployeeBenefitDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans("Benefit", "labels")}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" disabled></select>
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}" disabled></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans('Tax Options', 'labels')}">
+                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans("Tax Options", "labels")}">
                                 <option value="">(Select Tax Option)</option>
                                 <option value="1">Tax</option>
                                 <option value="2">Non</option>
@@ -7900,15 +13408,16 @@ const EmployeeBenefitDialog = (() => {
             },
             contentCreated: (me) => {
                 DateTimePicker.init(me.controls.effective_date);
-                const taxOptionField = me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+                const taxOptionField =
+                    me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField =
+                    me.divModal.querySelector(".flat_tax_rate");
                 taxOptionField.addEventListener("change", () => {
                     flatTaxRateField.classList.toggle(
                         "d-none",
-                        taxOptionField.value !== "3"
+                        taxOptionField.value !== "3",
                     );
                 });
-
             },
 
             prepareFormOptions: {
@@ -7921,15 +13430,17 @@ const EmployeeBenefitDialog = (() => {
                 },
             },
             onPrepareForm: (me, data) => {
-
                 const BenefitField = me.divModal.querySelector("#benefit_id");
 
-                const effective_date = me.divModal.querySelector(".effective_date");
+                const effective_date =
+                    me.divModal.querySelector(".effective_date");
                 BenefitField.addEventListener("change", () => {
                     const selectedValue = BenefitField.value;
                     const benefit_disburse_policies =
                         data.benefit_disburse_policies;
-                    const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
+                    const exists = benefit_disburse_policies.find(
+                        (e) => e.benefit_id === selectedValue,
+                    );
                     if (exists) {
                         effective_date.classList.remove("d-none");
                     } else {
@@ -7942,7 +13453,7 @@ const EmployeeBenefitDialog = (() => {
 
                 Object.keys(data).forEach((key) => {
                     const input = me.divModal.querySelector(
-                        `[data-field="${key}"]`
+                        `[data-field="${key}"]`,
                     );
                     if (input) {
                         input.value = data[key];
@@ -7981,8 +13492,8 @@ const EmployeeBenefitDialog = (() => {
                     label: '<span  vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
                     click: (me, btn) => {
-                        me.hide(false)
-                    }
+                        me.hide(false);
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -7995,15 +13506,19 @@ const EmployeeBenefitDialog = (() => {
                             .call(
                                 `${main_view.base_url}/mhr/emp-benefit/save`,
                                 p,
-                                btn
+                                btn,
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success("update_success_employee_benefit");
+                                        cv_interact.success(
+                                            "update_success_employee_benefit",
+                                        );
                                     } else {
-                                        cv_interact.success("create_success_employee_benefit");
+                                        cv_interact.success(
+                                            "create_success_employee_benefit",
+                                        );
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -8020,16 +13535,17 @@ const EmployeeBenefitDialog = (() => {
     return self;
 })();
 
-
-
-
 var PayrollAccountComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_accountComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_accountComponent",
+    );
     mThis.title_prop = "Payroll Accounts";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
-    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
+    mThis.btnAddAccountMissing = mThis.self.querySelector(
+        "#_btnAddAccountMissing",
+    );
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
     mThis.elDepartment = mThis.self.querySelector("#el_department");
@@ -8037,7 +13553,7 @@ var PayrollAccountComponent = (function () {
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
-    mThis.divListView = mThis.self.querySelector('#_account_list');
+    mThis.divListView = mThis.self.querySelector("#_account_list");
 
     mThis.cols = [
         {
@@ -8067,7 +13583,7 @@ var PayrollAccountComponent = (function () {
             transTitle: "titles.Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                 return `<div class="text-primary-custom" style="width:80px;">
+                return `<div class="text-primary-custom" style="width:80px;">
                             <span class="badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis text-capitalize d-inline-block text-center" style="min-width:70px">
                                 ${data.account_type ?? ""}
                             </span>
@@ -8085,7 +13601,7 @@ var PayrollAccountComponent = (function () {
             transTitle: "titles.Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
             },
         },
 
@@ -8111,10 +13627,10 @@ var PayrollAccountComponent = (function () {
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_account_action"
                     }" data-id="${data.id}" data-emp_id="${
-                data.emp_id
-            }" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
+                        data.emp_id
+                    }" data-statusid="${
+                        data.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
@@ -8131,7 +13647,8 @@ var PayrollAccountComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 overflow-hidden  header-uppercase",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
 
@@ -8169,33 +13686,33 @@ var PayrollAccountComponent = (function () {
                                 ].join(""),
                                 op,
                                 false,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     const d = res.data;
                                     if (d.success_count > 0) {
                                         mThis.AccountListView.showPage(
-                                            mThis.getFilterData()
+                                            mThis.getFilterData(),
                                         );
                                         cv_interact.success(
-                                            `${d.success_count} accounts have been created!`
+                                            `${d.success_count} accounts have been created!`,
                                         );
                                     } else
                                         cv_interact.info(
-                                            "No account were created! Maybe because all staff already have an account!"
+                                            "No account were created! Maybe because all staff already have an account!",
                                         );
                                 } else cv_interact.error(res.error_message);
                             });
                     }
-                }
+                },
             );
         };
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             const sub_content_account = mThis.self.querySelector(
-                "#sub_content_account"
+                "#sub_content_account",
             );
             sub_content_account.classList.remove("d-none");
             const view_transaction =
@@ -8370,11 +13887,11 @@ var PayrollAccountComponent = (function () {
                                             trx.trx_type === 1
                                                 ? "Deposit"
                                                 : trx.trx_type === 2
-                                                ? "Withdrawal"
-                                                : "Transfer"
+                                                  ? "Withdrawal"
+                                                  : "Transfer"
                                         }</td>
-                                       <td>${trx.from_account_number ?? 'N/A'}</td>
-                                        <td>${trx.to_account_number ?? 'N/A'}</td>
+                                       <td>${trx.from_account_number ?? "N/A"}</td>
+                                        <td>${trx.to_account_number ?? "N/A"}</td>
                                         <td class="${
                                             trx.status === "in"
                                                 ? "text-success"
@@ -8394,9 +13911,9 @@ var PayrollAccountComponent = (function () {
                                                 ${trx.status}
                                             </span>
                                         </td>
-                                        <td>${trx.remarks ?? 'N/A'}</td>
+                                        <td>${trx.remarks ?? "N/A"}</td>
                                     </tr>
-                                `
+                                `,
                                     )
                                     .join("")}
                             </tbody>
@@ -8530,7 +14047,7 @@ var PayrollAccountComponent = (function () {
 
     mThis.viewTransaction = (id, menuLink) => {
         const sub_content_account = mThis.self.querySelector(
-            "#sub_content_account"
+            "#sub_content_account",
         );
         sub_content_account.classList.add("d-none");
         const view_transaction = mThis.self.querySelector("#view_transaction");
@@ -8548,7 +14065,7 @@ var PayrollAccountComponent = (function () {
                 op,
                 false,
                 false,
-                false
+                false,
             )
             .then((res) => {
                 if (res.status_code == 200) {
@@ -8594,7 +14111,7 @@ var PayrollAccountComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
@@ -8603,23 +14120,23 @@ var PayrollAccountComponent = (function () {
                             } else cv_interact.error(res.error_message);
                         });
                 }
-            }
+            },
         );
     };
 
-    mThis.setDefaultFilter = ()=>{
-        if(!mThis.rem_filter) return;
+    mThis.setDefaultFilter = () => {
+        if (!mThis.rem_filter) return;
         const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
-             const f = el.dataset.field;
-             el.value = mThis.rem_filter[f] ?? '';
+            const f = el.dataset.field;
+            el.value = mThis.rem_filter[f] ?? "";
         });
     };
 
     mThis.getFilterData = () => {
         const p = {};
         p.search_value = mThis.elSearch.value;
-       // p.sort_by_department = mThis.elSortByDepartment.value;
+        // p.sort_by_department = mThis.elSortByDepartment.value;
         // p.sort_by_branch = mThis.elSortByBranch.value;
         //p.sort_by_account = mThis.elSortByAccount.value;
         //p.account_id = mThis.divFilter.value;
@@ -8639,7 +14156,7 @@ var PayrollAccountComponent = (function () {
                 `${main_view.base_url}/mhr/account/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
@@ -8648,16 +14165,16 @@ var PayrollAccountComponent = (function () {
                     d.departments,
                     "id",
                     "name",
-                    '',
-                    'All Departments'
+                    "",
+                    "All Departments",
                 );
                 VSUtil.setComboItems(
                     mThis.elAccount,
                     d.account,
                     "id",
                     "name",
-                    '',
-                    'All Accounts'
+                    "",
+                    "All Accounts",
                 );
                 onFinish();
             });
@@ -8665,14 +14182,13 @@ var PayrollAccountComponent = (function () {
 
     mThis.show = function () {
         mThis.init();
-        mThis.prepareFormOptions(()=>{
-            if (mThis.rem_filter){
+        mThis.prepareFormOptions(() => {
+            if (mThis.rem_filter) {
                 mThis.setDefaultFilter();
             }
             mThis.AccountListView.showPage();
             main_view.setContentView(mThis.self, mThis.title_prop);
         });
-
     };
     return mThis;
 })();
@@ -8691,10 +14207,10 @@ const AccountDialog = (() => {
                     return [
                         `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control"  data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                            <select data-style="material" name="employee" class="data-input form-control"  data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans("Account Type", "labels")}">
                                 <option value="Payroll">Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
@@ -8725,9 +14241,7 @@ const AccountDialog = (() => {
 
                     if (currency_codeField && !currency_codeField.value) {
                         currency_codeField.value = VSMoney.getCurrency().code;
-
                     }
-
                 },
                 configSelect: [
                     {
@@ -8770,7 +14284,7 @@ const AccountDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
@@ -8806,14 +14320,20 @@ const AccountDialog = (() => {
 
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.setReadOnly(true,['account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
+                    me.setReadOnly(true, ["account_number", "currency_code"], {
+                        currency_code: VSMoney.getCurrency().code,
+                    });
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly,['balance','employee'],isReadOnly? null : {"balance":"0.00"});
+                    me.setReadOnly(
+                        isReadOnly,
+                        ["balance", "employee"],
+                        isReadOnly ? null : { balance: "0.00" },
+                    );
                     // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';
                     // me.controls.account_name.setAttribute('readonly',true);
 
                     const balanceField = me.divModal.querySelector(
-                        '[data-field="balance"]'
+                        '[data-field="balance"]',
                     );
                     if (balanceField) {
                         if (me.dataOptions && me.dataOptions.id) {
@@ -8913,13 +14433,13 @@ const DepositDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "Updated balance successfully"
+                                            "Updated balance successfully",
                                         );
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -8939,12 +14459,12 @@ const DepositDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                       onResponse: (me, res)=>{
+                    onResponse: (me, res) => {
                         //  console.log('result from api "/form-options": ', res);
-                       }
+                    },
                 },
 
-                onPrepareForm: (me,acc) => {
+                onPrepareForm: (me, acc) => {
                     LocaleManager.translateZone(me.divModal);
                     // me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
                     // me.controls.account_number.value = acc.account_number;
@@ -9037,11 +14557,11 @@ const TransferDialog = (() => {
                     vsapi
                         .call(
                             [main_view.base_url, "/mhr/account/get-info"].join(
-                                ""
+                                "",
                             ),
                             p,
                             null,
-                            null
+                            null,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
@@ -9082,7 +14602,7 @@ const TransferDialog = (() => {
                                 ].join(""),
                                 p,
                                 null,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
@@ -9110,11 +14630,14 @@ const TransferDialog = (() => {
                                         </div>`;
                                     to_account_info.innerHTML = div;
                                     if (
-                                        me.to_account_currency_code == me.currency_code
+                                        me.to_account_currency_code ==
+                                        me.currency_code
                                     ) {
                                         exchange_rate.classList.add("d-none");
                                     } else {
-                                        exchange_rate.classList.remove("d-none");
+                                        exchange_rate.classList.remove(
+                                            "d-none",
+                                        );
                                     }
                                 }
                             });
@@ -9137,14 +14660,15 @@ const TransferDialog = (() => {
                             p.account_type = me.account_type;
                             p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
-                            p.to_account_currency_code = me.to_account_currency_code;
+                            p.to_account_currency_code =
+                                me.to_account_currency_code;
                             p.id = me.dataOptions.id;
                             if (
                                 me.to_account_currency_code != me.currency_code
                             ) {
                                 if (!me.controls.exchange_rate.value) {
                                     cv_interact.error(
-                                        "Please enter exchange rate"
+                                        "Please enter exchange rate",
                                     );
                                     return;
                                 }
@@ -9158,7 +14682,7 @@ const TransferDialog = (() => {
                                     ].join(""),
                                     p,
                                     null,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200 && res.data) {
@@ -9173,8 +14697,14 @@ const TransferDialog = (() => {
                                             },
                                             function (confirmation) {
                                                 if (confirmation) {
-                                                    p.from_account = {'account_number':p.account_number}
-                                                    p.to_account = {'account_number':p.to_account_number}
+                                                    p.from_account = {
+                                                        account_number:
+                                                            p.account_number,
+                                                    };
+                                                    p.to_account = {
+                                                        account_number:
+                                                            p.to_account_number,
+                                                    };
                                                     vsapi
                                                         .call(
                                                             [
@@ -9183,7 +14713,7 @@ const TransferDialog = (() => {
                                                             ].join(""),
                                                             p,
                                                             null,
-                                                            null
+                                                            null,
                                                         )
                                                         .then((res) => {
                                                             if (
@@ -9197,36 +14727,36 @@ const TransferDialog = (() => {
                                                         To: ${res.data.to_account_number}
                                                     `;
                                                                 cv_interact.success(
-                                                                    formattedData
+                                                                    formattedData,
                                                                 );
                                                                 AccountManagementComponent.AccountListView.showPage();
                                                                 me.hide(false);
                                                             } else {
                                                                 cv_interact.error(
                                                                     res.error_message ||
-                                                                        "Error in processing transfer"
+                                                                        "Error in processing transfer",
                                                                 );
                                                             }
                                                         })
                                                         .catch((err) => {
                                                             cv_interact.error(
                                                                 res.error_message ||
-                                                                    "Error in processing transfer"
+                                                                    "Error in processing transfer",
                                                             );
                                                         });
                                                 }
-                                            }
+                                            },
                                         );
                                     } else {
                                         cv_interact.error(
                                             res.error_message ||
-                                                "Error fetching confirmation data"
+                                                "Error fetching confirmation data",
                                         );
                                     }
                                 })
                                 .catch((err) => {
                                     cv_interact.error(
-                                        "Error in processing confirmation"
+                                        "Error in processing confirmation",
                                     );
                                 });
                         },
@@ -9276,7 +14806,7 @@ function windowPrintTransaction(html = null) {
     } else cv_interact.warning("Select run report before print!");
 }
 
-"use strict";
+("use strict");
 var StaffAttendanceComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -9669,7 +15199,6 @@ const StaffAttendanceDialog = (() => {
                 });
                 DateTimePicker.init(me.controls.attendance_date);
 
-
                 me.saveStaffAttendance = (p) => {
                     alert("Data saved.");
                 };
@@ -9703,10 +15232,9 @@ const StaffAttendanceDialog = (() => {
     return self;
 })();
 
-
 // --- appended missing mhr components ---
 
-"use strict";
+("use strict");
 
 var TaxAllowanceComponent = (function () {
     const mThis = {};
@@ -9763,12 +15291,14 @@ var TaxAllowanceComponent = (function () {
             };
         });
 
-        container.querySelectorAll(".btn_delete_tax_allowance").forEach((btn) => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                mThis.deleteTaxAllowance(btn.dataset.id, btn, refresh);
-            };
-        });
+        container
+            .querySelectorAll(".btn_delete_tax_allowance")
+            .forEach((btn) => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    mThis.deleteTaxAllowance(btn.dataset.id, btn, refresh);
+                };
+            });
     };
 
     mThis.deleteTaxAllowance = (id, menulink, refresh) => {
@@ -9792,7 +15322,7 @@ var TaxAllowanceComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
@@ -9806,7 +15336,7 @@ var TaxAllowanceComponent = (function () {
                         })
                         .catch(() => {
                             cv_interact.error(
-                                "An error occurred. Please try again."
+                                "An error occurred. Please try again.",
                             );
                         })
                         .finally(() => {
@@ -9815,7 +15345,7 @@ var TaxAllowanceComponent = (function () {
                 } else {
                     menulink.disabled = false;
                 }
-            }
+            },
         );
     };
 
@@ -9844,7 +15374,7 @@ var TaxAllowanceComponent = (function () {
                             </div>
                         </div>
                     </div>
-                </div>`
+                </div>`,
                   )
                   .join("")
             : `<div class="emp-tax-allowance-empty">
@@ -9950,7 +15480,7 @@ const TaxAllowanceDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
@@ -9963,11 +15493,11 @@ const TaxAllowanceDialog = (() => {
                                         }
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "update_success"
+                                                "update_success",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "create_success"
+                                                "create_success",
                                             );
                                         }
                                     } else {
@@ -10014,11 +15544,13 @@ const TaxAllowanceDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var WorkShiftListComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftListComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_workShiftListComponent",
+    );
 
     mThis.title_prop = "Work Shifts";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
@@ -10047,8 +15579,8 @@ var WorkShiftListComponent = (function () {
             className: "align-middle",
             data: (data) => {
                 return [
-                    `<span class="text-Capitalize d-block">${data.update_user ?? '-'}</span>`,
-                    `<span class="text-small">${data.updated_at ?? '-'}</span>`,
+                    `<span class="text-Capitalize d-block">${data.update_user ?? "-"}</span>`,
+                    `<span class="text-small">${data.updated_at ?? "-"}</span>`,
                 ].join("");
             },
         },
@@ -10077,7 +15609,8 @@ var WorkShiftListComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -10101,12 +15634,12 @@ var WorkShiftListComponent = (function () {
         };
         mThis.listContainer = mThis.WorkShiftListsView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.initDropdownMenus(mThis.listContainer);
         mThis.initAlready = true;
@@ -10118,7 +15651,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage(mThis.getFilterData());
             } else {
                 console.error("Work is not defined");
-                }
+            }
         }, 200);
     });
     mThis.getFilterData = () => {
@@ -10180,11 +15713,13 @@ var WorkShiftListComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("delete_success_work_shift");
+                                cv_interact.success(
+                                    "delete_success_work_shift",
+                                );
                                 mThis.WorkShiftListsView.showPage();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -10192,7 +15727,7 @@ var WorkShiftListComponent = (function () {
                         })
                         .catch(() => {
                             cv_interact.error(
-                                "An error occurred. Please try again."
+                                "An error occurred. Please try again.",
                             );
                         })
                         .finally(() => {
@@ -10201,19 +15736,15 @@ var WorkShiftListComponent = (function () {
                 } else {
                     menulink.disabled = false;
                 }
-            }
+            },
         );
     };
     mThis.show = function () {
         mThis.init();
 
-        mThis.WorkShiftListsView.showPage(
-            mThis.getFilterData(),
-            null,
-            () => {
-               main_view.setContentView(mThis.self, mThis.title_prop);
-            }
-        );
+        mThis.WorkShiftListsView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+        });
     };
     return mThis;
 })();
@@ -10264,15 +15795,19 @@ const WorkShiftListDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_work_shift");
+                                            cv_interact.success(
+                                                "update_success_work_shift",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success_work_shift");
+                                            cv_interact.success(
+                                                "create_success_work_shift",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -10305,7 +15840,7 @@ const WorkShiftListDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var SkillsComponent = (function () {
     const mThis = {};
@@ -10377,7 +15912,8 @@ var SkillsComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 
@@ -10480,18 +16016,22 @@ var SkillsComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("delete_success_skill");
-                                mThis.SkillsListView.showPage(mThis.getFilterData());
+                                mThis.SkillsListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(res.error_message);
                             }
                         })
                         .catch(() => {
-                            cv_interact.error("An error occurred. Please try again.");
+                            cv_interact.error(
+                                "An error occurred. Please try again.",
+                            );
                         })
                         .finally(() => {
                             menulink.disabled = false;
@@ -10499,7 +16039,7 @@ var SkillsComponent = (function () {
                 } else {
                     menulink.disabled = false;
                 }
-            }
+            },
         );
     };
 
@@ -10559,21 +16099,31 @@ const SkillListDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/skills/save"].join(""),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/skills/save",
+                                    ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
+                                        if (
+                                            typeof me.dataOptions.onClose ===
+                                            "function"
+                                        ) {
                                             me.dataOptions.onClose(p);
                                         }
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_skill");
+                                            cv_interact.success(
+                                                "update_success_skill",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success_skill");
+                                            cv_interact.success(
+                                                "create_success_skill",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -10587,7 +16137,10 @@ const SkillListDialog = (() => {
                     modifyTitle: "vslang:titles.Edit Skill",
                     targetProp: "skills",
                     api: {
-                        endpoint: [main_view.base_url, "/mhr/skills/form-options"].join(""),
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/skills/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -10604,17 +16157,21 @@ const SkillListDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
-var BenefitDisbursementComponent =  (function () {
+var BenefitDisbursementComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self= main_view.VSAppContent.querySelector("#_main_benefit_disbursement_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_benefit_disbursement_component",
+    );
     mThis.title_prop = "Benefits Disbursement";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefitDisburse");
     mThis.elSearch = mThis.self.querySelector("#_benefit_disburse_search");
     mThis.elCard = mThis.self.querySelector(".top_level_card");
-    mThis._searchBenefitDisburse = mThis.self.querySelector("#container_benefit_disburse");
+    mThis._searchBenefitDisburse = mThis.self.querySelector(
+        "#container_benefit_disburse",
+    );
     mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
     const monthNames = [
@@ -10643,7 +16200,7 @@ var BenefitDisbursementComponent =  (function () {
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.name ?? ""
@@ -10668,7 +16225,7 @@ var BenefitDisbursementComponent =  (function () {
             transTitle: "titles.Target Month",
             className: "align-middle",
             data: (data) => {
-                const month = monthNames[data.target_month ] ?? "";
+                const month = monthNames[data.target_month] ?? "";
 
                 return `<p class="p-0 m-0">${month} </p>`;
             },
@@ -10737,12 +16294,12 @@ var BenefitDisbursementComponent =  (function () {
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 235 + "px";
+        };
 
         mThis.initDropdownMenus(pr_tbl);
 
@@ -10782,14 +16339,14 @@ var BenefitDisbursementComponent =  (function () {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
-                ".btn-benefit-disbursement-modify"
+                ".btn-benefit-disbursement-modify",
             );
             if (btn) {
                 mThis.editBenefitDisburse(btn.dataset.id, btn);
             }
             btn = VSUtil.closestLimited(
                 e.target,
-                ".btn-benefit-disbursement-delete"
+                ".btn-benefit-disbursement-delete",
             );
             if (btn) {
                 mThis.deleteBenefitDisburse(btn.dataset.id, btn);
@@ -10831,19 +16388,20 @@ var BenefitDisbursementComponent =  (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_benefit_disbursement");
+                                cv_interact.success(
+                                    "delete_success_benefit_disbursement",
+                                );
                                 mThis.BenefitDisburseListView.showPage();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -10853,7 +16411,7 @@ var BenefitDisbursementComponent =  (function () {
                 `${main_view.base_url}/mhr/emp/benefit-disbursement/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
@@ -10864,7 +16422,7 @@ var BenefitDisbursementComponent =  (function () {
                     "name",
                     true,
                     "All Benefits",
-                    null
+                    null,
                 );
             });
     };
@@ -10906,15 +16464,15 @@ const BenefitDisburseDialog = (() => {
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
                         { length: 10 },
-                        (_, i) => currentYear + i
+                        (_, i) => currentYear + i,
                     );
                     return [
                         `<div class="row g-3">
                             <div class="col-12">
-                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                             </div>
                             <div class="col-12">
-                                <select data-style="material" name="benefits" class="form-control data-input" data-field="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                                <select data-style="material" name="benefits" class="form-control data-input" data-field="benefit_id" placeholder="${LocaleManager.trans("Benefit", "labels")}"></select>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
@@ -10924,21 +16482,21 @@ const BenefitDisburseDialog = (() => {
                             </div>
 
                         <div class="col-6">
-                            <select data-style="material" name="target_month" class="form-control data-input" data-field="target_month" placeholder="${LocaleManager.trans('Month', 'labels')}">
+                            <select data-style="material" name="target_month" class="form-control data-input" data-field="target_month" placeholder="${LocaleManager.trans("Month", "labels")}">
                                 ${months
                                     .map(
                                         (month) =>
-                                            `<option value="${month.value}">${month.name}</option>`
+                                            `<option value="${month.value}">${month.name}</option>`,
                                     )
                                     .join("")}
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="year" class="form-control data-input" data-field="target_year" placeholder="${LocaleManager.trans('Year', 'labels')}">
+                            <select data-style="material" name="year" class="form-control data-input" data-field="target_year" placeholder="${LocaleManager.trans("Year", "labels")}">
                                 ${years
                                     .map(
                                         (year) =>
-                                            `<option value="${year}">${year}</option>`
+                                            `<option value="${year}">${year}</option>`,
                                     )
                                     .join("")}
                             </select>
@@ -10985,17 +16543,19 @@ const BenefitDisburseDialog = (() => {
                                     ].join(""),
                                     jl,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("update_success_benefit_disbursement");
-                                        }
-                                        else{
-                                        cv_interact.success("create_success_benefit_disbursement");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_benefit_disbursement",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_benefit_disbursement",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -11044,14 +16604,14 @@ const BenefitDisburseDialog = (() => {
                     setTimeout(() => {
                         if (data.target_month) {
                             const monthSelect = me.divModal.querySelector(
-                                '[name="target_month"]'
+                                '[name="target_month"]',
                             );
                             if (monthSelect)
                                 monthSelect.value = data.target_month;
                         }
                         if (data.target_year) {
                             const yearSelect = me.divModal.querySelector(
-                                '[name="target_year"]'
+                                '[name="target_year"]',
                             );
                             if (yearSelect) yearSelect.value = data.target_year;
                         }
@@ -11065,32 +16625,34 @@ const BenefitDisburseDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var UninformedLeaveComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Uninformed Leave";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_emp_Uninform_leave_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_emp_Uninform_leave_component",
+    );
 
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_leave");
 
     mThis.cols = [
         {
             transTitle: "",
-            className: 'align-middle',
+            className: "align-middle",
         },
         {
             transTitle: "titles.Employee ID",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span>${data.emp_code ?? '-'}</span>`;
-             }
+                return `<span>${data.emp_code ?? "-"}</span>`;
+            },
         },
 
         {
@@ -11109,8 +16671,8 @@ var UninformedLeaveComponent = (function () {
             transTitle: "titles.Leave Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ''}</span>`;
-            }
+                return `<span class="text-nowrap text-prm-custom">${data.leave_type ?? ""}</span>`;
+            },
         },
         {
             transTitle: "titles.Start Date",
@@ -11147,7 +16709,7 @@ var UninformedLeaveComponent = (function () {
                         ${days} ${days === 1 ? "Day" : "Days"}
                     </span>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Remark",
@@ -11183,7 +16745,8 @@ var UninformedLeaveComponent = (function () {
                 const byName = {
                     pending:
                         "bg-warning-subtle text-warning border border-warning",
-                    approved: "bg-success-subtle text-success border border-success",
+                    approved:
+                        "bg-success-subtle text-success border border-success",
                     rejected:
                         "bg-danger-subtle text-danger border border-danger",
                 };
@@ -11209,38 +16772,37 @@ var UninformedLeaveComponent = (function () {
             },
         },
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                             </a>
                         </div>
                     </div>
                 `;
-            }
+            },
         },
-
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.LeaveRequestListView = new ListView('_leave_request_list',{
-            fetchApi : `${main_view.base_url}/mhr/leave/list-paginate`,
+        mThis.LeaveRequestListView = new ListView("_leave_request_list", {
+            fetchApi: `${main_view.base_url}/mhr/leave/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated:(data,index,tr)=>{
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('leave');
-              tr.setAttribute('id',['leave_id',data.id].join(''));
-
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            rowCreated: (data, index, tr) => {
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add("leave");
+                tr.setAttribute("id", ["leave_id", data.id].join(""));
             },
-            listContainerClass: null
+            listContainerClass: null,
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -11251,7 +16813,7 @@ var UninformedLeaveComponent = (function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-                }
+                },
             };
             // if (!AuthManager.allowed(240)) return;
             LeaveRequestDialog.show(op);
@@ -11262,21 +16824,20 @@ var UninformedLeaveComponent = (function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         mThis.pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
+        sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 170 + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            };
+        });
 
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
-       });
-
-        mThis.elSearch.addEventListener('keyup', (e) => {
+        mThis.elSearch.addEventListener("keyup", (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -11294,73 +16855,70 @@ var UninformedLeaveComponent = (function () {
             search_value: mThis.elSearch.value,
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-                const f = el.dataset.field;
-                p[f] = el.value;
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
         });
 
         return p;
     };
 
-    mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_leave_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_leave"
+                    html: '<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_leave",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_leave"
+                    html: '<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_leave",
                 },
             ],
-        //     adjustPosition:{
-        //         top:-200 ,
-        //         left:-300
-        //    },
+            //     adjustPosition:{
+            //         top:-200 ,
+            //         left:-300
+            //    },
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'edit_leave':{
-                      mThis.editLeave(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_leave": {
+                        mThis.editLeave(id, menuLink);
+                        break;
                     }
-                    case 'delete_leave':{
+                    case "delete_leave": {
                         mThis.deleteLeave(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
-
-
+    };
 
     mThis.editLeave = (id, menuLink) => {
-
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(241)) return;
         LeaveRequestDialog.show(op);
-    }
+    };
 
     mThis.deleteLeave = (id, menuLink) => {
         let op = {
@@ -11368,51 +16926,82 @@ var UninformedLeaveComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this leave request?',{
-            title: 'Delete Leave Request',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/leave/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
-                        mThis.LeaveRequestListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
-    }
+        cv_interact.confirm(
+            "Delete this leave request?",
+            {
+                title: "Delete Leave Request",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/leave/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted successfully");
+                                mThis.LeaveRequestListView.showPage();
+                            }
+                        });
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            },
+        );
+    };
 
     mThis.prepareFormOptions = () => {
-        vsapi.call(`${main_view.base_url}/mhr/leave/form-options`, null, null, null)
-            .then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',"",LocaleManager.trans("All Statuses", "titles"),"");
-            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',"",LocaleManager.trans("All Types", "titles"),"");
-        })
-    }
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/leave/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.status,
+                    "id",
+                    "leave_status",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elLeaveType,
+                    d.leave_types,
+                    "id",
+                    "leave_type",
+                    "",
+                    LocaleManager.trans("All Types", "titles"),
+                    "",
+                );
+            });
+    };
 
     mThis.show = function () {
         mThis.init();
 
         mThis.prepareFormOptions();
-        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
-           main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null, () => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
         });
-    }
+    };
     return mThis;
 })();
 
-
-
-"use strict";
+("use strict");
 var HolidayComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -11714,7 +17303,7 @@ const HolidayDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans('Holiday Type', 'labels')}" data-field="holiday_type_id"></select>
+                            <select data-style="material" name="holiday_type" class="form-control data-input" placeholder="${LocaleManager.trans("Holiday Type", "labels")}" data-field="holiday_type_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -11820,16 +17409,24 @@ const HolidayDialog = (() => {
 var WalletAccountComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_walletAccountComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_walletAccountComponent",
+    );
 
     mThis.title_prop = "Wallet Accounts";
     mThis.btnAdd = mThis.self.querySelector("#_btnWalletAddAccount");
-    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnWalletAddAccountMissing");
+    mThis.btnAddAccountMissing = mThis.self.querySelector(
+        "#_btnWalletAddAccountMissing",
+    );
     mThis.divFilter = mThis.self.querySelector("#_wla_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_wla_search_wallet_account");
-    mThis.elFilter_department = mThis.self.querySelector("#_wla_filter_department");
+    mThis.elFilter_department = mThis.self.querySelector(
+        "#_wla_filter_department",
+    );
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_wallet_account");
-    mThis._wallet_transaction_info = mThis.self.querySelector("#_wallet_transaction_info");
+    mThis._wallet_transaction_info = mThis.self.querySelector(
+        "#_wallet_transaction_info",
+    );
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
 
     mThis.cols = [
@@ -11880,7 +17477,7 @@ var WalletAccountComponent = (function () {
             transTitle: "titles.Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
             },
         },
         {
@@ -11907,10 +17504,10 @@ var WalletAccountComponent = (function () {
                             ? "d-none"
                             : "btn_wallet_account_action"
                     }" data-id="${data.id}" data-emp_id="${
-                data.emp_id
-            }" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
+                        data.emp_id
+                    }" data-statusid="${
+                        data.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
@@ -11928,7 +17525,8 @@ var WalletAccountComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 overflow-hidden  header-uppercase",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
 
@@ -11947,29 +17545,32 @@ var WalletAccountComponent = (function () {
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
+            const sub_wallet_content = mThis.self.querySelector(
+                "#sub_wallet_content",
+            );
             sub_wallet_content.classList.remove("d-none");
-            const view_wallet_transaction = mThis.self.querySelector("#view_wallet_transaction");
+            const view_wallet_transaction = mThis.self.querySelector(
+                "#view_wallet_transaction",
+            );
             view_wallet_transaction.classList.add("d-none");
-
         };
 
         const pr_tbl = mThis.WalletAccountListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        sh_parent.style.height = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        };
 
         mThis.initDropdownMenus(pr_tbl);
-        const filter_fields = mThis.divFilter.querySelectorAll('.filter-field');
-        filter_fields.forEach(el =>{
-            el.onchange =  (e) => {
-               e.preventDefault();
-               mThis.WalletAccountListView.showPage(mThis.getFilterData());
-            }
+        const filter_fields = mThis.divFilter.querySelectorAll(".filter-field");
+        filter_fields.forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.WalletAccountListView.showPage(mThis.getFilterData());
+            };
         });
 
         mThis.btnAddAccountMissing.onclick = function (e) {
@@ -11977,7 +17578,7 @@ var WalletAccountComponent = (function () {
 
             const op = {
                 //account_id: mThis.divFilter.value,
-                account_type:"Wallet"
+                account_type: "Wallet",
             };
             if (!AuthManager.allowed(471)) return;
             cv_interact.confirm(
@@ -11997,24 +17598,27 @@ var WalletAccountComponent = (function () {
                                 ].join(""),
                                 op,
                                 false,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     const d = res.data ?? {};
                                     const success_count = d.success_count ?? 0;
-                                    if(success_count > 0) {
+                                    if (success_count > 0) {
                                         mThis.WalletAccountListView.showPage(
-                                            mThis.getFilterData()
+                                            mThis.getFilterData(),
                                         );
-                                        cv_interact.success(`${success_count} wallet accounts have been creted!`);
-                                    }
-                                    else cv_interact.info('No wallet accounts were created. This is maybe because all staffs already have a wallet account!');
-
+                                        cv_interact.success(
+                                            `${success_count} wallet accounts have been creted!`,
+                                        );
+                                    } else
+                                        cv_interact.info(
+                                            "No wallet accounts were created. This is maybe because all staffs already have a wallet account!",
+                                        );
                                 } else cv_interact.error(res.error_message);
                             });
                     }
-                }
+                },
             );
         };
 
@@ -12143,23 +17747,27 @@ var WalletAccountComponent = (function () {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${transactions.map(trx => `
+                                ${transactions
+                                    .map(
+                                        (trx) => `
                                     <tr>
-                                        <td>${trx.trx_type === 1 ? 'Deposit' : trx.trx_type === 2 ? 'Withdrawal' : 'Transfer'}</td>
+                                        <td>${trx.trx_type === 1 ? "Deposit" : trx.trx_type === 2 ? "Withdrawal" : "Transfer"}</td>
                                         <td>${trx.from_account_number}</td>
                                         <td>${trx.to_account_number}</td>
-                                        <td class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
-                                            ${Number(trx.amount).toLocaleString('en-US').replace(/,/g, ' ')}
+                                        <td class="${trx.status === "in" ? "text-success" : "text-danger"}">
+                                            ${Number(trx.amount).toLocaleString("en-US").replace(/,/g, " ")}
                                         </td>
                                         <td>${trx.created_at}</td>
                                         <td>
-                                            <span class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
+                                            <span class="${trx.status === "in" ? "text-success" : "text-danger"}">
                                                 ${trx.status}
                                             </span>
                                         </td>
-                                        <td>${trx.remarks ?? 'N/A'}</td>
+                                        <td>${trx.remarks ?? "N/A"}</td>
                                     </tr>
-                                `).join('')}
+                                `,
+                                    )
+                                    .join("")}
                             </tbody>
 
                         </table>
@@ -12171,11 +17779,10 @@ var WalletAccountComponent = (function () {
         mThis._wallet_transaction_info.innerHTML = html;
     };
 
-
-    mThis.btnPrintTransaction.addEventListener('click', () => {
+    mThis.btnPrintTransaction.addEventListener("click", () => {
         windowPrintWalletTransaction(mThis._wallet_transaction_info.innerHTML);
         // window.print();
-    })
+    });
 
     mThis.elSearch.addEventListener("keyup", (e) => {
         e.preventDefault();
@@ -12240,7 +17847,6 @@ var WalletAccountComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-
     mThis.editWalletAccount = (id, menuLink) => {
         let op = {
             id: id,
@@ -12278,42 +17884,51 @@ var WalletAccountComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
                                 mThis.WalletAccountListView.showPage();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
     mThis.viewWalletTransaction = (id, menuLink) => {
-
-        const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
+        const sub_wallet_content = mThis.self.querySelector(
+            "#sub_wallet_content",
+        );
         sub_wallet_content.classList.add("d-none");
-        const view_wallet_transaction = mThis.self.querySelector("#view_wallet_transaction");
+        const view_wallet_transaction = mThis.self.querySelector(
+            "#view_wallet_transaction",
+        );
         view_wallet_transaction.classList.remove("d-none");
 
         let emp_id = menuLink.dataset.emp_id;
         let op = {
             emp_id: emp_id,
             account_id: id,
-        }
+        };
         if (!AuthManager.allowed(259)) return; // add comma (259, true) it show silent mode
-        vsapi.call(`${main_view.base_url}/mhr/account/print-transaction`,op,false,false,false).then(res => {
-
-            if(res.status_code == 200){
-                let d = res.data;
-                mThis.renderWalletTransaction(d)
-            }
-        })
-    }
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/account/print-transaction`,
+                op,
+                false,
+                false,
+                false,
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                    let d = res.data;
+                    mThis.renderWalletTransaction(d);
+                }
+            });
+    };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -12321,47 +17936,53 @@ var WalletAccountComponent = (function () {
                 `${main_view.base_url}/mhr/account/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-               VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
-               onFinish();
-
+                VSUtil.setComboItems(
+                    mThis.elFilter_department,
+                    d.departments,
+                    "id",
+                    "name",
+                    "",
+                    "(All Departments)",
+                    null,
+                );
+                onFinish();
             });
     };
 
-    mThis.setDefaultFilter = ()=>{
-        if(!mThis.rem_filter) return;
+    mThis.setDefaultFilter = () => {
+        if (!mThis.rem_filter) return;
         const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
-             const f = el.dataset.field;
-             el.value = mThis.rem_filter[f] ?? '';
+            const f = el.dataset.field;
+            el.value = mThis.rem_filter[f] ?? "";
         });
     };
 
-    mThis.getFilterData = ()=>{
-        const els = mThis.divFilter.querySelectorAll('.filter-field');
+    mThis.getFilterData = () => {
+        const els = mThis.divFilter.querySelectorAll(".filter-field");
         const p = {};
         p.search_value = mThis.elSearch.value;
-        els.forEach(el =>{
+        els.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
         mThis.rem_filter = p;
         return p;
-    }
+    };
     mThis.show = function () {
         mThis.init();
 
-        mThis.prepareFormOptions(()=>{
-            if(mThis.rem_filter){
-                 mThis.setDefaultFilter();
+        mThis.prepareFormOptions(() => {
+            if (mThis.rem_filter) {
+                mThis.setDefaultFilter();
             }
             mThis.WalletAccountListView.showPage(mThis.getFilterData());
             main_view.setContentView(mThis.self, mThis.title_prop);
         });
-
     };
     return mThis;
 })();
@@ -12378,13 +17999,13 @@ const WalletAccountDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                    `<div class="row g-3">
+                        `<div class="row g-3">
                         <div class="col-12">
                             <select data-style="material" name="employee" class="form-control data-input"  data-field="emp_id"
-                            placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                            placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans("Account Type", "labels")}">
                                 <option value="Payroll">Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
@@ -12435,7 +18056,7 @@ const WalletAccountDialog = (() => {
                         data: "currency_codes",
                         textField: "code",
                         valueField: "code",
-                    }
+                    },
                 ],
                 buttons: [
                     {
@@ -12452,15 +18073,27 @@ const WalletAccountDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url,"/mhr/account/save",].join(""),p,btn,null).then((res) => {
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/account/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("Updated wallet account successfully");
-                                        }
-                                        else{
-                                        cv_interact.success("Added wallet account successfully");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated wallet account successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Added wallet account successfully",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -12484,9 +18117,17 @@ const WalletAccountDialog = (() => {
 
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
-                    const isReadOnly =me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly,['balance','employee'], isReadOnly? null : {"balance":"0.00"});
+                    me.setReadOnly(
+                        true,
+                        ["account_type", "account_number", "currency_code"],
+                        { currency_code: VSMoney.getCurrency().code },
+                    );
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(
+                        isReadOnly,
+                        ["balance", "employee"],
+                        isReadOnly ? null : { balance: "0.00" },
+                    );
                 },
             });
 
@@ -12495,13 +18136,11 @@ const WalletAccountDialog = (() => {
 
     return self;
 })();
-function windowPrintWalletTransaction(html=null)
-{
+function windowPrintWalletTransaction(html = null) {
     let HtmlString = null;
     HtmlString = html ? html : HtmlString;
-    if(HtmlString)
-    {
-        let myWindow = window.open('','PRINT');
+    if (HtmlString) {
+        let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
@@ -12530,13 +18169,11 @@ function windowPrintWalletTransaction(html=null)
             myWindow.focus();
             myWindow.print();
             myWindow.close();
-        },500);
-    }
-    else
-        cv_interact.warning('Select run report before print!');
+        }, 500);
+    } else cv_interact.warning("Select run report before print!");
 }
 
-"use strict";
+("use strict");
 var EmployeeAttendanceComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -12614,8 +18251,12 @@ var EmployeeAttendanceComponent = (function () {
                 hours = hours % 12 || 12;
                 const formattedTime = `${hours}:${minutes} ${ampm}`;
 
-                const isCheckIn = (data.scan_action || "").toLowerCase().includes("in");
-                const iconClass = isCheckIn ? "fa-right-to-bracket" : "fa-right-from-bracket";
+                const isCheckIn = (data.scan_action || "")
+                    .toLowerCase()
+                    .includes("in");
+                const iconClass = isCheckIn
+                    ? "fa-right-to-bracket"
+                    : "fa-right-from-bracket";
                 const colorClass = isCheckIn ? "success" : "warning";
                 const actionLabel = isCheckIn ? "IN" : "OUT";
 
@@ -12649,22 +18290,30 @@ var EmployeeAttendanceComponent = (function () {
             className: "align-middle",
             data: (data) => {
                 const status = data.attendance_status ?? "Present";
-                let badgeClass = "bg-success-subtle text-success border border-success";
+                let badgeClass =
+                    "bg-success-subtle text-success border border-success";
                 if (status === "Late") {
-                    badgeClass = "bg-warning-subtle text-warning border border-warning";
+                    badgeClass =
+                        "bg-warning-subtle text-warning border border-warning";
                 } else if (status === "Absent") {
-                    badgeClass = "bg-danger-subtle text-danger border border-danger";
-                } else if (status === "Leave" || status === "Permission" || status === "Half Day") {
+                    badgeClass =
+                        "bg-danger-subtle text-danger border border-danger";
+                } else if (
+                    status === "Leave" ||
+                    status === "Permission" ||
+                    status === "Half Day"
+                ) {
                     badgeClass = "bg-info-subtle text-info border border-info";
                 } else if (status === "Holiday" || status === "Weekend") {
-                    badgeClass = "bg-secondary-subtle text-secondary border border-secondary";
+                    badgeClass =
+                        "bg-secondary-subtle text-secondary border border-secondary";
                 }
                 return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
-            }
+            },
         },
 
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
@@ -12675,11 +18324,8 @@ var EmployeeAttendanceComponent = (function () {
                         </div>
                     </div>
                 `;
-            }
+            },
         },
-
-
-
     ];
 
     mThis.init = function () {
@@ -12712,7 +18358,9 @@ var EmployeeAttendanceComponent = (function () {
 
         mThis.pr_tbl = mThis.StaffAttendanceListView.getListContainer();
         mThis.initDropdownMenus(mThis.pr_tbl);
-        const elDate = mThis.containerFilter.querySelector("[data-select='datepicker']");
+        const elDate = mThis.containerFilter.querySelector(
+            "[data-select='datepicker']",
+        );
         if (elDate && typeof DateTimePicker !== "undefined") {
             DateTimePicker.init(elDate);
         }
@@ -12780,63 +18428,62 @@ var EmployeeAttendanceComponent = (function () {
         return p;
     };
 
-     mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
-            actionButtonClass:"btn_attendance_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_attendance_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Attendance"></span>',
-                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_attendance"
+                    html: '<span class="ps-2  " vslang="titles.Modify Attendance"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_attendance",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Attendance"></span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_attendance"
+                    html: '<span class="ps-2  " vslang="titles.Delete Attendance"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_attendance",
                 },
             ],
-        //     adjustPosition:{
-        //         top:-200 ,
-        //         left:-300
-        //    },
+            //     adjustPosition:{
+            //         top:-200 ,
+            //         left:-300
+            //    },
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'edit_attendance':{
-                      mThis.editAttendance(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_attendance": {
+                        mThis.editAttendance(id, menuLink);
+                        break;
                     }
-                    case 'delete_attendance':{
+                    case "delete_attendance": {
                         mThis.deleteAttendance(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptions);
-    }
+    };
 
     mThis.editAttendance = (id, menuLink) => {
-
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(241)) return;
         StaffAttendanceDialog.show(op);
-    }
+    };
 
     mThis.deleteAttendance = (id, menuLink) => {
         let op = {
@@ -12844,26 +18491,43 @@ var EmployeeAttendanceComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
-            }
+            },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('delete_attendance?',{
-            title: 'Delete Attendance Record.',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/mhr/attendances/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('attendance_delete_successfully');
-                        mThis.StaffAttendanceListView.showPage();
-                    } else {
-                        cv_interact.error(res.error_message || 'An error occurred while deleting');
-                    }
-                })
-            }
-        });
-    }
+        cv_interact.confirm(
+            "delete_attendance?",
+            {
+                title: "Delete Attendance Record.",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/attendances/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(
+                                    "attendance_delete_successfully",
+                                );
+                                mThis.StaffAttendanceListView.showPage();
+                            } else {
+                                cv_interact.error(
+                                    res.error_message ||
+                                        "An error occurred while deleting",
+                                );
+                            }
+                        });
+                }
+            },
+        );
+    };
 
     mThis.show = function () {
         mThis.init();
@@ -12906,7 +18570,7 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                              <div class="col-6">
-                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans('Attendance Type', 'labels')}">
+                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans("Attendance Type", "labels")}">
                                      <option value="Check In">Check In</option>
                                      <option value="Check Out">Check Out</option>
                                  </select>
@@ -12919,14 +18583,14 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans('Work Shift', 'titles')}">
+                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans("Work Shift", "titles")}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
+                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans("Position", "labels")}"></select>
                             </div>
                              <div class="col-6">
-                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans('Status', 'titles')}"></select>
+                                 <select data-style="material" data-field="attendance_status" name="attendance_status" class="data-input form-control" placeholder="${LocaleManager.trans("Status", "titles")}"></select>
                              </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
@@ -13028,14 +18692,18 @@ const StaffAttendanceDialog = (() => {
                     },
                     onSelect: (employee) => {
                         if (me.controls.employee_code) {
-                            me.controls.employee_code.value = employee.code || "";
+                            me.controls.employee_code.value =
+                                employee.code || "";
                         }
                         if (me.controls.emp_id) {
                             me.controls.emp_id.value = employee.id || "";
                         }
                         if (employee.position_id && me.controls.position_id) {
-                            me.controls.position_id.value = employee.position_id;
-                            me.controls.position_id.dispatchEvent(new Event("change"));
+                            me.controls.position_id.value =
+                                employee.position_id;
+                            me.controls.position_id.dispatchEvent(
+                                new Event("change"),
+                            );
                             if (window.jQuery) {
                                 jQuery(me.controls.position_id).change();
                             }
@@ -13078,7 +18746,7 @@ const StaffAttendanceDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var WarningComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -13134,8 +18802,8 @@ var WarningComponent = (function () {
             transTitle: "titles.Warning Type",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-nowrap text-prm-custom">${data.warning_type ?? ''}</span>`;
-            }
+                return `<span class="text-nowrap text-prm-custom">${data.warning_type ?? ""}</span>`;
+            },
         },
         {
             transTitle: "titles.Date",
@@ -13171,7 +18839,7 @@ var WarningComponent = (function () {
             },
         },
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
@@ -13182,9 +18850,8 @@ var WarningComponent = (function () {
                         </div>
                     </div>
                 `;
-            }
+            },
         },
-
     ];
 
     mThis.init = function () {
@@ -13345,24 +19012,39 @@ var WarningComponent = (function () {
             },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm("delete_warning?",
-        {
-            title: "Delete Warning.",
-            context: "delete",
-            confirmButtonText: "Delete",
-        },function (e) {
+        cv_interact.confirm(
+            "delete_warning?",
+            {
+                title: "Delete Warning.",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
                 if (e) {
-                    vsapi.call(`${main_view.base_url}/mhr/emp-warning/delete`,op, false, false, false)
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/mhr/emp-warning/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("warning_delete_successfully");
+                                cv_interact.success(
+                                    "warning_delete_successfully",
+                                );
                                 mThis.WarningListView.showPage();
                             } else {
-                                cv_interact.error(res.error_message || 'An error occurred while deleting.');
+                                cv_interact.error(
+                                    res.error_message ||
+                                        "An error occurred while deleting.",
+                                );
                             }
-                        })
-                    }
-        });
+                        });
+                }
+            },
+        );
     };
 
     mThis.show = function () {
@@ -13387,13 +19069,13 @@ const WarningDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}" data-field="emp_id"></select>
+                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans("Employee", "labels")}" data-field="emp_id"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans('Position', 'labels')}" data-field="position_id" disabled></select>
+                            <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans("Position", "labels")}" data-field="position_id" disabled></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="${LocaleManager.trans('Warning Type', 'labels')}" data-field="warning_type_id"></select>
+                            <select data-style="material" name="warning_type" class="form-control data-input" placeholder="${LocaleManager.trans("Warning Type", "labels")}" data-field="warning_type_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -13416,15 +19098,13 @@ const WarningDialog = (() => {
                     </div>`,
                 ].join("");
             },
-            contentCreate: (me) => {
-
-            },
+            contentCreate: (me) => {},
             configSelect: [
                 {
                     name: "employee_id",
                     data: "employees",
                     textField: (me, d) => {
-                        return `${d.name ?? '-'} <small class="text-muted">(${d.code ?? '-'})</small>`;
+                        return `${d.name ?? "-"} <small class="text-muted">(${d.code ?? "-"})</small>`;
                     },
                     valueField: "id",
                     emptyText: LocaleManager.trans("Employee", "titles"),
@@ -13442,7 +19122,7 @@ const WarningDialog = (() => {
                     textField: "name",
                     valueField: "id",
                     emptyText: LocaleManager.trans("Warning Type", "titles"),
-                }
+                },
             ],
             buttons: [
                 {
@@ -13451,37 +19131,39 @@ const WarningDialog = (() => {
                     click: (me, btn) => me.hide(false),
                 },
                 {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn-vs-save",
-                        click: (me, btn) => {
-                            const p = me.getData();
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn-vs-save",
+                    click: (me, btn) => {
+                        const p = me.getData();
 
-                            p.id = me.dataOptions.id;
+                        p.id = me.dataOptions.id;
 
-                            vsapi
-                                .call(
-                                    [main_view.base_url, "/mhr/emp-warning/save"].join(
-                                        ""
-                                    ),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("warning_update_successfully");
-                                        }
-                                        else
-                                        {
-                                            cv_interact.success("warning_create_successfully");
-                                        }
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/emp-warning/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "warning_update_successfully",
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "warning_create_successfully",
+                                        );
+                                    }
+                                } else cv_interact.error(res.error_message);
+                            });
                     },
+                },
             ],
             prepareFormOptions: {
                 createTitle: "vslang:titles.Add Warning",
@@ -13496,17 +19178,18 @@ const WarningDialog = (() => {
                         return { id: op.id };
                     },
                 },
-
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
 
                 if (me.controls.employee_id && me.controls.position) {
-                    me.controls.position.setAttribute('disabled', 'true');
+                    me.controls.position.setAttribute("disabled", "true");
 
                     const updatePosition = () => {
                         const empId = me.controls.employee_id.value;
-                        const emp = (data.employees || []).find(e => e.id == empId);
+                        const emp = (data.employees || []).find(
+                            (e) => e.id == empId,
+                        );
                         if (emp) {
                             me.controls.position.value = emp.position_id || "";
                         } else {
@@ -13518,7 +19201,10 @@ const WarningDialog = (() => {
                         }
                     };
 
-                    me.controls.employee_id.addEventListener("change", updatePosition);
+                    me.controls.employee_id.addEventListener(
+                        "change",
+                        updatePosition,
+                    );
 
                     if (me.controls.employee_id.value) {
                         updatePosition();
@@ -13533,12 +19219,12 @@ const WarningDialog = (() => {
     return self;
 })();
 
-"use strict";
-var TaxBracketComponent = (function() {
+("use strict");
+var TaxBracketComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_taxBracketComponent"
+        "#_main_taxBracketComponent",
     );
 
     mThis.title_prop = "Tax Bracket";
@@ -13547,13 +19233,13 @@ var TaxBracketComponent = (function() {
         mThis.self.querySelector("#_divFilter_taxBracketComponent") ||
         mThis.self.querySelector("#_divFilter");
 
-    const formattedNumber = number => {
+    const formattedNumber = (number) => {
         number = Number(number) || 0;
         return number
             .toLocaleString("en-US", {
                 useGrouping: true,
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
             })
             .replace(/,/g, " ");
     };
@@ -13566,23 +19252,24 @@ var TaxBracketComponent = (function() {
                 `<div class="rounded-circle text-center p-1 text-white" style="background-color:#1f386b; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
                 </div>
-            `
+            `,
         },
         {
             transTitle: "titles.Salary Range",
             className: "align-middle  text-nowrap ",
             data: (data, index, tr) => {
-                const currency = data.currency_code || '';
+                const currency = data.currency_code || "";
                 const lowerAmount = data.lower_amount;
 
                 // Handle open-ended ranges (e.g., "$5,000 and upwards")
                 // vs bounded ranges (e.g., "$1,000 to $5,000 USD")
-                const rangeText = data.upper_amount == -1
-                    ? `${lowerAmount} ${currency} ${LocaleManager.trans('and upwards', 'titles')}`
-                    : `${LocaleManager.trans('Salary ranges from', 'titles')}${lowerAmount} ${LocaleManager.trans('to', 'titles')} ${data.upper_amount} ${currency}`;
+                const rangeText =
+                    data.upper_amount == -1
+                        ? `${lowerAmount} ${currency} ${LocaleManager.trans("and upwards", "titles")}`
+                        : `${LocaleManager.trans("Salary ranges from", "titles")}${lowerAmount} ${LocaleManager.trans("to", "titles")} ${data.upper_amount} ${currency}`;
 
                 return `<p class="p-0 m-0">${rangeText}</p>`;
-            }
+            },
         },
 
         {
@@ -13590,7 +19277,7 @@ var TaxBracketComponent = (function() {
             className: "align-middle  text-nowrap text-left",
             data: (data, index, tr) => {
                 return `<p class="text-danger p-0 m-0">${data.rate} %</p>`;
-            }
+            },
         },
         {
             transTitle: "titles.Bias",
@@ -13598,38 +19285,39 @@ var TaxBracketComponent = (function() {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.bias,
-                    data.currency_code
+                    data.currency_code,
                 )}</p>`;
-            }
+            },
         },
         {
             transTitle: "titles.Last Updated",
             className: "align-middle  text-nowrap ",
-            data: data => `
+            data: (data) => `
             <div style="display: block; align-items: center;">
-                <span class='text-primary-custom' >${data.update_user ??
-                    ""}</span><br/>
+                <span class='text-primary-custom' >${
+                    data.update_user ?? ""
+                }</span><br/>
                 <small class="text-primary">${data.updated_at ?? ""}</small>
-            </div>`
+            </div>`,
         },
 
         {
             className: "col_action align-middle",
-            data: data => `
+            data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_taxBracket_action"
                     }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
+                        data.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
-            </div>`
-        }
+            </div>`,
+        },
     ];
 
     mThis.init = () => {
@@ -13642,23 +19330,23 @@ var TaxBracketComponent = (function() {
             columns: mThis.cols,
             tableClass:
                 "table table--white rounded-2 overflow-hidden header-uppercase",
-            listContainerClass: null
+            listContainerClass: null,
         });
 
         if (mThis.divFilter) {
-            mThis.divFilter.addEventListener("change", e => {
+            mThis.divFilter.addEventListener("change", (e) => {
                 e.preventDefault();
                 mThis.TaxBracketListView.showPage(mThis.getDataFormFilter());
             });
         }
-        mThis.btnAdd.onclick = function(e) {
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             let op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
                     mThis.TaxBracketListView.showPage();
-                }
+                },
             };
             if (!AuthManager.allowed(253)) return;
             TaxBracketDialog.show(op);
@@ -13677,7 +19365,7 @@ var TaxBracketComponent = (function() {
         mThis.initAlready = true;
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_taxBracket_action",
@@ -13685,19 +19373,17 @@ var TaxBracketComponent = (function() {
             //menuItemClass:"",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Tax Bracket</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify Tax Bracket</span>',
                     icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_taxBracket"
+                    name: "edit_taxBracket",
                 },
                 {
-                    html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Tax Bracket</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete">Delete Tax Bracket</span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_taxBracket"
-                }
+                    name: "delete_taxBracket",
+                },
             ],
 
             onClick: (menuLink, id, name) => {
@@ -13715,7 +19401,7 @@ var TaxBracketComponent = (function() {
                         break;
                     }
                 }
-            }
+            },
         };
         new VSDropdownMenu(menuOptopns);
     };
@@ -13726,7 +19412,7 @@ var TaxBracketComponent = (function() {
             btn: menuLink,
             onClose: () => {
                 mThis.TaxBracketListView.showPage();
-            }
+            },
         };
         if (!AuthManager.allowed(254)) return;
         TaxBracketDialog.show(op);
@@ -13738,7 +19424,7 @@ var TaxBracketComponent = (function() {
             btn: menuLink,
             onClose: () => {
                 mThis.TaxBracketListView.showPage();
-            }
+            },
         };
         if (!AuthManager.allowed(255)) return;
         cv_interact.confirm(
@@ -13746,9 +19432,9 @@ var TaxBracketComponent = (function() {
             {
                 title: "Delete Tax Bracket",
                 context: "delete",
-                confirmButtonText: "Delete"
+                confirmButtonText: "Delete",
             },
-            function(e) {
+            function (e) {
                 if (e) {
                     vsapi
                         .call(
@@ -13756,9 +19442,9 @@ var TaxBracketComponent = (function() {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
-                        .then(res => {
+                        .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
                                 mThis.TaxBracketListView.showPage();
@@ -13767,14 +19453,14 @@ var TaxBracketComponent = (function() {
                             }
                         });
                 }
-            }
+            },
         );
     };
 
     mThis.getDataFormFilter = () => {
         let p = {};
         if (mThis.divFilter) {
-            mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+            mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
                 const f = el.dataset.field;
                 if (f) {
                     p[f] = el.value;
@@ -13784,7 +19470,7 @@ var TaxBracketComponent = (function() {
         return p;
     };
 
-    mThis.show = function() {
+    mThis.show = function () {
         mThis.init();
 
         // mThis.prepareFormOptions();
@@ -13798,7 +19484,7 @@ var TaxBracketComponent = (function() {
 const TaxBracketDialog = (() => {
     const self = {};
     let dialog = null;
-    self.show = op => {
+    self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -13840,7 +19526,7 @@ const TaxBracketDialog = (() => {
                                 </div>
                             </div>
 
-                        </div>`
+                        </div>`,
                     ].join("");
                 },
 
@@ -13851,7 +19537,7 @@ const TaxBracketDialog = (() => {
                         click: (me, btn) => {
                             //Close with Cancel button
                             me.hide(false);
-                        }
+                        },
                     },
                     {
                         label: "<span>Save</span>",
@@ -13864,19 +19550,19 @@ const TaxBracketDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/mhr/tax-bracket/save"
+                                        "/mhr/tax-bracket/save",
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
-                                .then(res => {
+                                .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                     } else cv_interact.error(res.error_message);
                                 });
-                        }
-                    }
+                        },
+                    },
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Tax Bracket",
@@ -13885,12 +19571,12 @@ const TaxBracketDialog = (() => {
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/mhr/tax-bracket/form-options"
+                            "/mhr/tax-bracket/form-options",
                         ].join(""),
-                        params: op => {
+                        params: (op) => {
                             return { id: op.id };
-                        }
-                    }
+                        },
+                    },
                     //    onResponse: (me, res)=>{
                     //      console.log('result from api "/form-options": ', res);
                     //    }
@@ -13900,13 +19586,14 @@ const TaxBracketDialog = (() => {
                         name: "currency_code",
                         data: "currency_codes",
                         textField: "code",
-                        valueField: "code"
-                    }
+                        valueField: "code",
+                    },
                 ],
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
-                }
+                    me.controls.currency_code.value =
+                        VSMoney.getCurrency().code;
+                },
             });
 
         dialog.show(op);
@@ -13914,7 +19601,7 @@ const TaxBracketDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var PositionComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -13953,7 +19640,7 @@ var PositionComponent = (function () {
             data: (data) =>
                 `<span class="text-primary-custom ">${data.department}</span>`,
         },
-         {
+        {
             transTitle: "titles.Job Level",
             className: "align-middle text-nowrap",
             data: (data) =>
@@ -14156,9 +19843,7 @@ var PositionComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "delete_success_position",
-                                );
+                                cv_interact.success("delete_success_position");
                                 mThis.PositionListView.showPage();
                             } else cv_interact.error(res.error_message);
                         });
@@ -14211,10 +19896,10 @@ const PositionDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans('Department', 'labels')}"  data-field="department_id"></select>
+                            <select data-style="material" name="department" class="form-control data-input" placeholder="${LocaleManager.trans("Department", "labels")}"  data-field="department_id"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
+                            <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans("Job Level", "labels")}"  data-field="job_level_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -14235,7 +19920,7 @@ const PositionDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
+                            <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans("Staff Group", "labels")}"  data-field="staff_group_id"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -14244,7 +19929,7 @@ const PositionDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans('Currency Code', 'labels')}"  data-field="currency_code"></select>
+                            <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans("Currency Code", "labels")}"  data-field="currency_code"></select>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
@@ -14354,7 +20039,7 @@ const PositionDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var DepartmentComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -14419,7 +20104,7 @@ var DepartmentComponent = new (function () {
         },
 
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex justify-content-center align-items-center">
@@ -14430,7 +20115,7 @@ var DepartmentComponent = new (function () {
                         </div>
                     </div>
                 `;
-            }
+            },
         },
     ];
 
@@ -14447,11 +20132,11 @@ var DepartmentComponent = new (function () {
             listContainerClass: null,
         });
 
-         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
                 e.preventDefault();
 
-               mThis.DepartmentListView.showPage(mThis.getFilterData());
+                mThis.DepartmentListView.showPage(mThis.getFilterData());
             };
         });
 
@@ -14469,12 +20154,12 @@ var DepartmentComponent = new (function () {
         };
         mThis.listContainer = mThis.DepartmentListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
@@ -14490,7 +20175,7 @@ var DepartmentComponent = new (function () {
         mThis.initAlready = true;
     };
 
-       mThis.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
@@ -14593,8 +20278,12 @@ var DepartmentComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_department_success");
-                                mThis.DepartmentListView.showPage(mThis.getFilterData());
+                                cv_interact.success(
+                                    "delete_department_success",
+                                );
+                                mThis.DepartmentListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -14739,16 +20428,20 @@ const DepartmentDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var JobsLevelComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_jobsLevelComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_jobsLevelComponent",
+    );
 
     mThis.initAlready = false;
     mThis.title_prop = "Job Levels";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_jobsLevelComponent");
+    mThis.divFilter = mThis.self.querySelector(
+        "#_divFilter_jobsLevelComponent",
+    );
     mThis.elSearch = mThis.self.querySelector("#_job_level_search");
     mThis.cols = [
         {
@@ -14759,21 +20452,20 @@ var JobsLevelComponent = new (function () {
         {
             transTitle: "titles.Ranking",
             className: "align-middle text-nowrap",
-            data: (data)=>
+            data: (data) =>
                 `<div class=" text-start p-1 " ><span class="">${data.rank}</span></div>`,
-
         },
         {
             transTitle: "titles.Job Level",
             className: "align-middle text-nowrap",
-            data: (data)=>
-                `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
+            data: (data) =>
+                `<span class="text-primary-custom">${data.name ?? "HD"}</span>`,
         },
 
         {
             transTitle: "titles.Description",
             className: "align-middle text-nowrap",
-            data: (data)=>
+            data: (data) =>
                 `<div  class="text-remark text-muted" >${data.description}</div>`,
         },
         {
@@ -14786,24 +20478,23 @@ var JobsLevelComponent = new (function () {
             </div>`,
         },
 
-
         {
             className: "col_action align-middle",
-            data: data => `
+            data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_jobLevel_action"
                     }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
+                        data.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
-            </div>`
-        }
+            </div>`,
+        },
     ];
 
     mThis.init = function () {
@@ -14814,7 +20505,8 @@ var JobsLevelComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 
@@ -14832,12 +20524,12 @@ var JobsLevelComponent = new (function () {
         };
         mThis.pr_tbl = mThis.JobLevelListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -14854,26 +20546,24 @@ var JobsLevelComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_jobLevel_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
                     icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_jobevel"
+                    name: "edit_jobevel",
                 },
                 {
-                    html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_jobevel"
-                }
+                    name: "delete_jobevel",
+                },
             ],
 
             onClick: (menuLink, id, name) => {
@@ -14890,7 +20580,7 @@ var JobsLevelComponent = new (function () {
                         break;
                     }
                 }
-            }
+            },
         };
         new VSDropdownMenu(menuOptopns);
     };
@@ -14941,21 +20631,20 @@ var JobsLevelComponent = new (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "delete_job_level_successfully"
+                                    "delete_job_level_successfully",
                                 );
                                 mThis.JobLevelListView.showPage();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -14965,7 +20654,7 @@ var JobsLevelComponent = new (function () {
                 `${main_view.base_url}/mhr/job_level/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
@@ -15040,18 +20729,19 @@ const JobLevelDialog = (() => {
                                     ].join(""),
                                     jl,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success( 'update_job_level_successfully');
-                                        }
-                                        else
-                                        {
-                                            cv_interact.success('create_job_level_successfully');
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_job_level_successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_job_level_successfully",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -15088,13 +20778,17 @@ const JobLevelDialog = (() => {
 
     return self;
 })();
-"use strict";
+("use strict");
 
-var BenefitDisbursePolicyComponent =  (function () {
+var BenefitDisbursePolicyComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector( "#_main_benefit_disbursement_policy_component");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_benefit_disbursement_policy_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_benefit_disbursement_policy_component",
+    );
+    mThis.divFilter = mThis.self.querySelector(
+        "#_divFilter_benefit_disbursement_policy_component",
+    );
     mThis.title_prop = "Disbursement Policy";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
@@ -15132,7 +20826,7 @@ var BenefitDisbursePolicyComponent =  (function () {
             transTitle: "titles.Target Month",
             className: "align-middle",
             data: (data) => {
-                const month = monthNames[data.target_month ] ?? "";
+                const month = monthNames[data.target_month] ?? "";
 
                 return `<p class="p-0 m-0">${month} </p>`;
             },
@@ -15151,23 +20845,23 @@ var BenefitDisbursePolicyComponent =  (function () {
             },
         },
 
-         {
+        {
             className: "col_action align-middle",
-            data: data => `
+            data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_bdp_action"
                     }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
+                        data.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
-            </div>`
-        }
+            </div>`,
+        },
     ];
 
     mThis.init = () => {
@@ -15203,12 +20897,12 @@ var BenefitDisbursePolicyComponent =  (function () {
 
         mThis.pr_tbl = mThis.BdpListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement || mThis.pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 225 + "px";
+        };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -15220,7 +20914,7 @@ var BenefitDisbursePolicyComponent =  (function () {
         mThis.initAlready = true;
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_bdp_action",
@@ -15230,14 +20924,14 @@ var BenefitDisbursePolicyComponent =  (function () {
                     html: '<span class="ps-2 " vslang="titles.Modify">Modify Policy</span>',
                     icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_bdp"
+                    name: "edit_bdp",
                 },
                 {
                     html: '<span class="ps-2 " vslang="titles.Delete">Delete Policy</span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_bdp"
-                }
+                    name: "delete_bdp",
+                },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -15253,7 +20947,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                         break;
                     }
                 }
-            }
+            },
         };
         new VSDropdownMenu(menuOptions);
     };
@@ -15263,7 +20957,8 @@ var BenefitDisbursePolicyComponent =  (function () {
         BdpDialog.show({
             id,
             btn,
-            onClose: () => mThis.BdpListView.showPage(mThis.getDataFormFilter()),
+            onClose: () =>
+                mThis.BdpListView.showPage(mThis.getDataFormFilter()),
         });
     };
 
@@ -15291,19 +20986,20 @@ var BenefitDisbursePolicyComponent =  (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
-                                mThis.BdpListView.showPage(mThis.getDataFormFilter());
-                            }
-                            else {
+                                mThis.BdpListView.showPage(
+                                    mThis.getDataFormFilter(),
+                                );
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -15319,7 +21015,12 @@ var BenefitDisbursePolicyComponent =  (function () {
 
     mThis.prepareFormOptions = () => {
         vsapi
-            .call(`${main_view.base_url}/mhr/disburse-policy/form-options`, null, null, null)
+            .call(
+                `${main_view.base_url}/mhr/disburse-policy/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
 
@@ -15329,8 +21030,8 @@ var BenefitDisbursePolicyComponent =  (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("All Benefits","titles"),
-                    ""
+                    LocaleManager.trans("All Benefits", "titles"),
+                    "",
                 );
             });
     };
@@ -15349,7 +21050,6 @@ const BdpDialog = (() => {
     const self = {};
     let dialogAdd = null;
     self.show = (op) => {
-
         dialogAdd =
             dialogAdd ||
             new GeneralDialog({
@@ -15376,14 +21076,14 @@ const BdpDialog = (() => {
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
                         { length: 10 },
-                        (_, i) => currentYear + i
+                        (_, i) => currentYear + i,
                     );
 
                     return [
                         `<div class="row g-3">
 
                             <div class="col-6">
-                                <select data-style="material" placeholder="${LocaleManager.trans('Benefit', 'labels')}" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id"> </select>
+                                <select data-style="material" placeholder="${LocaleManager.trans("Benefit", "labels")}" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id"> </select>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
@@ -15393,23 +21093,23 @@ const BdpDialog = (() => {
                             </div>
 
                         <div class=" col-6">
-                            <select data-style="material" placeholder="${LocaleManager.trans('Month', 'labels')}" name="month" class="form-control data-input" data-field="target_month">
+                            <select data-style="material" placeholder="${LocaleManager.trans("Month", "labels")}" name="month" class="form-control data-input" data-field="target_month">
                                 ${months
-                                        .map(
-                                            (month) =>
-                                                `<option value="${month.value}">${month.name}</option>`
-                                        )
-                                        .join("")}
+                                    .map(
+                                        (month) =>
+                                            `<option value="${month.value}">${month.name}</option>`,
+                                    )
+                                    .join("")}
                              </select>
                         </div>
                         <div class=" col-6">
-                            <select data-style="material" placeholder="${LocaleManager.trans('Year', 'labels')}" name="year" class="form-control data-input" data-field="target_year">
+                            <select data-style="material" placeholder="${LocaleManager.trans("Year", "labels")}" name="year" class="form-control data-input" data-field="target_year">
                                  ${years
-                                    .map(
-                                        (year) =>
-                                            `<option value="${year}">${year}</option>`
-                                    )
-                                    .join("")}
+                                     .map(
+                                         (year) =>
+                                             `<option value="${year}">${year}</option>`,
+                                     )
+                                     .join("")}
                              </select>
                         </div>
                     </div>`,
@@ -15442,22 +21142,25 @@ const BdpDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/disburse-policy/save"].join(
-                                        ""
-                                    ),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/disburse-policy/save",
+                                    ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("Updated benefit disburse policy successfully");
-                                        }
-                                        else{
-                                            cv_interact.success("Added benefit disburse policy successfully");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated benefit disburse policy successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Added benefit disburse policy successfully",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -15491,12 +21194,14 @@ const BdpDialog = (() => {
     };
     return self;
 })();
-"use strict";
+("use strict");
 
 var CheckPointComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_check_point_component",
+    );
 
     mThis.title_prop = "Checkpoints";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPoint");
@@ -15510,25 +21215,25 @@ var CheckPointComponent = (function () {
         },
         {
             transTitle: "titles.Name",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style="word-break:break-word;">${data.name ?? "-"}</span>
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Category",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style="word-break:break-word;">${data.category_name ?? "-"}</span>
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Last Updated",
@@ -15587,12 +21292,12 @@ var CheckPointComponent = (function () {
         };
         mThis.pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -15611,7 +21316,10 @@ var CheckPointComponent = (function () {
 
     mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn_delete_check_point",
+            );
             if (btn) {
                 mThis.deleteCheckPoint(btn.dataset.id, btn);
             }
@@ -15625,7 +21333,12 @@ var CheckPointComponent = (function () {
 
     mThis.editCheckPoint = (id, btn) => {
         if (!AuthManager.allowed(301)) return;
-        CheckPointDialog.show({ id, btn, onClose: () => mThis.CheckPointListView.showPage(mThis.getFilterData()), });
+        CheckPointDialog.show({
+            id,
+            btn,
+            onClose: () =>
+                mThis.CheckPointListView.showPage(mThis.getFilterData()),
+        });
     };
 
     mThis.deleteCheckPoint = (id, menuLink) => {
@@ -15640,18 +21353,27 @@ var CheckPointComponent = (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${main_view.base_url}/mhr/check-point/delete`, { id: id }, false, false, false)
+                        .call(
+                            `${main_view.base_url}/mhr/check-point/delete`,
+                            { id: id },
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_check_point");
-                                mThis.CheckPointListView.showPage(mThis.getFilterData());
-                            }
-                            else {
+                                cv_interact.success(
+                                    "delete_success_check_point",
+                                );
+                                mThis.CheckPointListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -15668,10 +21390,23 @@ var CheckPointComponent = (function () {
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/mhr/check-point/form-options`, null, null, null)
+            .call(
+                `${main_view.base_url}/mhr/check-point/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elCategory, d.check_point_categories, "id", "name", "", LocaleManager.trans("All Categories", "titles"), "");
+                VSUtil.setComboItems(
+                    mThis.elCategory,
+                    d.check_point_categories,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Categories", "titles"),
+                    "",
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -15700,7 +21435,7 @@ const CheckPointDialog = (() => {
                     return [
                         `<div class="row g-3">
                             <div class="col-12">
-                                <select data-style="material" name="category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
+                                <select data-style="material" name="category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans("Category", "labels")}">
                                 </select>
                             </div>
                             <div class="col-12">
@@ -15747,16 +21482,19 @@ const CheckPointDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_check_point");
-                                        }
-                                        else {
-                                            cv_interact.success("create_success_check_point");
+                                            cv_interact.success(
+                                                "update_success_check_point",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_check_point",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -15789,12 +21527,14 @@ const CheckPointDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 
 var CheckPointCategoryComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_category_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_check_point_category_component",
+    );
 
     mThis.title_prop = "Checkpoint Categories";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPointCategory");
@@ -15807,16 +21547,16 @@ var CheckPointCategoryComponent = (function () {
         },
         {
             transTitle: "titles.Name",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                console.log(123456,data);
+                console.log(123456, data);
 
                 return `
                     <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "-"}</span>
                     </div>
                 `;
-             }
+            },
         },
         {
             transTitle: "titles.Last Updated",
@@ -15851,15 +21591,18 @@ var CheckPointCategoryComponent = (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.CheckPointCategoryListView = new ListView("_check_point_category_list", {
-            fetchApi: `${main_view.base_url}/mhr/check-point-category/list-paginate`,
-            perPage: 10,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
-            listContainerClass: null,
-        });
+        mThis.CheckPointCategoryListView = new ListView(
+            "_check_point_category_list",
+            {
+                fetchApi: `${main_view.base_url}/mhr/check-point-category/list-paginate`,
+                perPage: 10,
+                apiCluster: main_view.apiCluster,
+                columns: mThis.cols,
+                tableClass:
+                    "table table--white rounded-2 overflow-hidden header-uppercase",
+                listContainerClass: null,
+            },
+        );
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -15867,7 +21610,9 @@ var CheckPointCategoryComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+                    mThis.CheckPointCategoryListView.showPage(
+                        mThis.getFilterData(),
+                    );
                 },
             };
             if (!AuthManager.allowed(299)) return;
@@ -15875,21 +21620,25 @@ var CheckPointCategoryComponent = (function () {
         };
         mThis.pr_tbl = mThis.CheckPointCategoryListView.getListContainer();
         const sh_parent = mThis.pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 170) + 'px';
+        sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
+        };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
-                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+                mThis.CheckPointCategoryListView.showPage(
+                    mThis.getFilterData(),
+                );
         });
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+                mThis.CheckPointCategoryListView.showPage(
+                    mThis.getFilterData(),
+                );
             }, 200);
         });
         mThis.setActionListeners();
@@ -15899,12 +21648,18 @@ var CheckPointCategoryComponent = (function () {
 
     mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn_delete_check_point_category");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn_delete_check_point_category",
+            );
             if (btn) {
                 mThis.deleteCheckPointCategory(btn.dataset.id, btn);
             }
 
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_check_point_category");
+            btn = VSUtil.closestLimited(
+                e.target,
+                ".btn_edit_check_point_category",
+            );
             if (btn) {
                 mThis.editCheckPointCategory(btn.dataset.id, btn);
             }
@@ -15913,7 +21668,14 @@ var CheckPointCategoryComponent = (function () {
 
     mThis.editCheckPointCategory = (id, btn) => {
         if (!AuthManager.allowed(298)) return;
-        CheckPointCategoryDialog.show({ id, btn, onClose: () => mThis.CheckPointCategoryListView.showPage(mThis.getFilterData()),});
+        CheckPointCategoryDialog.show({
+            id,
+            btn,
+            onClose: () =>
+                mThis.CheckPointCategoryListView.showPage(
+                    mThis.getFilterData(),
+                ),
+        });
     };
 
     mThis.deleteCheckPointCategory = (id, menuLink) => {
@@ -15921,7 +21683,9 @@ var CheckPointCategoryComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
+                mThis.CheckPointCategoryListView.showPage(
+                    mThis.getFilterData(),
+                );
             },
         };
         // if (!AuthManager.allowed(300)) return;
@@ -15935,51 +21699,59 @@ var CheckPointCategoryComponent = (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call( `${main_view.base_url}/mhr/check-point-category/delete`, op, false, false, false)
+                        .call(
+                            `${main_view.base_url}/mhr/check-point-category/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_check_point_category");
+                                cv_interact.success(
+                                    "delete_success_check_point_category",
+                                );
                                 mThis.CheckPointCategoryListView.showPage();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
-
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
-
         });
 
         return p;
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/mhr/check-point-category/form-options`,null,null,null)
+            .call(
+                `${main_view.base_url}/mhr/check-point-category/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 if (typeof onFinish === "function") onFinish();
             });
     };
-    mThis.show =  (options) => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
-
         });
-
     };
     return mThis;
 })();
@@ -16032,17 +21804,19 @@ const CheckPointCategoryDialog = (() => {
                                     ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success("update_success_check_point_category");
-                                        }
-                                        else{
-                                        cv_interact.success("create_success_check_point_category");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_check_point_category",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_check_point_category",
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -16078,12 +21852,14 @@ const CheckPointCategoryDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var AttendanceTracksComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Track Shifts";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_workshiftComponent");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_workshiftComponent",
+    );
 
     mThis.btnAddShiftDetail = mThis.self.querySelector("#_btnAddShiftDetail");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -16097,7 +21873,12 @@ var AttendanceTracksComponent = (function () {
         mThis.WorkshiftListView = () => {
             vsapi
                 .call(
-                    `${mThis.base_url}/mhr/shift-details/list-paginate`,mThis.getFilterData(),null,null).then((res) => {
+                    `${mThis.base_url}/mhr/shift-details/list-paginate`,
+                    mThis.getFilterData(),
+                    null,
+                    null,
+                )
+                .then((res) => {
                     if (res.status_code === 200) {
                         mThis.renderWorkShift(list_container, res.data);
                     }
@@ -16124,7 +21905,9 @@ var AttendanceTracksComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Scanpoint has been saved successfully!");
+                    cv_interact.success(
+                        "Scanpoint has been saved successfully!",
+                    );
                     mThis.WorkshiftListView();
                 },
             };
@@ -16138,19 +21921,15 @@ var AttendanceTracksComponent = (function () {
             };
         });
 
-
         mThis.initDropdownMenus(list_container);
         mThis.initAlready = true;
     };
-
-
-
 
     mThis.renderWorkShift = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
             console.error(
-                "Authentication Management does not seem to work properly. You may need to refresh the page"
+                "Authentication Management does not seem to work properly. You may need to refresh the page",
             );
             return;
         }
@@ -16180,9 +21959,9 @@ var AttendanceTracksComponent = (function () {
                         shift.action === "CheckIn"
                             ? "bg-green"
                             : shift.action === "Check Out" ||
-                              shift.action === "CheckOut"
-                            ? "bg-gold"
-                            : "";
+                                shift.action === "CheckOut"
+                              ? "bg-gold"
+                              : "";
 
                     html += `
                     <div class="shift_card ${actionClass}">
@@ -16197,8 +21976,8 @@ var AttendanceTracksComponent = (function () {
                                         ? "d-none"
                                         : "btn_shift-details_action"
                                 }" data-id="${shift.id}" data-statusid="${
-                        shift.status_id
-                    }" aria-haspopup="true" aria-expanded="false">
+                                    shift.status_id
+                                }" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5 "></i>
                                 </a>
                             </div>
@@ -16304,30 +22083,43 @@ var AttendanceTracksComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Deleted successfully!");
                                 mThis.WorkshiftListView();
-                            }
-                            else {
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
-
                 }
-            }
+            },
         );
     };
 
     mThis.prepareFormOptions = () => {
-        vsapi.call(`${main_view.base_url}/mhr/shift-details/form-options`,null,null,null).then((res) => {
-                if (res.status_code === 200){
+        vsapi
+            .call(
+                `${main_view.base_url}/mhr/shift-details/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                if (res.status_code === 200) {
                     const d = res.data;
-                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",false,null,1);
+                    VSUtil.setComboItems(
+                        mThis.elFilter_status,
+                        d.shifts,
+                        "id",
+                        "name",
+                        false,
+                        null,
+                        1,
+                    );
                 }
-        });
+            });
     };
 
     mThis.show = function () {
@@ -16344,7 +22136,6 @@ const ShiftDetailDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-
         dialog = new GeneralDialog({
             cssClass: "modal-md",
             backdrop: "static",
@@ -16455,13 +22246,21 @@ const ShiftDetailDialog = (() => {
                         });
                         p.days = selectedDays.join("|");
 
-                        vsapi.call([ main_view.base_url,"/mhr/shift-details/save"].join(""),p,btn,null).then((res) => {
-                            if (res.status_code == 200) {
-                                me.hide(true, p);
-                            } else cv_interact.error(res.error_message);
-                        });
-
-
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/mhr/shift-details/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
                     },
                 },
             ],
@@ -16514,8 +22313,9 @@ const ShiftDetailDialog = (() => {
                             day.classList.remove("disabled");
                         });
                     }
-                    const shift = WorkshiftComponent.getFilterData().work_shift_id;
-                    if(shift) {
+                    const shift =
+                        WorkshiftComponent.getFilterData().work_shift_id;
+                    if (shift) {
                         me.controls.shifts.value = shift;
                     }
                 });
@@ -16528,11 +22328,13 @@ const ShiftDetailDialog = (() => {
     return self;
 })();
 
-"use strict";
+("use strict");
 var ExitFormComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_exit_form_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_exit_form_component",
+    );
 
     mThis.title_prop = "Exit Forms";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddExitForm");
@@ -16722,19 +22524,21 @@ var ExitFormComponent = (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("delete_success_exit_form");
-                                mThis.ExitFormListView.showPage(mThis.getFilterData());
+                                mThis.ExitFormListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(res.error_message);
                             }
                         })
                         .catch(() => {
                             cv_interact.error(
-                                "An error occurred. Please try again."
+                                "An error occurred. Please try again.",
                             );
                         })
                         .finally(() => {
@@ -16743,7 +22547,7 @@ var ExitFormComponent = (function () {
                 } else {
                     menulink.disabled = false;
                 }
-            }
+            },
         );
     };
 
@@ -16827,18 +22631,25 @@ const ExitFormDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/exit-form/save"].join(""),
+                                    [
+                                        main_view.base_url,
+                                        "/mhr/exit-form/save",
+                                    ].join(""),
                                     p,
                                     btn,
-                                    null
+                                    null,
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_exit_form");
+                                            cv_interact.success(
+                                                "update_success_exit_form",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success_exit_form");
+                                            cv_interact.success(
+                                                "create_success_exit_form",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -17028,10 +22839,13 @@ const ViewExitFormDialog = (() => {
                         };
                         vsapi
                             .call(
-                                [main_view.base_url, "/mhr/exit-form/update-checkbox"].join(""),
+                                [
+                                    main_view.base_url,
+                                    "/mhr/exit-form/update-checkbox",
+                                ].join(""),
                                 op,
                                 false,
-                                null
+                                null,
                             )
                             .then((res) => {
                                 if (res.status_code != 200) {
@@ -17060,12 +22874,14 @@ const ViewExitFormDialog = (() => {
                                 .call(
                                     `${main_view.base_url}/mhr/exit-form/details`,
                                     p,
-                                    btn
+                                    btn,
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         windowPrintExitForm(
-                                            me.divModal.querySelector(".modal-body").innerHTML
+                                            me.divModal.querySelector(
+                                                ".modal-body",
+                                            ).innerHTML,
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -17086,32 +22902,46 @@ const ViewExitFormDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, d) => {
-                    const tbl = me.divModal.querySelector(".tbl_exit_check_item");
+                    const tbl = me.divModal.querySelector(
+                        ".tbl_exit_check_item",
+                    );
                     const thead = tbl.querySelector("thead");
                     const tbody = tbl.querySelector("tbody");
 
                     thead.innerHTML = me.generateTableHeaders();
                     tbody.innerHTML = me.generateTableBody(d.list);
 
-                    const form_header = me.divModal.querySelector(".form_header");
+                    const form_header =
+                        me.divModal.querySelector(".form_header");
                     const form_title = form_header.querySelector(".form_title");
-                    const emp_info = form_header.querySelector(".employee-info-section");
+                    const emp_info = form_header.querySelector(
+                        ".employee-info-section",
+                    );
                     const emp_name = emp_info.querySelector(".employee_name");
                     const emp_code = emp_info.querySelector(".employee_code");
-                    const emp_effective_date = emp_info.querySelector(".employee_effective_date");
-                    const emp_branch = emp_info.querySelector(".employee_branch");
+                    const emp_effective_date = emp_info.querySelector(
+                        ".employee_effective_date",
+                    );
+                    const emp_branch =
+                        emp_info.querySelector(".employee_branch");
 
                     form_title.innerHTML = d.title ?? "";
                     emp_name.innerHTML = d.employee?.emp_name ?? "";
                     emp_code.innerHTML = d.employee?.code ?? "";
-                    emp_effective_date.innerHTML = d.employee?.efective_date ?? "";
+                    emp_effective_date.innerHTML =
+                        d.employee?.efective_date ?? "";
                     emp_branch.innerHTML = d.employee?.branch_name ?? "";
 
-                    tbl.querySelectorAll(".exit_form_check_box").forEach((cb) => {
-                        cb.onchange = (event) => {
-                            me.saveCheckBoxes(event, me.dataOptions.form_id);
-                        };
-                    });
+                    tbl.querySelectorAll(".exit_form_check_box").forEach(
+                        (cb) => {
+                            cb.onchange = (event) => {
+                                me.saveCheckBoxes(
+                                    event,
+                                    me.dataOptions.form_id,
+                                );
+                            };
+                        },
+                    );
                 },
             });
 
@@ -17160,4 +22990,3 @@ const ViewExitFormDialog = (() => {
 //             });
 //     }
 // }
-
