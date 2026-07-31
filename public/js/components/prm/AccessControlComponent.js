@@ -1,6 +1,5 @@
 "use strict";
 
-
 var AccessControlComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Access Control";
@@ -8,13 +7,22 @@ var AccessControlComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_access_control_component"
     );
+    
+    // Buttons
     mThis.btnAdd = mThis.self.querySelector("#_btnAccessCard");
-    // FIXED: ID matched HTML wrapper (#_divFilter_access_control)
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_access_control");
-    mThis.elFilter_status = mThis.self.querySelector("#_status_id");
-    mThis.elSearch = mThis.self.querySelector("#_search_access");
+    mThis.btnGenerateQR = mThis.self.querySelector("#_btnGenerateQR");
 
-    mThis.cols = [
+    // Containers & Filters
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_access_control");
+    mThis.elFilter_status_card = mThis.self.querySelector("#_status_id_card");
+    mThis.elFilter_status_log = mThis.self.querySelector("#_status_id_log");
+    mThis.elSearch = mThis.self.querySelector("#_search_access");
+    
+    // Default mode
+    mThis.currentViewMode = "accessLogView";
+
+    // Column definition for Access Card List
+    mThis.colsCard = [
         { title: "", className: "align-middle text-nowrap text-capitalize" },
         {
             transTitle: "titles.Code",
@@ -85,35 +93,148 @@ var AccessControlComponent = (() => {
         }
     ];
 
-    mThis.populateStatusFilter = () => {
-        if (!mThis.elFilter_status) return;
+    // Column definition for Access Log List
+    mThis.colsLog = [
+         {
+            transTitle: "titles.Code",
+            className: "align-middle text-nowrap",
+            data: data => `<span class="text-prm-custom">${data.code ?? "_"}</span>`
+        },
+        {
+            transTitle: "titles.Holder",
+            className: "align-middle text-nowrap",
+            data: data => `<span class="text-muted small">${data.holder_name ?? "_"}</span>`
+        },
+        {
+            transTitle: "titles.Type",
+            className: "align-middle text-nowrap",
+            data: data => `<span class="text-prm-custom">${data.type ?? "_"}</span>`
+        },
+        {
+            transTitle: "titles.Unit",
+            className: "align-middle text-nowrap",
+            data: data => `<span>${data.unit_code ?? "_"}</span>`
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-center",
+            data: data => {
+                const rawStatus = (data.log_status || data.status_id || "").toLowerCase();
+                const isAccessed = rawStatus === "accessed" || rawStatus === "granted";
 
-        const statuses = [
-            { id: "active", name: LocaleManager.trans("Active", "titles") },
-            { id: "inactive", name: LocaleManager.trans("Inactive", "titles") },
-        ];
+                let cls = "badge text-danger bg-danger-subtle border border-danger";
+                let displayStatus = "Denied";
 
-        VSUtil.setComboItems(
-            mThis.elFilter_status,
-            statuses,
-            "id",
-            "name",
-            "",
-            LocaleManager.trans("All Statuses", "titles"),
-            ""
-        );
+                if (isAccessed) {
+                    cls = "badge text-success bg-success-subtle border border-success";
+                    displayStatus = "Accessed";
+                }
+
+                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${displayStatus}
+                    </span>`;
+            }
+        },
+        {
+            transTitle: "titles.Access Time",
+            className: "align-middle text-nowrap",
+            data: data => `
+                <div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.created_at ?? ""}</span>
+                </div>`
+        },
+    ];
+
+    mThis.populateStatusFilters = () => {
+        // Populate Access Card Status Options
+        if (mThis.elFilter_status_card) {
+            const cardStatuses = [
+                { id: "active", name: LocaleManager.trans("Active", "titles") },
+                { id: "inactive", name: LocaleManager.trans("Inactive", "titles") },
+            ];
+            VSUtil.setComboItems(
+                mThis.elFilter_status_card,
+                cardStatuses,
+                "id",
+                "name",
+                "",
+                LocaleManager.trans("All Card Statuses", "titles"),
+                ""
+            );
+        }
+
+        // Populate Access Log Status Options
+            if (mThis.elFilter_status_log) {
+                const logStatuses = [
+                    { id: "accessed", name: LocaleManager.trans("Accessed", "titles") },
+                    { id: "denied", name: LocaleManager.trans("Denied", "titles") },
+                ];
+                VSUtil.setComboItems(
+                    mThis.elFilter_status_log,
+                    logStatuses,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Statuses", "titles"),
+                    ""
+                );
+            }
+    };
+
+    mThis.renderView = () => {
+        const elLogList = mThis.self.querySelector("#_access_log_list");
+        const elCardList = mThis.self.querySelector("#_access_control_list");
+        const elStatusCardContainer = mThis.self.querySelector("#_container_status_filter_card");
+        const elStatusLogContainer = mThis.self.querySelector("#_container_status_filter_log");
+        const elBtnAddContainer = mThis.self.querySelector("#_container_btn_add");
+        const elBtnQRContainer = mThis.btnGenerateQR?.parentElement;
+
+        if (mThis.currentViewMode === "accessLogView") {
+            // Display Log View Elements
+            if (elLogList) elLogList.style.display = "block";
+            if (elCardList) elCardList.style.display = "none";
+
+            if (elStatusLogContainer) elStatusLogContainer.style.display = "block";
+            if (elStatusCardContainer) elStatusCardContainer.style.display = "none";
+
+            if (elBtnQRContainer) elBtnQRContainer.style.display = "block";
+            if (elBtnAddContainer) elBtnAddContainer.style.display = "none";
+
+            mThis.AccessLogListView.showPage(mThis.getFilterData());
+        } else {
+            // Display Card View Elements
+            if (elLogList) elLogList.style.display = "none";
+            if (elCardList) elCardList.style.display = "block";
+
+            if (elStatusLogContainer) elStatusLogContainer.style.display = "none";
+            if (elStatusCardContainer) elStatusCardContainer.style.display = "block";
+
+            if (elBtnQRContainer) elBtnQRContainer.style.display = "none";
+            if (elBtnAddContainer) elBtnAddContainer.style.display = "block";
+
+            LocaleManager.translateZone(mThis.self);
+
+            mThis.AccessControlListView.showPage(mThis.getFilterData());
+        }
+    };
+
+    mThis.getActiveListView = () => {
+        return mThis.currentViewMode === "accessCardView"
+            ? mThis.AccessControlListView
+            : mThis.AccessLogListView;
     };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.populateStatusFilter();
+        mThis.populateStatusFilters();
 
+        // 1. Init Access Card View
         mThis.AccessControlListView = new ListView("_access_control_list", {
             fetchApi: `${main_view.base_url}/prm/access_control/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
+            columns: mThis.colsCard,
             tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.dataset.status = data.status;
@@ -123,36 +244,83 @@ var AccessControlComponent = (() => {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function(e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.AccessControlListView.showPage(mThis.getFilterData());
-                }
+        // 2. Init Access Log View
+        mThis.AccessLogListView = new ListView("_access_log_list", {
+            fetchApi: `${main_view.base_url}/prm/access_log/list-paginate`,
+            perPage: 8,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.colsLog,
+            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
+            rowCreated: (data, index, tr) => {
+                tr.classList.add("access_log");
+            },
+            listContainerClass: null
+        });
+
+        // Add Card Button Listener
+        if (mThis.btnAdd) {
+            mThis.btnAdd.onclick = function(e) {
+                e.preventDefault();
+                const op = {
+                    id: null,
+                    btn: e.target,
+                    onClose: () => {
+                        mThis.AccessControlListView.showPage(mThis.getFilterData());
+                    }
+                };
+                AccessControlDialog.show(op);
             };
-            AccessControlDialog.show(op);
-        };
+        }
+
+        // Generate QR Code Button Listener
+        if (mThis.btnGenerateQR) {
+            mThis.btnGenerateQR.onclick = function(e) {
+                e.preventDefault();
+                // Add your QR Generation dialog/action logic here
+                console.log("Generate QR clicked");
+            };
+        }
 
         mThis.tblAccessCard = mThis.AccessControlListView.getTable();
         mThis.initDropdownMenus(mThis.tblAccessCard);
 
+        // View Mode Toggle Listeners
+        const accessLogView = mThis.self.querySelector("#accessLogView");
+        const accessCardView = mThis.self.querySelector("#accessCardView");
+
+        if (accessLogView && accessCardView) {
+            accessLogView.addEventListener("change", () => {
+                if (accessLogView.checked) {
+                    mThis.currentViewMode = "accessLogView";
+                    mThis.renderView();
+                }
+            });
+
+            accessCardView.addEventListener("change", () => {
+                if (accessCardView.checked) {
+                    mThis.currentViewMode = "accessCardView";
+                    mThis.renderView();
+                }
+            });
+        }
+
+        // Filter trigger
         if (mThis.divFilter) {
             mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
                 el.onchange = e => {
                     e.preventDefault();
-                    mThis.AccessControlListView.showPage(mThis.getFilterData());
+                    mThis.getActiveListView().showPage(mThis.getFilterData());
                 };
             });
         }
 
+        // Search trigger
         if (mThis.elSearch) {
             mThis.elSearch.addEventListener("keyup", e => {
                 e.preventDefault();
                 clearTimeout(mThis.search_timeout);
                 mThis.search_timeout = setTimeout(() => {
-                    mThis.AccessControlListView.showPage(mThis.getFilterData());
+                    mThis.getActiveListView().showPage(mThis.getFilterData());
                 }, 250);
             });
         }
@@ -162,9 +330,16 @@ var AccessControlComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            status: mThis.elFilter_status ? mThis.elFilter_status.value : "",
             search_value: mThis.elSearch ? mThis.elSearch.value : ""
         };
+
+        if (mThis.currentViewMode === "accessCardView") {
+            p.status = mThis.elFilter_status_card ? mThis.elFilter_status_card.value : "";
+        } else {
+            // Send status_id to match $d->status_id in getListAccessLog()
+            p.status_id = mThis.elFilter_status_log ? mThis.elFilter_status_log.value : "";
+        }
+
         return p;
     };
 
@@ -308,7 +483,7 @@ var AccessControlComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.AccessControlListView.showPage(mThis.getFilterData());
+            mThis.renderView();
         });
     };
 
@@ -338,15 +513,15 @@ const AccessControlDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select name="category" id="_holder_category" class="data-input form-control" data-field="category" data-style="material" placeholder="${LocaleManager.trans('Select Category', 'labels')}">
-                                        <option value="internal">Internal Holder</option>
+                                    <select name="category" id="_holder_category" class="data-input form-control" data-field="category" data-style="material" placeholder="${LocaleManager.trans('Select Category', 'titles')}">
+                                        <option value="internal"> Internal Holder</option>
                                         <option value="external">External Holder</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12" id="_search_hint_container">
                                 <h3 class="fs-6 mb-2 text-start" style="color:#6c757d">
-                                    Search by prefix: <code class="text-danger" style="font-size: 14px;">e-</code> for Employee, <code class="text-danger" style="font-size: 14px;">t-</code> for Tenant, or <code class="text-danger" style="font-size: 14px;">m-</code> for Member
+                                ${LocaleManager.trans('Search by prefix: e- for Employee, t- for Tenant, or m- for Member', 'titles')}
                                 </h3>
                             </div>
                             <div class="col-6">
@@ -360,7 +535,7 @@ const AccessControlDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="type" id="_holder_type" required class="data-input form-control" data-field="type" placeholder=" " />
-                                    <label vslang="labels.Holder Type"></label>
+                                    <label vslang="labels.Type"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -369,7 +544,7 @@ const AccessControlDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="expire_date" class="data-input form-control" data-field="expire_date" placeholder=" " />
-                                    <label vslang="labels.Expire Date"></label>
+                                    <label vslang="labels.Expiry Date"></label>
                                 </div>
                             </div>
                         </div>`
@@ -494,15 +669,17 @@ const AccessControlDialog = (() => {
                         ""
                     );
 
-                     VSUtil.setComboItems(
-                        mThis.elFilter_status,
-                        d.statuses,
-                        "id",
-                        "status_name",
-                        "",
-                        LocaleManager.trans("All Statuses", "titles"),
-                        "",
-                    );
+                    if (data?.statuses && AccessControlComponent.elFilter_status_card) {
+                        VSUtil.setComboItems(
+                            AccessControlComponent.elFilter_status_card,
+                            data.statuses,
+                            "id",
+                            "status_name",
+                            "",
+                            LocaleManager.trans("All Statuses", "titles"),
+                            ""
+                        );
+                    }
 
                     if (isCreate) {
                         me.resetCreateForm?.();

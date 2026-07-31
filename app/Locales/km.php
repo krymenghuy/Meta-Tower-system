@@ -825,6 +825,19 @@ return [
         'Rating' => 'វាយតម្លៃ',
 
         'Work Shifts' => 'វេនការងារ',
+        'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
+        'Holder' => 'អ្នកកាន់កាត',
+        'Expiry Date' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Create Access Card' => "បង្កើតកាតចេញចូល",
+        'Modify Access Card' => "កែប្រែ កាតចេញចូល",
+        'External Holder' => "អ្នកកាន់កាតខាងក្រៅ",
+        'Internal Holder' => "អ្នកកាន់កាតខាងក្នុង",
+        "Search by prefix: e- for Employee, t- for Tenant, or m- for Member" => "ស្វែងរកតាមអក្សរចាប់ពីនេះ: e- សម្រាប់បុគ្គលិក, t- សម្រាប់អ្នកជួល, ឬ m- សម្រាប់សមាជិក",
+        'Select Unit' => "ជ្រើសរើសបន្ទប់",
+        'Select Category'=> "សូមជ្រើសរើសប្រភេទ",
+
+
+        
 
 
 
@@ -984,6 +997,7 @@ return [
         'Employee Warnings' => 'ការពិន័យបុគ្គលិក',
         'Leave Request' => 'សំណើសុំច្បាប់',
         'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
+        'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -1116,6 +1130,9 @@ return [
         'Create Deduction' => 'បង្កើតការកាត់កង',
 
         'Create Skill' => 'បង្កើតជំនាញ',
+        'Access Log' => 'ប្រវត្តិការចេញចូល',
+        'Access Card' => 'កាតចេញចូល',
+        'Create Access Card' => 'បង្កើតកាតចេញចូល',
 
     ],
     'filters' => [
@@ -1417,6 +1434,10 @@ return [
         'Warning Date' => 'ថ្ងៃប្រកាសព្រមាន',
         'Issue' => 'បញ្ហា',
         'failed_to_save' => 'មិនអាចរក្សាទុកព័ត៌មានព្រមានបានទេ',
+        'Card Code (Auto/Optional)' => 'លេខកូដកាត (ស្វ័យប្រវត្តិ/តាមជម្រើស)',
+
+        'Holder' => "អ្នកកាន់កាត",
+        'Expiry Date' => "កាលបរិច្ឆេទផុតកំណត់"
 
 
 
