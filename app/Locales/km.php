@@ -825,6 +825,56 @@ return [
         'Rating' => 'វាយតម្លៃ',
 
         'Work Shifts' => 'វេនការងារ',
+        'Effective Date' => 'កាលបរិច្ឆេទអនុវត្ត',
+
+        'Exit Forms' => 'ទម្រង់បែបបទចាកចេញ',
+        'Exit Form' => 'ទម្រង់បែបបទចាកចេញ',
+        'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
+        'Modify Exit Form' => 'កែប្រែទម្រង់បែបបទចាកចេញ',
+        'Delete Exit Form' => 'លុបទម្រង់បែបបទចាកចេញ',
+        'Form' => 'ទម្រង់បែបបទ',
+
+        'Attendance Track' => 'តាមដានការចូលរួម',
+        'Add Scan' => 'បង្កើតការស្កេន',
+        'Edit Scan' => 'កែប្រែការស្កេន',
+        'Delete Scan' => 'លុបការស្កេន',
+        'Scan' => 'ការស្កេន',
+        'Days' => 'ថ្ងៃ',
+        'Monday' => 'ថ្ងៃច័ន្ទ',
+        'Tuesday' => 'ថ្ងៃអង្គារ',
+        'Wednesday' => 'ថ្ងៃពុធ',
+        'Thursday' => 'ថ្ងៃព្រហស្បតិ៍',
+        'Friday' => 'ថ្ងៃសុក្រ',
+        'Saturday' => 'ថ្ងៃសៅរ៍',
+        'Sunday' => 'ថ្ងៃអាទិត្យ',
+        'Mon' => 'ច័ន្ទ',
+        'Tue' => 'អង្គារ',
+        'Wed' => 'ពុធ',
+        'Thu' => 'ព្រហស្បតិ៍',
+        'Fri' => 'សុក្រ',
+        'Sat' => 'សៅរ៍',
+        'Sun' => 'អាទិត្យ',
+
+        'Edit WorkShift' => 'កែប្រែវេនការងារ',
+        'Delete WorkShift' => 'លុបវេនការងារ',
+        'Uninformed Leaves' => 'អវត្តមានគ្មានច្បាប់',
+        'Payroll' => 'ប្រាក់ខែ',
+        'Staff Count' => 'ចំនួនបុគ្គលិក',
+
+        'Edit Payroll' => 'កែប្រែប្រាក់ខែ',
+        'Delete Payroll' => 'លុបប្រាក់ខែ',
+        'Payroll List' => 'បញ្ជីប្រាក់បៀវត្សរ៍',
+        'Nontaxable BFT' => 'BFT មិនជាប់ពន្ធ',
+        'Taxable BFT' => 'BFT ជាប់ពន្ធ',
+        'BFT (Flat Tax)' => 'BFT (ពន្ធអត្រាថេរ)',
+        'Deduction' => 'ការកាត់ប្រាក់', 
+        'Allowance' => 'ប្រាក់ឧបត្ថម្ភ',
+        'Tax Rate' => 'អត្រាពន្ធ',
+        'Tax Base' => 'មូលដ្ឋានពន្ធ',
+        'Benefit Tax' => 'ពន្ធលើអត្ថប្រយោជន៍',
+        'View Pay Slip' => 'មើលបញ្ជីប្រាក់បៀវត្សរ៍',
+        'Remove from List' => 'លុបចេញពីបញ្ជី',
+        'Payroll Accounts' => 'គណនីបើកប្រាក់ខែ'
 
 
 
@@ -984,6 +1034,14 @@ return [
         'Employee Warnings' => 'ការពិន័យបុគ្គលិក',
         'Leave Request' => 'សំណើសុំច្បាប់',
         'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
+        'Employee Actions' => 'សកម្មភាពបុគ្គលិក',
+        'Benefits' => 'អត្ថប្រយោជន៍',
+        'Employee Attendance' => 'វត្តមានបុគ្គលិក',
+        'Attendance Track' => 'តាមដានការចូលរួម',
+        'Payroll' => 'ប្រាក់ខែ',
+
+
+
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -1116,6 +1174,9 @@ return [
         'Create Deduction' => 'បង្កើតការកាត់កង',
 
         'Create Skill' => 'បង្កើតជំនាញ',
+        'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
+
+        'Add Scan' => 'បង្កើតការស្កេន',
 
     ],
     'filters' => [
@@ -1417,6 +1478,16 @@ return [
         'Warning Date' => 'ថ្ងៃប្រកាសព្រមាន',
         'Issue' => 'បញ្ហា',
         'failed_to_save' => 'មិនអាចរក្សាទុកព័ត៌មានព្រមានបានទេ',
+
+        'Session' => 'វគ្គ',
+        'Action' => 'សកម្មភាព',
+        'Scan Order Number' => 'លំដាប់ស្កេន',
+        'Allow Scan From' => 'អនុញ្ញាតិស្កេនចាប់ពី',
+        'Allow Scan To' => 'អនុញ្ញាតិស្កេនដល់',
+
+        'Leave Type' => 'ប្រភេទឈប់សម្រាក',
+
+        
 
 
 

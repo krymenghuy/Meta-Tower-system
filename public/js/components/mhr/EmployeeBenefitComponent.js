@@ -371,7 +371,7 @@ const EmployeeBenefitDialog = (() => {
                         <div class="col-3 flat_tax_rate d-none">
                             <div class="vs-material-field">
                                 <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
-                                <label vslang="titles.Flat Tax"></label>
+                                <label vslang="titles.Flat Tax">Flat Tax</label>
                             </div>
                         </div>
                          <div class="col-3 effective_date d-none">
@@ -411,7 +411,7 @@ const EmployeeBenefitDialog = (() => {
                 },
             },
             onPrepareForm: (me, data) => {
-
+                LocaleManager.translateZone(me.divModal);
                 const BenefitField = me.divModal.querySelector("#benefit_id");
 
                 const effective_date = me.divModal.querySelector(".effective_date");
