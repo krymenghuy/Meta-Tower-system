@@ -874,7 +874,20 @@ return [
         'Benefit Tax' => 'ពន្ធលើអត្ថប្រយោជន៍',
         'View Pay Slip' => 'មើលបញ្ជីប្រាក់បៀវត្សរ៍',
         'Remove from List' => 'លុបចេញពីបញ្ជី',
-        'Payroll Accounts' => 'គណនីបើកប្រាក់ខែ'
+        'Payroll Accounts' => 'គណនីបើកប្រាក់ខែ',
+        'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
+        'Holder' => 'អ្នកកាន់កាត',
+        'Expiry Date' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Create Access Card' => "បង្កើតកាតចេញចូល",
+        'Modify Access Card' => "កែប្រែ កាតចេញចូល",
+        'External Holder' => "អ្នកកាន់កាតខាងក្រៅ",
+        'Internal Holder' => "អ្នកកាន់កាតខាងក្នុង",
+        "Search by prefix: e- for Employee, t- for Tenant, or m- for Member" => "ស្វែងរកតាមអក្សរចាប់ពីនេះ: e- សម្រាប់បុគ្គលិក, t- សម្រាប់អ្នកជួល, ឬ m- សម្រាប់សមាជិក",
+        'Select Unit' => "ជ្រើសរើសបន្ទប់",
+        'Select Category'=> "សូមជ្រើសរើសប្រភេទ",
+
+
+        
 
 
 
@@ -1042,6 +1055,7 @@ return [
 
 
 
+        'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
     ],
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -1177,6 +1191,9 @@ return [
         'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
 
         'Add Scan' => 'បង្កើតការស្កេន',
+        'Access Log' => 'ប្រវត្តិការចេញចូល',
+        'Access Card' => 'កាតចេញចូល',
+        'Create Access Card' => 'បង្កើតកាតចេញចូល',
 
     ],
     'filters' => [
@@ -1478,6 +1495,10 @@ return [
         'Warning Date' => 'ថ្ងៃប្រកាសព្រមាន',
         'Issue' => 'បញ្ហា',
         'failed_to_save' => 'មិនអាចរក្សាទុកព័ត៌មានព្រមានបានទេ',
+        'Card Code (Auto/Optional)' => 'លេខកូដកាត (ស្វ័យប្រវត្តិ/តាមជម្រើស)',
+
+        'Holder' => "អ្នកកាន់កាត",
+        'Expiry Date' => "កាលបរិច្ឆេទផុតកំណត់",
 
         'Session' => 'វគ្គ',
         'Action' => 'សកម្មភាព',
