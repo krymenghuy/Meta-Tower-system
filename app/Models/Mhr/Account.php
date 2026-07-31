@@ -74,7 +74,7 @@ class Account extends VSModel
         $id = DBX::saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
- 
+
     static function accountNumberExists($account_number, $account_type, $id = null)
     {
         $str_id = $id > 0 ? 'id <> ' . $id : '1=1';
@@ -129,26 +129,26 @@ class Account extends VSModel
         return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');
     }
 
-public function getList($arr, $ss)
-{
-    $d = (object) $arr;
+    public function getList($arr, $ss)
+    {
+        $d = (object) $arr;
 
-    $isMasterAccount = (int) ($d->is_master_account ?? 0);
-    $branchId       = $d->branch_id ?? null;
-    $departmentId   = $d->department_id ?? null;
-    $accountType    = $d->account_type ?? 'Standard';
-    $searchValue    = trim($d->search_value ?? '');
+        $isMasterAccount = (int) ($d->is_master_account ?? 0);
+        $branchId       = $d->branch_id ?? null;
+        $departmentId   = $d->department_id ?? null;
+        $accountType    = $d->account_type ?? 'Standard';
+        $searchValue    = trim($d->search_value ?? '');
 
-    $currentPage = max((int) ($d->current_page ?? 1), 1);
-    $perPage     = max((int) ($d->per_page ?? 10), 1);
-    $skipRows    = ($currentPage - 1) * $perPage;
+        $currentPage = max((int) ($d->current_page ?? 1), 1);
+        $perPage     = max((int) ($d->per_page ?? 10), 1);
+        $skipRows    = ($currentPage - 1) * $perPage;
 
-    $balanceDate = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+        $balanceDate = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
-    if ($isMasterAccount) {
+        if ($isMasterAccount) {
 
-        $query = DB::table('accounts as a')
-            ->selectRaw("
+            $query = DB::table('accounts as a')
+                ->selectRaw("
                 a.id,
                 a.emp_id,
                 'Master Account' AS emp_name,
@@ -160,14 +160,14 @@ public function getList($arr, $ss)
                 {$balanceDate},
                 NULL AS emp_photo
             ")
-            ->where('a.id', 1);
+                ->where('a.id', 1);
 
-    } else {
+        } else {
 
-        $query = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->leftJoin('positions as p', 'p.id', '=', 'e.position_id')
-            ->selectRaw("
+            $query = DB::table('accounts as a')
+                ->join('employees as e', 'e.id', '=', 'a.emp_id')
+                ->leftJoin('positions as p', 'p.id', '=', 'e.position_id')
+                ->selectRaw("
                 a.id,
                 a.emp_id,
                 e.name AS emp_name,
@@ -179,47 +179,47 @@ public function getList($arr, $ss)
                 {$balanceDate},
                 e.photo_file_name AS emp_photo
             ")
-            ->where('a.account_type', $accountType);
+                ->where('a.account_type', $accountType);
 
-        // Search
-        if ($searchValue !== '') {
+            // Search
+            if ($searchValue !== '') {
 
-            $searchValue = escape_like_str($searchValue);
+                $searchValue = escape_like_str($searchValue);
 
-            $query->where(function ($q) use ($searchValue) {
-                $q->where('e.name', 'LIKE', "%{$searchValue}%")
-                  ->orWhere('a.account_number', 'LIKE', "%{$searchValue}%");
-            });
+                $query->where(function ($q) use ($searchValue) {
+                    $q->where('e.name', 'LIKE', "%{$searchValue}%")
+                        ->orWhere('a.account_number', 'LIKE', "%{$searchValue}%");
+                });
 
-        } else {
+            } else {
 
-            if (!empty($branchId)) {
-                $query->where('e.branch_id', $branchId);
-            }
+                if (!empty($branchId)) {
+                    $query->where('e.branch_id', $branchId);
+                }
 
-            if (!empty($departmentId)) {
-                $query->where('p.department_id', $departmentId);
+                if (!empty($departmentId)) {
+                    $query->where('p.department_id', $departmentId);
+                }
             }
         }
+
+        // Clone query before count (important for hosting compatibility)
+        $countQuery = clone $query;
+        $count = $countQuery->count();
+
+        // Get paginated rows
+        $rows = $query
+            ->offset($skipRows)
+            ->limit($perPage)
+            ->get();
+
+        return new LengthAwarePaginator(
+            $rows,
+            $count,
+            $perPage,
+            $currentPage
+        );
     }
-
-    // Clone query before count (important for hosting compatibility)
-    $countQuery = clone $query;
-    $count = $countQuery->count();
-
-    // Get paginated rows
-    $rows = $query
-        ->offset($skipRows)
-        ->limit($perPage)
-        ->get();
-
-    return new LengthAwarePaginator(
-        $rows,
-        $count,
-        $perPage,
-        $currentPage
-    );
-}
 
     function getDetails($id)
     {
@@ -280,7 +280,7 @@ public function getList($arr, $ss)
         if ($id == 1) {
             return DV::error('Cannot delete master account');
         }
-        foreach (self::$tables as $table => $field) {
+        foreach (self::$fk_tables as $table => $field) {
             DB::table($table)->where($field, $id)->delete();
         }
         $x = DB::table('accounts')->where('id', $id)->delete();
@@ -655,10 +655,10 @@ public function getList($arr, $ss)
                     ')
                     ->orderBy('t.created_at', 'desc')
                     ->get();
-                    $c_id = getCurrentSubs(true)->subscriber_id;
-                    $subs_id = $ss->subs_id;
-                    $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
-                    unset($row->emp_photo);
+                $c_id = getCurrentSubs(true)->subscriber_id;
+                $subs_id = $ss->subs_id;
+                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
+                unset($row->emp_photo);
             }
 
             return [
