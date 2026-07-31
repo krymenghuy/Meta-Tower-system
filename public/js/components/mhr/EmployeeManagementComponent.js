@@ -146,31 +146,11 @@ var EmployeeManagementComponent = (function () {
         return sex || "_";
     };
 
-    mThis._maritalLabel = (status) => {
-        if (!status) return "_";
-        const map = {
-            single: LocaleManager.trans("Single", "titles"),
-            married: LocaleManager.trans("Married", "titles"),
-            divorced: LocaleManager.trans("Divorced", "titles"),
-            widowed: LocaleManager.trans("Widowed", "titles"),
-        };
-        return map[status] || status;
-    };
 
-    mThis._payrollTaxLabel = (value) => {
-        if (value === "1" || value === 1) {
-            return LocaleManager.trans("Tax", "titles");
-        }
-        return LocaleManager.trans("Non Tax", "titles");
-    };
 
-    mThis._statusBadgeClass = (status) => {
-        const s = String(status || "").toLowerCase();
-        if (s.includes("active")) return "is-active";
-        if (s.includes("pending") || s.includes("leave")) return "is-pending";
-        if (s.includes("inactive") || s.includes("resign")) return "is-inactive";
-        return "is-active";
-    };
+  
+
+  
 
     mThis._pillText = (value) => {
         if (value == null || value === "") return "_";
@@ -446,7 +426,7 @@ var EmployeeManagementComponent = (function () {
 
         if (data.status_id == 20 || data.status_id == 30) {
             const hideEls = mThis.profile_info_emp.querySelectorAll(
-                ".movement, .movement_detail, .set_resign, .edit_emp_profile_info, .delete_employee, .group_action_movement"
+                ".movement, .set_resign, .edit_emp_profile_info, .delete_employee, .group_action_movement"
             );
             hideEls.forEach((el) => {
                 el.style.display = "none";
@@ -995,12 +975,12 @@ const EmployeeDialog = (() => {
                     if (me.empImageBox) {
                         me.empImageBox.setImage(emp?.image_url || null);
                     }
-
+                    me.controls.salary.disabled = isEdit;
                     if (isEdit) {
                         me.setReadOnly(true, [
                             "emp_type_id",
                             "position_id",
-                            "salary",
+                            "work_shift_id",
                         ]);
                     } else if (me.controls.apply_payroll_tax) {
                         me.controls.apply_payroll_tax.value = "1";
@@ -1032,6 +1012,7 @@ const ProfileResignDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: LocaleManager.trans("Set Resign", "titles"),
                 createContent: () => {
                     return [
                         `<div class="row g-3">
@@ -1122,8 +1103,7 @@ const ProfileResignDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Set Resign",
-                    modifyTitle: "vslang:titles.Set Resign",
+                    
                 },
 
                 onPrepareForm: (me, data) => {

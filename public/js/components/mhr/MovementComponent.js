@@ -27,20 +27,17 @@ var MovementComponent = (() => {
 
             return `
                 <div class="d-flex align-items-center">
-                    <img
-                        src="${photo}"
+                    <img src="${photo}"
                         class="rounded-circle border shadow-sm me-3"
                         style="width:42px;height:42px;object-fit:cover;"
-                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'"
-                    >
-
+                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'">
                     <div>
-                        <div class="fw-semibold text-dark">
-                            ${row.emp_name ?? "-"}
+                        <div class="text-prm-custom text-nowrap">
+                            ${row.emp_name ?? "_"}
                         </div>
 
                         <small class="text-muted">
-                            ${row.position ?? "-"}
+                            ${row.position ?? "_"}
                         </small>
                     </div>
                 </div>
@@ -50,18 +47,15 @@ var MovementComponent = (() => {
     {
         transTitle: "titles.Event",
         className: "align-middle",
-        data: row => `
-            <span class="fw-medium">
-                ${row.event ?? "-"}
-            </span>
-        `
+        data: (data) =>{
+            return `<span class="text-prm-custom text-nowrap">${data.event ?? "_"}</span>`;
+        } 
     },
     {
         transTitle: "titles.Date",
         className: "align-middle text-nowrap",
         data: row => `
-            <span class="text-muted">
-                <i class="fa fa-calendar-alt me-1"></i>
+            <span class="text-prm-custom">
                 ${row.event_date ?? "-"}
             </span>
         `
@@ -69,17 +63,12 @@ var MovementComponent = (() => {
     {
         transTitle: "titles.Last Updated",
         className: "align-middle",
-        data: row => `
-            <div>
-                <div class="fw-semibold text-dark">
-                    ${row.update_user ?? "-"}
-                </div>
-
-                <small class="text-muted">
-                    ${row.updated_at ?? "-"}
-                </small>
-            </div>
-        `
+        data: (data) => {
+            return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                <small class="text-muted">${data.updated_at ?? ""}</small>
+            </div>`;
+        },
     },
     {
         transTitle: "titles.Impact",
@@ -88,26 +77,26 @@ var MovementComponent = (() => {
 
             const impact = (row.impact || "").toLowerCase();
 
-            let badge = "bg-secondary";
+            let badge = "badge text-warning bg-warning-subtle border border-warning";
 
             switch (impact) {
 
                 case "positive":
-                    badge = "bg-success";
+                    badge = "badge text-success bg-success-subtle border border-success";
                     break;
 
                 case "neutral":
-                    badge = "bg-warning text-dark";
+                    badge = "badge text-warning bg-warning-subtle border border-warning";
                     break;
 
                 case "negative":
-                    badge = "bg-danger";
+                    badge = "badge text-danger bg-danger-subtle border border-danger";
                     break;
             }
 
             return `
-                <span class="badge rounded-pill ${badge} px-3 py-2">
-                    ${row.impact ?? "-"}
+                <span class="text-capitalize d-inline-block text-center ${badge}" style="min-width:70px">
+                    ${row.impact ?? "_"}
                 </span>
             `;
         }
@@ -764,6 +753,7 @@ const EmployeeMovementHistoryDialog = (() => {
         const name = emp.name || first.emp_name || "Employee";
         const photo = emp.image_url || first.image_url || "";
         const position = emp.position || first.position || "";
+
         const count = rows.length;
         const titleText = "Detail Movement";
 
@@ -876,13 +866,12 @@ const EmployeeMovementHistoryDialog = (() => {
                         params: (op) => {
                             return {
                                 emp_id: op.emp_id || op.employee?.id || null,
-                                per_page: 100,
-                                current_page: 1,
                             };
                         },
                     },
                 },
                 onPrepareForm: (me, data) => {
+                    console.log(3333,data);
                     renderContent(me, data);
                     setTimeout(() => renderContent(me, data), 0);
                 },
