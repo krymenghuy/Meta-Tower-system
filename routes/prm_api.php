@@ -34,6 +34,7 @@ use App\Http\Controllers\Prm\ReportController;
 use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Prm\DepositController;
 use App\Http\Controllers\Prm\AccessController;
+use App\Http\Controllers\Prm\AccessLogsController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -404,6 +405,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('access_contro
     Route::post('/search-card-holder', [AccessController::class, 'searchCardHolder']);
     Route::post('/delete', [AccessController::class, 'delete']);
     Route::post('/update-status', [AccessController::class, 'updateCardStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('access_log')->group(function () {
+    Route::post('/save', [AccessLogsController::class, 'createAccessLog']);
+    Route::post('/list-paginate', [AccessLogsController::class, 'getListPaginate']);
+   
 });
 
 
