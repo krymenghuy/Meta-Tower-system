@@ -748,12 +748,12 @@ return [
         'Salary Range' => 'ប្រាក់ខែចាប់ពី',
         'Salary ranges from' => "ប្រាក់ខែចាប់ពី",
         'Rate' => "អត្រា",
-        'Tax Bracket' => 'ប្រាក់ខែចាប់ពី',
-        'Bias' => 'ប្រាក់ខែចាប់ពី',
+        'Tax Bracket' => 'កម្រិតពន្ធ',
+        'Bias' => 'ចំនួនកាត់បន្ថយ',
         'Lower Amount' => 'ទឹកប្រាក់អប្បបរមា',
         'Upper Amount' => 'ទឹកប្រាក់អតិបរមា',
-        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
-        'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
+        'Create Tax Bracket' => 'បង្កើតកម្រិតពន្ធ',
+        'Modify Tax Bracket' => 'កែប្រែកម្រិតពន្ធ',
 
         'Shortcut' => 'អក្សរកាត់',
         'Update By' => 'បានកែប្រែដោយ',
@@ -886,6 +886,24 @@ return [
         'Select Unit' => "ជ្រើសរើសបន្ទប់",
         'Select Category'=> "សូមជ្រើសរើសប្រភេទ",
 
+        'Benefit Disbursement' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Employee Deduction' => 'ការកាត់ប្រាក់បុគ្គលិក',
+        'Create Deduction' => 'បង្កើតការកាត់ប្រាក់',
+        'Benefit Disbursement Policy' => 'គោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
+        'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់',
+
+        'Holidays' => 'ថ្ងៃឈប់សម្រាក',
+        'Name KH' => 'ឈ្មោះ',
+
+        'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
+        'Create Checkpoint Evaluation' => 'បង្កើតការវាយតម្លៃត្រួតពិនិត្យ',
+        'Modify Checkpoint Evaluation' => 'កែប្រែការវាយតម្លៃត្រួតពិនិត្យ',
+        'Delete Checkpoint Evaluation' => 'លុបការវាយតម្លៃត្រួតពិនិត្យ',
+
+      
+        
 
         
 
@@ -1053,6 +1071,12 @@ return [
         'Attendance Track' => 'តាមដានការចូលរួម',
         'Payroll' => 'ប្រាក់ខែ',
 
+        'Wallet Accounts' => 'គណនីឌីជីថល',
+        'Benefit Disbursements' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',  
+
+        'Deductions' => 'ការកាត់ប្រាក់',
+        'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
+
 
 
         'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
@@ -1173,7 +1197,7 @@ return [
 
         'Set Attendance' => 'កំណត់វត្តមាន',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
-        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
+        'Create Tax Bracket' => 'បង្កើតកម្រិតពន្ធ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Add Policy' => 'បន្ថែមគោលការណ៍',
 
@@ -1194,6 +1218,11 @@ return [
         'Access Log' => 'ប្រវត្តិការចេញចូល',
         'Access Card' => 'កាតចេញចូល',
         'Create Access Card' => 'បង្កើតកាតចេញចូល',
+
+        'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Evaluation' => 'បង្កើតការវាយតម្លៃ',
+
+        'Create Work Shift' => 'បង្កើតវេនការងារ',
 
     ],
     'filters' => [
@@ -1508,6 +1537,11 @@ return [
 
         'Leave Type' => 'ប្រភេទឈប់សម្រាក',
 
+        'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
+        'Issues' => 'បញ្ហា',
+        
+       
+        
         
 
 
