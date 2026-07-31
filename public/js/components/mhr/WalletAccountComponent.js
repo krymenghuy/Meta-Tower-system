@@ -117,6 +117,7 @@ var WalletAccountComponent = (function () {
             e.preventDefault();
 
             let op = {
+                id: null,
                 btn: e.target,
                 onClose: () => {
                     mThis.WalletAccountListView.showPage();
@@ -371,7 +372,7 @@ var WalletAccountComponent = (function () {
     });
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_wallet_account_action",
             cssClass: "bg-white shadow",
@@ -418,7 +419,7 @@ var WalletAccountComponent = (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
 
@@ -551,9 +552,7 @@ const WalletAccountDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = new GeneralDialog({
                 cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
@@ -621,7 +620,7 @@ const WalletAccountDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="titles.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             //Close with Cancel button
                             me.hide(false);
@@ -629,7 +628,7 @@ const WalletAccountDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
@@ -651,7 +650,7 @@ const WalletAccountDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Account",
                     modifyTitle: "vslang:titles.Wallet Details",
-                    targetProp: "accounts",
+                    targetProp: "account",
                     api: {
                         endpoint: [
                             main_view.base_url,
@@ -663,10 +662,18 @@ const WalletAccountDialog = (() => {
                     },
                 },
 
-                onPrepareForm: (me) => {
+                onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+                    const accountRecord = data?.account;
+                    if (accountRecord) {
+                        if (me.controls.employee) me.controls.employee.value = accountRecord.emp_id || "";
+                        if (me.controls.account_type) me.controls.account_type.value = accountRecord.account_type || "";
+                        if (me.controls.account_number) me.controls.account_number.value = accountRecord.account_number || "";
+                        if (me.controls.balance) me.controls.balance.value = accountRecord.balance || "0.00";
+                        if (me.controls.currency_code) me.controls.currency_code.value = accountRecord.currency_code || VSMoney.getCurrency().code;
+                    }
                     me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
-                    const isReadOnly =me.dataOptions.id > 0;
+                    const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly,['balance','employee'], isReadOnly? null : {"balance":"0.00"});
                 },
             });

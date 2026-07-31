@@ -44,7 +44,7 @@ var CheckPointComponent = (function () {
             }
         },
         {
-            transTitle: "titles.Category",
+            transTitle: "titles.Evaluator",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `

@@ -4,7 +4,7 @@ var BenefitDisbursementComponent =  (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self= main_view.VSAppContent.querySelector("#_main_benefit_disbursement_component");
-    mThis.title_prop = "Benefits Disbursement";
+    mThis.title_prop = "Benefit  Disbursement";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefitDisburse");
     mThis.elSearch = mThis.self.querySelector("#_benefit_disburse_search");
     mThis.elCard = mThis.self.querySelector(".top_level_card");
@@ -20,7 +20,7 @@ var BenefitDisbursementComponent =  (function () {
         "May",
         "June",
         "July",
-        "August",
+        "August",   
         "September",
         "October",
         "November",
