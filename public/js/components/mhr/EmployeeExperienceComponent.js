@@ -209,35 +209,35 @@ const ExperienceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" type="text" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " />
                                     <label vslang="labels.Start Date"></label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" type="text" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
                                     <label vslang="labels.End Date"></label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
                                     <label vslang="labels.Period (if no dates)"></label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <select data-style="material" name="organization" class="form-control data-input" placeholder="Organization" data-field="organization_id"></select>
+                            <div class="col-6">
+                                <select data-style="material" name="organization" class="form-control data-input" placeholder="${LocaleManager.trans("Organization", "labels")}"  data-field="organization_id"></select>
                             </div>
-                            <div class="col-12">
-                                <select data-style="material" name="position" class="form-control data-input" placeholder="Position" data-field="position_id"></select>
+                            <div class="col-6">
+                                <select data-style="material" name="position" class="form-control data-input" placeholder="${LocaleManager.trans("Position", "labels")}" data-field="position_id"></select>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
@@ -273,14 +273,14 @@ const ExperienceDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -315,7 +315,7 @@ const ExperienceDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Experience",
-                    modifyTitle: "vslang:titles.Edit Experience",
+                    modifyTitle: "vslang:titles.Modify Experience",
                     targetProp: "employee_experiences",
                     api: {
                         endpoint: [

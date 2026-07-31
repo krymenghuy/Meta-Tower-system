@@ -240,8 +240,6 @@ class Movement extends VSModel
             $skip_rows = 0;
         }
 
-        $col_event_date = DBX::formatDate('ee.event_date', 'event_date');
-        $col_updated_at = DBX::formatTime('ee.updated_at', 'updated_at');
 
         $query = DB::table('emp_events as ee')
             ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
@@ -255,10 +253,10 @@ class Movement extends VSModel
                 ee.event_id,
                 COALESCE(NULLIF(ee.impact, ""), e.impact) as impact,
                 e.name as event,
-                ' . $col_event_date . ',
+                ee.event_date,
                 ee.remarks,
                 ee.update_user,
-                ' . $col_updated_at . ',
+                ee.updated_at,
                 emp.name as emp_name,
                 p.name as position,
                 emp.photo_file_name as emp_photo
@@ -282,7 +280,7 @@ class Movement extends VSModel
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
-            $row = setOfficialDates($row, ['event_date'], ['updated_at'], ['']);
+            setOfficialDates($row, ['event_date'], ['updated_at'], ['']);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

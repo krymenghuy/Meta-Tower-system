@@ -43,7 +43,7 @@ var TaxAllowanceComponent = (function () {
             };
         }
 
-        container.querySelectorAll(".btn_edit_tax_allowance").forEach((btn) => {
+        container.querySelectorAll(".emp-tax-allowance-action-btn-edit").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
                 TaxAllowanceDialog.show({
@@ -55,7 +55,7 @@ var TaxAllowanceComponent = (function () {
             };
         });
 
-        container.querySelectorAll(".btn_delete_tax_allowance").forEach((btn) => {
+        container.querySelectorAll(".emp-tax-allowance-action-btn-delete").forEach((btn) => {
             btn.onclick = (e) => {
                 e.preventDefault();
                 mThis.deleteTaxAllowance(btn.dataset.id, btn, refresh);
@@ -127,11 +127,11 @@ var TaxAllowanceComponent = (function () {
                     <div class="emp-tax-allowance-col-action">
                         <div class="d-flex justify-content-center align-items-middle">
                             <div class="text-middle gap-2 d-flex flex-wrap">
-                                <button class="btn rounded-3 p-1 btn-primary btn_edit_tax_allowance" data-id="${row.id}">
-                                    <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
+                                <button type="button" class="emp-skill-action-btn emp-tax-allowance-action-btn-edit" data-id="${row.id}">
+                                    <i class="fa-regular fa-pen-to-square"></i>
                                 </button>
-                                <button class="btn rounded-3 p-1 btn-danger btn_delete_tax_allowance" data-id="${row.id}">
-                                    <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
+                                <button type="button" class="emp-skill-action-btn emp-tax-allowance-action-btn-delete" data-id="${row.id}">
+                                    <i class="fa-regular fa-trash-can"></i>
                                 </button>
                             </div>
                         </div>
@@ -159,8 +159,8 @@ var TaxAllowanceComponent = (function () {
                     </div>
                     <div class="emp-tax-allowance-body">
                         <div class="emp-tax-allowance-cols">
-                            <span vslang="titles.Qty">Qty</span>
-                            <span vslang="titles.Unit Amt">Unit Amt</span>
+                            <span vslang="titles.QTY">QTY</span>
+                            <span vslang="titles.Unit Amt">Unit Amount</span>
                             <span vslang="titles.Allowance">Allowance</span>
                             <span vslang="titles.Action">Action</span>
                         </div>
@@ -205,8 +205,7 @@ const TaxAllowanceDialog = (() => {
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="vs-material-field">
-                                    <select name="currency_code" class="modal-select data-input" data-field="currency_code"></select>
-                                    <label vslang="titles.Currency">Currency</label>
+                                    <select data-style="material" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder="${LocaleManager.trans('Currency','labels')}"></select>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -221,14 +220,14 @@ const TaxAllowanceDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-default",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
@@ -255,11 +254,11 @@ const TaxAllowanceDialog = (() => {
                                         }
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "update_success"
+                                                "update_tax_allowance_success"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "create_success"
+                                                "create_tax_allowance_success"
                                             );
                                         }
                                     } else {
@@ -292,11 +291,7 @@ const TaxAllowanceDialog = (() => {
                     },
                 ],
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    if (!me.dataOptions.id && me.controls.currency_code) {
-                        me.controls.currency_code.value =
-                            VSMoney.getCurrency().code;
-                    }
+                   
                 },
             });
 

@@ -240,21 +240,26 @@ const DocumentDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                            <div class="col-6">
-                                <select data-style="material" name="document_type" class="form-control data-input" placeholder="Document Type" data-field="document_type_id"></select>
+                            <div class="col-8">
+                                <select data-style="material" name="document_type" class="form-control data-input" placeholder="${LocaleManager.trans('Document Type','labels')}" data-field="document_type_id"></select>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">${LocaleManager.trans("File", "labels")} <span class="text-danger">*</span></label>
-                                <div class="emp-doc-file-picker d-flex gap-2 align-items-center">
-                                    <button type="button" name="btn_chooseFile" class="btn btn-secondary">${LocaleManager.trans("Choose File", "buttons")}</button>
-                                    <input type="text" name="documents" class="form-control" disabled placeholder="No file chosen" />
-                                    <input type="hidden" name="file_ext" class="data-input" data-field="ext" />
+                            <div class="col-4">
+                                <div class="vs-material-field d-flex">
+                                    <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File">Choose File </button>
                                 </div>
                             </div>
                             <div class="col-12">
+                                <div class="vs-material-field d-flex">
+                                    <input type="text" name="documents" class="form-control data-input" data-field="original_file_name" accept=".pdf,.png,.jpg,.jpeg" /disabled>
+                                    <input type="hidden" name="original_file_name" data-field="original_file_name">
+                                    <input type="hidden" name="file_ext" data-field="ext">
+                                </div>
+                            </div>
+                     
+                            <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label>Remarks</label>
+                                    <label vslang="labels.Remarks"></label>
                                 </div>
                             </div>
                         </div>`,
@@ -274,12 +279,12 @@ const DocumentDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -318,8 +323,8 @@ const DocumentDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Set Document",
-                    modifyTitle: "Edit Document",
+                    createTitle: "vslang:titles.Upload Document",
+                    modifyTitle: "vslang:titles.Modify Document",
                     targetProp: "document_request",
                     api: {
                         endpoint: [

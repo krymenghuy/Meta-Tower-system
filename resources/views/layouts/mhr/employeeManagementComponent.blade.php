@@ -3,7 +3,7 @@
         <div id="div_filter_filed" class="bg-white rounded-2 shadow p-3">
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
-                    <input type="text" class="filter-field rounded-2 input-search" id="_search_employee" placeholder="Search here....">
+                    <input type="text" class="filter-field rounded-2 input-search" id="_search_employee" placeholder="Search name, code, phone">
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
                     <select type="id" id="_emp_status_id" class="filter-field data-input" data-field="status_id"></select>
@@ -507,8 +507,6 @@
     .emp-profile-field-value {
         display: block;
         color: var(--emp-primary);
-        font-size: 0.88rem;
-        line-height: 1.35;
         word-break: break-word;
     }
 

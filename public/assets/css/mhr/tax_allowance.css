@@ -69,7 +69,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #1f386b;
+    color: #7a90b0;
     border-bottom: 1px solid rgba(37, 66, 120, 0.12);
     margin-bottom: 8px;
 }
@@ -96,6 +96,8 @@
     font-size: 0.88rem;
     font-weight: 600;
     transition: background 0.15s ease;
+    background: rgba(255, 255, 255, 0.85);
+    
 }
 
 .emp-tax-allowance-row:hover {
@@ -133,6 +135,25 @@
     color: #7a90b0;
     font-size: 0.84rem;
     font-style: italic;
+}
+.emp-tax-allowance-action-btn-edit {
+    color: #ffb822;
+}
+
+.emp-tax-allowance-action-btn-edit:hover {
+    background: #eef4ff;
+    border-color: rgba(59, 111, 212, 0.25);
+    color: #2d5fc4;
+}
+
+.emp-tax-allowance-action-btn-delete {
+    color: #dc6b5c;
+}
+
+.emp-tax-allowance-action-btn-delete:hover {
+    background: #fff1ef;
+    border-color: rgba(232, 93, 76, 0.25);
+    color: #c94f42;
 }
 
 @media (max-width: 575.98px) {
