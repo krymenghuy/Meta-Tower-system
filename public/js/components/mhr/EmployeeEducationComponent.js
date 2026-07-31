@@ -168,7 +168,7 @@ var EmployeeEducationComponent = (function () {
                </div>`;
 
         container.innerHTML = `
-                <div class="emp-edu-card h-100">
+                <div class="emp-edu-card">
                     <div class="emp-edu-header">
                         <div class="emp-edu-header-title">
                             <span class="emp-edu-header-icon">

@@ -83,4 +83,14 @@ class EmployeeController extends Controller
         $res = $this->employees->deleteEmployee($req->id, $ss);
         return JDV::raw($res);
     }
+
+    public function promoteStaff(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id ?? $req->emp_id;
+        $employee = new Employee($id, $ss);
+        $res = $employee->promoteStaff($req->all(), $id, $ss);
+        return JDV::raw($res);
+    }
 }

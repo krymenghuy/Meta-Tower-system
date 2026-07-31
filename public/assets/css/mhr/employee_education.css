@@ -1,13 +1,13 @@
 /* Education card — simple stacked list */
 .emp-edu-card {
-    border-radius: 14px;
+    border-radius: 6px;
     overflow: hidden;
     background: #fff;
     border: 1px solid #e8edf4;
     box-shadow: 0 4px 18px rgba(15, 35, 80, 0.08);
     display: flex;
     flex-direction: column;
-    min-height: 360px;
+    height: 380px;
 }
 
 .emp-edu-header {
@@ -71,7 +71,7 @@
 }
 
 .emp-edu-body {
-    padding: 16px 12px 18px;
+    padding: 14px 10px 16px;
     background: #f8fafc;
     flex: 1 1 auto;
     min-height: 300px;
