@@ -93,19 +93,19 @@ class Employee extends VSModel
             'nssf_id'         => '1|string|1-30|text=nssf_id_required',
             'passport_number' => '0|string|1-30',
             'passport_expiry_date' => '0|date|text=passport_expiry_required',
-            'birth_city_id'   => '1|number|text=place_of_birth_required',
-            'emp_type_id'     => '1|number|text=employee_type_required',
-            'position_id'     => '1|number|text=position_required',
             'phone_number'    => '1|string|1-30|text=phone_number_required',
             'email'           => '0|string|1-30',
+            'position_id'     => '1|number|text=position_required',
+            'emp_type_id'     => '1|number|text=employee_type_required',
             'salary'          => '1|number|text=salary_required',
+            'birth_city_id'   => '1|number|text=place_of_birth_required',
+            'work_shift_id'   => '1|number|exists=work_shifts.id',
+            'apply_payroll_tax' => '1|number|default = 1',
             'joining_date'    => '1|date|text=joining_date_required',
             'address'         => '1|string|text=enter_address',
             'spouse_name'     => '0|string|1-30|text=spouse_name_required',
             'spouse_occ_code' => '0|string|1-30|text=spouse_occupation_required',
             'spouse_emp_id'   => '0|number|text=spouse_employee_required',
-            'apply_payroll_tax' => '1|number|default = 1',
-            'work_shift_id'   => '1|number|exists=work_shifts.id',
             'photo'           => '0|image',
         ];
         $checkUnique = null;
@@ -279,7 +279,7 @@ class Employee extends VSModel
             es.name as status,
             emp.birth_city_id
         ')
-            ->orderBy('emp.id', 'DESC');
+        ->orderBy('emp.id', 'DESC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
@@ -356,7 +356,7 @@ class Employee extends VSModel
             $row->image_url = $img;
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
-            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
             $row->skills = EmployeeSkill::getListByEmployee($id, $ss);
             $row->educations = EmployeeEducation::getListByEmployee($id, $ss);
             $row->experiences = EmployeeExperience::getListByEmployee($id, $ss);

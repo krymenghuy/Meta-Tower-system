@@ -519,6 +519,14 @@ return [
         'update_success_emp_skill' => 'Employee skill has been updated successfully!',
         'delete_success_emp_skill' => 'Employee skill has been deleted successfully!',
 
+        'create_education_success' => 'Employee Education has been created successfully.',
+        'update_education_success' => 'Employee has been updated successfully.',
+        'delete_education_success' => 'Employee  has been deleted successfully.',
+
+        'create_tax_allowance_success' => 'Tax allowance has been created successfully.',
+        'update_tax_allowance_success' => 'Tax allowance has been updated successfully.',
+        'delete_tax_allowance_success' => 'Tax allowance has been deleted successfully.',
+
         'create_success_check_point_category' => 'Checkpoint category has been created successfully.',
         'update_success_check_point_category' => 'Checkpoint category has been updated successfully.',
         'delete_success_check_point_category' => 'Checkpoint category has been deleted successfully.',

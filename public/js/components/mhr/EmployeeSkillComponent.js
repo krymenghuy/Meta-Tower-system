@@ -78,21 +78,14 @@ var EmployeeSkillComponent = (function () {
             btn.onclick = (e) => {
                 e.preventDefault();
                 const skillId = btn.dataset.skillId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this skill?",
-                        "message_box_default",
-                    ),
+                cv_interact.confirm('confirm_delete',
                     {
-                        title: LocaleManager.trans("Delete Skill", "titles"),
+                        title: "Delete",
                         context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
-                        ),
+                        confirmButtonText: "Delete",
                     },
-                    (confirmed) => {
-                        if (!confirmed) return;
+                    function (e)  {
+                        if (e)
                         vsapi
                             .call(
                                 `${main_view.base_url}/mhr/employee/skills/delete`,
@@ -100,12 +93,7 @@ var EmployeeSkillComponent = (function () {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
+                                    cv_interact.success('delete_success_skill');
                                     refresh();
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -182,45 +170,47 @@ var EmployeeSkillComponent = (function () {
 
     return mThis;
 })();
-
 const SkillDialog = (() => {
     const self = {};
+    let dialog = null;
 
-    self._openDialog = (op, payload) => {
-        const skills = payload.skills || [];
-        const skill = payload.skill || op.skill || null;
-        const selectedId = skill?.skill_id ?? null;
-
-        const dlg = new GeneralDialog({
-            cssClass: "modal-md vs-modal emp-skill-modal",
-            backdrop: "static",
-            keyboard: true,
-            title: (me) =>
-                LocaleManager.trans(
-                    me.dataOptions.id ? "Modify Skill" : "Add Skill",
-                    "titles",
-                ),
-            createContent: () => `
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => `
                 <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label fw-semibold">${LocaleManager.trans("Skill Name", "labels")} <span class="text-danger">*</span></label>
-                        <select name="skill_id" class="form-control data-input" data-field="skill_id">
-                            <option value="">${LocaleManager.trans("Select", "labels")}</option>
-                            ${EmployeeSkillComponent._skillOptionsHtml(skills, selectedId)}
-                        </select>
+                    <div class="col-6">
+                        <select data-style="material" name="skill_id" class="form-control data-input" data-field="skill_id" placeholder="${LocaleManager.trans("Skill Name", "labels")}"></select>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label fw-semibold">${LocaleManager.trans("Rate", "labels")} (%) <span class="text-danger">*</span></label>
-                        <input type="number" name="rate" class="form-control data-input" data-field="rate" min="0" max="100" step="0.01" value="${skill?.rate ?? ""}" />
+                    <div class="col-6">
+                        <div class="vs-material-field">
+                            <input type="number" name="rate" class="form-control data-input" data-field="rate" min="0" max="100" step="0.01" />
+                            <label vslang="labels.Rate"></label>
+                        </div>
                     </div>
                 </div>`,
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn-vs-cancel",
-                    click: (me) => me.hide(false),
+                contentCreated: (me) => {
+                   
                 },
-                {
+                configSelect: [
+                    {
+                        name: "skill_id",
+                        data: "skills",
+                        textField: "skill_name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
+                        click: (me, btn) => me.hide(false),
+                    },
+                    {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn-vs-save",
                     click: (me, btn) => {
@@ -248,30 +238,28 @@ const SkillDialog = (() => {
                             });
                     },
                 },
-            ],
-        });
+                ],
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Skill",
+                    modifyTitle: "vslang:titles.Edit Skill",
+                    targetProp: "skill",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/mhr/employee/skills/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
 
-        dlg.show({
-            ...op,
-            skills,
-            skill,
-        });
-    };
+                },
 
-    self.show = (op) => {
-        vsapi
-            .call(`${main_view.base_url}/mhr/employee/skills/form-options`, {
-                id: op.id || null,
-                emp_id: op.emp_id || null,
-            })
-            .then((res) => {
-                if (res.status_code !== 200) {
-                    cv_interact.error(res.error_message || "Failed to load skills");
-                    return;
-                }
-
-                self._openDialog(op, res.data || {});
+                onPrepareForm: (me, data) => {
+                },
             });
+
+        dialog.show(op);
     };
 
     return self;

@@ -64,21 +64,14 @@ var EmployeeEducationComponent = (function () {
             btn.onclick = (e) => {
                 e.preventDefault();
                 const eduId = btn.dataset.eduId;
-                cv_interact.confirm(
-                    LocaleManager.trans(
-                        "Delete this education?",
-                        "message_box_default",
-                    ),
+                cv_interact.confirm('confirm_delete',
                     {
-                        title: LocaleManager.trans("Delete Education", "titles"),
+                        title:"Delete",
                         context: "delete",
-                        confirmButtonText: LocaleManager.trans(
-                            "Delete",
-                            "buttons",
-                        ),
+                        confirmButtonText:"Delete",
                     },
-                    (confirmed) => {
-                        if (!confirmed) return;
+                    function (e){
+                        if (e)
                         vsapi
                             .call(
                                 `${main_view.base_url}/mhr/employee/educations/delete`,
@@ -86,12 +79,7 @@ var EmployeeEducationComponent = (function () {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        LocaleManager.trans(
-                                            "Deleted successfully",
-                                            "message_box_default",
-                                        ),
-                                    );
+                                    cv_interact.success('delete_education_success');
                                     refresh();
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -202,31 +190,31 @@ const EducationDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                            <div class="col-12">
-                                <select data-style="material" name="school" class="form-control data-input" placeholder="School" data-field="school_id"></select>
+                            <div class="col-6">
+                                <select data-style="material" name="school" class="form-control data-input" placeholder="${LocaleManager.trans("School", "labels")}" data-field="school_id"></select>
                             </div>
-                            <div class="col-12">
-                                <select data-style="material" name="edu_level" class="form-control data-input" placeholder="Education Level" data-field="edu_level_id"></select>
+                            <div class="col-6">
+                                <select data-style="material" name="edu_level" class="form-control data-input" placeholder="${LocaleManager.trans("Education Level", "labels")}" data-field="edu_level_id"></select>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="period" class="data-input form-control" data-field="period" placeholder=" " />
                                     <label vslang="labels.Period (if no dates)"></label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="number" name="start_year" class="data-input form-control" data-field="start_year" min="1950" max="2100" placeholder=" " />
                                     <label vslang="labels.Start Year"></label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="number" name="finish_year" class="data-input form-control" data-field="finish_year" min="1950" max="2100" placeholder=" " />
                                     <label vslang="labels.End Year"></label>
@@ -264,14 +252,14 @@ const EducationDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -295,9 +283,9 @@ const EducationDialog = (() => {
                                             me.dataOptions.onClose();
                                         }
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success");
+                                            cv_interact.success("update_education_success");
                                         } else {
-                                            cv_interact.success("create_success");
+                                            cv_interact.success("create_education_success");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -305,8 +293,8 @@ const EducationDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "New School",
-                    modifyTitle: "Modify School",
+                    createTitle: "vslang:titles.New Education",
+                    modifyTitle: "vslang:titles.Modify Education",
                     targetProp: "education_request",
                     api: {
                         endpoint: [

@@ -507,8 +507,6 @@
     .emp-profile-field-value {
         display: block;
         color: var(--emp-primary);
-        font-size: 0.88rem;
-        line-height: 1.35;
         word-break: break-word;
     }
 
