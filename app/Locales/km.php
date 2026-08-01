@@ -95,6 +95,7 @@ return [
 
         'select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
         'select_employee' => 'សូមជ្រើសរើសបុគ្គលិក។',
+        'select_benefit' => 'សូមជ្រើសរើសអត្ថប្រយោជន៍។',
 
         'contact_person_required' => 'សូមបញ្ចូលអ្នកទំនាក់ទំនង។',
         'contact_phone_required' => 'សូមបញ្ចូលលេខទូរស័ព្ទអ្នកទំនាក់ទំនង។',
@@ -670,6 +671,7 @@ return [
 
         'Create Employee Benefit' => 'បង្កើតអត្ថប្រយោជន៍បុគ្គលិក',
         'Edit Employee Benefit' => 'កែប្រែអត្ថប្រយោជន៍បុគ្គលិក',
+        'Delete Employee Benefit' => 'លុបអត្ថប្រយោជន៍បុគ្គលិក',
         'Tax Option' => 'ជម្រើសការបង់ពន្ធ',
         'Flat Tax Rate' => 'អត្រាពន្ធថេរ (%)',
         'Flat Tax' => 'អត្រាពន្ធថេរ',
@@ -922,6 +924,7 @@ return [
         'Modify Checkpoint Evaluation' => 'កែប្រែការវាយតម្លៃត្រួតពិនិត្យ',
         'Delete Checkpoint Evaluation' => 'លុបការវាយតម្លៃត្រួតពិនិត្យ',
 
+        ''
       
         
 

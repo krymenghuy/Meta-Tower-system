@@ -38,14 +38,14 @@ class EmployeeBenefit extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id',
-            'benefit_id' => '1|number|exists=benefits.id',
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
+            'benefit_id' => '1|number|exists=benefits.id|text=select_benefit',
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
             'effective_date' => '0|date',
-            'issue_date' => '0|date',
+            'issue_date' => '1|date',
             // 'balance' => '0|number|default=0',
-            'amount' => '1|number',
+            'amount' => '1|positive',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'remarks' => '0|string|1-250',
         ];
@@ -193,8 +193,8 @@ class EmployeeBenefit extends VSModel
                     $name = $arr['name'];
 
                     $v_rule = [
-                        'emp_id' => '1|number|exists=employees.id',
-                        'benefit_id' => '1|number|exists=benefits.id',
+                        'emp_id' => '1|number|exists=employees.id|text=select_employee',
+                        'benefit_id' => '1|number|exists=benefits.id|text=select_benefit',
                         'tax_option_id' => '1|choice|1,2,3|default=1',
                         'flat_tax_rate' => '0|number',
                         'balance' => '0|number|default=0',
@@ -239,7 +239,7 @@ class EmployeeBenefit extends VSModel
                 DB::rollback();
                 $file_name = basename($x->file_name);
                 XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$emp_benefit], 'documents', $file_name);
-                \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
+                // \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
                 return DV::error('There were some problems during importing. This is likely due to incorrect data format in Excel.');
             }
         }
@@ -341,6 +341,7 @@ class EmployeeBenefit extends VSModel
         ')
         ->where('eb.id', $id)->first();
         if(!$row) return null;
+        setOfficialDates($row, ['effective_date', 'issue_date'], [''], ['']);
         return $row;
     }
 
