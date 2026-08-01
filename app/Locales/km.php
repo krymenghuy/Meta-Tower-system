@@ -915,6 +915,7 @@ return [
 
         'Holidays' => 'ថ្ងៃឈប់សម្រាក',
         'Name KH' => 'ឈ្មោះ',
+        'Movement' => 'ការផ្លាស់ប្តូរ',
 
         'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
         'Create Checkpoint Evaluation' => 'បង្កើតការវាយតម្លៃត្រួតពិនិត្យ',
@@ -1575,7 +1576,17 @@ return [
 
         'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
         'Issues' => 'បញ្ហា',
-        
+        'Movement' => 'ការផ្លាស់ប្តូរ',
+        'Change Position' => 'ផ្លាស់ប្តូរមុខតំណែង',
+        'Change Salary' => 'ផ្លាស់ប្តូរប្រាក់បៀវត្ស',
+        'Change Work Shift' => 'ផ្លាស់ប្តូរវេនការងារ',
+        'Promotion Date' => 'កាលបរិច្ឆេទដំឡើងតំណែង',
+        'To Position' => 'ទៅកាន់មុខតំណែង',
+        'New Position' => 'មុខតំណែងថ្មី',
+        'Original Salary' => 'ប្រាក់បៀវត្សដើម',
+        'New Salary' => 'ប្រាក់បៀវត្សថ្មី',
+        'Current Work Shift' => 'វេនការងារបច្ចុប្បន្ន',
+        'New Work Shift' => 'វេនការងារថ្មី',
        
         
         

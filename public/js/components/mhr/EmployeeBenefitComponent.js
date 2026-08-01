@@ -418,7 +418,6 @@ const EmployeeBenefitDialog = (() => {
                 BenefitField.addEventListener("change", () => {
                     const selectedValue = BenefitField.value;
                     const benefit_disburse_policies = data.benefit_disburse_policies;
-                    console.log(123,benefit_disburse_policies);
                     
                     const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
                     if (exists) {
@@ -428,7 +427,7 @@ const EmployeeBenefitDialog = (() => {
                     }
                 });
                 BenefitField.dispatchEvent(new Event("change"));
-                me.controls.currency_code.value = VSMoney.getCurrency().code;
+                // me.controls.currency_code.value = VSMoney.getCurrency().code;
 
                 Object.keys(data).forEach((key) => {
                     const input = me.divModal.querySelector(
