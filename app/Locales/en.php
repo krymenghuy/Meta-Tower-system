@@ -80,6 +80,7 @@ return [
 
         'select_tenant' => 'Please select a tenant.',
         'select_employee' => 'Please select a employee.',
+        'select_benefit' => 'Please select a benefit.',
 
         'please_select_a_valid_category' => 'Please select a valid category.',
         'please_select_a_valid_unit' => 'Please select a valid unit.',

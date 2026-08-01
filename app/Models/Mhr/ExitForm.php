@@ -36,7 +36,7 @@ class ExitForm extends VSModel
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        // $branch_id = $ss->branch_id;
 
         $v_rule = [
             'name' => '1|string|0-250|text=name_required::@key;@max;@value',
@@ -49,7 +49,7 @@ class ExitForm extends VSModel
             return DV::error($res->error);
         }
 
-        $err = self::checkDuplicateName($res->values['name'], $id, $branch_id);
+        $err = self::checkDuplicateName($res->values['name'], $id);
         if ($err) {
             return DV::error($err);
         }
@@ -95,10 +95,10 @@ class ExitForm extends VSModel
         return DV::error('Error saving exit form');
     }
 
-    static function checkDuplicateName($name, $id, $branch_id)
+    static function checkDuplicateName($name, $id)
     {
         $query = DB::table('exit_forms')
-            ->where('branch_id', $branch_id)
+            // ->where('branch_id', $branch_id)
             ->where('name', $name);
         if ($id) {
             $query->where('id', '!=', $id);
@@ -227,8 +227,8 @@ class ExitForm extends VSModel
         $query = DB::table('exit_forms as ef')
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-            ->where('ef.branch_id', $branch_id)
+            // ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            // ->where('ef.branch_id', $branch_id)
             ->whereIn('emp.status_id', self::resignedStatusIds())
             ->whereRaw($str_search)
             ->selectRaw(
@@ -237,7 +237,6 @@ class ExitForm extends VSModel
                 ef.name,
                 ef.status_id as is_finished,
                 emp.name as emp_name,
-                br.name as branch_name,
                 emp.email,
                 emp.position_id,
                 pos.name as position,
@@ -327,7 +326,7 @@ class ExitForm extends VSModel
         $exitForm = DB::table('exit_forms as ef')
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
             ->leftJoin('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->leftJoin('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            // ->leftJoin('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->leftJoin('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
             ->where('ef.id', $form_id)
             ->selectRaw("
@@ -341,8 +340,6 @@ class ExitForm extends VSModel
                 emp.code,
                 $col_start_date,
                 emp.position_id,
-                emp.branch_id,
-                br.name as branch_name,
                 pos.name as position,
                 emp.photo_file_name as emp_photo,
                 $col_effective_date
