@@ -799,5 +799,149 @@ class Employee extends VSModel
         }
         return DV::success(['message' => 'Employee promotion was successful']);
     }
+    static function createPromotion($arr, $ss = null)
+    {
+        $v_rule = [
+            'id' => '0|identity=1',
+            'emp_id' => '1|number',
+            'promotion_date' => '0|date',
+            'change_branch' => '0|number|default=0',
+            'change_position' => '0|number|default=0',
+            'change_salary' => '0|number|default=0',
+            'change_work_shift' => '0|number|default=0'
+
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return null;
+        }
+        $id = $res->id;
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $promotion_date = $d->promotion_date;
+        $emp_id = $d->emp_id;
+        $change_branch = !empty($d->change_branch) ? 1 : 0;
+        $change_position = !empty($d->change_position) ? 1 : 0;
+        $change_salary = !empty($d->change_salary) ? 1 : 0;
+        $change_work_shift = !empty($d->change_work_shift) ? 1 : 0;
+
+        $promo_inputs = [
+            'emp_id' => $emp_id,
+            'promotion_date' => $promotion_date,
+            'change_branch' => $change_branch,
+            'change_position' => $change_position,
+            'change_salary' => $change_salary,
+            'change_work_shift' => $change_work_shift
+        ];
+        $id = DBX::saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
+        if ($id > 0) {
+            return $id;
+        }
+        return null;
+    }
+    static function changePosition($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        $v_rule = [
+            'position_id' => '0|number',
+            'to_position_id' => '1|number',
+            'start_date' => '0|date',
+            'remarks' => '0|string|0-300'
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $emp = self::getProps($emp_id,'position_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_position_id == $emp->position_id) return DV::Error('Please select a different position to change');
+        $start_date = convertDate($d->start_date ?? date('Y-m-d'));
+        $inputs['start_date'] = $start_date;
+        $id = DBX::saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
+        $position_id = $arr['to_position_id'];
+        $x = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
+        return DV::depends($x, null, 'Failed to change staff position');
+    }
+
+    static function changeSalary($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        if (empty($arr['new_salary'])) {
+            return DV::error('new salary is required.');
+        }
+        $v_rule = [
+            'org_position_id' => '0|number',
+            'new_position_id' => '0|number',
+            //'effective_date'=>'0|date',
+            'org_salary' => '0|decimal',
+            'new_salary' => '1|decimal'
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'salary, currency_code');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->new_salary == $emp->salary) return DV::Error('Please select enter a different amount of salary for change');
+
+        $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
+        $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
+
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $inputs['org_salary'] = $org_salary;
+        $inputs['org_position_id'] = $org_position_id;
+
+        $id = DBX::saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
+        $salary = $arr['new_salary'];
+        $x = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
+        return DV::depends(1, null, 'Failed to change staff salary');
+    }
+
+    static function changeWorkShift($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        $v_rule = [
+            'work_shift_id' => '0|number',
+            'to_work_shift_id' => '1|number',
+            'effective_date' => '0|date',
+            'remarks' => '0|string|0-300'
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error)  return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'work_shift_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_work_shift_id == $emp->work_shift_id) return DV::Error('Please select a different work shift to change');
+
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $effective_date = convertDate($d->effective_date ?? date('Y-m-d'));
+        $inputs['effective_date'] = $effective_date;
+
+        $emp = self::getProps($emp_id,'name,code, work_shift_id');
+        if(!$emp) return DV::error('Employee ID does not exist');
+        $id = DBX::saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
+        $work_shift_id = $inputs['to_work_shift_id'];
+        if($id){
+            $emp_name =$emp->name."( $emp->code)";
+            //$emp_name = $emp_name ?? "id $id";
+            $message = "$ss->full_name changed WorkShift for staff $emp_name from $emp->work_shift_id to $work_shift_id at ".getNowTime();
+            self::log($ss,$id,'change_work_shift',$message);
+            DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
+        }
+        return DV::depends($id, null,'Failed to change employee work shift');
+    }
 
 }
