@@ -380,7 +380,7 @@ var PayrollListComponent = (()=> {
     };
 
     mThis.initDropdownMenus = (table)=>{
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass:"btn_payroll_list_action",
             cssClass:"bg-white shadow",
@@ -456,7 +456,7 @@ var PayrollListComponent = (()=> {
                 }
             }
         }
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     }
 
     mThis.renderPayment = (data) => {

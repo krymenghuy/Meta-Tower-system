@@ -3,8 +3,10 @@
 var EmployeeBenefitComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_employee_benefit_component");
- 
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_employee_benefit_component",
+    );
+
     mThis.title_prop = "Employee Benefits";
 
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
@@ -32,10 +34,10 @@ var EmployeeBenefitComponent = new (function () {
         },
         {
             transTitle: "titles.Benefit",
-            className: 'align-middle text-nowrap',
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span>${data.benefit_name ?? '-'}</span>`;
-             }
+                return `<span>${data.benefit_name ?? "-"}</span>`;
+            },
         },
         {
             transTitle: "titles.Effective Date",
@@ -61,7 +63,7 @@ var EmployeeBenefitComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.amount,
-                    data.currency_code
+                    data.currency_code,
                 )}</p>`;
             },
         },
@@ -71,7 +73,7 @@ var EmployeeBenefitComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(
                     data.balance,
-                    data.currency_code
+                    data.currency_code,
                 )}</p>`;
             },
         },
@@ -112,7 +114,6 @@ var EmployeeBenefitComponent = new (function () {
                 `;
             },
         },
-       
     ];
 
     mThis.init = function () {
@@ -137,47 +138,59 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+                    mThis.EmployeeBenefitListView.showPage(
+                        mThis.getFilterData(),
+                    );
                 },
             });
         };
         mThis.btnImport.onclick = (e) => {
             e.preventDefault();
             // if (!AuthManager.allowed(325)) return;
-            FileChooser.chooseFile({
-                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            },(d) => {
-                if(d){
-                    vsapi.call(`${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,{
-                        file: d.dataUrl
-                    },false).then(res => {
-
-                        if(res.status_code === 200){
-                            mThis.EmployeeBenefitListView.showPage(null);
-                            cv_interact.success('Employees Benefit Were Import Successfully!');
-                        }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-                }
-            });
-
+            FileChooser.chooseFile(
+                {
+                    accept: "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                },
+                (d) => {
+                    if (d) {
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,
+                                {
+                                    file: d.dataUrl,
+                                },
+                                false,
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    mThis.EmployeeBenefitListView.showPage(
+                                        null,
+                                    );
+                                    cv_interact.success(
+                                        "Employees Benefit Were Import Successfully!",
+                                    );
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    }
+                },
+            );
         };
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 235 + "px";
+        };
         mThis.elSearch.addEventListener(
             "keyup",
             mThis.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
-            }, 300)
+            }, 300),
         );
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -246,7 +259,8 @@ var EmployeeBenefitComponent = new (function () {
         EmployeeBenefitDialog.show({
             id,
             btn,
-            onClose: () => mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
+            onClose: () =>
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -274,21 +288,22 @@ var EmployeeBenefitComponent = new (function () {
                             op,
                             false,
                             false,
-                            false
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_employee_benefit");
-                                mThis.EmployeeBenefitListView.showPage(
-                                    mThis.getFilterData()
+                                cv_interact.success(
+                                    "delete_success_employee_benefit",
                                 );
-                            }
-                            else {
+                                mThis.EmployeeBenefitListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
                                 cv_interact.error(res.error_message);
                             }
                         });
                 }
-            }
+            },
         );
     };
 
@@ -298,13 +313,28 @@ var EmployeeBenefitComponent = new (function () {
                 `${main_view.base_url}/mhr/emp-benefit/form-options`,
                 null,
                 null,
-                null
+                null,
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", "",LocaleManager.trans("All Benefits", "titles"), "");
-                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", "",LocaleManager.trans("All Tax Options", "titles"), "");
-
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Benefits", "titles"),
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elTaxOption,
+                    d.tax_options,
+                    "id",
+                    "name",
+                    "",
+                    LocaleManager.trans("All Tax Options", "titles"),
+                    "",
+                );
             });
     };
 
@@ -319,8 +349,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.init();
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
-         main_view.setContentView(mThis.self, mThis.title_prop);
-
+        main_view.setContentView(mThis.self, mThis.title_prop);
     };
     return mThis;
 })();
@@ -329,37 +358,38 @@ const EmployeeBenefitDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row g-3">
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
                         <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                            <select data-style="material" name="employee" class="data-input form-control" data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans('Benefit', 'labels')}"></select>
+                            <select data-style="material" name="benefits" class="data-input form-control" data-field="benefit_id" id="benefit_id" placeholder="${LocaleManager.trans("Benefit", "labels")}"></select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="number" name="amount" class="form-control data-input" data-field="amount" placeholder=" " />
+                                <input type="text" name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
                                 <label vslang="titles.Amount"></label>
-
                             </div>
                         </div>
                         <div class="col-3">
-                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}" ></select>
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}" ></select>
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
-                                <input type="text" data-type="date" name="issue_date" class="data-input form-control form_input" data-field="issue_date" placeholder=" " />
+                                <input data-type="date" name="issue_date" class="form-control data-input" data-field="issue_date" placeholder=" " />
                                 <label vslang="labels.Issue Date">Issue Date</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans('Tax Options', 'labels')}">
+                            <select data-style="material" name="tax_option_id" class="data-input form-control" data-field="tax_option_id" id="tax_option_id" placeholder="${LocaleManager.trans("Tax Options", "labels")}">
                                 <option value="">(Select Tax Option)</option>
                                 <option value="1">Tax</option>
                                 <option value="2">Non</option>
@@ -370,13 +400,13 @@ const EmployeeBenefitDialog = (() => {
                        
                         <div class="col-3 flat_tax_rate d-none">
                             <div class="vs-material-field">
-                                <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
+                                <input type="text" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />
                                 <label vslang="titles.Flat Tax">Flat Tax</label>
                             </div>
                         </div>
                          <div class="col-3 effective_date d-none">
                             <div class="vs-material-field">
-                                <input type="text" data-type="date" name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" "></input>
+                                <input data-type="date" name="effective_date" class="form-control data-input" data-field="effective_date" placeholder=" " />
                                 <label vslang="titles.Effective Date"></label>
                             </div>
                         </div>
@@ -387,63 +417,82 @@ const EmployeeBenefitDialog = (() => {
                             </div>
                         </div>
                     </div>`,
-                ].join("");
-            },
-            contentCreated: (me) => {
-                const taxOptionField = me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
-                taxOptionField.addEventListener("change", () => {
-                    flatTaxRateField.classList.toggle(
-                        "d-none",
-                        taxOptionField.value !== "3"
-                    );
-                });
-
-            },
-
-            prepareFormOptions: {
-                createTitle: "vslang:titles.Create Employee Benefit",
-                modifyTitle: "vslang:titles.Edit Employee Benefit",
-                targetProp: "emp_benefits",
-                api: {
-                    endpoint: `${main_view.base_url}/mhr/emp-benefit/form-options`,
-                    params: (op) => ({ id: op.id }),
+                    ].join("");
                 },
-            },
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-                const BenefitField = me.divModal.querySelector("#benefit_id");
+                contentCreated: (me) => {
+                    if (me.controls?.issue_date) DateTimePicker.init(me.controls.issue_date);
+                    if (me.controls?.effective_date) DateTimePicker.init(me.controls.effective_date);
+                    applyNumberInput(me.controls.amount);
+                    applyNumberInput(me.controls.flat_tax_rate);
+                    const taxOptionField =
+                        me.divModal.querySelector("#tax_option_id");
+                    const flatTaxRateField =
+                        me.divModal.querySelector(".flat_tax_rate");
+                    taxOptionField.addEventListener("change", () => {
+                        flatTaxRateField.classList.toggle(
+                            "d-none",
+                            taxOptionField.value !== "3",
+                        );
+                    });
 
-                const effective_date = me.divModal.querySelector(".effective_date");
-                BenefitField.addEventListener("change", () => {
-                    const selectedValue = BenefitField.value;
-                    const benefit_disburse_policies = data.benefit_disburse_policies;
-                    console.log(123,benefit_disburse_policies);
-                    
-                    const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
-                    if (exists) {
-                        effective_date.classList.remove("d-none");
-                    } else {
-                        effective_date.classList.add("d-none");
-                    }
-                });
-                BenefitField.dispatchEvent(new Event("change"));
-                me.controls.currency_code.value = VSMoney.getCurrency().code;
+                },
 
-                Object.keys(data).forEach((key) => {
-                    const input = me.divModal.querySelector(
-                        `[data-field="${key}"]`
-                    );
-                    if (input) {
-                        input.value = data[key];
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create Employee Benefit",
+                    modifyTitle: "vslang:titles.Edit Employee Benefit",
+                    targetProp: "emp_benefits",
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/emp-benefit/form-options`,
+                        params: (op) => ({ id: op.id }),
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    const BenefitField =
+                        me.divModal.querySelector("#benefit_id");
+                    const taxOptionField =
+                        me.divModal.querySelector("#tax_option_id");
+                    const effective_date =
+                        me.divModal.querySelector(".effective_date");
+
+                    BenefitField.addEventListener("change", () => {
+                        const selectedValue = BenefitField.value;
+                        const benefit_disburse_policies =
+                            data.benefit_disburse_policies || [];
+
+                        const exists = benefit_disburse_policies.find(
+                            (e) => e.benefit_id == selectedValue,
+                        );
+                        if (exists) {
+                            effective_date.classList.remove("d-none");
+                        } else {
+                            effective_date.classList.add("d-none");
+                        }
+                    });
+
+                    const empBenefit = data.emp_benefits || {};
+                    Object.keys(empBenefit).forEach((key) => {
+                        const input = me.divModal.querySelector(
+                            `[data-field="${key}"]`,
+                        );
+                        if (input) {
+                            input.value = empBenefit[key] ?? "";
+                        }
+                    });
+
+                    BenefitField.dispatchEvent(new Event("change"));
+                    if (taxOptionField) {
+                        taxOptionField.dispatchEvent(new Event("change"));
                     }
-                });
-            },
-            configSelect: [
-                {
-                    name: "employee",
-                    data: "employees",
-                    textField: (me, d) => `
+                    if (!me.dataOptions?.id && me.controls?.currency_code) {
+                        me.controls.currency_code.value = "USD";
+                    }
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => `
                         <div class="d-flex gap-2">
                             <img class="img_select" src="${d.image_url}" />
                             <div class="d-flex flex-column">
@@ -451,65 +500,66 @@ const EmployeeBenefitDialog = (() => {
                                 <span>${d.position}</span>
                             </div>
                         </div>`,
-                    valueField: "id",
-                },
-                {
-                    name: "benefits",
-                    data: "benefits",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "currency_code",
-                    data: "currency_codes",
-                    textField: "code",
-                    valueField: "code",
-                },
-            ],
-            buttons: [
-                {
-                    label: '<span  vslang="buttons.Cancel"></span>',
-                    cssClass: "btn-vs-cancel",
-                    click: (me, btn) => {
-                        me.hide(false)
-                    }
-                },
-                {
-                    label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn-vs-save",
-                    click: (me, btn) => {
-                        const p = me.getData();
-                        p.id = me.dataOptions.id;
-                        console.log(123,p);
-                        
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/mhr/emp-benefit/save`,
-                                p,
-                                btn
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, p);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success("update_success_employee_benefit");
-                                    } else {
-                                        cv_interact.success("create_success_employee_benefit");
-                                    }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
+                        valueField: "id",
                     },
-                },
-            ],
-        });
+                    {
+                        name: "benefits",
+                        data: "benefits",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span  vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+                            console.log(123, p);
+
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/emp-benefit/save`,
+                                    p,
+                                    btn,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_employee_benefit",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_employee_benefit",
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
 
         dialog.show(op);
     };
 
     return self;
 })();
-
-
-
