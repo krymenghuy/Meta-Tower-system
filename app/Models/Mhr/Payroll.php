@@ -40,7 +40,7 @@ class Payroll
             'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
-            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
+            'currency_code' => '1|choice',
             'exchange_rate' => '0|number',
 
         ];

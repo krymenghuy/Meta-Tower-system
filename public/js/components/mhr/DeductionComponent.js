@@ -290,14 +290,24 @@ const DeductDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-            cssClass: "modal-md vs-modal",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
                 return [
                     `<div class="row g-3">
-                        <div class="col-6"> 
-                            <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}" data-field="emp_id"></select>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+                                <input name="employee" class="data-input form-control" data-field="employee_name" placeholder=" " autocomplete="off" />
+                                <label vslang="labels.Employee"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="employee_code" class="data-input form-control" data-field="employee_code" placeholder=" " disabled />
+                                <label vslang="labels.Employee Code">Employee Code</label>
+                            </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -320,20 +330,44 @@ const DeductDialog = (() => {
                     </div>`,
                 ].join("");
             },
-            contentCreate: (me) => {
-
-            },
-            configSelect: [
-                {
-                    name: "employee_id",
-                    data: "employees",
-                    textField: (me, d) => {
-                        return `${d.name ?? '-'} <small class="text-muted">(${d.code ?? '-'})</small>`;
-                    },
-                    valueField: "id",
-                    emptyText: LocaleManager.trans("Employee", "titles"),
+            contentCreated: (me, divModal) => {
+                if (me.controls.deduct_date && typeof DateTimePicker !== "undefined") {
+                    DateTimePicker.init(me.controls.deduct_date);
                 }
-            ],
+
+                me.searchEmployee = VSSearchInput.init(me.controls.employee, {
+                    type: "select",
+                    prefetch: true,
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/emp-deduction/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const employees = res?.data?.employees || [];
+                        return (Array.isArray(employees) ? employees : []).map(
+                            (i) => ({
+                                ...i,
+                                code: i.code || "",
+                                name: i.name || "",
+                            }),
+                        );
+                    },
+                    showColumnHeader: true,
+                    columns: {
+                        code: "Code",
+                        name: "Name",
+                    },
+                    onSelect: (employee) => {
+                        if (me.controls.employee_code) {
+                            me.controls.employee_code.value = employee.code || "";
+                        }
+                        if (me.controls.emp_id) {
+                            me.controls.emp_id.value = employee.id || "";
+                        }
+                    },
+                });
+                me.searchEmployee.reset("");
+            },
+            configSelect: [],
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
@@ -399,9 +433,16 @@ const DeductDialog = (() => {
 
                 const deductionRecord = data?.deduction;
                 if (deductionRecord) {
-                    if (me.controls.employee_id) {
-                        me.controls.employee_id.value = deductionRecord.emp_id || "";
-                        me.controls.employee_id.dispatchEvent(new Event("change"));
+                    if (me.controls.emp_id) {
+                        me.controls.emp_id.value = deductionRecord.emp_id || "";
+                    }
+                    if (me.controls.employee) {
+                        const emp = (data?.employees || []).find(e => e.id == deductionRecord.emp_id);
+                        me.controls.employee.value = emp ? (emp.name || "") : (deductionRecord.employee || deductionRecord.emp_name || "");
+                    }
+                    if (me.controls.employee_code) {
+                        const emp = (data?.employees || []).find(e => e.id == deductionRecord.emp_id);
+                        me.controls.employee_code.value = emp ? (emp.code || "") : (deductionRecord.emp_code || "");
                     }
                     if (me.controls.deduct_amount) {
                         me.controls.deduct_amount.value = deductionRecord.deduct_amount || "";
@@ -413,9 +454,15 @@ const DeductDialog = (() => {
                         me.controls.issues.value = deductionRecord.issues || deductionRecord.remarks || "";
                     }
                 } else if (me.dataOptions) {
-                    if (me.dataOptions.emp_id && me.controls.employee_id) {
-                        me.controls.employee_id.value = me.dataOptions.emp_id;
-                        me.controls.employee_id.dispatchEvent(new Event("change"));
+                    if (me.dataOptions.emp_id) {
+                        if (me.controls.emp_id) {
+                            me.controls.emp_id.value = me.dataOptions.emp_id;
+                        }
+                        const emp = (data?.employees || []).find(e => e.id == me.dataOptions.emp_id);
+                        if (emp) {
+                            if (me.controls.employee) me.controls.employee.value = emp.name || "";
+                            if (me.controls.employee_code) me.controls.employee_code.value = emp.code || "";
+                        }
                     }
                     if (me.dataOptions.deduct_amount && me.controls.deduct_amount) {
                         me.controls.deduct_amount.value = me.dataOptions.deduct_amount;

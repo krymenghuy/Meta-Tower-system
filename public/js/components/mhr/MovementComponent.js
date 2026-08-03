@@ -27,20 +27,17 @@ var MovementComponent = (() => {
 
             return `
                 <div class="d-flex align-items-center">
-                    <img
-                        src="${photo}"
+                    <img src="${photo}"
                         class="rounded-circle border shadow-sm me-3"
                         style="width:42px;height:42px;object-fit:cover;"
-                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'"
-                    >
-
+                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'">
                     <div>
-                        <div class="fw-semibold text-dark">
-                            ${row.emp_name ?? "-"}
+                        <div class="text-prm-custom text-nowrap">
+                            ${row.emp_name ?? "_"}
                         </div>
 
                         <small class="text-muted">
-                            ${row.position ?? "-"}
+                            ${row.position ?? "_"}
                         </small>
                     </div>
                 </div>
@@ -50,18 +47,15 @@ var MovementComponent = (() => {
     {
         transTitle: "titles.Event",
         className: "align-middle",
-        data: row => `
-            <span class="fw-medium">
-                ${row.event ?? "-"}
-            </span>
-        `
+        data: (data) =>{
+            return `<span class="text-prm-custom text-nowrap">${data.event ?? "_"}</span>`;
+        } 
     },
     {
         transTitle: "titles.Date",
         className: "align-middle text-nowrap",
         data: row => `
-            <span class="text-muted">
-                <i class="fa fa-calendar-alt me-1"></i>
+            <span class="text-prm-custom">
                 ${row.event_date ?? "-"}
             </span>
         `
@@ -69,17 +63,12 @@ var MovementComponent = (() => {
     {
         transTitle: "titles.Last Updated",
         className: "align-middle",
-        data: row => `
-            <div>
-                <div class="fw-semibold text-dark">
-                    ${row.update_user ?? "-"}
-                </div>
-
-                <small class="text-muted">
-                    ${row.updated_at ?? "-"}
-                </small>
-            </div>
-        `
+        data: (data) => {
+            return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                <small class="text-muted">${data.updated_at ?? ""}</small>
+            </div>`;
+        },
     },
     {
         transTitle: "titles.Impact",
@@ -88,26 +77,26 @@ var MovementComponent = (() => {
 
             const impact = (row.impact || "").toLowerCase();
 
-            let badge = "bg-secondary";
+            let badge = "badge text-warning bg-warning-subtle border border-warning";
 
             switch (impact) {
 
                 case "positive":
-                    badge = "bg-success";
+                    badge = "badge text-success bg-success-subtle border border-success";
                     break;
 
                 case "neutral":
-                    badge = "bg-warning text-dark";
+                    badge = "badge text-warning bg-warning-subtle border border-warning";
                     break;
 
                 case "negative":
-                    badge = "bg-danger";
+                    badge = "badge text-danger bg-danger-subtle border border-danger";
                     break;
             }
 
             return `
-                <span class="badge rounded-pill ${badge} px-3 py-2">
-                    ${row.impact ?? "-"}
+                <span class="text-capitalize d-inline-block text-center ${badge}" style="min-width:70px">
+                    ${row.impact ?? "_"}
                 </span>
             `;
         }
@@ -305,8 +294,8 @@ const MovementDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Employee Movement",
-                    modifyTitle: "Edit Employee Movement",
+                    createTitle: "vslang:titles.Add Employee Movement",
+                    modifyTitle: "vslang:titles.Edit Employee Movement",
                     targetProp: "emp_event",
                     api: {
                         endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
@@ -332,42 +321,6 @@ const ProfileMovementDialog = (() => {
     const self = {};
     let dialog = null;
 
-    const fillCurrentValues = (me, data) => {
-        const emp = data?.employee || me.dataOptions.employee || {};
-        const branches = data?.branches || [];
-
-        if (me.controls.emp_id) {
-            me.controls.emp_id.value = emp.id || me.dataOptions.emp_id || "";
-        }
-
-        const branchName =
-            emp.branch_name ||
-            branches.find((b) => String(b.id) === String(emp.branch_id))?.branch_name ||
-            branches.find((b) => String(b.id) === String(emp.branch_id))?.name ||
-            "";
-
-        if (me.controls.current_branch) {
-            me.controls.current_branch.value = branchName;
-        }
-        if (me.controls.current_position) {
-            me.controls.current_position.value = emp.position || emp.position_title || "";
-        }
-        if (me.controls.original_salary) {
-            const sal = emp.salary;
-            if (sal != null && sal !== "") {
-                me.controls.original_salary.value =
-                    typeof VSMoney !== "undefined" && VSMoney.formatAmount
-                        ? VSMoney.formatAmount(sal, emp.currency_code || "USD")
-                        : Number(sal).toFixed(2);
-            } else {
-                me.controls.original_salary.value = "";
-            }
-        }
-        if (me.controls.current_work_shift) {
-            me.controls.current_work_shift.value = emp.work_shift || "";
-        }
-    };
-
     self.show = (op) => {
         if (!op.emp_id && !op.employee?.id) {
             cv_interact.error(LocaleManager.trans("Employee is required", "message_box_default"));
@@ -379,260 +332,216 @@ const ProfileMovementDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-xl vs-modal movement-dialog",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: LocaleManager.trans("Movement", "titles"),
                 createContent: () => {
-                    return [
-                        `<div class="movement-dialog-body">
-                            <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
+                    return [`<div>
+                        <div class="d-flex align-items-center gap-3 border-bottom ">
+                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox"  value="position" />
+                            <label class="text-primary-custom" vslang="labels.Change Position"></label>
 
-                            <div class="movement-check-row d-flex flex-wrap align-items-center gap-3 gap-md-4 mb-3">
-                                <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_branch" data-field="change_branch" data-section="branch" value="1" />
-                                    <span class="form-check-label" vslang="labels.Change Branch">Change Branch</span>
-                                </label>
-                                <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_position" data-field="change_position" data-section="position" value="1" />
-                                    <span class="form-check-label" vslang="labels.Change Position">Change Position</span>
-                                </label>
-                                <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_salary" data-field="change_salary" data-section="salary" value="1" />
-                                    <span class="form-check-label" vslang="labels.Change Salary">Change Salary</span>
-                                </label>
-                                <label class="movement-check form-check mb-0">
-                                    <input type="checkbox" class="form-check-input data-input movement-toggle" name="change_work_shift" data-field="change_work_shift" data-section="work_shift" value="1" />
-                                    <span class="form-check-label" vslang="labels.Change Work Shift">Change Work Shift</span>
-                                </label>
-                            </div>
-                       <div class="position-relative">
-                            <div class="row g-3 movement-section mb-2" data-section-row="branch">
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Current Branch">Current Branch <span class="text-danger">*</span></label>
-                                    <input type="text" name="current_branch" class="form-control data-input movement-readonly" data-field="current_branch" readonly />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.To Branch">To Branch <span class="text-danger">*</span></label>
-                                    <select data-style="material" name="to_branch" class="form-control data-input" placeholder="To Branch" data-field="to_branch_id"></select>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
-                                    <input type="text" name="branch_remarks" class="form-control data-input" data-field="branch_remarks" />
+                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox"  value="salary" />
+                            <label class="text-primary-custom" vslang="labels.Change Salary"></label>
+
+                            <input data-target="div_work_shift" name="change_work_shift" class="mb-2 change-option " type="checkbox"  value="work_shift" />
+                            <label class="text-primary-custom" vslang="labels.Change Work Shift"></label>
+                        </div>
+                    </div>`,
+                    `<div name="div_position" class="p-3" style="display:none;">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <div class="vs-material-field">
+                                    <input name="org_position"  class="form-control data-input" data-field="position" placeholder=" " />
+                                    <label vslang="labels.Position"></label>
                                 </div>
                             </div>
+                             <div class="col-md-3">
+                                <select data-style="material" name="to_position" class="form-control data-input" data-field="to_position_id" placeholder="${LocaleManager.trans("To Position","labels")}" >
+                                </select>
+                            </div>`,
+                            `<div id="remarks" class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input name="position_remarks" class="form-control data-input" placeholder=" " data-field="remarks" />
+                                    <label vslang="labels.Remarks"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`,
 
-                            <div class="row g-3 movement-section mb-2" data-section-row="position">
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Current Position">Current Position <span class="text-danger">*</span></label>
-                                    <input type="text" name="current_position" class="form-control data-input movement-readonly" data-field="current_position" readonly />
+                    `<div name="div_salary" class="p-3" style="display:none;">
+                        <div class="row g-2">
+                            <div id="salary" class="col-md-3">
+                                <div class="vs-material-field">
+                                    <input name="org_salary" class="form-control  data-input" placeholder="" data-field="salary"/>
+                                    <label vslang="labels.Original Salary"></label> 
                                 </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.To Position">To Position <span class="text-danger">*</span></label>
-                                    <select data-style="material" name="to_position" class="form-control data-input" placeholder="To Position" data-field="to_position_id"></select>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
-                                    <input type="text" name="position_remarks" class="form-control data-input" data-field="position_remarks" />
+                            </div>
+                            <div id="salary" class="col-md-3">
+                                <div class="vs-material-field">
+                                    <input name="new_salary" type="number" class="form-control  data-input" placeholder="" data-field="new_salary" />
+                                    <label vslang="labels.New Salary"></label>
                                 </div>
                             </div>
 
-                            <div class="row g-3 movement-section mb-2" data-section-row="salary">
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Original Salary">Original Salary</label>
-                                    <input type="text" name="original_salary" class="form-control data-input movement-readonly" data-field="original_salary" readonly />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.New Salary">New Salary <span class="text-danger">*</span></label>
-                                    <input type="number" name="new_salary" class="form-control data-input" data-field="new_salary" min="0" step="0.01" />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
-                                    <input type="text" name="salary_remarks" class="form-control data-input" data-field="salary_remarks" />
+                            <div id="remarks" class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input name="salary_remarks" class="form-control  data-input" placeholder="" data-field="remarks" />
+                                    <label vslang="labels.Remarks"></label>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>`,
+                    `<div name="div_work_shift" class="p-3" style="display:none;">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <div class="vs-material-field">
+                                    <input name="org_work_shift" class="form-control data-input" data-field="work_shift" />
+                                    <label vslang="labels.Current Work Shift"></label>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <select data-style="material" name="to_work_shift" class="form-control data-input" data-field="to_work_shift_id" placeholder="${LocaleManager.trans('To Work Shift','labels')}" >
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <input name="work_shift_remarks" class="form-control  data-input" placeholder=" " data-field="remarks">
+                                    <label vslang="labels.Remarks"></label>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div class="row g-3 movement-section mb-2" data-section-row="work_shift">
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Current Work Shift">Current Work Shift <span class="text-danger">*</span></label>
-                                    <input type="text" name="current_work_shift" class="form-control data-input movement-readonly" data-field="current_work_shift" readonly />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.To Work Shift">To Work Shift <span class="text-danger">*</span></label>
-                                    <select data-style="material" name="to_work_shift" class="form-control data-input" placeholder="To Work Shift" data-field="to_work_shift_id"></select>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="form-label" vslang="labels.Remarks">Remarks</label>
-                                    <input type="text" name="work_shift_remarks" class="form-control data-input" data-field="work_shift_remarks" />
-                                </div>
-                            </div>
-                            </div>
-                        </div>`,
-                    ].join("");
+                    </div>`].join('');
                 },
                 contentCreated: (me) => {
-                    me.syncMovementSections = () => {
-                        me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
-                            const key = chk.dataset.section;
-                            const row = me.divModal.querySelector(`[data-section-row="${key}"]`);
-                            if (!row) return;
-                            row.classList.toggle("is-open", chk.checked);
-                            row.querySelectorAll(
-                                "input:not([type=checkbox]), select, textarea",
-                            ).forEach((el) => {
-                                el.disabled = false;
-                                el.removeAttribute("disabled");
-                                if (el.classList.contains("movement-readonly")) {
-                                    el.readOnly = true;
-                                }
-                            });
-                        });
+                      me.setEvent = (div) => {
+                        const elements = div.querySelectorAll("input.change-option");
+                        elements.forEach(
+                            (input) => {
+                                input.onchange = (e) => {
+                                    e.preventDefault();
+                                    const divTarget = me.controls[input.dataset.target];
+                                    if (divTarget) {
+                                        divTarget.style.display = input.checked
+                                            ? "block"
+                                            : "none";
+                                    }
+                                };
+                            }
+                        );
                     };
-                    me.divModal.querySelectorAll(".movement-toggle").forEach((chk) => {
-                        chk.addEventListener("change", () => {
-                            me.syncMovementSections();
-                            fillCurrentValues(me, me._formData || {});
-                        });
-                    });
-                    me.syncMovementSections();
+                    me.setEvent(me.divModal);
                 },
                 configSelect: [
+                  
                     {
-                        name: "to_branch",
-                        data: "branches",
-                        textField: "branch_name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "to_position",
+                        name: "to_position_id",
                         data: "positions",
                         textField: "position_name",
                         valueField: "id",
                     },
                     {
-                        name: "to_work_shift",
+                        name: "to_work_shift_id",
                         data: "work_shifts",
                         textField: "name",
                         valueField: "id",
                     },
                 ],
-                buttons: [
+                  buttons: [
                     {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me, btn) => me.hide(false),
+                       label: '<span  vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
+                        click: (me) => {
+                            me.hide(false);
+                        },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
+                        cssClass: "btn-vs-save",
+                        click: (me, btn, divModal) => {
                             const p = me.getData();
-                            const toggleChecked = (name) => {
-                                const el = me.divModal.querySelector(
-                                    `.movement-toggle[name="${name}"]`,
-                                );
-                                return !!(el && el.checked);
-                            };
+                            p.emp_id = op.emp_id;
+                            const d = {};
+                            d.emp_id = p.emp_id;
+                            let change_position = {},
+                                change_salary = {},
+                                change_work_shift = {};
 
-                            p.emp_id =
-                                me.dataOptions.emp_id || me.dataOptions.employee?.id || p.emp_id;
-                            // Prefer DOM .checked — getData() often misses unchecked/checked box values
-                            p.change_branch = toggleChecked("change_branch") ? 1 : 0;
-                            p.change_position = toggleChecked("change_position") ? 1 : 0;
-                            p.change_salary = toggleChecked("change_salary") ? 1 : 0;
-                            p.change_work_shift = toggleChecked("change_work_shift") ? 1 : 0;
+                            if (me.controls.change_position.checked) {
+                                change_position.position_id = p.position_id;
+                                change_position.to_position_id = p.to_position_id;
+                                change_position.remarks = me.controls.position_remarks.value;
+                                change_position.start_date = p.start_date;
+                            }
+                            if (me.controls.change_salary.checked) {
+                                change_salary.new_salary = p.new_salary;
+                                change_salary.remarks = me.controls.salary_remarks.value;
+                                change_salary.org_salary = p.salary;
+                                change_salary.org_position_id = p.position_id;
+                                change_salary.new_position_id = p.position_id;
+                            }
+                            if (me.controls.change_work_shift.checked) {
+                                change_work_shift.work_shift_id = p.work_shift_id;
+                                change_work_shift.to_work_shift_id = p.to_work_shift_id;
+                                change_work_shift.remarks = me.controls.work_shift_remarks.value;
+                                //change_work_shift.effective_date = p.effective_date;
+                            }
 
-                            if (
-                                !p.change_branch &&
-                                !p.change_position &&
-                                !p.change_salary &&
-                                !p.change_work_shift
-                            ) {
-                                cv_interact.warning(
-                                    LocaleManager.trans(
-                                        "Please select at least one change",
-                                        "message_box_default",
-                                    ),
-                                );
-                                return;
-                            }
-                            if (p.change_branch && !p.to_branch_id) {
-                                cv_interact.warning(
-                                    LocaleManager.trans("To Branch is required", "message_box_default"),
-                                );
-                                return;
-                            }
-                            if (p.change_position && !p.to_position_id) {
-                                cv_interact.warning(
-                                    LocaleManager.trans(
-                                        "To Position is required",
-                                        "message_box_default",
-                                    ),
-                                );
-                                return;
-                            }
-                            if (
-                                p.change_salary &&
-                                (p.new_salary === "" || p.new_salary == null)
-                            ) {
-                                cv_interact.warning(
-                                    LocaleManager.trans(
-                                        "New Salary is required",
-                                        "message_box_default",
-                                    ),
-                                );
-                                return;
-                            }
-                            if (p.change_work_shift && !p.to_work_shift_id) {
-                                cv_interact.warning(
-                                    LocaleManager.trans(
-                                        "To Work Shift is required",
-                                        "message_box_default",
-                                    ),
-                                );
-                                return;
-                            }
+                            d.change_position = change_position;
+                            d.change_salary = change_salary;
+                            d.change_work_shift = change_work_shift;
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/mhr/emp-event/save"].join(""),
-                                    p,
+                                    `${main_view.base_url}/mhr/staff-promotion/promote`,
+                                    d,
                                     btn,
-                                    null,
+                                    false
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
-                                            me.dataOptions.onClose(p);
-                                        }
-                                        cv_interact.success("Set movement successfully");
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
+                                        cv_interact.success(
+                                            "This employee has been promoted successfully!"
+                                        );
+                                        mThis.showPage('profile_view', d.emp_id);
+                                    } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Movement",
-                    modifyTitle: "Movement",
+                    // createTitle: "vslang:titles.Employee Movement",
+                    // modifyTitle: "vslang:titles.Movement",
                     targetProp: "employee",
                     api: {
-                        endpoint: [main_view.base_url, "/mhr/emp-event/form-options"].join(""),
+                        endpoint: `${main_view.base_url}/mhr/employee/form-options`,
                         params: (op) => {
-                            return {
-                                id: op.id || null,
-                                emp_id: op.emp_id || op.employee?.id || null,
-                            };
+                            console.log(123, op);
+                            return { id: op.dataOptions.emp_id };
                         },
                     },
                 },
+
                 onPrepareForm: (me, data) => {
-                    me._formData = data || {};
-                    fillCurrentValues(me, me._formData);
-                    if (typeof me.syncMovementSections === "function") {
-                        me.syncMovementSections();
-                    }
+                    me.setReadOnly(true,['org_position','org_salary','org_work_shift']);
+                    
+                    const divModal = me.divModal;
+                    divModal
+                        .querySelectorAll("input.change-option")
+                        .forEach((input) => {
+                            input.checked = false;
+                            const divTarget = me.controls[input.dataset.target];
+                            if (divTarget) {
+                                divTarget.style.display = input.checked
+                                    ? "block"
+                                    : "none";
+                            }
+                        });
+
+                    //me.setEvent(divModal);
                 },
             });
 
@@ -764,6 +673,7 @@ const EmployeeMovementHistoryDialog = (() => {
         const name = emp.name || first.emp_name || "Employee";
         const photo = emp.image_url || first.image_url || "";
         const position = emp.position || first.position || "";
+
         const count = rows.length;
         const titleText = "Detail Movement";
 
@@ -876,13 +786,12 @@ const EmployeeMovementHistoryDialog = (() => {
                         params: (op) => {
                             return {
                                 emp_id: op.emp_id || op.employee?.id || null,
-                                per_page: 100,
-                                current_page: 1,
                             };
                         },
                     },
                 },
                 onPrepareForm: (me, data) => {
+                    console.log(3333,data);
                     renderContent(me, data);
                     setTimeout(() => renderContent(me, data), 0);
                 },

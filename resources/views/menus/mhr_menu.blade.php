@@ -133,7 +133,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Attendance">Employee Attendance</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Employee Attendance"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
@@ -164,7 +164,7 @@ function v_display($mod_id, $module_ids = null)
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                                     </span>
-                                    <span class="font-color kt-menu__link-text" vslang="menus.Attendance Track">Attendance Track</span>
+                                    <span class="font-color kt-menu__link-text" vslang="menus.Attendance Track"></span>
                                 </a>
                             </li>
                         </ul>
@@ -188,7 +188,7 @@ function v_display($mod_id, $module_ids = null)
                             <img class="opacity-icons icons"
                                 src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Unauthorized Leave">Unauthorized Leave</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Uninformed Leaves"></span>
                     </a>
                 </li>
                
@@ -258,7 +258,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Benefit Disbursements">Benefit Disbursements</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Benefit Disbursements"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(418); ?>>
@@ -342,7 +342,7 @@ function v_display($mod_id, $module_ids = null)
                                         <img class="opacity-icons icons"
                                             src="{{ asset('assets/images/icons/form.svg') }}" />
                                     </span>
-                                    <span class="font-color kt-menu__link-text" vslang="menus.Checkpoint Categories"></span>
+                                    <span class="font-color kt-menu__link-text" vslang="menus.Checkpoint Evaluation"></span>
                                 </a>
                             </li>
                             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(425); ?>>

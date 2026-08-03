@@ -80,6 +80,7 @@ return [
 
         'select_tenant' => 'Please select a tenant.',
         'select_employee' => 'Please select a employee.',
+        'select_benefit' => 'Please select a benefit.',
 
         'please_select_a_valid_category' => 'Please select a valid category.',
         'please_select_a_valid_unit' => 'Please select a valid unit.',
@@ -518,6 +519,14 @@ return [
         'create_success_emp_skill' => 'Employee skill has been created successfully!',
         'update_success_emp_skill' => 'Employee skill has been updated successfully!',
         'delete_success_emp_skill' => 'Employee skill has been deleted successfully!',
+
+        'create_education_success' => 'Employee Education has been created successfully.',
+        'update_education_success' => 'Employee has been updated successfully.',
+        'delete_education_success' => 'Employee  has been deleted successfully.',
+
+        'create_tax_allowance_success' => 'Tax allowance has been created successfully.',
+        'update_tax_allowance_success' => 'Tax allowance has been updated successfully.',
+        'delete_tax_allowance_success' => 'Tax allowance has been deleted successfully.',
 
         'create_success_check_point_category' => 'Checkpoint category has been created successfully.',
         'update_success_check_point_category' => 'Checkpoint category has been updated successfully.',

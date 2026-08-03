@@ -510,27 +510,27 @@ const LeaveRequestDialog = (()=>{
                     return [
                         `<div class="row g-3">
                             <div class="col-6">
-                                <select data-style="material" name="employee_id" class="form-control data-input" placeholder="Employee"  data-field="emp_id"></select>
+                                <select data-style="material" name="employee_id" class="form-control data-input" placeholder="${LocaleManager.trans('Employee', 'labels')}"  data-field="emp_id"></select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="leave_type" class="form-control data-input" placeholder="Leave Type"  data-field="leave_type_id"></select>
+                                <select data-style="material" name="leave_type" class="form-control data-input" placeholder="${LocaleManager.trans('Leave Type', 'labels')}"  data-field="leave_type_id"></select>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
-                                    <label>Start Date</label>
+                                    <label vslang="labels.Start Date"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
-                                    <label>End Date</label>
+                                    <label vslang="labels.End Date"></label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remarks</label>
+                                    <label vslang="labels.Remarks"></label>
                                 </div>
                             </div>
                         </div>`,].join("");
@@ -556,12 +556,12 @@ const LeaveRequestDialog = (()=>{
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 

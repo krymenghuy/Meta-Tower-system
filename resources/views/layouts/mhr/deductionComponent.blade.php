@@ -9,10 +9,10 @@
                 <select id="warning_type" class="filter-field data-input" data-field="warning_type_id" placeholder=""></select>
             </div> --}}
 
-            <div class="ms-md-auto text-md-end col-12 col-md-auto d-none" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddDeduction" title="Add Deduction">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span vslang="buttons.Create Warning"></span>
+                    <span vslang="buttons.Create Deduction"></span>
                 </button>
             </div>
         </div> 

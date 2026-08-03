@@ -4,6 +4,7 @@ namespace App\Models\Mhr;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+// use DBX;
 use Vsd\Database\DBX;
 use Vsd\Response\DV;
 use XPublicStorage;
@@ -12,6 +13,8 @@ use Vsd\Vsloquent\VSModel;
 use Vsd\Money\Models\VSMoney;
 use App\Models\Location\Country;
 use App\Models\Umt\Branch;
+use App\Models\Mhr\Event;
+
 
 
 
@@ -93,19 +96,19 @@ class Employee extends VSModel
             'nssf_id'         => '1|string|1-30|text=nssf_id_required',
             'passport_number' => '0|string|1-30',
             'passport_expiry_date' => '0|date|text=passport_expiry_required',
-            'birth_city_id'   => '1|number|text=place_of_birth_required',
-            'emp_type_id'     => '1|number|text=employee_type_required',
-            'position_id'     => '1|number|text=position_required',
             'phone_number'    => '1|string|1-30|text=phone_number_required',
             'email'           => '0|string|1-30',
-            'salary'          => '1|number|text=salary_required',
+            'position_id'     => '1|number|text=position_required',
+            'emp_type_id'     => '1|number|text=employee_type_required',
+            'salary'          => '0|number|text=salary_required',
+            'birth_city_id'   => '1|number|text=place_of_birth_required',
+            'work_shift_id'   => '1|number|exists=work_shifts.id',
+            'apply_payroll_tax' => '1|number|default = 1',
             'joining_date'    => '1|date|text=joining_date_required',
             'address'         => '1|string|text=enter_address',
             'spouse_name'     => '0|string|1-30|text=spouse_name_required',
             'spouse_occ_code' => '0|string|1-30|text=spouse_occupation_required',
             'spouse_emp_id'   => '0|number|text=spouse_employee_required',
-            'apply_payroll_tax' => '1|number|default = 1',
-            'work_shift_id'   => '1|number|exists=work_shifts.id',
             'photo'           => '0|image',
         ];
         $checkUnique = null;
@@ -148,15 +151,20 @@ class Employee extends VSModel
         $created = !$id;
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
         $salary = $d->salary ?? 0;
-        if ($d->emp_type_id == '3' && $d->position_id >0){
-            if($created && !$salary){
-                $position = DB::table('positions')->where('id', $d->position_id)->selectRaw('id,salary,currency_code')->first();
-                if(!$position) return DV::error('Position ID does not exist');
-                $inputs['salary'] = $position->salary ?? 0;
+        if ($created && $d->emp_type_id == 3 && $d->position_id > 0 && !$salary) {
+            $position = DB::table('positions')
+                ->where('id', $d->position_id)
+                ->select('salary', 'currency_code')
+                ->first();
+            if (!$position) {
+                return DV::error('Position ID does not exist');
             }
 
-        } elseif ($d->emp_type_id != '3') {
-            $inputs['salary'] = $inputs['salary'] ?? 0;
+            $salary = $position->salary ?? 0;
+        }else{
+            if (empty($salary) || $salary <= 0) {
+                return DV::error('salary_required');
+            }
         }
 
         $inputs['salary'] = $salary;
@@ -222,10 +230,7 @@ class Employee extends VSModel
         }
         if ($status_id) {
             $str_moreWhere .= ' AND emp.status_id =' .  $status_id;
-        } else {
-            // Hide resigned/inactive from default employee cards
-            $str_moreWhere .= ' AND emp.status_id = 10';
-        }
+        } 
         if ($branch_id_filter) {
             $str_moreWhere .= ' AND emp.branch_id =' . $branch_id_filter;
         }
@@ -279,7 +284,7 @@ class Employee extends VSModel
             es.name as status,
             emp.birth_city_id
         ')
-            ->orderBy('emp.id', 'DESC');
+        ->orderBy('emp.id', 'DESC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
@@ -356,7 +361,7 @@ class Employee extends VSModel
             $row->image_url = $img;
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
-            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
             $row->skills = EmployeeSkill::getListByEmployee($id, $ss);
             $row->educations = EmployeeEducation::getListByEmployee($id, $ss);
             $row->experiences = EmployeeExperience::getListByEmployee($id, $ss);
@@ -599,7 +604,7 @@ class Employee extends VSModel
             return DV::error('Error saving resignation');
         }
 
-        DBX::saveData($ss, 'employees', ['id' => $emp_id], ['status_id' => 11], [], 1, false);
+        DBX::saveData($ss, 'employees', ['id' => $emp_id], ['status_id' => 20], [], 1, false);
 
         // Show on Employee Movements list
         $resignEvent = DB::table('events')->where('name', 'Resignation')->first();
@@ -615,6 +620,90 @@ class Employee extends VSModel
 
         return DV::depends(1, ['id' => $id, 'emp_id' => $emp_id]);
     }
+     public function setResignStatus($arr = [], $id = null, $ss = null, $status_id)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+
+        $v_rule = [
+            'effective_date' => '1|date',
+            'resign_date' => '1|date',
+            'remarks' => '0|string|1-300'
+        ];
+
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
+
+        $inputs = $res->values;
+        $inputs['emp_id'] = $id;
+
+
+        $emp = self::getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
+        }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
+
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
+
+            // Ensure new effective_date is after the latest effective_date
+            if (strtotime($inputs['effective_date']) <= strtotime($latest_effective_date)) {
+                return DV::error('The effective date must be later than the previous resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
+        $events = [
+            'active.20' => 'Resignation'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Resignation';
+
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+
+
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve resignation event.');
+        }
+
+        $event_date = date('Y-m-d', strtotime($inputs['resign_date']));
+        // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => 'Negative',
+            'remarks' => $inputs['remarks'] ?? '',
+            'event_date' => $event_date
+        ];
+
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log resignation event.');
+        }
+
+
+        $resign_id = DBX::saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
+        if ($resign_id) {
+
+            DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
+
+            return DV::depends(1, ['new resign' => $inputs], 'Resignation processed successfully.');
+        }
+
+        return DV::error('Failed to save resignation record.');
+    }
+    static function getEventId($name)
+   {
+        return DB::table('events')->where('name', $name)->value('id');
+    } 
     function promoteStaff($arr, $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -709,6 +798,150 @@ class Employee extends VSModel
             }
         }
         return DV::success(['message' => 'Employee promotion was successful']);
+    }
+    static function createPromotion($arr, $ss = null)
+    {
+        $v_rule = [
+            'id' => '0|identity=1',
+            'emp_id' => '1|number',
+            'promotion_date' => '0|date',
+            'change_branch' => '0|number|default=0',
+            'change_position' => '0|number|default=0',
+            'change_salary' => '0|number|default=0',
+            'change_work_shift' => '0|number|default=0'
+
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return null;
+        }
+        $id = $res->id;
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $promotion_date = $d->promotion_date;
+        $emp_id = $d->emp_id;
+        $change_branch = !empty($d->change_branch) ? 1 : 0;
+        $change_position = !empty($d->change_position) ? 1 : 0;
+        $change_salary = !empty($d->change_salary) ? 1 : 0;
+        $change_work_shift = !empty($d->change_work_shift) ? 1 : 0;
+
+        $promo_inputs = [
+            'emp_id' => $emp_id,
+            'promotion_date' => $promotion_date,
+            'change_branch' => $change_branch,
+            'change_position' => $change_position,
+            'change_salary' => $change_salary,
+            'change_work_shift' => $change_work_shift
+        ];
+        $id = DBX::saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
+        if ($id > 0) {
+            return $id;
+        }
+        return null;
+    }
+    static function changePosition($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        $v_rule = [
+            'position_id' => '0|number',
+            'to_position_id' => '1|number',
+            'start_date' => '0|date',
+            'remarks' => '0|string|0-300'
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $emp = self::getProps($emp_id,'position_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_position_id == $emp->position_id) return DV::Error('Please select a different position to change');
+        $start_date = convertDate($d->start_date ?? date('Y-m-d'));
+        $inputs['start_date'] = $start_date;
+        $id = DBX::saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
+        $position_id = $arr['to_position_id'];
+        $x = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
+        return DV::depends($x, null, 'Failed to change staff position');
+    }
+
+    static function changeSalary($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        if (empty($arr['new_salary'])) {
+            return DV::error('new salary is required.');
+        }
+        $v_rule = [
+            'org_position_id' => '0|number',
+            'new_position_id' => '0|number',
+            //'effective_date'=>'0|date',
+            'org_salary' => '0|decimal',
+            'new_salary' => '1|decimal'
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'salary, currency_code');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->new_salary == $emp->salary) return DV::Error('Please select enter a different amount of salary for change');
+
+        $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
+        $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
+
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $inputs['org_salary'] = $org_salary;
+        $inputs['org_position_id'] = $org_position_id;
+
+        $id = DBX::saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
+        $salary = $arr['new_salary'];
+        $x = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
+        return DV::depends(1, null, 'Failed to change staff salary');
+    }
+
+    static function changeWorkShift($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+        $v_rule = [
+            'work_shift_id' => '0|number',
+            'to_work_shift_id' => '1|number',
+            'effective_date' => '0|date',
+            'remarks' => '0|string|0-300'
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error)  return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'work_shift_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_work_shift_id == $emp->work_shift_id) return DV::Error('Please select a different work shift to change');
+
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+        $effective_date = convertDate($d->effective_date ?? date('Y-m-d'));
+        $inputs['effective_date'] = $effective_date;
+
+        $emp = self::getProps($emp_id,'name,code, work_shift_id');
+        if(!$emp) return DV::error('Employee ID does not exist');
+        $id = DBX::saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
+        $work_shift_id = $inputs['to_work_shift_id'];
+        if($id){
+            $emp_name =$emp->name."( $emp->code)";
+            //$emp_name = $emp_name ?? "id $id";
+            $message = "$ss->full_name changed WorkShift for staff $emp_name from $emp->work_shift_id to $work_shift_id at ".getNowTime();
+            self::log($ss,$id,'change_work_shift',$message);
+            DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
+        }
+        return DV::depends($id, null,'Failed to change employee work shift');
     }
 
 }

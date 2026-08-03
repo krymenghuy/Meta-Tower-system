@@ -34,16 +34,19 @@ var AttendanceTracksComponent = (function () {
         let html = `
         <div class="_work_shift_header">
             <div id="work_shift_type" class="col-12 p-3 border d-flex justify-content-between text-center align-items-center mb-3 gap-2">
-                <div class="shift_date col p-2 text-center">Monday</div>
-                <div class="shift_date col p-2 text-center">Tuesday</div>
-                <div class="shift_date col p-2 text-center">Wednesday</div>
-                <div class="shift_date col p-2 text-center">Thursday</div>
-                <div class="shift_date col p-2 text-center">Friday</div>
-                <div class="shift_date col p-2 text-center">Saturday</div>
-                <div class="shift_date col p-2 text-center">Sunday</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Monday">${LocaleManager.trans("Monday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Tuesday">${LocaleManager.trans("Tuesday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Wednesday">${LocaleManager.trans("Wednesday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Thursday">${LocaleManager.trans("Thursday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Friday">${LocaleManager.trans("Friday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Saturday">${LocaleManager.trans("Saturday", "titles")}</div>
+                <div class="shift_date col p-2 text-center" vslang="titles.Sunday">${LocaleManager.trans("Sunday", "titles")}</div>
             </div>
         </div>`;
         header_container.innerHTML = html;
+        if (typeof LocaleManager !== "undefined") {
+            LocaleManager.translateZone(header_container);
+        }
 
         mThis.btnAddShiftDetail.onclick = function (e) {
             e.preventDefault();
@@ -159,13 +162,13 @@ var AttendanceTracksComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit WorkShift">Edit WorkShift</span>',
+                    html: '<span class="ps-2  " vslang="titles.Edit WorkShift"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_shift-details",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete WorkShift">Delete WorkShift</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete WorkShift"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_shift-details",
@@ -267,6 +270,9 @@ var AttendanceTracksComponent = (function () {
 
         mThis.prepareFormOptions();
         mThis.WorkshiftListView();
+        if (typeof LocaleManager !== "undefined") {
+            LocaleManager.translateZone(mThis.self);
+        }
         main_view.setContentView(mThis.self, mThis.title_prop);
     };
     return mThis;
@@ -289,13 +295,13 @@ const ShiftDetailDialog = (() => {
                         <div class="col-12">
                             <label class="form-label text-muted fs-7 mb-1" vslang="titles.Days">Days</label>
                             <div name="day" class="d-flex week gap-1 w-100">
-                                <div class="days flex-fill text-center" data-value="Mon">Mon</div>
-                                <div class="days flex-fill text-center" data-value="Tue">Tue</div>
-                                <div class="days flex-fill text-center" data-value="Wed">Wed</div>
-                                <div class="days flex-fill text-center" data-value="Thu">Thu</div>
-                                <div class="days flex-fill text-center" data-value="Fri">Fri</div>
-                                <div class="days flex-fill text-center" data-value="Sat">Sat</div>
-                                <div class="days flex-fill text-center" data-value="Sun">Sun</div>
+                                <div class="days flex-fill text-center" data-value="Mon" vslang="titles.Mon">${LocaleManager.trans("Mon", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Tue" vslang="titles.Tue">${LocaleManager.trans("Tue", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Wed" vslang="titles.Wed">${LocaleManager.trans("Wed", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Thu" vslang="titles.Thu">${LocaleManager.trans("Thu", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Fri" vslang="titles.Fri">${LocaleManager.trans("Fri", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Sat" vslang="titles.Sat">${LocaleManager.trans("Sat", "titles")}</div>
+                                <div class="days flex-fill text-center" data-value="Sun" vslang="titles.Sun">${LocaleManager.trans("Sun", "titles")}</div>
                             </div>
                         </div>
                         <div class="col-6">
@@ -409,8 +415,8 @@ const ShiftDetailDialog = (() => {
             ],
 
             prepareFormOptions: {
-                createTitle: "Add Scan",
-                modifyTitle: "Edit Scan",
+                createTitle: "vslang:titles.Add Scan",
+                modifyTitle: "vslang:titles.Edit Scan",
                 targetProp: "shift_details",
                 api: {
                     endpoint: [

@@ -65,9 +65,9 @@ class EmployeeController extends Controller
             return JDV::raw($ss);
         }
 
-        $emp_id = $req->emp_id ?? $req->id;
-        $emp = new Employee($emp_id, $ss);
-        $res = $emp->setResign($req->all(), $ss);
+        $id = $req->emp_id ?? $req->id;
+        $emp = new Employee($id, $ss);
+        $res = $emp->setResignStatus($req->all(),$id, $ss,$req->status_id);
         return JDV::raw($res);
     }
 

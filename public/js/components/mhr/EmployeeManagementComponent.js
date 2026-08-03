@@ -146,31 +146,11 @@ var EmployeeManagementComponent = (function () {
         return sex || "_";
     };
 
-    mThis._maritalLabel = (status) => {
-        if (!status) return "_";
-        const map = {
-            single: LocaleManager.trans("Single", "titles"),
-            married: LocaleManager.trans("Married", "titles"),
-            divorced: LocaleManager.trans("Divorced", "titles"),
-            widowed: LocaleManager.trans("Widowed", "titles"),
-        };
-        return map[status] || status;
-    };
 
-    mThis._payrollTaxLabel = (value) => {
-        if (value === "1" || value === 1) {
-            return LocaleManager.trans("Tax", "titles");
-        }
-        return LocaleManager.trans("Non Tax", "titles");
-    };
 
-    mThis._statusBadgeClass = (status) => {
-        const s = String(status || "").toLowerCase();
-        if (s.includes("active")) return "is-active";
-        if (s.includes("pending") || s.includes("leave")) return "is-pending";
-        if (s.includes("inactive") || s.includes("resign")) return "is-inactive";
-        return "is-active";
-    };
+  
+
+  
 
     mThis._pillText = (value) => {
         if (value == null || value === "") return "_";
@@ -411,7 +391,7 @@ var EmployeeManagementComponent = (function () {
                         <div class="emp-profile-group">
                             <div class="emp-profile-field-grid">
                                 ${mThis._profileLine(LocaleManager.trans("Code", "labels"), data.code)}
-                                ${mThis._profileLine(LocaleManager.trans("Date Of Birth", "labels"), data.date_of_birth)}
+                                ${mThis._profileLine(LocaleManager.trans("Date of Birth", "labels"), data.date_of_birth)}
                                 ${mThis._profileLine(LocaleManager.trans("Phone Number", "labels"), data.phone_number)}
                                 ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
                                 ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
@@ -426,12 +406,12 @@ var EmployeeManagementComponent = (function () {
                             <div class="emp-profile-field-grid">
                                 ${mThis._profileLine(LocaleManager.trans("Position", "labels"), data.position)}
                                 ${mThis._profileLine(LocaleManager.trans("Salary", "labels"), mThis._formatSalary(data.salary, data.currency_code))}
-                                ${mThis._profileLine(LocaleManager.trans("Staff Type", "labels"), data.type)}
-                                ${mThis._profileLine(LocaleManager.trans("WorkShift", "labels"), data.work_shift)}
+                                ${mThis._profileLine(LocaleManager.trans("Type", "labels"), data.type)}
+                                ${mThis._profileLine(LocaleManager.trans("Work Shift", "labels"), data.work_shift)}
                                 ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date)}
                                 ${mThis._profileLine(LocaleManager.trans("Apply Tax", "labels"), data.apply_payroll_tax)}
                                 <div class="emp-profile-field emp-profile-field-full">
-                                    ${mThis._profileLine(LocaleManager.trans("Place Of Birth", "labels"), data.city_name)}
+                                    ${mThis._profileLine(LocaleManager.trans("Place of Birth", "labels"), data.city_name)}
                                 </div>
                             </div>
                            
@@ -446,7 +426,7 @@ var EmployeeManagementComponent = (function () {
 
         if (data.status_id == 20 || data.status_id == 30) {
             const hideEls = mThis.profile_info_emp.querySelectorAll(
-                ".movement, .movement_detail, .set_resign, .edit_emp_profile_info, .delete_employee, .group_action_movement"
+                ".movement, .set_resign, .edit_emp_profile_info, .delete_employee, .group_action_movement"
             );
             hideEls.forEach((el) => {
                 el.style.display = "none";
@@ -746,13 +726,13 @@ const EmployeeDialog = (() => {
                                     <div class="col-md-6">
                                         <div class="vs-material-field">
                                             <input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " required />
-                                            <label>Full Name</label>
+                                            <label vslang="titles.Full Name"></label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="vs-material-field">
                                             <input type="text" name="name_kh" class="form-control data-input" data-field="name_kh" placeholder=" " required />
-                                            <label>Name (KH)</label>
+                                            <label vslang="titles.Full Name (KH)"></label>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -762,7 +742,7 @@ const EmployeeDialog = (() => {
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <select data-style="material" name="nationality_id" class="form-control data-input" placeholder="Nationality" data-field="nationality_id" required></select>
+                                        <select data-style="material" name="nationality_id" class="form-control data-input" placeholder="${LocaleManager.trans("Nationality", "labels")}" data-field="nationality_id" required></select>
                                     </div>
                                     <div class="col-md-4">
                                         <select data-style="material" name="marital_status" class="form-control data-input" data-field="marital_status" placeholder="${LocaleManager.trans("Marital Status", "labels")}">
@@ -775,19 +755,19 @@ const EmployeeDialog = (() => {
                                     <div class="col-md-4">
                                         <div class="vs-material-field">
                                             <input data-type="date" name="date_of_birth" class="form-control data-input" data-field="date_of_birth" required />
-                                            <label>Date of Birth</label>
+                                            <label vslang="titles.Date of Birth"></label>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="vs-material-field">
                                             <input type="text" name="nid" class="form-control data-input" data-field="nid" placeholder=" " required />
-                                            <label>ID Card</label>
+                                            <label vslang="labels.ID Card"></label>
                                         </div>
                                     </div>
                                      <div class="col-md-4">
                                         <div class="vs-material-field">
-                                            <input data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" required />
-                                            <label>ID Card Expiry</label>
+                                            <input data-type="date" name="nid_expiry_date" class="form-control data-input" data-field="nid_expiry_date" placeholder=" " required />
+                                            <label vslang="labels.ID Card Expiry"></label>
                                         </div>
                                     </div>
                                     
@@ -798,82 +778,82 @@ const EmployeeDialog = (() => {
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder=" " required />
-                                    <label>NSSF ID</label>
+                                    <label vslang="labels.NSSF ID"></label>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="text" name="passport_number" class="form-control data-input" data-field="passport_number" placeholder=" " required />
-                                    <label>Passport Number</label>
+                                    <label vslang="labels.Passport Number"></label>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="passport_expiry_date" class="form-control data-input" data-field="passport_expiry_date" required />
-                                    <label>Passport Expiry</label>
+                                    <label vslang="labels.Passport Expiry"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="phone_number" class="form-control data-input" data-field="phone_number" placeholder=" " required />
-                                    <label>Phone Number</label>
+                                    <label vslang="labels.Phone Number"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input type="email" name="email" class="form-control data-input" data-field="email" placeholder=" " required />
-                                    <label>Email</label>
+                                    <label vslang="labels.Email"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <select data-style="material" name="position_id" class="form-control data-input" placeholder="Position" data-field="position_id" required></select>
+                                <select data-style="material" name="position_id" class="form-control data-input" placeholder="${LocaleManager.trans("Position", "labels")}" data-field="position_id" required></select>
                             </div>  
                             <div class="col-md-3">
-                                <select data-style="material" name="emp_type_id" class="form-control data-input" placeholder="Employee Type" data-field="emp_type_id" required></select>
+                                <select data-style="material" name="emp_type_id" class="form-control data-input" placeholder="${LocaleManager.trans("Type", "labels")}" data-field="emp_type_id" required></select>
                             </div>
                              
                             <div class="col-md-3">
                                 <div class="vs-material-field">
                                     <input type="number" name="salary" class="form-control data-input" data-field="salary" placeholder=" " required />
-                                    <label>Salary</label>
+                                    <label vslang="titles.Salary"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <select data-style="material" name="birth_city_id" class="form-control data-input" placeholder="Place of Birth" data-field="birth_city_id" required></select>
+                                <select data-style="material" name="birth_city_id" class="form-control data-input" placeholder="${LocaleManager.trans("Place of Birth", "labels")}" data-field="birth_city_id" required></select>
                             </div>
                             <div class="col-md-6">
-                                <select data-style="material" name="work_shift_id" class="form-control data-input" placeholder="WorkShift" data-field="work_shift_id" required></select>
+                                <select data-style="material" name="work_shift_id" class="form-control data-input" placeholder="${LocaleManager.trans("Work Shift", "labels")}" data-field="work_shift_id" required></select>
                             </div>
                             <div class="col-md-6">
-                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" placeholder="Apply Payroll Tax" data-field="apply_payroll_tax" required></select>
+                                <select data-style="material" name="apply_payroll_tax" class="form-control data-input" placeholder="${LocaleManager.trans("Apply Tax", "labels")}" data-field="apply_payroll_tax" required></select>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
-                                    <input data-type="date" name="joining_date" class="form-control data-input" data-field="joining_date" required />
-                                    <label>Joining Date</label>
+                                    <input data-type="date" name="joining_date" class="form-control data-input" placeholder=" " data-field="joining_date" required />
+                                    <label vslang="labels.Joining Date"></label>
                                 </div>
                             </div>
                             <div class="col-md-3 d-none">
                                 <div class="vs-material-field">
                                     <input type="text" name="spouse_name" class="form-control data-input" data-field="spouse_name" placeholder=" " required />
-                                    <label>Spouse Name</label>
+                                    <label vslang="labels.Spouse Name"></label>
                                 </div>
                             </div>
                             <div class="col-md-3 d-none">
                                 <div class="vs-material-field">
                                     <input type="text" name="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" placeholder=" " required />
-                                    <label>Spouse Occupation</label>
+                                    <label vslang="labels.Spouse Occupation"></label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea type="text" name="address" class="form-control data-input" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
+                                    <label vslang="labels.Address"></label>
                                 </div>
                             </div>
                             
                             <div class="col-md-6 d-none">
-                                <select data-style="material" name="spouse_emp_id" class="form-control data-input" placeholder="Spouse Employee" data-field="spouse_emp_id" required></select>
+                                <select data-style="material" name="spouse_emp_id" class="form-control data-input" placeholder="${LocaleManager.trans('Spouse Employee','labels')}" data-field="spouse_emp_id" required></select>
                             </div>
                             
                         </div>`,
@@ -995,12 +975,12 @@ const EmployeeDialog = (() => {
                     if (me.empImageBox) {
                         me.empImageBox.setImage(emp?.image_url || null);
                     }
-
+                    me.controls.salary.disabled = isEdit;
                     if (isEdit) {
                         me.setReadOnly(true, [
                             "emp_type_id",
                             "position_id",
-                            "salary",
+                            "work_shift_id",
                         ]);
                     } else if (me.controls.apply_payroll_tax) {
                         me.controls.apply_payroll_tax.value = "1";
@@ -1032,26 +1012,27 @@ const ProfileResignDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: LocaleManager.trans("Set Resign", "titles"),
                 createContent: () => {
                     return [
                         `<div class="row g-3">
                             <input type="hidden" name="emp_id" class="data-input" data-field="emp_id" />
                             <div class="col-md-6">
                                 <div class="vs-material-field">
-                                    <input data-type="date" name="resign_date" class="form-control data-input" data-field="resign_date" required />
-                                    <label>Resign Date</label>
+                                    <input data-type="date" name="resign_date" class="form-control data-input" data-field="resign_date" placeholder=" " required />
+                                    <label vslang="titles.Resign Date"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
-                                    <input data-type="date" name="effective_date" class="form-control data-input" data-field="effective_date" required />
-                                    <label>Effective Date</label>
+                                    <input data-type="date" name="effective_date" class="form-control data-input" placeholder=" " data-field="effective_date" required />
+                                    <label vslang="titles.Effective Date"></label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remarks</label>
+                                    <label vslang="labels.Remarks"></label>
                                 </div>
                             </div>
                         </div>`,
@@ -1062,12 +1043,12 @@ const ProfileResignDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -1122,8 +1103,7 @@ const ProfileResignDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Set Resign",
-                    modifyTitle: "vslang:titles.Set Resign",
+                    
                 },
 
                 onPrepareForm: (me, data) => {

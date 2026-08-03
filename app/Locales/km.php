@@ -95,6 +95,7 @@ return [
 
         'select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
         'select_employee' => 'សូមជ្រើសរើសបុគ្គលិក។',
+        'select_benefit' => 'សូមជ្រើសរើសអត្ថប្រយោជន៍។',
 
         'contact_person_required' => 'សូមបញ្ចូលអ្នកទំនាក់ទំនង។',
         'contact_phone_required' => 'សូមបញ្ចូលលេខទូរស័ព្ទអ្នកទំនាក់ទំនង។',
@@ -426,6 +427,16 @@ return [
         'Contract' => 'កិច្ចសន្យា',
         'Document' => 'ឯកសារ',
         'Documents' => 'ឯកសារ',
+        'Education' => 'ការអប់រំ',
+        'New Education' => 'បន្ថែមការអប់រំ',
+        'Modify Education' => 'កែប្រែការអប់រំ',
+        'Unit Amt' => 'តម្លៃឯកតា',
+        'Allowance' => 'ប្រាក់បន្ថែម',
+        'Experience' => 'បទពិសោធន៍ការងារ',
+        'New Experience' => 'បន្ថែមបទពិសោធន៍ការងារ',
+        'Create Experience' => 'បង្កើតបទពិសោធន៍ការងារ',
+        'Modify Experience' => 'កែប្រែបទពិសោធន៍ការងារ',
+        'Delete Experience' => 'លុបបទពិសោធន៍ការងារ',
         'Create Space' => 'បង្កើតបន្ទប់',
         'Identity Documents' => 'ឯកសារសម្គាល់',
 
@@ -660,9 +671,11 @@ return [
 
         'Create Employee Benefit' => 'បង្កើតអត្ថប្រយោជន៍បុគ្គលិក',
         'Edit Employee Benefit' => 'កែប្រែអត្ថប្រយោជន៍បុគ្គលិក',
+        'Delete Employee Benefit' => 'លុបអត្ថប្រយោជន៍បុគ្គលិក',
         'Tax Option' => 'ជម្រើសការបង់ពន្ធ',
         'Flat Tax Rate' => 'អត្រាពន្ធថេរ (%)',
         'Flat Tax' => 'អត្រាពន្ធថេរ',
+        'Tax Allowance' => 'ប្រាក់បន្ថែមមិនជាប់ពន្ធ',
         'Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
         'All Movements' => 'ការផ្លាស់ប្តូរទាំងអស់',
         'Employee Movements' => 'ការផ្លាស់ប្តូរបុគ្គលិក',
@@ -687,6 +700,7 @@ return [
         'Shift List' => 'បញ្ជីវេនការងារ',
         'Shift' => 'វេនការងារ',
         'Work Shift' => 'វេនការងារ',
+        'Joining Date' => 'ថ្ងៃចូលបម្រើការងារ',
         'Edit Shift' => 'កែប្រែវេនការងារ',
         'Delete Shift' => 'លុបវេនការងារ',
         'Create Shift' => 'បង្កើតវេនការងារ',
@@ -748,12 +762,16 @@ return [
         'Salary Range' => 'ប្រាក់ខែចាប់ពី',
         'Salary ranges from' => "ប្រាក់ខែចាប់ពី",
         'Rate' => "អត្រា",
-        'Tax Bracket' => 'ប្រាក់ខែចាប់ពី',
-        'Bias' => 'ប្រាក់ខែចាប់ពី',
+        'Tax Bracket' => 'កម្រិតពន្ធ',
+        'Bias' => 'ចំនួនកាត់បន្ថយ',
         'Lower Amount' => 'ទឹកប្រាក់អប្បបរមា',
         'Upper Amount' => 'ទឹកប្រាក់អតិបរមា',
-        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
-        'Modify Tax Bracket' => 'កែប្រែប្រាក់ខែចាប់ពី',
+        'Create Tax Allowance' => 'បង្កើតប្រាក់បន្ថែមមិនជាប់ពន្ធ',
+        'New Tax Allowance' => 'បន្ថែមប្រាក់បន្ថែមមិនជាប់ពន្ធ',
+        'Modify Tax Allowance' => 'កែប្រែប្រាក់បន្ថែមមិនជាប់ពន្ធ',
+        'Delete Tax Allowance' => 'លុបប្រាក់បន្ថែមមិនជាប់ពន្ធ',
+        'Create Tax Bracket' => 'បង្កើតកម្រិតពន្ធ',
+        'Modify Tax Bracket' => 'កែប្រែកម្រិតពន្ធ',
 
         'Shortcut' => 'អក្សរកាត់',
         'Update By' => 'បានកែប្រែដោយ',
@@ -767,6 +785,8 @@ return [
         'Employee Code' => 'លេខកូដបុគ្គលិក',
         'Scan Info' => 'ព័ត៌មានស្កេន',
         'Full Name' => 'ឈ្មោះបុគ្គលិក',
+        'Full Name (KH)' => 'ឈ្មោះពេញ (ខ្មែរ)',
+
 
         'Create Attendance' => 'បន្ថែមវត្តមាន',
         'Modify Attendance' => 'កែប្រែវត្តមាន',
@@ -822,9 +842,60 @@ return [
         'Edit Skill' => 'កែប្រែជំនាញ',
         'Delete Skill' => 'លុបជំនាញ',
         'Skills' => 'ជំនាញ',
+        'Skill Name' => 'ជំនាញ',
         'Rating' => 'វាយតម្លៃ',
 
         'Work Shifts' => 'វេនការងារ',
+        'Effective Date' => 'កាលបរិច្ឆេទអនុវត្ត',
+
+        'Exit Forms' => 'ទម្រង់បែបបទចាកចេញ',
+        'Exit Form' => 'ទម្រង់បែបបទចាកចេញ',
+        'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
+        'Modify Exit Form' => 'កែប្រែទម្រង់បែបបទចាកចេញ',
+        'Delete Exit Form' => 'លុបទម្រង់បែបបទចាកចេញ',
+        'Form' => 'ទម្រង់បែបបទ',
+
+        'Attendance Track' => 'តាមដានការចូលរួម',
+        'Add Scan' => 'បង្កើតការស្កេន',
+        'Edit Scan' => 'កែប្រែការស្កេន',
+        'Delete Scan' => 'លុបការស្កេន',
+        'Scan' => 'ការស្កេន',
+        'Days' => 'ថ្ងៃ',
+        'Monday' => 'ថ្ងៃច័ន្ទ',
+        'Tuesday' => 'ថ្ងៃអង្គារ',
+        'Wednesday' => 'ថ្ងៃពុធ',
+        'Thursday' => 'ថ្ងៃព្រហស្បតិ៍',
+        'Friday' => 'ថ្ងៃសុក្រ',
+        'Saturday' => 'ថ្ងៃសៅរ៍',
+        'Sunday' => 'ថ្ងៃអាទិត្យ',
+        'Mon' => 'ច័ន្ទ',
+        'Tue' => 'អង្គារ',
+        'Wed' => 'ពុធ',
+        'Thu' => 'ព្រហស្បតិ៍',
+        'Fri' => 'សុក្រ',
+        'Sat' => 'សៅរ៍',
+        'Sun' => 'អាទិត្យ',
+
+        'Edit WorkShift' => 'កែប្រែវេនការងារ',
+        'Delete WorkShift' => 'លុបវេនការងារ',
+        'Uninformed Leaves' => 'អវត្តមានគ្មានច្បាប់',
+        'Payroll' => 'ប្រាក់ខែ',
+        'Staff Count' => 'ចំនួនបុគ្គលិក',
+
+        'Edit Payroll' => 'កែប្រែប្រាក់ខែ',
+        'Delete Payroll' => 'លុបប្រាក់ខែ',
+        'Payroll List' => 'បញ្ជីប្រាក់បៀវត្សរ៍',
+        'Nontaxable BFT' => 'BFT មិនជាប់ពន្ធ',
+        'Taxable BFT' => 'BFT ជាប់ពន្ធ',
+        'BFT (Flat Tax)' => 'BFT (ពន្ធអត្រាថេរ)',
+        'Deduction' => 'ការកាត់ប្រាក់', 
+        'Allowance' => 'ប្រាក់ឧបត្ថម្ភ',
+        'Tax Rate' => 'អត្រាពន្ធ',
+        'Tax Base' => 'មូលដ្ឋានពន្ធ',
+        'Benefit Tax' => 'ពន្ធលើអត្ថប្រយោជន៍',
+        'View Pay Slip' => 'មើលបញ្ជីប្រាក់បៀវត្សរ៍',
+        'Remove from List' => 'លុបចេញពីបញ្ជី',
+        'Payroll Accounts' => 'គណនីបើកប្រាក់ខែ',
         'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
         'Holder' => 'អ្នកកាន់កាត',
         'Expiry Date' => 'កាលបរិច្ឆេទផុតកំណត់',
@@ -836,6 +907,26 @@ return [
         'Select Unit' => "ជ្រើសរើសបន្ទប់",
         'Select Category'=> "សូមជ្រើសរើសប្រភេទ",
 
+        'Benefit Disbursement' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Employee Deduction' => 'ការកាត់ប្រាក់បុគ្គលិក',
+        'Create Deduction' => 'បង្កើតការកាត់ប្រាក់',
+        'Benefit Disbursement Policy' => 'គោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
+        'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់',
+
+        'Holidays' => 'ថ្ងៃឈប់សម្រាក',
+        'Name KH' => 'ឈ្មោះ',
+        'Movement' => 'ការផ្លាស់ប្តូរ',
+
+        'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
+        'Create Checkpoint Evaluation' => 'បង្កើតការវាយតម្លៃត្រួតពិនិត្យ',
+        'Modify Checkpoint Evaluation' => 'កែប្រែការវាយតម្លៃត្រួតពិនិត្យ',
+        'Delete Checkpoint Evaluation' => 'លុបការវាយតម្លៃត្រួតពិនិត្យ',
+
+        ''
+      
+        
 
         
 
@@ -997,6 +1088,20 @@ return [
         'Employee Warnings' => 'ការពិន័យបុគ្គលិក',
         'Leave Request' => 'សំណើសុំច្បាប់',
         'Uninformed Leave' => 'អវត្តមានមិនបានជូនដំណឹង',
+        'Employee Actions' => 'សកម្មភាពបុគ្គលិក',
+        'Benefits' => 'អត្ថប្រយោជន៍',
+        'Employee Attendance' => 'វត្តមានបុគ្គលិក',
+        'Attendance Track' => 'តាមដានការចូលរួម',
+        'Payroll' => 'ប្រាក់ខែ',
+
+        'Wallet Accounts' => 'គណនីឌីជីថល',
+        'Benefit Disbursements' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',  
+
+        'Deductions' => 'ការកាត់ប្រាក់',
+        'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
+
+
+
         'Access Control' => 'ការគ្រប់គ្រងការចេញចូល',
     ],
     'buttons' => [
@@ -1115,7 +1220,7 @@ return [
 
         'Set Attendance' => 'កំណត់វត្តមាន',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
-        'Create Tax Bracket' => 'បង្កើតប្រាក់ខែចាប់ពី',
+        'Create Tax Bracket' => 'បង្កើតកម្រិតពន្ធ',
         'Create Job Level' => 'បង្កើតកម្រិតការងារ',
         'Add Policy' => 'បន្ថែមគោលការណ៍',
 
@@ -1130,9 +1235,17 @@ return [
         'Create Deduction' => 'បង្កើតការកាត់កង',
 
         'Create Skill' => 'បង្កើតជំនាញ',
+        'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
+
+        'Add Scan' => 'បង្កើតការស្កេន',
         'Access Log' => 'ប្រវត្តិការចេញចូល',
         'Access Card' => 'កាតចេញចូល',
         'Create Access Card' => 'បង្កើតកាតចេញចូល',
+
+        'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Evaluation' => 'បង្កើតការវាយតម្លៃ',
+
+        'Create Work Shift' => 'បង្កើតវេនការងារ',
 
     ],
     'filters' => [
@@ -1164,13 +1277,15 @@ return [
         'Description' => 'ការពិពណ៌នា',
         'Qty' => 'ចំនួន',
         'QTY' => 'ចំនួន',
-
         'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
         'Size (m²)' => 'ទំហំ (m²)',
         'Price' => 'តម្លៃ',
         'Charge As' => 'គិតជា',
         'Unit Details' => 'ព័ត៌មានបន្ទប់',
-
+        'Code' => 'លេខកូដ',
+        'ID Card' => 'អត្តសញ្ញាណប័ណ្ណ',
+        'ID Card Expiry' => 'ថ្ងៃផុតកំណត់',
+        'NSSF ID' => 'លេខបសស',
         'Booker Name' => 'ឈ្មោះអ្នកកក់',
         'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
         'Email (Optional)' => 'អ៊ីមែល (Optional)',
@@ -1185,11 +1300,13 @@ return [
         'Male' => 'ប្រុស',
         'Female' => 'ស្រី',
         'Nationality' => 'សញ្ជាតិ',
+        'Marital Status' => 'ស្ថានភាពគ្រួសារ',
         'Legal Name' => 'ឈ្មោះស្របច្បាប់',
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
         'Passport Number' => 'លេខលិខិតឆ្លងដែន',
+        'Passport Expiry' => 'ថ្ងៃផុតកំណត់',
         'Relationship' => 'ទំនាក់ទំនង',
         'Partner' => 'ដៃគូរ',
         'Phone Number' => 'លេខទូរស័ព្ទ',
@@ -1300,8 +1417,18 @@ return [
         'Unit Type' => 'ប្រភេទឯកតា',
         'Name' => 'ឈ្មោះ',
         'Name (KH)' => 'ឈ្មោះខ្មែរ',
-
-
+        'School' => 'សាលា/ស្ថាប័នសិក្សា',
+        'Major' => 'មុខជំនាញ',
+        'Education Level' => 'កម្រិតការអប់រំ',
+        'Degree' => 'សញ្ញាបត្រ',
+        'Period (if no dates)' => 'រយៈពេល (ប្រសិនបើគ្មានកាលបរិច្ឆេទ)',
+        'Start Year' => 'ឆ្នាំចាប់ផ្តើម',
+        'End Year' => 'ឆ្នាំបញ្ចប់',
+        'Organization' => 'ក្រុមហ៊ុន/អង្គភាព',
+        'Position' => 'មុខតំណែង',
+        'Rate' => 'កម្រិតវាយតម្លៃ',
+        'Skill Name' => 'ជំនាញ',
+        'Document Type' => 'ប្រភេទឯកសារ',
 
         'Deposit Amount' => 'ចំនួនប្រាក់កក់',
         'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់ចេញ',
@@ -1316,7 +1443,7 @@ return [
         'Address (English)' => 'អាស័យដ្ឋាន (អង់គ្លេស)',
         'phone_number' => 'លេខទូរស័ព្ទ',
         'email' => 'អ៊ីមែល',
-        'Position' => 'មុខតំណែង',
+        // 'Position' => 'មុខតំណែង',
 
         'Booking Name' => 'ឈ្មោះអ្នកកក់',
         'Booking Phone' => 'លេខទូរសព្ទអ្នកកក់',
@@ -1412,6 +1539,9 @@ return [
         'Attendance Type' => 'ប្រភេទវត្តមាន',
         'Time' => 'ម៉ោង',
         'Work Shift' => 'វេនការងារ',
+        'Joining Date' => 'ថ្ងៃចូលបម្រើការងារ',
+        'Place of Birth' => 'ទីកន្លែងកំណើត',
+        'Apply Tax' => 'អនុវត្តពន្ធ',
         'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
         'Withdraw Percent' => 'ភាគរយដក',
 
@@ -1437,7 +1567,32 @@ return [
         'Card Code (Auto/Optional)' => 'លេខកូដកាត (ស្វ័យប្រវត្តិ/តាមជម្រើស)',
 
         'Holder' => "អ្នកកាន់កាត",
-        'Expiry Date' => "កាលបរិច្ឆេទផុតកំណត់"
+        'Expiry Date' => "កាលបរិច្ឆេទផុតកំណត់",
+
+        'Session' => 'វគ្គ',
+        'Action' => 'សកម្មភាព',
+        'Scan Order Number' => 'លំដាប់ស្កេន',
+        'Allow Scan From' => 'អនុញ្ញាតិស្កេនចាប់ពី',
+        'Allow Scan To' => 'អនុញ្ញាតិស្កេនដល់',
+
+        'Leave Type' => 'ប្រភេទឈប់សម្រាក',
+
+        'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
+        'Issues' => 'បញ្ហា',
+        'Movement' => 'ការផ្លាស់ប្តូរ',
+        'Change Position' => 'ផ្លាស់ប្តូរមុខតំណែង',
+        'Change Salary' => 'ផ្លាស់ប្តូរប្រាក់បៀវត្ស',
+        'Change Work Shift' => 'ផ្លាស់ប្តូរវេនការងារ',
+        'Promotion Date' => 'កាលបរិច្ឆេទដំឡើងតំណែង',
+        'To Position' => 'ទៅកាន់មុខតំណែង',
+        'New Position' => 'មុខតំណែងថ្មី',
+        'Original Salary' => 'ប្រាក់បៀវត្សដើម',
+        'New Salary' => 'ប្រាក់បៀវត្សថ្មី',
+        'Current Work Shift' => 'វេនការងារបច្ចុប្បន្ន',
+        'New Work Shift' => 'វេនការងារថ្មី',
+       
+        
+        
 
 
 
@@ -1655,12 +1810,20 @@ return [
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
         'create_success_emp_skill' => 'បានបង្កើតជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
-        'update_success_emp_skill' => 'បានធ្វើបច្ចុប្បន្នភាពជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
+        'update_success_emp_skill' => 'បានកែប្រែជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
         'delete_success_emp_skill' => 'បានលុបជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
 
         'create_success_skill' => 'បានបង្កើតជំនាញដោយជោគជ័យ!',
-        'update_success_skill' => 'បានធ្វើបច្ចុប្បន្នភាពជំនាញដោយជោគជ័យ!',
+        'update_success_skill' => 'បានកែប្រែជំនាញដោយជោគជ័យ!',
         'delete_success_skill' => 'បានលុបជំនាញដោយជោគជ័យ!',
+
+        'create_education_success' => 'បានបង្កើតព័ត៌មានការអប់រំរបស់បុគ្គលិកដោយជោគជ័យ។',
+        'update_education_success' => 'បានកែប្រែព័ត៌មានការអប់រំរបស់បុគ្គលិកដោយជោគជ័យ។',
+        'delete_education_success' => 'បានលុបព័ត៌មានការអប់រំរបស់បុគ្គលិកដោយជោគជ័យ។',
+
+        'create_tax_allowance_success' => 'បានបង្កើតប្រាក់បន្ថែមមិនជាប់ពន្ធដោយជោគជ័យ។',
+        'update_tax_allowance_success' => 'បានកែប្រែប្រាក់បន្ថែមមិនជាប់ពន្ធដោយជោគជ័យ។',
+        'delete_tax_allowance_success' => 'បានលុបប្រាក់បន្ថែមមិនជាប់ពន្ធដោយជោគជ័យ។',
 
         'create_success_check_point_category' => 'បានបង្កើតប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
         'update_success_check_point_category' => 'បានកែប្រែប្រភេទចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
