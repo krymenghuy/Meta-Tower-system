@@ -282,7 +282,8 @@ class Employee extends VSModel
             emp.marital_status,
             emp.status_id,
             es.name as status,
-            emp.birth_city_id
+            emp.birth_city_id,
+            emp.update_user
         ')
         ->orderBy('emp.id', 'DESC');
 

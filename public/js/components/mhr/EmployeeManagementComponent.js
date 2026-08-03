@@ -234,37 +234,57 @@ var EmployeeManagementComponent = (function () {
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
                 const photo = d.image_url || defaultPhoto;
-                const updatedBy = d.update_user || "System";
-
+                const statusClass =
+                    d.status_id == 10
+                        ? "badge border-success text-white bg-success"
+                        : d.status_id == 20
+                        ? "badge border-warning text-white bg-warning"
+                        : "badge border-danger text-white bg-danger";
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         <article class="emp-list-card">
-                            <div class="emp-list-card-header">
-                                <div class="emp-list-card-avatar-wrap">
-                                    <div class="emp-list-card-avatar">
-                                        <img src="${photo}" alt="${mThis._escapeHtml(d.name || "Employee")}">
+                               <div class="emp-list-card-header">
+                                    <div class="d-flex justify-content-between align-items-start p-3">
+                                        <span class="text-capitalize d-inline-block text-center ${statusClass}"  style="min-width:70px;border-width:2px; border: 2px solid #c9a227; border-radius: 6px; padding: 3px 8px; font-size:0.85rem;">
+                                            ${d.status}
+                                        </span>
+
+                                        <div class="dropdown">
+                                            <a href="javascript:void(0)"
+                                                class="btn_employee_action"
+                                                data-id="${d.id}"
+                                                aria-haspopup="true"
+                                                aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="emp-list-card-avatar-wrap">
+                                        <div class="emp-list-card-avatar">
+                                            <img src="${photo}" alt="${mThis._escapeHtml(d.name || "Employee")}">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             <div class="emp-list-card-nameband">
-                                <span class="emp-list-card-name">${mThis._escapeHtml(d.name || "_")}</span>
+                                <span class="emp-list-card-name">${mThis._escapeHtml(d.position || "_")}</span>
                             </div>
                             <div class="emp-list-card-body">
-                                <ul class="emp-list-card-details">
-                                    ${mThis._employeeCardDetail("fa-solid fa-hashtag", d.code)}
-                                    ${mThis._employeeCardDetail("fa-regular fa-calendar", d.date_of_birth)}
-                                    ${mThis._employeeCardDetail("fa-solid fa-phone", d.phone_number)}
-                                    ${mThis._employeeCardDetail("fa-solid fa-at", d.email)}
+                               <ul class="emp-list-card-details">
+                                    ${mThis._employeeCardDetail("fa-solid fa-user", d.name)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-id-badge", d.code)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-briefcase", d.type)}
+                                    ${mThis._employeeCardDetail("fa-solid fa-calendar-days", d.joining_date)}
                                 </ul>
                             </div>
                             <footer class="emp-list-card-footer">
-                                <span class="emp-list-card-footer-meta">
-                                    <span vslang="titles.Last Updated">Last Updated</span>:
-                                    ${mThis._escapeHtml(updatedBy)}
+                                <span class="emp-list-card-footer-meta text-white">
+                                    <span vslang="titles.Last Updated"></span>: <span class="text-capitalize">${d.update_user ?? "_"}</span>
                                 </span>
                                 <a href="javascript:void(0)" class="emp-list-card-footer-link see-employee-detail" data-id="${d.id}">
                                     <span vslang="titles.View Details">View Details</span>
-                                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                                    <i class="fa-solid fa-arrow-right " aria-hidden="true"></i>
                                 </a>
                             </footer>
                         </article>
@@ -367,7 +387,7 @@ var EmployeeManagementComponent = (function () {
                         </button>
 
                         <button type="button"
-                            class="btn btn-success btn-sm movement_detail"
+                            class="btn d-none btn-success btn-sm movement_detail"
                             data-id="${data.id}"
                             data-status="${data.status_id}"
                             title="Movement Detail">
