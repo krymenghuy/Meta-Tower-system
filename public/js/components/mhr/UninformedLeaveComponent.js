@@ -558,13 +558,13 @@ const UninformedLeaveDialog = (() => {
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
-                                    <label>Start Date</label>
+                                    <label vslang="labels.Start Date"></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
-                                    <label>End Date</label>
+                                    <label vslang="labels.End Date"></label>
                                 </div>
                             </div>  
                             <div class="col-6 d-none">
@@ -577,7 +577,7 @@ const UninformedLeaveDialog = (() => {
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Reason</label>
+                                    <label vslang="labels.Reason"></label>
                                 </div>
                             </div>
                         </div>`,
@@ -741,7 +741,7 @@ const ExcuseLeaveDialog = (() => {
 
     self.show = (op) => {
         const dialog = new GeneralDialog({
-            title: "Excuse Leave Request",
+            title: "vslang:titles.Excuse Leave Request",
             cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,

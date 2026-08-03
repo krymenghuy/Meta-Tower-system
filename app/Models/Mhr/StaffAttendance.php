@@ -31,7 +31,7 @@ class StaffAttendance extends VSModel
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id|text=select_employee',
-            'attendance_date' => '1|date|text=required_date',
+            'attendance_date' => '1|date|text=date',
             'scan_action' => '1|string|text=required_action',
             'scan_time' => '1|string|text=required_time',
             'work_shift_id' => '1|number|exists=work_shifts.id|text=select_work_shift',

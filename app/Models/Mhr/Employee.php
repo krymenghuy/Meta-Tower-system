@@ -85,7 +85,7 @@ class Employee extends VSModel
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'name'            => '1|string|0-150|text=name_required::@key;@max;@value_required',
+            'name'            => '1|string|0-150|text=name_required::@key;@max;@value',
             'name_kh'         => '1|string|0-150|text=name_required::@key;@max;@value',
             'sex'             => '1|choice|F,M|text=select_gender',
             'nationality_id'  => '1|number|text=nationality_required',

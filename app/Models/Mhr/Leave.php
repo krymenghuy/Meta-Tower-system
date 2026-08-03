@@ -33,9 +33,9 @@ class Leave extends VSModel
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id|text=select_employee',
-            'start_date' => '1|date|text=start_date_required',
-            'end_date' => '1|date|text=end_date_required',
-            'leave_type_id' => '1|number|exists=leave_types.id',
+            'leave_type_id' => '1|number|exists=leave_types.id|text=select_leave_type',
+            'start_date' => '1|date|text=required_start_date',
+            'end_date' => '1|date|text=required_end_date',
             'status_id' => '0|number|exists=leave_statuses.id',
             'remarks' => '0|string|250',
         ];
@@ -57,6 +57,17 @@ class Leave extends VSModel
         $end_date = $inputs['end_date'];
         $remarks = $inputs['remarks'];
         $status_id = $inputs['status_id'] ?? null;
+        if ($id) {
+            if (is_null($status_id)) {
+                $status_id = DB::table('leaves')->where('id', $id)->value('status_id');
+                $inputs['status_id'] = $status_id;
+            }
+        } else {
+            if (is_null($status_id)) {
+                $status_id = 1; // Default to Pending (1)
+                $inputs['status_id'] = 1;
+            }
+        }
 
         // Uninformed leaves (status_id = 4) are allowed to be in the past
         if ($status_id != 4) {
@@ -77,7 +88,8 @@ class Leave extends VSModel
                 return DV::error('The employee already has leave for the specified date range.');
             }
         }
-        if (Employee::isOnLeave($d->emp_id)) {
+        $active_leave_id = Employee::isOnLeave($d->emp_id);
+        if ($active_leave_id && $active_leave_id != $id) {
             return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
         }
 
