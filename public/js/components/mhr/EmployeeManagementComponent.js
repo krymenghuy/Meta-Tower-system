@@ -81,6 +81,8 @@ var EmployeeManagementComponent = (function () {
         };
 
         mThis.listContainer = mThis.EmployeeListView.getListContainer();
+        mThis.initDropdownMenus(mThis.divlistView);
+        
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -91,8 +93,10 @@ var EmployeeManagementComponent = (function () {
         };
 
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
+
         mThis.initAlready = true;
     };
+   
 
     mThis.getFilterData = () => {
         const p = { search_value: mThis.elSearch.value };
@@ -130,7 +134,75 @@ var EmployeeManagementComponent = (function () {
             mThis.renderEmployee(container, data);
         });
     };
+   mThis.initDropdownMenus = (container) => {
+    const menuOptions = {
+        containerElement: container,
+        actionButtonClass: "btn-employee-dropdown-action",
+        cssClass: "bg-white shadow",
+        menus: [
+            {
+                html: '<span class="ps-2" vslang="titles.View Details"></span>',
+                icon: '<i class="fa-regular fa-eye fs-5 text-primary"></i>',
+                cssClass: "border-bottom pb-2",
+                name: "view",
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.Modify"></span>',
+                icon: '<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>',
+                cssClass: "border-bottom pb-2",
+                name: "edit",
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.Movement"></span>',
+                icon: '<i class="fa-solid fa-right-left fs-5 text-info"></i>',
+                cssClass: "border-bottom pb-2",
+                name: "movement",
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.Set Resign"></span>',
+                icon: '<i class="fa-solid fa-user-xmark fs-5 text-dark"></i>',
+                cssClass: "border-bottom pb-2",
+                name: "resign",
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.Delete"></span>',
+                icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>',
+                name: "delete",
+            },
+        ],
 
+        onClick: (menuLink, id, name) => {
+            switch (name) {
+                case "view":
+                    mThis.employee_id = id;
+                    mThis.showPage("profile_view", { id });
+                    break;
+
+                case "edit":
+                    mThis.editEmployee(id, menuLink);
+                    break;
+
+                case "movement":
+                    mThis.movement(id);
+                    break;
+
+                case "movement_history":
+                    mThis.movementDetail(id);
+                    break;
+
+                case "resign":
+                    mThis.setResign(id);
+                    break;
+
+                case "delete":
+                    mThis.deleteEmployee(id, menuLink);
+                    break;
+            }
+        },
+    };
+
+    new VSDropdownMenu(menuOptions);
+};
     mThis._escapeHtml = (s) => {
         if (s == null) return "";
         return String(s)
@@ -145,25 +217,10 @@ var EmployeeManagementComponent = (function () {
         if (sex === "F") return LocaleManager.trans("Female", "titles");
         return sex || "_";
     };
-
-
-
-  
-
-  
-
     mThis._pillText = (value) => {
         if (value == null || value === "") return "_";
         return mThis._escapeHtml(String(value));
     };
-
-    mThis._shortText = (value, max = 48) => {
-        if (value == null || value === "") return "_";
-        const text = String(value);
-        if (text.length <= max) return mThis._escapeHtml(text);
-        return mThis._escapeHtml(text.slice(0, max).trim() + "...");
-    };
-
     mThis._formatSalary = (salary, currency) => {
         if (salary == null || salary === "") return "_";
         if (typeof VSMoney !== "undefined" && VSMoney.formatAmount) {
@@ -203,20 +260,7 @@ var EmployeeManagementComponent = (function () {
             </div>`;
     };
 
-    mThis._profileLinePassport = (label, passportNumber) => {
-        if (!passportNumber) {
-            return mThis._profileLine(
-                label,
-                LocaleManager.trans("not have yet", "titles"),
-                { muted: true },
-            );
-        }
-        return mThis._profileLine(label, passportNumber);
-    };
-
-    mThis._profileLineExpiry = (label, expiryDate) => {
-        return mThis._profileLine(label, expiryDate);
-    };
+    
 
     mThis._employeeCardDetail = (iconClass, value) => `
         <li class="emp-list-card-detail">
@@ -249,10 +293,12 @@ var EmployeeManagementComponent = (function () {
                                             ${d.status}
                                         </span>
 
-                                        <div class="dropdown">
+                                        <div class="align-items-center">
                                             <a href="javascript:void(0)"
-                                                class="btn_employee_action"
+                                                class="btn-employee-dropdown-action"
                                                 data-id="${d.id}"
+                                                data-statusid="${d.status_id}"
+                                                data-typeid="${d.emp_type_id}"
                                                 aria-haspopup="true"
                                                 aria-expanded="false">
                                                 <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
@@ -302,7 +348,6 @@ var EmployeeManagementComponent = (function () {
 
         container.innerHTML = html;
         LocaleManager.translateZone(container);
-
         const seeProfileInfo = container.querySelectorAll(".see-employee-detail");
         seeProfileInfo.forEach((link) => {
             link.addEventListener("click", (e) => {
@@ -313,29 +358,6 @@ var EmployeeManagementComponent = (function () {
             });
         });
     };
-
-    mThis.renderProfilePlaceholderCard = (container) => {
-        if (!container) return;
-        container.innerHTML = `
-            <div class="emp-skill-card h-100">
-                <div class="emp-skill-header">
-                    <div class="emp-skill-header-title">
-                        <span class="emp-skill-header-icon">
-                            <i class="fa-solid fa-briefcase"></i>
-                        </span>
-                        <span class="emp-skill-header-label" vslang="titles.Experience">Experience</span>
-                    </div>
-                </div>
-                <div class="emp-skill-body">
-                    <div class="emp-skill-empty">
-                        <i class="fa-solid fa-briefcase emp-skill-empty-icon"></i>
-                        <span class="emp-skill-empty-text">${LocaleManager.trans("No data available.", "titles")}</span>
-                    </div>
-                </div>
-            </div>`;
-        LocaleManager.translateZone(container);
-    };
-
     mThis.renderProfile = (data) => {
         if (!mThis.profile_info_emp || !data) return;
 
@@ -628,33 +650,11 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi
-            .call(
-                `${main_view.base_url}/mhr/employee/form-options`,
-                null,
-                null,
-                null
-            )
+        vsapi.call(`${main_view.base_url}/mhr/employee/form-options`,null,null,null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elEmployeeStatus,
-                    d.status,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Statuses", "titles"),
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elEmployeeType,
-                    d.types,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Types", "titles"),
-                    ""
-                );
+                VSUtil.setComboItems(mThis.elEmployeeStatus,d.status,"id","name","",LocaleManager.trans("All Statuses", "titles"),"");
+                VSUtil.setComboItems(mThis.elEmployeeType,d.types,"id","name","",LocaleManager.trans("All Types", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
     };
