@@ -680,10 +680,7 @@ var EmployeeManagementComponent = (function () {
                     null,
                 );
                 if (res.status_code !== 200 || !res.data) {
-                    cv_interact.error(
-                        res.error_message ||
-                            LocaleManager.trans("Employee not found", "message_box_default"),
-                    );
+                    cv_interact.error(res.error_message);
                     mThis.showPage("employee_list", mThis.getFilterData());
                     return;
                 }
