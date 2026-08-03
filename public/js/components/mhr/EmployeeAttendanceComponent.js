@@ -515,7 +515,7 @@ const StaffAttendanceDialog = (() => {
                 };
             },
             prepareFormOptions: {
-                createTitle: "vslang:titles.Create Attendance",
+                createTitle: "vslang:titles.Set Attendance",
                 modifyTitle: "vslang:titles.Modify Attendance",
                 
                 targetProp: "attendance",

@@ -255,7 +255,7 @@ return [
 
 
         'required_date' => 'សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវ។',
-        'required_action' => 'សូមជ្រើសរើសសកម្មភាពត្រឹមត្រូវ។',
+        'required_action' => 'សូមជ្រើសរើសប្រភេទវត្តមាន។',
         'required_time' => 'សូមជ្រើសរើសម៉ោងត្រឹមត្រូវ។',
         'select_work_shift' => 'សូមជ្រើសរើសម៉ោងធ្វើការ',
 
@@ -267,6 +267,9 @@ return [
 
 
         'work_shift_is_assigned_to_employee' => 'វេនការងារនេះត្រូវបានកំណត់ឱ្យបុគ្គលិករួចហើយ។',
+        'select_leave_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
+
+        
 
 
 
@@ -853,7 +856,7 @@ return [
         'Create Exit Form' => 'បង្កើតទម្រង់បែបបទចាកចេញ',
         'Modify Exit Form' => 'កែប្រែទម្រង់បែបបទចាកចេញ',
         'Delete Exit Form' => 'លុបទម្រង់បែបបទចាកចេញ',
-        'Form' => 'ទម្រង់បែបបទ',
+        'Form Name' => 'ទម្រង់បែបបទ',
 
         'Attendance Track' => 'តាមដានការចូលរួម',
         'Add Scan' => 'បង្កើតការស្កេន',
@@ -924,15 +927,19 @@ return [
         'Modify Checkpoint Evaluation' => 'កែប្រែការវាយតម្លៃត្រួតពិនិត្យ',
         'Delete Checkpoint Evaluation' => 'លុបការវាយតម្លៃត្រួតពិនិត្យ',
 
-        ''
-      
+        'Create Employee' => 'បង្កើតបុគ្គលិក',
+        'Employee Attendance' => 'វត្តមានបុគ្គលិក',
+        'Set Attendance' => 'កំណត់វត្តមាន',
+
+        'Modify Leave' => 'កែប្រែថ្ងៃឈប់សម្រាក',
+        'Delete Leave' => 'លុបថ្ងៃឈប់សម្រាក',
+
+        'Excuse Leave Request' => 'សំណើសុំច្បាប់មានការអនុញ្ញាត',
         
 
         
 
-
-
-
+        
 
 
 
@@ -1246,6 +1253,9 @@ return [
         'Create Evaluation' => 'បង្កើតការវាយតម្លៃ',
 
         'Create Work Shift' => 'បង្កើតវេនការងារ',
+        'Create Employee' => 'បង្កើតបុគ្គលិក',
+
+        'Add Uninformed Leave' => 'បង្កើតការស្នើសុំថ្ងៃឈប់សម្រាក'
 
     ],
     'filters' => [
@@ -1591,6 +1601,8 @@ return [
         'Current Work Shift' => 'វេនការងារបច្ចុប្បន្ន',
         'New Work Shift' => 'វេនការងារថ្មី',
        
+        'Status' => 'ស្ថានភាព',
+        'Reason' => 'មូលហេតុ',
         
         
 
@@ -1895,7 +1907,14 @@ return [
         'exit_form_name_already_exists' => 'ឈ្មោះមានរួចហើយ។',
 
 
-
+        'set_leave_successfully' => 'បានកំណត់ថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'update_set_leave_successfully' => 'បានកែប្រែថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        'delete_set_leave?' => 'តើអ្នកប្រាកដទេថាចង់លុបថ្ងៃឈប់សម្រាកនេះ?',
+        'delete_set_leave_successfully' => 'លុបថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
+        
+         'delete_leave_request' => 'តើអ្នកប្រាកដទេថាចង់លុបសំណើឈប់សម្រាកនេះ?',
+         'accept_request' => 'តើអ្នកប្រាកដទេថាចង់យល់ព្រមនឹងសំណើនេះ?',
+         'delete_leave_request_success' => 'លុបសំណើឈប់សម្រាកដោយជោគជ័យ។',
 
 
 

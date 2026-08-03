@@ -39,8 +39,8 @@ class ExitForm extends VSModel
         // $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'emp_id' => '1|number|exists=employees.id|text=select_employee',
             'name' => '1|string|0-250|text=name_required::@key;@max;@value',
-            'emp_id' => '1|number',
             'is_finished' => '1|choice|0,1|default=0',
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
