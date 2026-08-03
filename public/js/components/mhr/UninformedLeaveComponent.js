@@ -429,7 +429,7 @@ var UninformedLeaveComponent = (function () {
         let has_warning = menuLink.dataset.has_warning;
         if (has_warning === "1" || has_warning === "true") {
             cv_interact.error(
-                "Warning has already been issued for this absence.",
+                "warning_already_issued",
             );
             return;
         }

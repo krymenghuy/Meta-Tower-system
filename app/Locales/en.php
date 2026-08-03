@@ -252,6 +252,8 @@ return [
         'Category' => 'Category',
         'Published' => 'Published',
 
+       
+
 
 
 
@@ -560,8 +562,12 @@ return [
         'delete_uninformed' => 'Delete this uninformed leave?',
         'delete_uninformed_success' => 'Delete uninformed leave successfully.',
         'deduct_already_issued' => 'Deduct has already been issued for this absence.',
+        'warning_already_issued' => 'Warning has already been issued for this absence.',
 
 
+        'disburse_payroll' => 'Are you sure you want to disburse this payroll?',
+        'authorize_payroll' => 'Are you sure you want to authorize payroll?',
+        'reset_payroll' => 'Are you sure you want to reset this payroll?',
 
 
 
@@ -598,3 +604,4 @@ return [
         'Create Tenant' => 'Create Tenant',
     ],
 ];
+
