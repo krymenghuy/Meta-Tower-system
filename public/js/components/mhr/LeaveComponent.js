@@ -325,7 +325,7 @@ var LeaveComponent = (function () {
             id: id
         };
 
-        if (!AuthManager.allowed(259, false)) return;
+        // if (!AuthManager.allowed(259, false)) return;
 
         Swal.fire({
             input: "textarea",
@@ -353,7 +353,7 @@ var LeaveComponent = (function () {
     };
 
     mThis.acceptRequest = (id, menuLink) => {
-        if (!AuthManager.allowed(260, false)) return;
+        // if (!AuthManager.allowed(260, false)) return;
         cv_interact.confirm(
             'Are you sure to accept this request?',
             {

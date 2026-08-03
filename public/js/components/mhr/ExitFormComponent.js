@@ -92,7 +92,7 @@ var ExitFormComponent = (function () {
                     mThis.ExitFormListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(282)) return;
+            // if (!AuthManager.allowed(282)) return;
             ExitFormDialog.show(op);
         };
 
@@ -194,7 +194,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(283)) return;
+        // if (!AuthManager.allowed(283)) return;
         ExitFormDialog.show(op);
     };
 
@@ -206,7 +206,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(284)) return;
+        // if (!AuthManager.allowed(284)) return;
         cv_interact.confirm(
             "Delete this exit form?",
             {
@@ -248,7 +248,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(285)) return;
+        // if (!AuthManager.allowed(285)) return;
         ViewExitFormDialog.show(op);
     };
 
@@ -535,7 +535,7 @@ const ViewExitFormDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             // same permission as View Exit Form
-                            if (!AuthManager.allowed(285, false)) return;
+                            // if (!AuthManager.allowed(285, false)) return;
 
                             const body =
                                 me.divModal.querySelector(".modal-body") ||
