@@ -1,5 +1,19 @@
 "use strict";
 
+function openOverdueAlertsModal() {
+    vsapi
+        .call(`${main_view.base_url}/prm/invoice/overdue-alert`, {})
+        .then(res => {
+            if (res.status_code === 200 && res.data) {
+                OverdueAlertsDialog.show({
+                    data: {
+                        alerts_data: res.data.list || []
+                    }
+                });
+            }
+        });
+}
+
 var InvoiceComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
@@ -16,6 +30,8 @@ var InvoiceComponent = (() => {
     mThis.elTenant = mThis.self.querySelector("#tenant_id");
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
     mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
+    mThis.elBtnOverdueAlert = mThis.self.querySelector("#_btnOverdueAlert");
+  
 
     mThis.globalSetting = null;
     mThis.invoiceSetting = null;
@@ -45,7 +61,6 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="d-flex flex-column">
                         ${code}
-                     <!--   <hr class="m-0 border border-secondary border-3 opacity-75"> -->
                         ${typeHtml}
                     </div>
                 `;
@@ -137,7 +152,6 @@ var InvoiceComponent = (() => {
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
-
         {
             transTitle: "titles.Status",
             className: "align-middle text-center text-nowrap",
@@ -146,17 +160,16 @@ var InvoiceComponent = (() => {
                 let cls = "bg-secondary";
 
                 if (statusId === 1) {
-                    // Paid
-                    cls = "text-success bg-success-subtle border border-success";
+                    cls =
+                        "text-success bg-success-subtle border border-success";
                 } else if (statusId === 2) {
-                    // Unpaid
                     cls = "text-danger bg-danger-subtle border border-danger";
                 } else if (statusId === 3) {
-                    // Partially Paid
-                    cls = "text-warning bg-warning-subtle border border-warning";
+                    cls =
+                        "text-warning bg-warning-subtle border border-warning";
                 } else if (statusId === 4) {
-                    // Overdue
-                    cls = "text-danger bg-danger-subtle border border-danger fw-bold";
+                    cls =
+                        "text-danger bg-danger-subtle border border-danger fw-bold";
                 }
                 return `
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
@@ -176,7 +189,6 @@ var InvoiceComponent = (() => {
                 `;
             }
         },
-
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
@@ -191,10 +203,6 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => {
-                // if (data.payment_status_id === 4) {
-                //     return "";
-                // }
-
                 return `<div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action" data-id="${
                         data.id
@@ -237,27 +245,26 @@ var InvoiceComponent = (() => {
             });
         };
 
-        // vsapi
-        //     .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
-        //     .then(res => {
-        //         if (res.status_code !== 200) {
-        //             cv_interact.error("Failed to load invoice details.");
-        //             return;
-        //         }
-        //         mThis.globalSetting = res.data;
-        //     });
+        mThis.elBtnOverdueAlert.onclick = e => {
+            e.preventDefault();
+            if (!AuthManager.allowed(234, false)) return;
+            OverdueAlertsDialog.show({
+                id: null,
+                btn: e.target,
+                onClose: () =>
+                    mThis.InvoiceListView.showPage(mThis.getFilterData())
+            });
+        };
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
-
         mThis.initDropdownMenus(mThis.tblInvoice);
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
@@ -282,6 +289,8 @@ var InvoiceComponent = (() => {
             }
         });
 
+        openOverdueAlertsModal();
+
         mThis.initAlready = true;
     };
 
@@ -291,13 +300,19 @@ var InvoiceComponent = (() => {
             .call(`${main_view.base_url}/prm/invoice/details`, { id })
             .then(res => {
                 if (res.status_code !== 200) {
-                    container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
+                    container.innerHTML = `<div class="alert alert-danger m-3">${LocaleManager.trans(
+                        "Failed to load invoice details",
+                        "message_box_default"
+                    )}</div>`;
                     return;
                 }
                 mThis.renderInvoiceDetail(container, res.data || {});
             })
             .catch(() => {
-                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice detail.</div>`;
+                container.innerHTML = `<div class="alert alert-danger m-3">${LocaleManager.trans(
+                    "Network error loading invoice detail.",
+                    "message_box_default"
+                )}</div>`;
             });
     };
 
@@ -323,9 +338,7 @@ var InvoiceComponent = (() => {
         const getDiscountDisplay = item => {
             const value = parseFloat(item.discount || 0);
             const type = (item.discount_type || "percent").toLowerCase().trim();
-
             const discType = type === "percent" ? "%" : "$";
-
             const currency = mThis.currency_symbol || "$";
 
             if (value <= 0) {
@@ -337,7 +350,6 @@ var InvoiceComponent = (() => {
             } else {
                 const percentStr =
                     value % 1 === 0 ? value.toFixed(0) : value.toFixed(2);
-
                 return `${percentStr}${discType}`;
             }
         };
@@ -345,7 +357,6 @@ var InvoiceComponent = (() => {
             .map(item => {
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
-
                 const discount = parseFloat(item.discount || 0);
                 const taxAmount = parseFloat(item.tax_rate) || 0;
                 const total = parseFloat(item.total || item.amount || 0);
@@ -353,8 +364,7 @@ var InvoiceComponent = (() => {
 
                 return `
                 <tr>
-                    <td class="fw-medium">${item.remarks || "—"}
-                    </td>
+                    <td class="fw-medium">${item.remarks || "—"}</td>
                     <td class="text-center small">${formatDate(
                         item.start_date
                     )}</td>
@@ -364,10 +374,7 @@ var InvoiceComponent = (() => {
                     <td class="text-center small">${qty} ${unit_type}</td>
                     <td class="text-end">${currency}${price.toLocaleString(
                     "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
                 )}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(
                         item
@@ -377,12 +384,10 @@ var InvoiceComponent = (() => {
                     "en-US",
                     { minimumFractionDigits: 2, maximumFractionDigits: 2 }
                 )}</td>
-
                 </tr>`;
             })
             .join("");
 
-        // ✅ Footer totals calculation
         const foot = validItems.reduce(
             (acc, item) => {
                 const total = parseFloat(item.total || item.amount || 0);
@@ -399,13 +404,13 @@ var InvoiceComponent = (() => {
                 <div class="table-responsive table--dropdown">
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background:#e1e5f2;">
-                            <tr style= background-color:#E1E5F2;" >
-                                <th class="text-center" vslang="titles.Item Description"> </th>
+                            <tr style="background-color:#E1E5F2;">
+                                <th class="text-center" vslang="titles.Item Description"></th>
                                 <th class="text-center" vslang="titles.Start Date"></th>
                                 <th class="text-center" vslang="titles.End Date"></th>
                                 <th class="text-center" vslang="titles.Qty"></th>
                                 <th class="text-end" vslang="titles.Price"></th>
-                                <th class="text-end" vslang="titles.Discount" ></th>
+                                <th class="text-end" vslang="titles.Discount"></th>
                                 <th class="text-center" vslang="titles.Tax %"></th>
                                 <th class="text-end" vslang="titles.Total">Total</th>
                             </tr>
@@ -415,14 +420,11 @@ var InvoiceComponent = (() => {
                                 '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'}
                         </tbody>
                         <tfoot class="table-light fw-bold">
-                                <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  " vslang="titles.SubTotal"></td>
-                                <td colspan="1" class="text-end  fs-6">
-                                    ${currency}${fmt(
+                                <td colspan="7" class="text-end" vslang="titles.SubTotal"></td>
+                                <td colspan="1" class="text-end fs-6">${currency}${fmt(
             parseFloat(invoice.amount || 0)
-        )}
-                                </td>
+        )}</td>
                             </tr>
                             <tr>
                                 <td colspan="7" class="text-end text-danger" vslang="titles.Total Discount"></td>
@@ -434,26 +436,19 @@ var InvoiceComponent = (() => {
                                         const discType = (
                                             invoice.discount_type || ""
                                         ).toLowerCase();
-
                                         if (discVal <= 0)
                                             return `<span class="text-muted">0%</span>`;
-                                        if (discType === "percent") {
-                                            return `${fmt(discVal)}%`;
-                                        } else {
-                                            return `${currency}${fmt(discVal)}`;
-                                        }
+                                        return discType === "percent"
+                                            ? `${fmt(discVal)}%`
+                                            : `${currency}${fmt(discVal)}`;
                                     })()}
                                 </td>
                             </tr>
-
-                            <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  text-primary" vslang="titles.Grand (Net)"></td>
-                                <td colspan="1" class="text-end text-success fs-6">
-                                    ${currency}${fmt(
+                                <td colspan="7" class="text-end text-primary" vslang="titles.Grand (Net)"></td>
+                                <td colspan="1" class="text-end text-success fs-6">${currency}${fmt(
             parseFloat(invoice.amount_payable || 0)
-        )}
-                                </td>
+        )}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -463,7 +458,7 @@ var InvoiceComponent = (() => {
                         invoice.remarks
                             ? `
                         <div class="mt-3 p-3 bg-light rounded border">
-                            <small class="text-muted fw-semibold d-block  text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
+                            <small class="text-muted fw-semibold d-block text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
                             <p class="mb-0 small">${invoice.remarks}</p>
                         </div>`
                             : ""
@@ -498,7 +493,6 @@ var InvoiceComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "receive_invoice"
                 },
-
                 {
                     html:
                         '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
@@ -513,13 +507,6 @@ var InvoiceComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
-                // {
-                //     html:
-                //         '<span class="ps-2" vslang="titles.Print Invoice Internal"></span>',
-                //     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
-                //     cssClass: "border-bottom pb-2",
-                //     name: "print_invoice_internal"
-                // },
                 {
                     html:
                         '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
@@ -546,16 +533,12 @@ var InvoiceComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
-                // Show "Receive Payment" for Unpaid (2), Partially Paid (3), and Overdue (4)
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
                         : "none";
-
-                // Delete and Modify restricted to Unpaid (2) or Overdue (4) as needed
                 menu.delete_invoice.style.display =
                     statusId === 2 || statusId === 4 ? "block" : "none";
-                    
                 menu.modify_invoice.style.display =
                     statusId === 2 || statusId === 4 ? "block" : "none";
             },
@@ -605,10 +588,19 @@ var InvoiceComponent = (() => {
                             mThis.InvoiceListView.showPage(
                                 mThis.getFilterData()
                             );
-                            cv_interact.success("delete_success_invoice");
+                            cv_interact.success(
+                                LocaleManager.trans(
+                                    "delete_success_invoice",
+                                    "message_box_default"
+                                )
+                            );
                         } else {
                             cv_interact.error(
-                                res.error_message || "delete_failed"
+                                res.error_message ||
+                                    LocaleManager.trans(
+                                        "delete_failed",
+                                        "message_box_default"
+                                    )
                             );
                         }
                     });
@@ -631,7 +623,10 @@ var InvoiceComponent = (() => {
         cv_interact.confirm(
             "confirm_reset_invoice",
             {
-                transTitle: "Reset Invoice Settings",
+                transTitle: LocaleManager.trans(
+                    "Reset Invoice Settings",
+                    "titles"
+                ),
                 confirmButtonText: LocaleManager.trans("Reset", "buttons"),
                 context: "danger"
             },
@@ -642,19 +637,26 @@ var InvoiceComponent = (() => {
                     .call(
                         `${main_view.base_url}/prm/invoice/reset-setting`,
                         { id },
-                        menulink // Fixed typo: changed menuLink to menulink to match parameters
+                        menulink
                     )
                     .then(res => {
                         if (res.status_code === 200) {
-                            // Refresh the data view to display updated status states
                             mThis.InvoiceListView.showPage(
                                 mThis.getFilterData()
                             );
-                            // Cleaned up messages so it describes a reset, not a deletion
-                            cv_interact.success("reset_success_invoice");
+                            cv_interact.success(
+                                LocaleManager.trans(
+                                    "reset_success_invoice",
+                                    "message_box_default"
+                                )
+                            );
                         } else {
                             cv_interact.error(
-                                res.error_message || "reset_failed"
+                                res.error_message ||
+                                    LocaleManager.trans(
+                                        "reset_failed",
+                                        "message_box_default"
+                                    )
                             );
                         }
                     });
@@ -680,59 +682,7 @@ var InvoiceComponent = (() => {
         });
     };
 
-    // mThis.printInvoice = (id, menulink) => {
-    //     if (!AuthManager.allowed(238, false)) return;
-
-    //     vsapi
-    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
-    //         .then(res => {
-    //             if (res.status_code === 200) {
-    //                 const invoiceDetails = res.data?.invoice_details;
-    //                 const globalSetting = res.data?.invoice_setting || {};
-    //                 const companyProfile = res.data?.company_info || {};
-    //                 const invoiceSetting = invoiceDetails.settings;
-
-    //                 const invType = invoiceDetails?.invoice_type;
-
-    //                 // Initialize params object
-    //                 const params = {
-    //                     invoice_id: id,
-    //                     btn: menulink,
-    //                     invoice: invoiceDetails,
-    //                     global: globalSetting,
-    //                     company: companyProfile,
-    //                     setting: invoiceSetting
-    //                 };
-
-    //                 if (invoiceSetting.show_balance !== null) {
-    //                     params.setting = invoiceSetting;
-    //                 } else {
-    //                     params.setting = globalSetting;
-    //                 }
-    //                 if (invType === 1) {
-    //                     InvoiceTaxDialogHorizontal.show(params);
-    //                 }
-                    
-    //                 // else if (invType === 2 && mThis.internalInvoice) {
-    //                 //     InternalInvoiceNoTaxDialog.show(params);
-    //                 // }
-                    
-    //                 else if (invType === 2) {
-    //                     InvoiceNoTaxDialogHorizontal.show(params);
-    //                 } else if (invType === 3) {
-    //                     InvoiceCommercialDialogHorizontal.show(params);
-    //                 } else {
-    //                     cv_interact.error("Unknown invoice type variant.");
-    //                 }
-    //             } else {
-    //                 cv_interact.error(
-    //                     res.message || "Could not determine invoice type."
-    //                 );
-    //             }
-    //         });
-    // };
-
-        mThis.printInvoice = (id, menulink) => {
+    mThis.printInvoice = (id, menulink) => {
         if (!AuthManager.allowed(238, false)) return;
 
         vsapi
@@ -743,10 +693,8 @@ var InvoiceComponent = (() => {
                     const globalSetting = res.data?.invoice_setting || {};
                     const companyProfile = res.data?.company_info || {};
                     const invoiceSetting = invoiceDetails.settings;
-
                     const invType = invoiceDetails?.invoice_type;
 
-                    // Initialize params object
                     const params = {
                         invoice_id: id,
                         btn: menulink,
@@ -763,22 +711,25 @@ var InvoiceComponent = (() => {
                     }
                     if (invType === 1) {
                         InvoiceTaxDialogVertical.show(params);
-                    }
-                    
-                    // else if (invType === 2 && mThis.internalInvoice) {
-                    //     InternalInvoiceNoTaxDialog.show(params);
-                    // }
-                    
-                    else if (invType === 2) {
+                    } else if (invType === 2) {
                         InvoiceNoTaxDialogVertical.show(params);
                     } else if (invType === 3) {
                         InvoiceCommercialDialogVertical.show(params);
                     } else {
-                        cv_interact.error("Unknown invoice type variant.");
+                        cv_interact.error(
+                            LocaleManager.trans(
+                                "Unknown invoice type variant.",
+                                "message_box_default"
+                            )
+                        );
                     }
                 } else {
                     cv_interact.error(
-                        res.message || "Could not determine invoice type."
+                        res.message ||
+                            LocaleManager.trans(
+                                "Could not determine invoice type.",
+                                "message_box_default"
+                            )
                     );
                 }
             });
@@ -799,7 +750,6 @@ var InvoiceComponent = (() => {
                     ""
                 );
 
-                // Populate Invoice Type filter
                 const typeOptions = [
                     { id: 1, name: "Tax" },
                     { id: 2, name: "No Tax" },
@@ -850,57 +800,54 @@ const InvoiceDialog = (() => {
                             <div id="_invoice_form_container" class="bg-white rounded-3">
 
                                 <div class="d-flex justify-content-between align-items-start">
-
                                     <!-- LEFT: Tenant Info -->
                                     <div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold" vslang="labels.Tenant">  </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Tenant"></label>
                                             <span class="field-sep">:</span>
                                             <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Phone Number"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input"  placeholder=" " disabled>
+                                            <input name="phone_number" class="data-input form-control field-input" placeholder=" " disabled>
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Email"></label>
                                             <span class="field-sep">:</span>
                                             <input name="email" class="data-input form-control field-input" placeholder=" " disabled>
                                         </div>
-                                        <div class="field-row ">
+                                        <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Unit"></label>
                                             <span class="field-sep">:</span>
-                                                <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
-                                                </select>
+                                            <select name="space" data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" "></select>
                                         </div>
                                     </div>
 
                                     <!-- RIGHT: Space / Button -->
                                     <div>
-                                        <div class="field-row ">
+                                        <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Invoice Type"></label>
                                             <span class="field-sep">:</span>
-                                                <select name="invoice_type"  data-style="material" class="data-input form-control" data-field="invoice_type" required placeholder=" ">
-                                                    <option value="1">Tax</option>
-                                                    <option value="2">No Tax</option>
-                                                    <option value="3">Commercial</option>
-                                                </select>
+                                            <select name="invoice_type" data-style="material" class="data-input form-control" data-field="invoice_type" required placeholder=" ">
+                                                <option value="1">Tax</option>
+                                                <option value="2">No Tax</option>
+                                                <option value="3">Commercial</option>
+                                            </select>
                                         </div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold" vslang="labels.Issue Date"> </label>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold" vslang="labels.Issue Date"></label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="issue_date" data-field="issue_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold" vslang="labels.Due Date"> </label>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold" vslang="labels.Due Date"></label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
 
-
                                         <div class="field-row w-100 justify-content-end">
-                                            <div class="d-flex flex-wrap gap-2 justify-content-end ">
+                                            <div class="d-flex flex-wrap gap-2 justify-content-end">
                                                 <button name="btnRent" class="custom-button" vslang="buttons.Rent"></button>
                                                 <button name="btnService" class="custom-button" vslang="buttons.Service"></button>
                                                 <button name="btnRequest" class="custom-button" vslang="buttons.Request"></button>
@@ -910,7 +857,7 @@ const InvoiceDialog = (() => {
                                     </div>
                                 </div>
 
-                                <div name="divItemsView" ></div>
+                                <div name="divItemsView"></div>
                                 <div class="mt-4 d-flex justify-content-end mb-3">
                                     <div name="div_invoice_summary" class="w-100" style="max-width: 400px;"></div>
                                 </div>
@@ -919,104 +866,29 @@ const InvoiceDialog = (() => {
                                     <textarea class="data-input form-control" data-field="general_remark" name="general_remark" rows="1" placeholder=" "></textarea>
                                     <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
-
-
                             </div>
                         </div>
 
                         <style>
-                        .field-row {
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 12px;
-                            --field-width: 260px;
-                        }
-                        .field-label {
-                            width: 110px;
-                            font-size: 0.875rem;
-                            color: #222;
-                            flex-shrink: 0;
-                        }
-                        .field-sep {
-                            margin: 0 10px;
-                            font-weight: 600;
-                            color: #444;
-                            flex-shrink: 0;
-                        }
-                        .field-row .field-input {
-                            width: var(--field-width);
-                            border-radius: 6px;
-                            border: 1px solid #d0d0d0;
-                            font-size: 0.875rem;
-                            padding: 6px 10px;
-                            background-color: #fff;
-                            box-sizing: border-box;
-                        }
-                        .field-row .field-input:focus {
-                            border-color: #86b7fe;
-                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
-                            outline: none;
-                        }
-                        .field-row .choices {
-                            width: var(--field-width) !important;
-                            flex-shrink: 0;
-                        }
-                        .field-row .choices .choices__inner {
-                            width: 100% !important;
-                            min-height: unset !important;
-                            border-radius: 6px !important;
-                            border: 1px solid #d0d0d0 !important;
-                            font-size: 0.875rem !important;
-                            padding: 6px 10px !important;
-                            background-color: #fff !important;
-                            box-sizing: border-box;
-                        }
-                        .field-row .choices.is-focused .choices__inner,
-                        .field-row .choices .choices__inner:focus-within {
-                            border-color: #86b7fe !important;
-                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15) !important;
-                            outline: none !important;
-                        }
-                        .field-row .choices[data-type="select-one"] .choices__button {
-                            display: none !important;
-                        }
-                        .field-row .choices .choices__list--dropdown {
-                            width: var(--field-width) !important;
-                            z-index: 9999;
-                        }
-                        .custom-button {
-                            color: #1a1647;
-                            padding: 10px;
-                            font-size: 12px;
-                            border-radius: 0.5em;
-                            background: ##d4d4db;
-                            cursor: pointer;
-                            border: 1px solid #9290aa;
-                            transition: all 0.3s;
-                        }
-                        .custom-button:hover {
-                            background-color: #b9b9c9;
-                            border-color: #1a1647;
-                        }
-
-                        .custom-button:active {
-                            color: #666;
-                            box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
-                        }
-
-                        .cursor-blocked {
-                            cursor: not-allowed !important;
-                        }
-
+                        .field-row { display: flex; align-items: center; margin-bottom: 12px; --field-width: 260px; }
+                        .field-label { width: 110px; font-size: 0.875rem; color: #222; flex-shrink: 0; }
+                        .field-sep { margin: 0 10px; font-weight: 600; color: #444; flex-shrink: 0; }
+                        .field-row .field-input { width: var(--field-width); border-radius: 6px; border: 1px solid #d0d0d0; font-size: 0.875rem; padding: 6px 10px; background-color: #fff; box-sizing: border-box; }
+                        .field-row .field-input:focus { border-color: #86b7fe; box-shadow: 0 0 0 3px rgba(13,110,253,0.15); outline: none; }
+                        .field-row .choices { width: var(--field-width) !important; flex-shrink: 0; }
+                        .field-row .choices .choices__inner { width: 100% !important; min-height: unset !important; border-radius: 6px !important; border: 1px solid #d0d0d0 !important; font-size: 0.875rem !important; padding: 6px 10px !important; background-color: #fff !important; box-sizing: border-box; }
+                        .field-row .choices.is-focused .choices__inner, .field-row .choices .choices__inner:focus-within { border-color: #86b7fe !important; box-shadow: 0 0 0 3px rgba(13,110,253,0.15) !important; outline: none !important; }
+                        .field-row .choices[data-type="select-one"] .choices__button { display: none !important; }
+                        .field-row .choices .choices__list--dropdown { width: var(--field-width) !important; z-index: 9999; }
+                        .custom-button { color: #1a1647; padding: 10px; font-size: 12px; border-radius: 0.5em; background: #d4d4db; cursor: pointer; border: 1px solid #9290aa; transition: all 0.3s; }
+                        .custom-button:hover { background-color: #b9b9c9; border-color: #1a1647; }
+                        .custom-button:active { color: #666; box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff; }
+                        .cursor-blocked { cursor: not-allowed !important; }
                         </style>
-
-
                     `,
 
             contentCreated: me => {
                 me.controls = me.controls || {};
-                // const btn_close = me.divModal.querySelector(".close");
-                // if (btn_close) btn_close.classList.add("show");
                 const allInputs = me.divModal.querySelectorAll(
                     ".data-input, input, select, textarea"
                 );
@@ -1027,27 +899,41 @@ const InvoiceDialog = (() => {
                 me.controls.divItemsView = me.divModal.querySelector(
                     '[name="divItemsView"]'
                 );
-
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("select_tenant");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_tenant",
+                                "message_box_default"
+                            )
+                        );
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("select_space");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_space",
+                                "message_box_default"
+                            )
+                        );
                     }
 
                     if (
                         !me.controls.invoice_type.value ||
                         me.controls.invoice_type.value === ""
                     ) {
-                        return cv_interact.error("Please select Invoice Type.");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "Please select Invoice Type.",
+                                "message_box_default"
+                            )
+                        );
                     }
                     const invoiceType = me.controls.invoice_type.value;
                     const spaces = me._tenantSpaces || [];
@@ -1063,7 +949,12 @@ const InvoiceDialog = (() => {
                         ) || spaces[0];
 
                     if (!matchedSpace) {
-                        return cv_interact.error("No space/contract found.");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "No space/contract found.",
+                                "message_box_default"
+                            )
+                        );
                     }
                     const availableMonths = months.filter(
                         m =>
@@ -1071,15 +962,15 @@ const InvoiceDialog = (() => {
                             String(matchedSpace.contract_id)
                     );
 
-                    // console.log("availableMonths", availableMonths);
-
                     if (!availableMonths || availableMonths.length === 0) {
                         return cv_interact.error(
-                            "Rent has already reached the final month of the contract."
+                            LocaleManager.trans(
+                                "Rent has already reached the final month of the contract.",
+                                "message_box_default"
+                            )
                         );
                     }
 
-                    // Popup Initialization
                     let rentDiv = null;
                     InputBox.resetInstance("rentPopUp");
 
@@ -1088,7 +979,6 @@ const InvoiceDialog = (() => {
                             "Rental Details",
                             "titles"
                         )}`,
-                        // title: "Rental Details",
                         instanceKey: "rentPopUp",
                         confirmButtonText: `${LocaleManager.trans(
                             "Save",
@@ -1107,7 +997,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Contract Details"></span>
+                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Contract Details"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1124,24 +1014,24 @@ const InvoiceDialog = (() => {
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
+                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                             <input class="data-input form-control cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
-                            <label style="color:#777;" vslang="labels.Start Date">/label>
+                            <label style="color:#777;" vslang="labels.Start Date"></label>
                         </div>
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                             <input class="data-input form-control cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
-                            <label style="color:#777;"vslang="labels.End Date"></label>
+                            <label style="color:#777;" vslang="labels.End Date"></label>
                         </div>
                     </div>
                 </div>
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
+                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1150,7 +1040,7 @@ const InvoiceDialog = (() => {
                                 ? "grid-column: span 2;"
                                 : ""
                         }">
-                            <input class="data-input form-control cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                            <input class="data-input form-control cursor-blocked" data-field="price" name="price" type="text" readonly style="color:#0c447c;">
                             <label style="color:#777;" vslang="labels.Total Price ($)"></label>
                         </div>
                         ${
@@ -1228,16 +1118,13 @@ const InvoiceDialog = (() => {
 
                             elMonthly.value = matchedMonth.month || "";
 
-                            if (elDiscountType) {
+                            if (elDiscountType)
                                 elDiscountType.value = "percent";
-                            }
-                            if (elStartDate) {
+                            if (elStartDate)
                                 elStartDate.value =
                                     matchedMonth.start_date || "";
-                            }
-                            if (elEndDate) {
+                            if (elEndDate)
                                 elEndDate.value = matchedMonth.end_date || "";
-                            }
 
                             const numericInputs = [
                                 rentDiv.querySelector(
@@ -1253,15 +1140,13 @@ const InvoiceDialog = (() => {
                                         ""
                                     );
                                     const parts = v.split(".");
-                                    if (parts.length > 2) {
+                                    if (parts.length > 2)
                                         v = parts[0] + "." + parts[1];
-                                    }
-                                    if (parts[1] !== undefined) {
+                                    if (parts[1] !== undefined)
                                         v =
                                             parts[0] +
                                             "." +
                                             parts[1].slice(0, 2);
-                                    }
                                     e.target.value = v;
                                 });
 
@@ -1277,13 +1162,11 @@ const InvoiceDialog = (() => {
                         },
 
                         onConfirm(data, btn, ibMe) {
-                            // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
                             const elTaxRate = document.querySelector(
                                 '[data-field="tax_rate"]'
                             );
 
                             if (elTaxRate) {
-                                // If tax field is blank, empty strings, or evaluates to an invalid number
                                 if (
                                     data.tax_rate === undefined ||
                                     data.tax_rate === null ||
@@ -1383,22 +1266,26 @@ const InvoiceDialog = (() => {
                 };
 
                 me.controls.btnElectric.onclick = () => {
-                    // console.log("Global Setting", globalSetting);
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("select_tenant");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_tenant",
+                                "message_box_default"
+                            )
+                        );
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("select_space");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_space",
+                                "message_box_default"
+                            )
+                        );
                     }
-                    // const exchangeRate = me.exchangeRate;
-                    // console.log(1111111111111111111,exchangeRate);
-                    const getRowItem = me.itemsView.getItems();
-                    // console.log("getRowItem", getRowItem);
 
-                    // Fetch InvoiceSetting first, then open popup
                     const openElectricPopup = () => {
                         let electricDiv = null;
                         InputBox.resetInstance("electricPopUp");
@@ -1407,8 +1294,6 @@ const InvoiceDialog = (() => {
                                 "Electricity Utility",
                                 "titles"
                             )}`,
-                            // title: "vslang:titles.Electricity Utility",
-                            // title: LocaleManager.translate("titles.Electricity Utility"),
                             instanceKey: "electricPopUp",
                             confirmButtonText: `${LocaleManager.trans(
                                 "Save",
@@ -1425,19 +1310,16 @@ const InvoiceDialog = (() => {
                                     "display:flex; flex-direction:column;";
 
                                 div.innerHTML = `
-                                <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
                                     <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;" vslang="titles.By Reading"></div>
                                     <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;" vslang="titles.Manual Entry"></div>
                                 </div>
 
-                                <!-- Section: Core Consumption Inputs -->
                                 <div class="d-flex align-items-center mb-3">
                                     <span id="consumption_header" style="color:#0C447C; font-size:13px;" vslang="titles.Readings"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
-                                <!-- Conditional Dynamic Fields (Reading vs Manual) -->
                                 <div id="row_reading_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
@@ -1449,46 +1331,35 @@ const InvoiceDialog = (() => {
                                     </div>
                                 </div>
 
-                                <!-- Shared Units Field (ReadOnly on Reading tab, Editable on Manual tab) -->
                                 <div id="row_manual_fields" class="material-input outlined" style="margin-bottom: 1rem; display:none;">
                                     <input class="data-input form-control" data-field="units_used" name="units_used" type="text" inputmode="decimal" placeholder="0.00">
                                     <label style="color:#777;" vslang="labels.Units Used (kWh)"></label>
                                 </div>
 
-                               <!-- Section: Unified Calculations -->
                                 <div class="d-flex align-items-center mb-3">
                                     <span style="color:#0C447C; font-size:13px;" vslang="titles.Calculation"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
-                                <!-- Dynamic Row Container: Swaps between 2 columns (Reading mode) and 3 columns (Manual mode) -->
                                 <div id="row_calculation_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-
-                                    <!-- Only visible in Reading Tab -->
                                     <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
                                         <label style="color:#777;" vslang="labels.Calculated Units (kWh)"></label>
                                     </div>
-
-                                    <!-- Shared Field: Changes grid position dynamically -->
                                     <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
                                         <label style="color:#777;" vslang="labels.Exchange Rate (KHR)"></label>
                                     </div>
-
-                                    <!-- Hidden on Reading Init, part of the 3-column row in Manual -->
                                     <div id="wrapper_price_khr" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="price_khr" name="price_khr" type="text" inputmode="decimal" placeholder="0.00">
                                         <label style="color:#777;" vslang="labels.Price per kWh (KHR)"></label>
                                     </div>
-
                                     <div id="wrapper_price_usd" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="price_usd" name="price_usd" type="text" inputmode="decimal" placeholder="0.00">
                                         <label style="color:#777;" vslang="labels.Price per kWh (USD)"></label>
                                     </div>
                                 </div>
 
-                                <!-- Section: Unified Period -->
                                 <div class="d-flex align-items-center mb-3">
                                     <span style="color:#0C447C; font-size:13px;" vslang="titles.Period"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
@@ -1500,11 +1371,10 @@ const InvoiceDialog = (() => {
                                     </div>
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
-                                        <label style="color:#777;"vslang="labels.End Date"></label>
+                                        <label style="color:#777;" vslang="labels.End Date"></label>
                                     </div>
                                 </div>
 
-                                <!-- Unified Total Amount Footer Display -->
                                 <div class="material-input outlined">
                                     <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                         style="background-color: #f0f7ff; border-color: #0c447c; font-weight: bold; font-size: 1.1em;">
@@ -1522,7 +1392,6 @@ const InvoiceDialog = (() => {
                             },
 
                             onOpen(ibMe) {
-                                // Target elements using structural selectors
                                 const elOld = electricDiv.querySelector(
                                     '[data-field="old_electric"]'
                                 );
@@ -1535,7 +1404,6 @@ const InvoiceDialog = (() => {
                                 const elUnitsReadonly = electricDiv.querySelector(
                                     "#units_used_readonly"
                                 );
-
                                 const elExchangeRate = electricDiv.querySelector(
                                     '[data-field="exchange_rate"]'
                                 );
@@ -1545,7 +1413,6 @@ const InvoiceDialog = (() => {
                                 const elPriceUSD = electricDiv.querySelector(
                                     '[data-field="price_usd"]'
                                 );
-
                                 const elStartDate = electricDiv.querySelector(
                                     '[data-field="start_date"]'
                                 );
@@ -1562,7 +1429,6 @@ const InvoiceDialog = (() => {
                                     '[data-field="entry_mode"]'
                                 );
 
-                                // Structural layout layout control nodes
                                 const btnTabReading = electricDiv.querySelector(
                                     "#btn_tab_reading"
                                 );
@@ -1586,14 +1452,6 @@ const InvoiceDialog = (() => {
                                     ? exchangeRate.exchange_rate ?? ""
                                     : "";
 
-                                // console.log(
-                                //     "InvoiceSetting.exchange_rate",
-                                //     exchangeRate
-                                //         ? exchangeRate.exchange_rate
-                                //         : null
-                                // );
-
-                                // Currency conversion handlers
                                 elPriceKHR.addEventListener("input", e => {
                                     const rate =
                                         parseFloat(elExchangeRate.value) ||
@@ -1641,48 +1499,38 @@ const InvoiceDialog = (() => {
                                     recalc();
                                 });
 
-                                // UI Tab switcher
-
-                                // New structural nodes for 3-in-1 row switching
                                 const rowCalculationFields = electricDiv.querySelector(
                                     "#row_calculation_fields"
                                 );
 
-                                // UI Tab switcher
                                 const switchTab = mode => {
                                     elMode.value = mode;
                                     if (mode === "reading") {
-                                        // Form structure configuration
                                         rowReadingFields.style.display = "grid";
                                         rowManualFields.style.display = "none";
-                                        txtConsumptionHeader.textContent =
-                                            "Readings";
-
-                                        // Calculation Row: Standard 2x2 layout look
+                                        txtConsumptionHeader.textContent = LocaleManager.trans(
+                                            "Readings",
+                                            "titles"
+                                        );
                                         rowCalculationFields.style.gridTemplateColumns =
                                             "1fr 1fr";
                                         wrapperUnitsReadonly.style.display =
                                             "block";
-
-                                        // Tab Styles
                                         btnTabReading.style.cssText =
                                             "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
                                         btnTabManual.style.cssText =
                                             "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
                                     } else {
-                                        // Form structure configuration
                                         rowReadingFields.style.display = "none";
                                         rowManualFields.style.display = "block";
-                                        txtConsumptionHeader.textContent =
-                                            "Manual Entry";
-
-                                        // Calculation Row: Shrinks into 1 clean row with 3 columns
+                                        txtConsumptionHeader.textContent = LocaleManager.trans(
+                                            "Manual Entry",
+                                            "titles"
+                                        );
                                         rowCalculationFields.style.gridTemplateColumns =
                                             "1fr 1fr 1fr";
                                         wrapperUnitsReadonly.style.display =
                                             "none";
-
-                                        // Tab Styles
                                         btnTabManual.style.cssText =
                                             "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
                                         btnTabReading.style.cssText =
@@ -1696,7 +1544,6 @@ const InvoiceDialog = (() => {
                                 btnTabManual.onclick = () =>
                                     switchTab("manual");
 
-                                // Centralized recalculation logic
                                 const recalc = () => {
                                     const mode = elMode.value;
                                     let units = 0;
@@ -1749,7 +1596,6 @@ const InvoiceDialog = (() => {
                                     }
                                 };
 
-                                // Input format validation helpers and recalculation binding
                                 [
                                     elOld,
                                     elNew,
@@ -1765,7 +1611,6 @@ const InvoiceDialog = (() => {
                                         el.addEventListener("change", recalc);
                                     }
 
-                                    // Block non-numeric characters while tying
                                     el.addEventListener("input", e => {
                                         if (el.dataset.type === "date") return;
                                         let v = e.target.value.replace(
@@ -1783,7 +1628,6 @@ const InvoiceDialog = (() => {
                                         e.target.value = v;
                                     });
 
-                                    // Enforce proper floats on losing input focus
                                     el.addEventListener("blur", e => {
                                         if (el.dataset.type === "date") return;
                                         let v = parseFloat(e.target.value);
@@ -1802,7 +1646,6 @@ const InvoiceDialog = (() => {
                                 let units = 0;
                                 let remarks = "";
 
-                                // Validation rules per view mode
                                 if (mode === "reading") {
                                     const oldReading =
                                         parseFloat(data.old_electric) || 0;
@@ -1812,18 +1655,27 @@ const InvoiceDialog = (() => {
 
                                     if (newReading <= 0)
                                         return ibMe.setError(
-                                            "New reading is required."
+                                            LocaleManager.trans(
+                                                "New reading is required.",
+                                                "message_box_default"
+                                            )
                                         );
                                     if (newReading <= oldReading)
                                         return ibMe.setError(
-                                            "New reading must be greater than old reading."
+                                            LocaleManager.trans(
+                                                "New reading must be greater than old reading.",
+                                                "message_box_default"
+                                            )
                                         );
                                     remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
                                 } else {
                                     units = parseFloat(data.units_used) || 0;
                                     if (units <= 0)
                                         return ibMe.setError(
-                                            "Units Used field is required and must be greater than 0."
+                                            LocaleManager.trans(
+                                                "Units Used field is required and must be greater than 0.",
+                                                "message_box_default"
+                                            )
                                         );
                                     remarks = `Electric Utility - ${data.start_date ||
                                         ""} to ${data.end_date || ""}`;
@@ -1831,29 +1683,36 @@ const InvoiceDialog = (() => {
 
                                 if (ppu <= 0)
                                     return ibMe.setError(
-                                        "Price per kWh (USD) is required."
+                                        LocaleManager.trans(
+                                            "Price per kWh (USD) is required.",
+                                            "message_box_default"
+                                        )
                                     );
                                 if (!data.start_date || !data.end_date)
                                     return ibMe.setError(
-                                        "Start and End dates are required."
+                                        LocaleManager.trans(
+                                            "Start and End dates are required.",
+                                            "message_box_default"
+                                        )
                                     );
                                 if (
                                     new Date(data.end_date) <
                                     new Date(data.start_date)
                                 ) {
                                     return ibMe.setError(
-                                        "End date cannot be before Start date."
+                                        LocaleManager.trans(
+                                            "End date cannot be before Start date.",
+                                            "message_box_default"
+                                        )
                                     );
                                 }
 
-                                // Push payload to items view structure
                                 me.itemsView.addRow(
                                     {
                                         item_id: null,
                                         type: "utility",
                                         price: ppu,
                                         qty: units,
-                                        // remarks: remarks,
                                         remarks:
                                             mode === "reading"
                                                 ? `Electricity ${data.old_electric ||
@@ -1883,30 +1742,49 @@ const InvoiceDialog = (() => {
                                     0
                                 );
 
-                                cv_interact.success("Electric item added.");
+                                cv_interact.success(
+                                    LocaleManager.trans(
+                                        "Electric item added.",
+                                        "message_box_default"
+                                    )
+                                );
                                 ibMe.close();
                             }
                         });
-                    }; // end openElectricPopup
+                    };
 
                     openElectricPopup();
                 };
 
-                // =====================Service ===================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("select_tenant");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_tenant",
+                                "message_box_default"
+                            )
+                        );
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("select_space");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_space",
+                                "message_box_default"
+                            )
+                        );
                     }
 
                     const services = availableItem || [];
                     if (services.length === 0) {
-                        return cv_interact.error("No services available.");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "No services available.",
+                                "message_box_default"
+                            )
+                        );
                     }
 
                     const serviceOptions = services
@@ -1927,7 +1805,6 @@ const InvoiceDialog = (() => {
                             "Add Service",
                             "titles"
                         )}`,
-                        // title: "Add Service",
                         instanceKey: "servicePopUp",
                         confirmButtonText: `${LocaleManager.trans(
                             "Save",
@@ -1975,8 +1852,8 @@ const InvoiceDialog = (() => {
                                 </div>
 
                                 <div id="billing_period_container" style="display:none;">
-                                    <div class="d-flex align-items-center  mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -2034,7 +1911,6 @@ const InvoiceDialog = (() => {
                             const elPriceWrapper = serviceDiv.querySelector(
                                 "#price_wrapper"
                             );
-
                             const elService = serviceDiv.querySelector(
                                 '[data-field="service_id"]'
                             );
@@ -2066,11 +1942,8 @@ const InvoiceDialog = (() => {
                                 '[data-field="total_amount"]'
                             );
 
-                            // --- Calculation Engine ---
                             const calculateTotalAmount = () => {
                                 const price = parseFloat(elPrice.value) || 0;
-
-                                // If it's a month unit, get month selection. Otherwise, fallback to Qty 1.
                                 const isMonthly =
                                     (elUnitType.value || "").toLowerCase() ===
                                     "month";
@@ -2091,10 +1964,8 @@ const InvoiceDialog = (() => {
                                 }
 
                                 if (subtotal < 0) subtotal = 0;
-
-                                if (elTotalAmount) {
+                                if (elTotalAmount)
                                     elTotalAmount.value = subtotal.toFixed(2);
-                                }
                             };
 
                             const fillFields = serviceId => {
@@ -2125,13 +1996,12 @@ const InvoiceDialog = (() => {
                                         elBillingCont.style.display = "none";
                                         elPriceWrapper.style.gridColumn =
                                             "span 2";
-
                                         elStartDate.value = "";
                                         elEndDate.value = "";
                                     }
 
                                     recalcDates();
-                                    calculateTotalAmount(); // Calculate right after switching services
+                                    calculateTotalAmount();
                                 }
                             };
 
@@ -2184,7 +2054,6 @@ const InvoiceDialog = (() => {
                                 );
                             }
 
-                            // Recalculate dates AND totals on configuration inputs
                             [elDuration, elStartDate].forEach(el => {
                                 el?.addEventListener("change", () => {
                                     recalcDates();
@@ -2192,7 +2061,6 @@ const InvoiceDialog = (() => {
                                 });
                             });
 
-                            // Trigger real-time calculations on financial configuration inputs
                             if (elDiscountType) {
                                 elDiscountType.addEventListener(
                                     "change",
@@ -2210,8 +2078,7 @@ const InvoiceDialog = (() => {
                                     if (parts.length > 2)
                                         v = parts[0] + "." + parts[1];
                                     e.target.value = v;
-
-                                    calculateTotalAmount(); // Live recalculation as you type
+                                    calculateTotalAmount();
                                 });
 
                                 elDiscount.addEventListener("blur", e => {
@@ -2277,7 +2144,6 @@ const InvoiceDialog = (() => {
                                 } `;
                             }
 
-                            // Read the dynamically computed total amount from input
                             const totalAmountInput = serviceDiv.querySelector(
                                 '[data-field="total_amount"]'
                             );
@@ -2330,13 +2196,10 @@ const InvoiceDialog = (() => {
                             );
 
                             cv_interact.success(
-                                `Service added for ${qtyMonths} ${
-                                    unit === "month"
-                                        ? qtyMonths === 1
-                                            ? "month"
-                                            : "months"
-                                        : "unit"
-                                }`
+                                LocaleManager.trans(
+                                    "Service added.",
+                                    "message_box_default"
+                                )
                             );
                             ibMe.close();
                         },
@@ -2346,21 +2209,28 @@ const InvoiceDialog = (() => {
                     });
                 };
 
-                // ==================Service Request=========
                 me.controls.btnRequest.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("select_tenant");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_tenant",
+                                "message_box_default"
+                            )
+                        );
                     }
 
                     const selectedSpaceId =
                         me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
-                        return cv_interact.error("select_space");
+                        return cv_interact.error(
+                            LocaleManager.trans(
+                                "select_space",
+                                "message_box_default"
+                            )
+                        );
                     }
 
                     const requests = me._requestedServices || [];
-                    // console.log("All Requests", requests);
-
                     const filteredRequests = requests.filter(
                         r => String(r.space_id) === String(selectedSpaceId)
                     );
@@ -2385,7 +2255,6 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("requestPopUp");
 
                     InputBox.show({
-                        // title: "Service Request",
                         title: `${LocaleManager.trans(
                             "Service Request",
                             "titles"
@@ -2462,7 +2331,7 @@ const InvoiceDialog = (() => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class=" material-input outlined" style="display:none;">
+                                <div class="material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
@@ -2509,7 +2378,6 @@ const InvoiceDialog = (() => {
                             if (elPriceWrapperR)
                                 elPriceWrapperR.style.gridColumn = "span 2";
 
-                            // Calculation function for Live Totals
                             const calculateTotalAmount = () => {
                                 if (!elPrice || !elTotalAmount) return;
 
@@ -2537,9 +2405,7 @@ const InvoiceDialog = (() => {
                                     finalTotal = baseTotal - discountVal;
                                 }
 
-                                // Make sure total doesn't drop into negative numbers
                                 if (finalTotal < 0) finalTotal = 0;
-
                                 elTotalAmount.value = finalTotal.toFixed(2);
                             };
 
@@ -2570,7 +2436,6 @@ const InvoiceDialog = (() => {
                                             ? "span 2"
                                             : "span 1";
 
-                                    // Recalculate based on newly matched service values
                                     calculateTotalAmount();
                                 }
                             };
@@ -2606,15 +2471,14 @@ const InvoiceDialog = (() => {
                                             parts[1].slice(0, 2);
                                     e.target.value = v;
 
-                                    calculateTotalAmount(); // Recalculate on keystroke
+                                    calculateTotalAmount();
                                 });
 
                                 elDiscount.addEventListener("blur", e => {
                                     const v = parseFloat(e.target.value);
                                     e.target.value =
                                         isNaN(v) || v < 0 ? "" : v.toFixed(2);
-
-                                    calculateTotalAmount(); // Final check on blur
+                                    calculateTotalAmount();
                                 });
                             }
                         },
@@ -2674,7 +2538,7 @@ const InvoiceDialog = (() => {
                                         ? selectedRequest.duration_hours || 0
                                         : 1,
                                 unit_type: `${selectedRequest.unit_type || 0}`,
-                                remarks: `Service Request:  ${requestDisplayName}`,
+                                remarks: `Service Request: ${requestDisplayName}`,
                                 space_id: selectedRequest.space_id,
                                 space_code: selectedRequest.space_code,
                                 discount: Number(data.discount) || 0,
@@ -2699,13 +2563,6 @@ const InvoiceDialog = (() => {
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
                     columns: [
-                        // {
-                        //     name: "item_id",
-                        //     displayType: "text",
-                        //     readOnly: true,
-                        //     width: "2px",
-                        // },
-
                         {
                             name: "remarks",
                             transTitle: "titles.Item",
@@ -2714,9 +2571,7 @@ const InvoiceDialog = (() => {
                             readOnly: true,
                             className: "small col-item-name",
                             width: "230px"
-                            // html: '<input type="checkbox" class="check_accept">',
                         },
-
                         {
                             name: "start_date",
                             transTitle: "titles.Start Date",
@@ -2741,7 +2596,6 @@ const InvoiceDialog = (() => {
                             className: "text-start",
                             width: "70px"
                         },
-
                         {
                             name: "unit_type",
                             transTitle: "titles.Charge As",
@@ -2791,7 +2645,6 @@ const InvoiceDialog = (() => {
                         taxField: "tax_rate",
                         currencyPrecision: 2
                     },
-
                     totalSummary: {
                         container: me.controls.div_invoice_summary,
                         showTax: false,
@@ -2805,25 +2658,10 @@ const InvoiceDialog = (() => {
                             discount: LocaleManager.trans("Discount", "titles"),
                             total: LocaleManager.trans("Total", "titles")
                         }
-                        // currencyConversion: {
-                        //     currency_code: "KHR",
-                        //     rate: 4100
-                        // }
                     },
-                    // currencyConversion: {
-                    //     currency_code: "KHR",
-                    //     rate: 4100,
-                    //     transTitle: "titles.Amount in KHR"
-                    // },
                     tableClass: "table",
                     ensureEmptyRow: true,
                     showAddLineButton: true,
-
-                    // validateColumns: {
-                    //     item_id: "positive",
-                    //     qty: "positive",
-                    //     price: "positive"
-                    // },
 
                     itemRendered(item, ctx) {
                         const tr = ctx.tr;
@@ -2846,10 +2684,6 @@ const InvoiceDialog = (() => {
                             ]);
                         }
                     },
-
-                    // afterDelete(rows, ctx) {
-                    //     // console.log("afterDelete", rows, ctx);
-                    // },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
@@ -2896,60 +2730,6 @@ const InvoiceDialog = (() => {
                         }
                     }
                 });
-
-                // me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                //     type: "select",
-                //     prefetch: true,
-                //     query: {
-                //         from: "tenants",
-                //         where: [["status_id", "=", 2]],
-                //         select: [
-                //             "id",
-                //             "name",
-                //             "legal_name",
-                //             "email",
-                //             "phone_number",
-                //         ],
-                //         showColumnHeader: true,
-                //         searchFields: {
-                //             name: "LIKE",
-                //             phone_number: "LIKE",
-                //         },
-                //     },
-                //     columns: { name: "Name", phone_number: "Phone" },
-                //     onSelect: (tenant) => {
-                //         me._selectedTenantId = tenant.id;
-                //         vsapi
-                //             .post(
-                //                 `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
-                //                 { tenant_id: tenant.id },
-                //                 {},
-                //             )
-                //             .then((res) => {
-                //                 const d = res.data || {};
-
-                //                 me.controls.phone_number.value =
-                //                     d.tenant?.phone_number || "";
-                //                 me.controls.email.value = d.tenant?.email || "";
-                //                 me._selectedTenantId = tenant.id;
-                //                 me._tenantData = d;
-                //                 me._tenantSpaces = d.spaces || [];
-                //                 me._tenantMonths = d.months || [];
-                //                 me._requestedServices =
-                //                     d.service_requests || [];
-
-                //                 VSUtil.setComboItems(
-                //                     me.controls.space,
-                //                     d.spaces || [],
-                //                     "space_id",
-                //                     "space_code",
-                //                     "",
-                //                     "Select Space",
-                //                     "",
-                //                 );
-                //             });
-                //     },
-                // });
 
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: "select",
@@ -3001,9 +2781,6 @@ const InvoiceDialog = (() => {
                                 );
                             });
                     }
-                    //     api: {
-                    //     endpoint: `${main_view.base_url}/prm/tenant/option-tenant-with-contract`
-                    // },
                 });
 
                 me.searchTenant.reset("");
@@ -3012,9 +2789,7 @@ const InvoiceDialog = (() => {
                     let header = me.getData();
                     const items = me.itemsView.getItems({
                         metaKeys: ["item_id", "type", "remark", "unit_type"]
-                    }); // Retrieves all row data
-
-                    // console.log("Items", items);
+                    });
 
                     const totals = me.itemsView.getCurrentTotals?.() || {};
 
@@ -3025,21 +2800,12 @@ const InvoiceDialog = (() => {
                         header.id = me.dataOptions.id;
                     }
 
-                    const toMySQLDate = dateStr => {
-                        if (!dateStr) return null;
-                        const d = new Date(dateStr);
-                        return isNaN(d.getTime())
-                            ? null
-                            : d.toISOString().split("T")[0];
-                    };
-
                     const mappedItems = items
                         .filter(
                             item =>
                                 parseFloat(item.price || 0) > 0 ||
                                 parseFloat(item.qty || 0) > 0
                         )
-
                         .map(item => {
                             return {
                                 ...item,
@@ -3062,7 +2828,7 @@ const InvoiceDialog = (() => {
                         items: mappedItems,
                         discount_value: totals.discount_value || 0,
                         discount_type: totals.discount_type || "percent",
-                        amount: totals.subtotal, // Total for the invoice header
+                        amount: totals.subtotal,
                         amount_payable: totals.grand_total
                     };
                 };
@@ -3088,7 +2854,6 @@ const InvoiceDialog = (() => {
                             );
                             return;
                         }
-
                         exchangeRate = res.data;
                     });
 
@@ -3100,14 +2865,11 @@ const InvoiceDialog = (() => {
                     "invoice_type"
                 ]);
 
-                // me.set;
-
                 me._selectedTenantId = null;
                 me._tenantData = null;
                 me._tenantSpaces = [];
                 me._tenantMonths = [];
 
-                // Clear all inputs
                 if (me.controls) {
                     Object.values(me.controls).forEach(el => {
                         if (
@@ -3193,7 +2955,6 @@ const InvoiceDialog = (() => {
                                                 me.controls.space.value = String(
                                                     detail.space_id
                                                 );
-
                                                 if (
                                                     me.controls.space.value !==
                                                     String(detail.space_id)
@@ -3230,17 +2991,6 @@ const InvoiceDialog = (() => {
                 }
             },
 
-            // onShow: me => {
-            //     const title = me.divModal.querySelector(".modal-title");
-            //     if (title) {
-            //         const isModify = !!me.dataOptions?.id;
-            //         title.innerHTML = isModify
-            //             ? '<h4 class="text-prm-custom text-start fw-bold text-white" vslang="titles.Modify Invoice">Modify Invoice</h4>'
-            //             : '<h4 class="text-prm-custom text-start fw-bold text-white" vslang="titles.Create Invoice">Create Invoice</h4>';
-            //     }
-
-            // },
-
             onShow: me => {
                 const titleEl = me.divModal.querySelector(".modal-title");
 
@@ -3254,13 +3004,10 @@ const InvoiceDialog = (() => {
             },
 
             prepareFormOptions: {
-                // modifyTitle: "vslang:titles.Modify Invoice",
-                // createTitle: "vslang:titles.Create Invoice",
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
                     params: op => {
-                        // console.log("API params op:", op);
                         return { id: op.id };
                     }
                 }
@@ -3292,7 +3039,12 @@ const InvoiceDialog = (() => {
                         if (!formData) return;
 
                         if (!formData.items || formData.items.length === 0) {
-                            return cv_interact.error("add_item");
+                            return cv_interact.error(
+                                LocaleManager.trans(
+                                    "add_item",
+                                    "message_box_default"
+                                )
+                            );
                         }
                         formData.id = me.dataOptions.id;
 
@@ -3306,13 +3058,23 @@ const InvoiceDialog = (() => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
-                                            ? "update_success_invoice"
-                                            : "create_success_invoice"
+                                            ? LocaleManager.trans(
+                                                  "update_success_invoice",
+                                                  "message_box_default"
+                                              )
+                                            : LocaleManager.trans(
+                                                  "create_success_invoice",
+                                                  "message_box_default"
+                                              )
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "save_failed"
+                                        res.error_message ||
+                                            LocaleManager.trans(
+                                                "save_failed",
+                                                "message_box_default"
+                                            )
                                     );
                                 }
                             });
@@ -3728,13 +3490,250 @@ const ReceiveDialog = (() => {
     return self;
 })();
 
+// const InvoiceSettingDialog = (() => {
+//     const self = {};
+//     let dialog = null;
+
+//     self.show = op => {
+//         // console.log(12, op);
+
+//         const currentData = op || {};
+//         const invoiceId = currentData.id || currentData.invoice_id || 0;
+
+//         dialog = new GeneralDialog({
+//             title: LocaleManager.trans("Invoice Setting", "titles"),
+//             cssClass: "modal-lg vs-modal",
+//             backdrop: "static",
+//             keyboard: true,
+
+//             createContent: () => `
+//                 <div class="is-card">
+//                     <p class="is-section-title"> ${LocaleManager.trans(
+//                         "Invoice Display Options",
+//                         "labels"
+//                     )}</p>
+
+//                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
+//                         <span class="is-row-label">
+//                             <i class="fa-solid fa-receipt me-2"></i>
+//                             ${LocaleManager.trans(
+//                                 "Show Commercial Tax",
+//                                 "labels"
+//                             )}
+
+//                         </span>
+//                         <div class="form-check form-switch">
+//                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
+//                         </div>
+//                     </div>
+
+//                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
+//                         <span class="is-row-label">
+//                             <i class="fa-solid fa-credit-card me-2"></i>
+//                             ${LocaleManager.trans(
+//                                 "Show Payment Status",
+//                                 "labels"
+//                             )}
+//                         </span>
+//                         <div class="form-check form-switch">
+//                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
+//                         </div>
+//                     </div>
+
+//                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
+//                         <span class="is-row-label">
+//                             <i class="fa-solid fa-scale-balanced me-2"></i>
+//                             ${LocaleManager.trans("Show Balance", "labels")}
+//                         </span>
+//                         <div class="form-check form-switch">
+//                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
+//                         </div>
+//                     </div>
+
+//                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
+//                         <span class="is-row-label">
+//                             <i class="fa-solid fa-money-bill-wave me-2"></i>
+//                             ${LocaleManager.trans("Show Amount Paid", "labels")}
+//                         </span>
+//                         <div class="form-check form-switch">
+//                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_show_amount_paid">
+//                         </div>
+//                     </div>
+
+//                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
+//                         <span class="is-row-label">
+//                             <i class="fa-solid fa-pen-to-square me-2"></i>
+//                             ${LocaleManager.trans("Show Signature", "labels")}
+//                         </span>
+//                         <div class="form-check form-switch">
+//                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
+//                         </div>
+//                     </div>
+//                 </div>
+//             `,
+
+//             contentCreated: me => {
+//                 const dataSource = currentData.settings
+//                     ? currentData.settings
+//                     : currentData;
+
+//                 const normalizedData = {
+//                     show_comm_tax: dataSource.show_comm_tax,
+//                     show_pmt_status: dataSource.show_pmt_status,
+//                     show_balance: dataSource.show_balance,
+//                     show_amount_paid:
+//                         dataSource.show_amount_paid !== undefined
+//                             ? dataSource.show_amount_paid
+//                             : dataSource.show_amount_piad,
+//                     show_sign: dataSource.show_sign
+//                 };
+
+//                 // Fix: Safely locate checkboxes inside document context if framework wrappers fail
+//                 const container = me.divModal || document;
+//                 container.querySelectorAll(".toggle-setting").forEach(input => {
+//                     const field = input.getAttribute("data-field");
+//                     if (field && normalizedData[field] !== undefined) {
+//                         input.checked = parseInt(normalizedData[field]) === 1;
+//                     }
+//                 });
+//             },
+
+//             onPrepareForm: me => {
+//                 vsapi
+//                     .call(`${main_view.base_url}/prm/invoice/get-setting`, {
+//                         id: invoiceId
+//                     })
+//                     .then(res => {
+//                         if (res && res.data) {
+//                             const settingsData = res.data.settings || {};
+
+//                             // console.log(13, settingsData);
+//                             // console.log(14, res);
+
+//                             const normalizedData = {
+//                                 show_comm_tax: settingsData.show_comm_tax,
+//                                 show_pmt_status: settingsData.show_pmt_status,
+//                                 show_balance: settingsData.show_balance,
+//                                 show_amount_paid:
+//                                     settingsData.show_amount_paid !== undefined
+//                                         ? settingsData.show_amount_paid
+//                                         : settingsData.show_amount_piad,
+//                                 show_sign: settingsData.show_sign
+//                             };
+
+//                             // 3. Select container context and map checkbox statuses dynamically
+//                             const container = me.divModal || document;
+//                             container
+//                                 .querySelectorAll(".toggle-setting")
+//                                 .forEach(input => {
+//                                     const field = input.getAttribute(
+//                                         "data-field"
+//                                     );
+//                                     if (
+//                                         field &&
+//                                         normalizedData[field] !== undefined
+//                                     ) {
+//                                         input.checked =
+//                                             parseInt(normalizedData[field]) ===
+//                                             1;
+//                                     }
+//                                 });
+//                         } else {
+//                             // console.error(
+//                             //     "Failed to map configurations:",
+//                             //     res.error_message
+//                             // );
+//                         }
+//                     })
+//                     .catch(err => {
+//                         // console.error("AJAX Gateway Exception:", err);
+//                     });
+//             },
+
+//             buttons: [
+//                 {
+//                     label: '<span vslang="buttons.Cancel"></span>',
+//                     cssClass: "btn btn-secondary",
+//                     click: (me, btn) => {
+//                         me.hide(false);
+//                     }
+//                 },
+//                 {
+//                     label: '<span vslang="buttons.Save"></span>',
+//                     cssClass: "btn btn-primary",
+//                     click: (me, btn) => {
+//                         const payload = { id: invoiceId };
+
+//                         // Fix: Changed from me.divModal to document context to guarantee loops evaluate
+//                         const container = me.divModal || document;
+//                         container
+//                             .querySelectorAll(".toggle-setting")
+//                             .forEach(input => {
+//                                 const field = input.getAttribute("data-field");
+//                                 if (field) {
+//                                     payload[field] = input.checked ? 1 : 0;
+//                                 }
+//                             });
+
+//                         // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
+//                         // console.log(
+//                         //     "Invoice Setting Payload gathered:",
+//                         //     payload
+//                         // );
+
+//                         vsapi
+//                             .call(
+//                                 `${main_view.base_url}/prm/invoice/setting`,
+//                                 payload,
+//                                 btn
+//                             )
+//                             .then(res => {
+//                                 if (res.status_code === 200) {
+//                                     me.hide(true, res);
+
+//                                     cv_interact.success(
+//                                         LocaleManager.trans(
+//                                             "update_success_setting",
+//                                             "message_box_default"
+//                                         )
+//                                     );
+
+//                                     if (
+//                                         typeof currentData.onClose ===
+//                                         "function"
+//                                     ) {
+//                                         currentData.onClose();
+//                                     } else if (mThis.loadSettings) {
+//                                         mThis.loadSettings(null);
+//                                     } else if (
+//                                         mThis.InvoiceListView &&
+//                                         typeof mThis.InvoiceListView
+//                                             .showPage === "function"
+//                                     ) {
+//                                         mThis.InvoiceListView.showPage();
+//                                     }
+//                                 } else {
+//                                     cv_interact.error(
+//                                         res.error_message || "save_failed"
+//                                     );
+//                                 }
+//                             });
+//                     }
+//                 }
+//             ]
+//         });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
+
 const InvoiceSettingDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = op => {
-        // console.log(12, op);
-
         const currentData = op || {};
         const invoiceId = currentData.id || currentData.invoice_id || 0;
 
@@ -3746,7 +3745,7 @@ const InvoiceSettingDialog = (() => {
 
             createContent: () => `
                 <div class="is-card">
-                    <p class="is-section-title"> ${LocaleManager.trans(
+                    <p class="is-section-title">${LocaleManager.trans(
                         "Invoice Display Options",
                         "labels"
                     )}</p>
@@ -3758,7 +3757,6 @@ const InvoiceSettingDialog = (() => {
                                 "Show Commercial Tax",
                                 "labels"
                             )}
-
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
@@ -3807,33 +3805,98 @@ const InvoiceSettingDialog = (() => {
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
                         </div>
                     </div>
+
+                    <!-- Show Overdue Alert Toggle -->
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i>
+                            ${LocaleManager.trans(
+                                "Show Overdue Alert",
+                                "labels"
+                            )}
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_overdue_alert" id="_is_show_overdue_alert">
+                        </div>
+                    </div>
+
+                    <!-- Overdue Alert Days Input (Dynamically Toggled) -->
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3 ms-4" id="_overdue_days_wrapper" style="display: none;">
+                        <span class="is-row-label small text-muted">
+                            <i class="fa-solid fa-clock me-2"></i>
+                            ${LocaleManager.trans(
+                                "Alert Threshold (Days)",
+                                "labels"
+                            )}
+                        </span>
+                        <div class="input-group input-group-sm" style="width: 130px;">
+                            <input type="number" min="1" max="365" class="form-control text-center" id="_is_overdue_alert_days" value="7">
+                            <span class="input-group-text">${LocaleManager.trans(
+                                "Days",
+                                "labels"
+                            )}</span>
+                        </div>
+                    </div>
                 </div>
             `,
 
             contentCreated: me => {
-                const dataSource = currentData.settings
-                    ? currentData.settings
-                    : currentData;
+                const dataSource = currentData.settings || currentData;
 
                 const normalizedData = {
                     show_comm_tax: dataSource.show_comm_tax,
                     show_pmt_status: dataSource.show_pmt_status,
                     show_balance: dataSource.show_balance,
-                    show_amount_paid:
-                        dataSource.show_amount_paid !== undefined
-                            ? dataSource.show_amount_paid
-                            : dataSource.show_amount_piad,
-                    show_sign: dataSource.show_sign
+                    show_amount_paid: dataSource.show_amount_paid,
+                    show_sign: dataSource.show_sign,
+                    show_overdue_alert:
+                        dataSource.show_overdue_alert !== undefined
+                            ? dataSource.show_overdue_alert
+                            : 1,
+                    overdue_alert_days:
+                        dataSource.overdue_alert_days !== undefined
+                            ? dataSource.overdue_alert_days
+                            : 7
                 };
 
-                // Fix: Safely locate checkboxes inside document context if framework wrappers fail
                 const container = me.divModal || document;
+
+                // Populate switches
                 container.querySelectorAll(".toggle-setting").forEach(input => {
                     const field = input.getAttribute("data-field");
                     if (field && normalizedData[field] !== undefined) {
                         input.checked = parseInt(normalizedData[field]) === 1;
                     }
                 });
+
+                // Populate days input
+                const daysInput = container.querySelector(
+                    "#_is_overdue_alert_days"
+                );
+                if (daysInput) {
+                    daysInput.value = normalizedData.overdue_alert_days;
+                }
+
+                // Bind dynamic visibility toggle for Overdue Alert Days Input
+                const overdueToggle = container.querySelector(
+                    "#_is_show_overdue_alert"
+                );
+                const daysWrapper = container.querySelector(
+                    "#_overdue_days_wrapper"
+                );
+
+                if (overdueToggle && daysWrapper) {
+                    const toggleDaysVisibility = () => {
+                        daysWrapper.style.display = overdueToggle.checked
+                            ? "flex"
+                            : "none";
+                    };
+                    overdueToggle.addEventListener(
+                        "change",
+                        toggleDaysVisibility
+                    );
+                    toggleDaysVisibility(); // Set initial visibility state
+                }
             },
 
             onPrepareForm: me => {
@@ -3843,24 +3906,29 @@ const InvoiceSettingDialog = (() => {
                     })
                     .then(res => {
                         if (res && res.data) {
-                            const settingsData = res.data.settings || {};
-
-                            // console.log(13, settingsData);
-                            // console.log(14, res);
+                            const settingsData = res.data.settings || res.data;
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
                                 show_pmt_status: settingsData.show_pmt_status,
                                 show_balance: settingsData.show_balance,
-                                show_amount_paid:
-                                    settingsData.show_amount_paid !== undefined
-                                        ? settingsData.show_amount_paid
-                                        : settingsData.show_amount_piad,
-                                show_sign: settingsData.show_sign
+                                show_amount_paid: settingsData.show_amount_paid,
+                                show_sign: settingsData.show_sign,
+                                show_overdue_alert:
+                                    settingsData.show_overdue_alert !==
+                                    undefined
+                                        ? settingsData.show_overdue_alert
+                                        : 1,
+                                overdue_alert_days:
+                                    settingsData.overdue_alert_days !==
+                                    undefined
+                                        ? settingsData.overdue_alert_days
+                                        : 7
                             };
 
-                            // 3. Select container context and map checkbox statuses dynamically
                             const container = me.divModal || document;
+
+                            // Update toggles
                             container
                                 .querySelectorAll(".toggle-setting")
                                 .forEach(input => {
@@ -3876,34 +3944,51 @@ const InvoiceSettingDialog = (() => {
                                             1;
                                     }
                                 });
-                        } else {
-                            // console.error(
-                            //     "Failed to map configurations:",
-                            //     res.error_message
-                            // );
+
+                            // Update days input
+                            const daysInput = container.querySelector(
+                                "#_is_overdue_alert_days"
+                            );
+                            if (daysInput) {
+                                daysInput.value =
+                                    normalizedData.overdue_alert_days;
+                            }
+
+                            // Refresh threshold input visibility
+                            const overdueToggle = container.querySelector(
+                                "#_is_show_overdue_alert"
+                            );
+                            const daysWrapper = container.querySelector(
+                                "#_overdue_days_wrapper"
+                            );
+                            if (overdueToggle && daysWrapper) {
+                                daysWrapper.style.display = overdueToggle.checked
+                                    ? "flex"
+                                    : "none";
+                            }
                         }
                     })
                     .catch(err => {
-                        // console.error("AJAX Gateway Exception:", err);
+                        // console.error("AJAX Exception:", err);
                     });
             },
 
             buttons: [
                 {
-                    label: '<span vslang="buttons.Cancel"></span>',
+                    label: '<span vslang="buttons.Cancel">Cancel</span>',
                     cssClass: "btn btn-secondary",
                     click: (me, btn) => {
                         me.hide(false);
                     }
                 },
                 {
-                    label: '<span vslang="buttons.Save"></span>',
+                    label: '<span vslang="buttons.Save">Save</span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const payload = { id: invoiceId };
-
-                        // Fix: Changed from me.divModal to document context to guarantee loops evaluate
                         const container = me.divModal || document;
+
+                        // Gather switch states
                         container
                             .querySelectorAll(".toggle-setting")
                             .forEach(input => {
@@ -3913,11 +3998,14 @@ const InvoiceSettingDialog = (() => {
                                 }
                             });
 
-                        // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
-                        // console.log(
-                        //     "Invoice Setting Payload gathered:",
-                        //     payload
-                        // );
+                        // Gather overdue alert threshold days
+                        const daysInput = container.querySelector(
+                            "#_is_overdue_alert_days"
+                        );
+                        if (daysInput) {
+                            payload.overdue_alert_days =
+                                parseInt(daysInput.value) || 7;
+                        }
 
                         vsapi
                             .call(
@@ -3952,7 +4040,7 @@ const InvoiceSettingDialog = (() => {
                                     }
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "save_failed"
+                                        res.error_message || "Save failed."
                                     );
                                 }
                             });
@@ -3965,4 +4053,159 @@ const InvoiceSettingDialog = (() => {
     };
 
     return self;
+})();
+
+
+const OverdueAlertsDialog = (() => {
+    let dialog = null;
+
+    return {
+        show(op = {}) {
+
+            dialog ??= GeneralDialog.getOrCreate({
+                instanceKey: "overdue_invoice_alerts_dialog",
+                dialogOptions: {
+                    width: "800px",
+                    showFooter: true,
+                    // Make sure GeneralDialog actually reads a `title` key —
+                    // this was likely the cause of "No title Set" in the header.
+                    title: "Admin Alert: Invoice Payment Overdue Notifications"
+                },
+
+                prepareFormOptions: {
+                    createTitle:
+                        "Admin Alert: Invoice Payment Overdue Notifications",
+                    modifyTitle:
+                        "Admin Alert: Invoice Payment Overdue Notifications",
+                    targetProp: "alerts_data"
+                },
+
+                // Build HTML layout (Runs once)
+                createContent() {
+                    return `
+                        <div class="p-3">
+                            <!-- Alert Summary Header Banner -->
+                            <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-4"
+                                 style="background: linear-gradient(135deg, #fff4e5, #ffe9cc); border: 1px solid #ffd9a0;">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                     style="width: 46px; height: 46px; background: #ff9f1c; flex-shrink: 0;">
+                                    <i class="fa-solid fa-bell fs-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">Payment Attention Required</h6>
+                                    <small class="text-muted">
+                                        Found
+                                        <strong id="_cnt_overdue_text" class="text-danger">0</strong>
+                                        overdue invoice(s).
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Scrollable Invoice Alerts List Container -->
+                            <div id="_invoice_alert_list_container"
+                                 class="rounded-4"
+                                 style="max-height: 400px; overflow-y: auto; background:#f7f8fa; padding: 4px;">
+                                <div class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-spinner fa-spin me-2"></i>Loading alerts...
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+
+                // Cache DOM element references (Runs once)
+                contentCreated(me) {
+                    me.elListContainer = me.divModal.querySelector(
+                        "#_invoice_alert_list_container"
+                    );
+                    me.elCntOverdue = me.divModal.querySelector(
+                        "#_cnt_overdue_text"
+                    );
+                },
+
+                // Runs every time the dialog opens
+                onPrepareForm(me) {
+                    const alerts = op.data.alerts_data || [];
+
+                    let overdueCount = 0;
+                    let upcomingCount = 0;
+
+                    if (!Array.isArray(alerts) || alerts.length === 0) {
+                        me.elListContainer.innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fa-solid fa-circle-check text-success fs-2 d-block mb-2"></i>
+                                <span>No overdue or pending invoice alerts found.</span>
+                            </div>
+                        `;
+                        me.elCntOverdue.textContent = "0";
+                        return;
+                    }
+
+                    // Render alert items
+                    const itemsHtml = alerts
+                        .map(item => {
+                            const isDanger = item.alert_type === "danger";
+                            if (isDanger) overdueCount++;
+                            else upcomingCount++;
+
+                            const accentColor = isDanger ? "#e5384d" : "#ff9f1c";
+                            const iconClass = isDanger
+                                ? "fa-solid fa-triangle-exclamation"
+                                : "fa-solid fa-clock";
+                            const badgeBg = isDanger ? "#e5384d" : "#ff9f1c";
+
+                            return `
+                            <div class="d-flex align-items-center justify-content-between gap-3 p-3 mb-2 bg-white rounded-3"
+                                 style="border-left: 4px solid ${accentColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                         style="width: 34px; height: 34px; background: ${accentColor}1a; flex-shrink: 0;">
+                                        <i class="${iconClass}" style="color:${accentColor}; font-size: 14px;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">
+                                            ${item.code}
+                                            <span class="fw-normal" style="font-size: 12.5px; color:#000;">
+                                                (${item.tenant_name || "N/A"})
+                                            </span>
+                                        </div>
+                                        <small class="d-block mt-1" style="color:#000;">
+                                            ${item.message || ""}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-end ms-3" style="flex-shrink: 0;">
+                                    <span class="d-inline-block px-2 py-1 mb-1 rounded-pill fw-semibold"
+                                          style="background:${badgeBg}; color:#fff; font-size: 12.5px;">
+                                        Due: $${Number(item.due_amount || 0).toFixed(2)}
+                                    </span>
+                                    <small class="d-block text-muted" style="font-size: 11px;">
+                                        ${item.due_date || ""}
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                        })
+                        .join("");
+
+                    me.elCntOverdue.textContent = overdueCount;
+                    me.elListContainer.innerHTML = itemsHtml;
+                },
+
+                buttons: [
+                    {
+                       label: '<span vslang="buttons.Close">Close</span>',
+                        cssClass: "btn btn-primary",
+                        click(me) {
+                            me.hide(false);
+                        }
+                    }
+                ],
+
+                onClose(actionDone, payload) {}
+            });
+
+            dialog.show(op);
+        }
+    };
 })();

@@ -148,4 +148,15 @@ class InvoiceController extends Controller
             return JDV::raw($res);
         }
 
+          public function invoiceOverdueAlert(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $invoice = new Invoice(null, $ss);
+            $res = $invoice->invoiceOverdueAlert($req->all(), $ss);
+            return JDV::raw($res);
+        }
+
 }

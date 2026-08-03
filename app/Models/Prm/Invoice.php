@@ -256,7 +256,7 @@ class Invoice extends VSModel
             //     'penal_amount'     => $penal_amount,
             // ]);
 
-            $invoice_amount      = (float)$invoice->amount_payable  ;
+            $invoice_amount      = (float)$invoice->amount_payable;
             $already_paid        = (float)$invoice->paid_amount;
             $total_received      = array_sum(array_column($pmt_breakdowns, 'amount'));
             $current_balance_due = ($invoice_amount - $already_paid) + $penal_amount;
@@ -343,25 +343,25 @@ class Invoice extends VSModel
             }
 
             // ── Update Invoice ─────────────────────────────────────────────
-                $new_paid_amount = $already_paid + $total_received;
-                $new_due_amount  = ($invoice_amount + $penal_amount) - $new_paid_amount;
+            $new_paid_amount = $already_paid + $total_received;
+            $new_due_amount  = ($invoice_amount + $penal_amount) - $new_paid_amount;
 
-                if ($new_due_amount < 0) {
-                    $new_due_amount = 0;
-                }
+            if ($new_due_amount < 0) {
+                $new_due_amount = 0;
+            }
 
-                // Calculate status ID dynamically
-                if ($new_due_amount == 0) {
-                    $payment_status_id = 1; // Paid
-                } elseif ($new_paid_amount > 0) {
-                    $payment_status_id = 3; // Partially Paid
-                } else {
-                    // Check if the due date has passed
-                    $today = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
-                    $dueDate = \Carbon\Carbon::parse($invoice->due_date, 'Asia/Phnom_Penh')->startOfDay();
+            // Calculate status ID dynamically
+            if ($new_due_amount == 0) {
+                $payment_status_id = 1; // Paid
+            } elseif ($new_paid_amount > 0) {
+                $payment_status_id = 3; // Partially Paid
+            } else {
+                // Check if the due date has passed
+                $today = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+                $dueDate = \Carbon\Carbon::parse($invoice->due_date, 'Asia/Phnom_Penh')->startOfDay();
 
-                    $payment_status_id = ($today->greaterThan($dueDate)) ? 4 : 2; // 4 = Overdue, 2 = Unpaid
-                }
+                $payment_status_id = ($today->greaterThan($dueDate)) ? 4 : 2; // 4 = Overdue, 2 = Unpaid
+            }
 
 
 
@@ -403,7 +403,6 @@ class Invoice extends VSModel
 
 
 
-
     public function invoiceSetting($arr, $ss)
     {
         $d = (object) $arr;
@@ -422,14 +421,16 @@ class Invoice extends VSModel
                 throw new \Exception('Invoice not found.');
             }
 
-            // 2. Map toggle fields from request, fallback to existing DB values (Notice '_piad')
+            // 2. Map toggle fields & overdue alert days from request, fallback to DB values
             $updateData = [
-                'show_balance'      => isset($d->show_balance)      ? (int) $d->show_balance      : $invoice->show_balance,
-                'show_comm_tax'    => isset($d->show_comm_tax)    ? (int) $d->show_comm_tax    : $invoice->show_comm_tax,
-                'show_pmt_status'  => isset($d->show_pmt_status)  ? (int) $d->show_pmt_status  : $invoice->show_pmt_status,
-                'show_amount_paid' => isset($d->show_amount_paid) ? (int) $d->show_amount_paid : $invoice->show_amount_paid, // Fixed DB key here
-                'show_sign'        => isset($d->show_sign)        ? (int) $d->show_sign        : $invoice->show_sign,
-                'updated_at'       => now(),
+                'show_balance'        => isset($d->show_balance)        ? (int) $d->show_balance        : $invoice->show_balance,
+                'show_comm_tax'       => isset($d->show_comm_tax)       ? (int) $d->show_comm_tax       : $invoice->show_comm_tax,
+                'show_pmt_status'     => isset($d->show_pmt_status)     ? (int) $d->show_pmt_status     : $invoice->show_pmt_status,
+                'show_amount_paid'    => isset($d->show_amount_paid)    ? (int) $d->show_amount_paid    : $invoice->show_amount_paid,
+                'show_sign'           => isset($d->show_sign)           ? (int) $d->show_sign           : $invoice->show_sign,
+                'show_overdue_alert'  => isset($d->show_overdue_alert)  ? (int) $d->show_overdue_alert  : ($invoice->show_overdue_alert ?? 1),
+                'overdue_alert_days' => isset($d->overdue_alert_days) ? (int) $d->overdue_alert_days : ($invoice->overdue_alert_days ?? 7),
+                'updated_at'          => now(),
             ];
 
             // 3. Update database records
@@ -439,15 +440,17 @@ class Invoice extends VSModel
 
             DB::commit();
 
-            // 4. Return the newly saved visibility states to the frontend (Keeping frontend keys clean)
+            // 4. Return saved settings to the frontend
             return DV::depends(1, [
                 'id' => $id,
                 'settings' => [
-                    'show_balance'      => (int) $updateData['show_balance'],
-                    'show_comm_tax'    => (int) $updateData['show_comm_tax'],
-                    'show_pmt_status'  => (int) $updateData['show_pmt_status'],
-                    'show_amount_paid' => (int) $updateData['show_amount_paid'],
-                    'show_sign'        => (int) $updateData['show_sign'],
+                    'show_balance'        => (int) $updateData['show_balance'],
+                    'show_comm_tax'       => (int) $updateData['show_comm_tax'],
+                    'show_pmt_status'     => (int) $updateData['show_pmt_status'],
+                    'show_amount_paid'    => (int) $updateData['show_amount_paid'],
+                    'show_sign'           => (int) $updateData['show_sign'],
+                    'show_overdue_alert'  => (int) $updateData['show_overdue_alert'],
+                    'overdue_alert_days' => (int) $updateData['overdue_alert_days'],
                 ]
             ]);
         } catch (\Exception $e) {
@@ -465,28 +468,28 @@ class Invoice extends VSModel
             return DV::error('Invalid invoice ID.');
         }
 
-        DB::beginTransaction();
-
         try {
             // 1. Verify the invoice exists
             $invoice = DB::table('invoices')->where('id', $id)->first();
             if (!$invoice) {
                 throw new \Exception('Invoice not found.');
             }
-            // 4. Return the newly saved visibility states to the frontend (Keeping frontend keys clean)
+
+            // 2. Return visibility states and overdue settings
             return DV::depends(1, [
                 'id' => $id,
                 'settings' => [
-                    'show_balance'      => (int) $invoice->show_balance,
-                    'show_comm_tax'    => (int) $invoice->show_comm_tax,
-                    'show_pmt_status'  => (int) $invoice->show_pmt_status,
-                    'show_amount_paid' => (int) $invoice->show_amount_paid,
-                    'show_sign'        => (int) $invoice->show_sign,
+                    'show_balance'        => isset($invoice->show_balance) ? (int) $invoice->show_balance : 0,
+                    'show_comm_tax'       => isset($invoice->show_comm_tax) ? (int) $invoice->show_comm_tax : 0,
+                    'show_pmt_status'     => isset($invoice->show_pmt_status) ? (int) $invoice->show_pmt_status : 0,
+                    'show_amount_paid'    => isset($invoice->show_amount_paid) ? (int) $invoice->show_amount_paid : 0,
+                    'show_sign'           => isset($invoice->show_sign) ? (int) $invoice->show_sign : 0,
+                    'show_overdue_alert'  => isset($invoice->show_overdue_alert) ? (int) $invoice->show_overdue_alert : 1,
+                    'overdue_alert_days' => isset($invoice->overdue_alert_days) ? (int) $invoice->overdue_alert_days : 7,
                 ]
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error('Failed to update invoice display settings: ' . $e->getMessage());
+            return DV::error('Failed to get invoice display settings: ' . $e->getMessage());
         }
     }
 
@@ -508,29 +511,243 @@ class Invoice extends VSModel
                 throw new \Exception('Invoice not found.');
             }
 
-            // 2. Perform the Update (Resetting all toggles to 0)
-            DB::table('invoices')->where('id', $id)->update([
-                'show_balance'      => null,
-                'show_comm_tax'    => null,
-                'show_pmt_status'  => null,
-                'show_amount_paid' => null,
-            ]);
+            // 2. Reset display toggles to null (or 0) and restore alert defaults according to schema defaults
+            $resetData = [
+                'show_balance'        => null,
+                'show_comm_tax'       => null,
+                'show_pmt_status'     => null,
+                'show_amount_paid'    => null,
+                'show_sign'           => null,
+                'show_overdue_alert'  => 1,
+                'overdue_alert_days' => 7,
+                'updated_at'          => now(),
+            ];
+
+            DB::table('invoices')->where('id', $id)->update($resetData);
 
             DB::commit();
 
-            // 4. Return the newly reset states to the frontend
+            // 3. Return reset states to frontend
             return DV::depends(1, [
                 'id' => $id,
                 'settings' => [
-                    'show_balance'      => 0,
-                    'show_comm_tax'    => 0,
-                    'show_pmt_status'  => 0,
-                    'show_amount_paid' => 0,
+                    'show_balance'        => 0,
+                    'show_comm_tax'       => 0,
+                    'show_pmt_status'     => 0,
+                    'show_amount_paid'    => 0,
+                    'show_sign'           => 0,
+                    'show_overdue_alert'  => 1,
+                    'overdue_alert_days' => 7,
                 ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return DV::error('Failed to reset invoice display settings: ' . $e->getMessage());
+        }
+    }
+
+
+    // public function invoiceOverdueAlert($arr, $ss)
+    // {
+    //     $d = (object) $arr;
+
+    //     // Default fallback alert window if no invoice setting exists
+    //     $default_alert_days = isset($d->alert_days) && (int) $d->alert_days > 0 ? (int) $d->alert_days : 7;
+
+    //     try {
+    //         $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+
+    //         // 1. Fetch unpaid, partially paid, or overdue invoices with enabled alerts
+    //         $invoices = DB::table('invoices as i')
+    //             ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
+    //             ->whereIn('i.payment_status_id', [2, 3, 4])
+    //             ->whereNotNull('i.due_date')
+    //             ->where(function ($q) {
+    //                 $q->whereNull('i.show_overdue_alert')
+    //                     ->orWhere('i.show_overdue_alert', 1);
+    //             })
+    //             ->select([
+    //                 'i.id',
+    //                 'i.code',
+    //                 'i.due_date',
+    //                 'i.amount_payable',
+    //                 'i.paid_amount',
+    //                 'i.payment_status_id',
+    //                 'i.overdue_alert_days',
+    //                 'i.last_alert_date', // Added missing select column
+    //                 't.name as tenant_name',
+    //             ])
+    //             ->get();
+
+    //         $alerts = [];
+
+    //         // 2. Filter and calculate alert windows dynamically based on settings
+    //         foreach ($invoices as $row) {
+    //             $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
+
+    //             // Difference from Today to Due Date (- days = overdue, + days = upcoming)
+    //             $dueDateDiff = (int) $now->diffInDays($dueDate, false);
+
+    //             // Per-invoice dynamic threshold
+    //             $customThreshold = isset($row->overdue_alert_days) && (int) $row->overdue_alert_days > 0
+    //                 ? (int) $row->overdue_alert_days
+    //                 : $default_alert_days;
+
+    //             // Trigger alert if invoice is overdue or within threshold window
+    //             if ($dueDateDiff <= $customThreshold) {
+
+    //                 // Skip alert if already notified recently (e.g., within threshold window)
+    //                 if (!empty($row->last_alert_date)) {
+    //                     $lastAlertDate = \Carbon\Carbon::parse($row->last_alert_date, 'Asia/Phnom_Penh')->startOfDay();
+    //                     $lastAlertDiff = (int) $now->diffInDays($lastAlertDate, false);
+
+    //                     // If alert was already issued today or within cooldown days, skip
+    //                     if (abs($lastAlertDiff) < $customThreshold) {
+    //                         continue;
+    //                     }
+    //                 }
+
+    //                 // Determine Alert Status Message & Type
+    //                 if ($dueDateDiff < 0) {
+    //                     $daysOverdue = abs($dueDateDiff);
+    //                     $message   = "Invoice #{$row->code} ({$row->tenant_name}) is OVERDUE by {$daysOverdue} day(s).";
+    //                     $alertType = 'danger';
+    //                 } elseif ($dueDateDiff === 0) {
+    //                     $message   = "Invoice #{$row->code} ({$row->tenant_name}) is DUE TODAY.";
+    //                     $alertType = 'warning';
+    //                 } else {
+    //                     $message   = "Invoice #{$row->code} ({$row->tenant_name}) is due in {$dueDateDiff} day(s).";
+    //                     $alertType = 'warning';
+    //                 }
+
+    //                 $alerts[] = [
+    //                     'id'               => (int) $row->id,
+    //                     'code'             => $row->code,
+    //                     'tenant_name'      => $row->tenant_name ?? 'N/A',
+    //                     'due_date'         => $row->due_date,
+    //                     'amount_payable'   => (float) $row->amount_payable,
+    //                     'paid_amount'      => (float) $row->paid_amount,
+    //                     'due_amount'       => (float) ($row->amount_payable - $row->paid_amount),
+    //                     'threshold_days'   => $customThreshold,
+    //                     'days_difference'  => $dueDateDiff,
+    //                     'alert_type'       => $alertType,
+    //                     'message'          => $message,
+    //                 ];
+    //             }
+    //         }
+
+    //         return DV::depends(1, [
+    //             'default_alert_days' => $default_alert_days,
+    //             'total_alerts'       => count($alerts),
+    //             'alerts_data'        => $alerts, // Clean key compatible with targetProp in VSA GeneralDialog
+    //             'list'               => $alerts,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return DV::error('Failed to fetch overdue alerts: ' . $e->getMessage());
+    //     }
+    // }
+
+
+    public function invoiceOverdueAlert($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        // Default fallback alert window if no invoice setting exists
+        $default_alert_days = isset($d->alert_days) && (int) $d->alert_days > 0 ? (int) $d->alert_days : 7;
+
+        try {
+            $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+
+            // 1. Fetch unpaid, partially paid, or overdue invoices with enabled alerts
+            $invoices = DB::table('invoices as i')
+                ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
+                ->whereIn('i.payment_status_id', [2, 3, 4])
+                ->whereNotNull('i.due_date')
+                ->where(function ($q) {
+                    $q->whereNull('i.show_overdue_alert')
+                        ->orWhere('i.show_overdue_alert', 1);
+                })
+                ->select([
+                    'i.id',
+                    'i.code',
+                    'i.due_date',
+                    'i.amount_payable',
+                    'i.paid_amount',
+                    'i.payment_status_id',
+                    'i.overdue_alert_days',
+                    'i.last_alert_date',
+                    't.name as tenant_name',
+                ])
+                ->get();
+
+            $alerts = [];
+
+            // 2. Filter and calculate alert windows dynamically based on settings
+            foreach ($invoices as $row) {
+                $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
+
+                // Difference from Today to Due Date (- days = overdue, + days = upcoming)
+                $dueDateDiff = (int) $now->diffInDays($dueDate, false);
+
+                // Per-invoice dynamic threshold
+                $customThreshold = isset($row->overdue_alert_days) && (int) $row->overdue_alert_days > 0
+                    ? (int) $row->overdue_alert_days
+                    : $default_alert_days;
+
+                // Trigger alert if invoice is overdue or within threshold window
+                if ($dueDateDiff <= $customThreshold) {
+
+                    // Skip alert if already notified recently (e.g., within threshold window)
+                    if (!empty($row->last_alert_date)) {
+                        $lastAlertDate = \Carbon\Carbon::parse($row->last_alert_date, 'Asia/Phnom_Penh')->startOfDay();
+                        $lastAlertDiff = (int) $now->diffInDays($lastAlertDate, false);
+
+                        // If alert was already issued today or within cooldown days, skip
+                        if (abs($lastAlertDiff) < $customThreshold) {
+                            continue;
+                        }
+                    }
+
+                    // Determine Alert Status Message & Type
+                    if ($dueDateDiff < 0) {
+                        $daysOverdue = abs($dueDateDiff);
+                        $message   = "Invoice #{$row->code} ({$row->tenant_name}) is OVERDUE by {$daysOverdue} day(s).";
+                        $alertType = 'danger';
+                    } elseif ($dueDateDiff === 0) {
+                        $message   = "Invoice #{$row->code} ({$row->tenant_name}) is DUE TODAY.";
+                        $alertType = 'warning';
+                    } else {
+                        $message   = "Invoice #{$row->code} ({$row->tenant_name}) is due in {$dueDateDiff} day(s).";
+                        $alertType = 'warning';
+                    }
+
+                    // Format due_date to match system standard: " 29 -Jul-2026"
+                    $formattedDueDate = \Carbon\Carbon::parse($row->due_date)->format(' d -M-Y');
+
+                    $alerts[] = [
+                        'id'               => (int) $row->id,
+                        'code'             => $row->code,
+                        'tenant_name'      => $row->tenant_name ?? 'N/A',
+                        'due_date'         => $formattedDueDate, // Applied custom formatted date string
+                        'amount_payable'   => (float) $row->amount_payable,
+                        'paid_amount'      => (float) $row->paid_amount,
+                        'due_amount'       => (float) ($row->amount_payable - $row->paid_amount),
+                        'threshold_days'   => $customThreshold,
+                        'days_difference'  => $dueDateDiff,
+                        'alert_type'       => $alertType,
+                        'message'          => $message,
+                    ];
+                }
+            }
+
+            return DV::depends(1, [
+                'default_alert_days' => $default_alert_days,
+                'total_alerts'       => count($alerts),
+                'alerts_data'        => $alerts,
+                'list'               => $alerts,
+            ]);
+        } catch (\Exception $e) {
+            return DV::error('Failed to fetch overdue alerts: ' . $e->getMessage());
         }
     }
 
@@ -675,10 +892,12 @@ class Invoice extends VSModel
                 ) {
 
                     $resSave = DB::table('invoices')
-                                        ->where('id', $row->id)
-                                        ->update(['payment_status_id' => 4]);
+                        ->where('id', $row->id)
+                        ->update(['payment_status_id' => 4, 'last_alert_date' => $now]);
 
-                    if($resSave){
+
+
+                    if ($resSave) {
                         $row->payment_status_id = 4;
                         $row->payment_status_name = 'Overdue';
                     }
@@ -700,6 +919,7 @@ class Invoice extends VSModel
             $current_page
         );
     }
+
 
     public static function getInvoiceDetails($id)
     {
