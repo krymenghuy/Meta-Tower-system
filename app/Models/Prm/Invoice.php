@@ -343,19 +343,25 @@ class Invoice extends VSModel
             }
 
             // ── Update Invoice ─────────────────────────────────────────────
-            $new_paid_amount = $already_paid + $total_received;
-            $new_due_amount  = ($invoice_amount + $penal_amount) - $new_paid_amount;
+                $new_paid_amount = $already_paid + $total_received;
+                $new_due_amount  = ($invoice_amount + $penal_amount) - $new_paid_amount;
 
-            if ($new_due_amount < 0) {
-                $new_due_amount = 0;
-            }
+                if ($new_due_amount < 0) {
+                    $new_due_amount = 0;
+                }
 
-            $payment_status_id = 2; // unpaid
-            if ($new_due_amount == 0) {
-                $payment_status_id = 1; // fully paid
-            } elseif ($new_paid_amount > 0) {
-                $payment_status_id = 3; // partial
-            }
+                // Calculate status ID dynamically
+                if ($new_due_amount == 0) {
+                    $payment_status_id = 1; // Paid
+                } elseif ($new_paid_amount > 0) {
+                    $payment_status_id = 3; // Partially Paid
+                } else {
+                    // Check if the due date has passed
+                    $today = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+                    $dueDate = \Carbon\Carbon::parse($invoice->due_date, 'Asia/Phnom_Penh')->startOfDay();
+
+                    $payment_status_id = ($today->greaterThan($dueDate)) ? 4 : 2; // 4 = Overdue, 2 = Unpaid
+                }
 
 
 
@@ -653,7 +659,6 @@ class Invoice extends VSModel
             ->take($per_page)
             ->get();
 
-
         $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
 
         foreach ($rows as $row) {
@@ -663,12 +668,20 @@ class Invoice extends VSModel
                     'Asia/Phnom_Penh'
                 )->startOfDay();
 
+                // If unpaid or partially paid and past the due date, set status to Overdue (4)
                 if (
                     in_array((int) $row->payment_status_id, [2, 3]) &&
                     $dueDate->lessThan($now)
                 ) {
-                    $row->payment_status_id = 4;
-                    $row->payment_status_name = 'Overdue';
+
+                    $resSave = DB::table('invoices')
+                                        ->where('id', $row->id)
+                                        ->update(['payment_status_id' => 4]);
+
+                    if($resSave){
+                        $row->payment_status_id = 4;
+                        $row->payment_status_name = 'Overdue';
+                    }
                 }
             }
 

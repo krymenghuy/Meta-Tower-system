@@ -144,26 +144,23 @@ var InvoiceComponent = (() => {
             data: data => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
-                let icon = "bi bi-question-circle";
 
                 if (statusId === 1) {
                     // Paid
-                    cls =
-                        "text-success bg-success-subtle border border-success";
+                    cls = "text-success bg-success-subtle border border-success";
                 } else if (statusId === 2) {
                     // Unpaid
                     cls = "text-danger bg-danger-subtle border border-danger";
                 } else if (statusId === 3) {
                     // Partially Paid
-                    cls =
-                        "text-warning bg-warning-subtle border border-warning ";
+                    cls = "text-warning bg-warning-subtle border border-warning";
                 } else if (statusId === 4) {
                     // Overdue
-                    cls = "status-overdue";
+                    cls = "text-danger bg-danger-subtle border border-danger fw-bold";
                 }
                 return `
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
-                        ${data.payment_status_name || "—"}
+                        ${data.payment_status_name || "Overdue"}
                     </span>`;
             }
         },
@@ -549,15 +546,18 @@ var InvoiceComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
+                // Show "Receive Payment" for Unpaid (2), Partially Paid (3), and Overdue (4)
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
                         : "none";
-                statusId === 2 || statusId === 3 ? "block" : "none";
+
+                // Delete and Modify restricted to Unpaid (2) or Overdue (4) as needed
                 menu.delete_invoice.style.display =
-                    statusId === 2 ? "block" : "none";
+                    statusId === 2 || statusId === 4 ? "block" : "none";
+                    
                 menu.modify_invoice.style.display =
-                    statusId === 2 ? "block" : "none";
+                    statusId === 2 || statusId === 4 ? "block" : "none";
             },
             onClick: (menulink, id, name) => {
                 if (name === "delete_invoice") {
