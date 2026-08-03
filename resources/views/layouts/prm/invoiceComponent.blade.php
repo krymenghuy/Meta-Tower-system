@@ -13,6 +13,13 @@
         <div class="col-12 col-md-6 col-lg-2">
             <select id="invoice_type" placeholder='vslang="titles.All Types"' class="filter-field data-input form-control" data-field="invoice_type"></select>
         </div>
+             
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm bg-danger" id="_btnOverdueAlert">
+                        <i class="mr-2 fa-solid fa-bell"></i>
+                    <span vslang="buttons.OverDue Alerts"></span>
+                </button>
+            </div>
 
             <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnInvoice">
