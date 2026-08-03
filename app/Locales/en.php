@@ -207,7 +207,7 @@ return [
         'holiday_exist' => 'Holiday already exists.',
 
         'required_date' => 'Please select date.',
-        'required_action' => 'Please select action.',
+        'required_action' => 'Please select Attendance Type.',
         'required_time' => 'Please select time.',
         'select_work_shift' => 'Please select work shift.',
 
@@ -223,6 +223,8 @@ return [
         'work_shift_is_assigned_to_employee' => 'Work shift is assigned to employees.',
         'exit_form_name_already_exists' => 'Name already exists.',
 
+        'amount_is_required' => 'Amount is required.',
+        'select_leave_type' => 'Please select a leave type.',
 
 
     ],
@@ -541,7 +543,12 @@ return [
         'delete_job_level_successfully' => 'Deleted job level successfully.',
         'delete_job_level?' => 'Delete this job level?',
 
+        'set_leave_successfully' => 'Set leave successfully.',
+        'update_set_leave_successfully' => 'Update set leave successfully.',
 
+        'delete_leave_request' => 'Delete this leave request?',
+        'accept_request' => 'Are you sure to accept this request?',
+        'delete_leave_request_success' => 'Delete leave request successfully.',
 
 
 

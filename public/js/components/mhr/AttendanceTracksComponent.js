@@ -60,7 +60,7 @@ var AttendanceTracksComponent = (function () {
                     mThis.WorkshiftListView();
                 },
             };
-            if (!AuthManager.allowed(487)) return;
+            // if (!AuthManager.allowed(487)) return;
             ShiftDetailDialog.show(op);
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -202,7 +202,7 @@ var AttendanceTracksComponent = (function () {
                 mThis.WorkshiftListView();
             },
         };
-        if (!AuthManager.allowed(488)) return;
+        // if (!AuthManager.allowed(488)) return;
         ShiftDetailDialog.show(op);
     };
     mThis.deleteWorkShift = (id, menuLink) => {
@@ -210,7 +210,7 @@ var AttendanceTracksComponent = (function () {
             id: id,
             btn: menuLink,
         };
-        if (!AuthManager.allowed(489)) return;
+        // if (!AuthManager.allowed(489)) return;
         cv_interact.confirm(
             "Are you sure you want to delete this scanpoint?",
             {
