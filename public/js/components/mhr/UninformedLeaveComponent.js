@@ -269,19 +269,19 @@ var UninformedLeaveComponent = (function () {
                     name: "edit_uninformed_leave",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Excuse">Excuse</span>',
+                    html: '<span class="ps-2" vslang="titles.Excuse Reason"></span>',
                     icon: `<i class="fa-regular fa-circle-question fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "excuse_uninformed_leave",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Deduct">Deduct</span>',
+                    html: '<span class="ps-2" vslang="titles.Deduction"></span>',
                     icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "deduct_uninformed_leave",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Warning">Warning</span>',
+                    html: '<span class="ps-2" vslang="titles.Warning"></span>',
                     icon: `<i class="fa-regular fa-bell fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "warning_uninformed_leave",
@@ -355,7 +355,7 @@ var UninformedLeaveComponent = (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this leave request?",
+            "delete_uninformed",
             {
                 title: "Delete Leave Request",
                 context: "delete",
@@ -373,7 +373,7 @@ var UninformedLeaveComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_uninformed_success");
                                 mThis.LeaveRequestListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -401,7 +401,7 @@ var UninformedLeaveComponent = (function () {
         let deduction = parseFloat(menuLink.dataset.deduction);
         if (deduction > 0) {
             cv_interact.error(
-                "Deduct has already been issued for this absence.",
+                "deduct_already_issued",
             );
             return;
         }
@@ -664,12 +664,12 @@ const UninformedLeaveDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -698,7 +698,7 @@ const UninformedLeaveDialog = (() => {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Updated uninformed leave successfully",
+                                                "update_uninformed_success",
                                             );
                                         } else {
                                             cv_interact.success(
@@ -751,7 +751,7 @@ const ExcuseLeaveDialog = (() => {
                     <div class="col-12">
                         <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" " required style="height: 100px;"></textarea>
-                            <label>Excuse</label>
+                            <label vslang='titles.Excuse Reason'></label>
                         </div>
                     </div>
                 </div>
@@ -759,14 +759,14 @@ const ExcuseLeaveDialog = (() => {
             },
             buttons: [
                 {
-                    label: "Cancel",
+                    label: "    <span vslang='buttons.Cancel'></span>",
                     cssClass: "btn-vs-cancel",
                     click: (me) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: "Submit",
+                    label: "<span vslang='buttons.Save'></span>",
                     cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
