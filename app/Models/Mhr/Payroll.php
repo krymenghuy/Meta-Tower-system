@@ -40,7 +40,7 @@ class Payroll
             'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
-            'currency_code' => '1|choice',
+            'currency_code' => '0|choice|default = USD',
             'exchange_rate' => '0|number',
 
         ];

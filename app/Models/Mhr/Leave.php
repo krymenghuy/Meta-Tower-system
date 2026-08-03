@@ -85,7 +85,7 @@ class Leave extends VSModel
                 ->where('end_date', $end_date)
                 ->exists();
             if ($existingLeave) {
-                return DV::error('The employee already has leave for the specified date range.');
+                return DV::error('emp_already_leave');
             }
         }
         $active_leave_id = Employee::isOnLeave($d->emp_id);
