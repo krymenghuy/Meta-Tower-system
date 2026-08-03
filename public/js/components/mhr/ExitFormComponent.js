@@ -33,7 +33,7 @@ var ExitFormComponent = (function () {
             },
         },
         {
-            transTitle: "titles.Form",
+            transTitle: "titles.Form Name",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.name ?? "-"}</span>`;
@@ -277,16 +277,16 @@ const ExitFormDialog = (() => {
                     return [
                         `<div class="row g-3">
                             <div class="col-12">
-                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="Employee"></select>
+                                <select data-style="material" name="employee" class="form-control data-input" data-field="emp_id" placeholder="${LocaleManager.trans("Employee", "labels")}"></select>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <input type="text" name="form_name" required class="form-control data-input" data-field="name" placeholder=" " />
-                                    <label>Form</label>
+                                    <label vslang="titles.Form Name"></label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <select data-style="material" name="is_finished" class="form-control data-input" data-field="is_finished" placeholder="Status">
+                                <select data-style="material" name="is_finished" class="form-control data-input" data-field="is_finished" placeholder="${LocaleManager.trans("Status", "labels")}">
                                     <option value="0">Pending</option>
                                     <option value="1">Done</option>
                                 </select>

@@ -40,15 +40,6 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            transTitle: "titles.Effective Date",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<span class="text-primary p-0 m-0">${
-                    data.effective_date ?? "_"
-                }</span>`;
-            },
-        },
-        {
             transTitle: "titles.Issue Date",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
@@ -57,6 +48,16 @@ var EmployeeBenefitComponent = new (function () {
                 }</span>`;
             },
         },
+        {
+            transTitle: "titles.Effective Date",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary p-0 m-0">${
+                    data.effective_date ?? "_"
+                }</span>`;
+            },
+        },
+        
         {
             transTitle: "titles.Amount",
             className: "align-middle",
@@ -396,8 +397,7 @@ const EmployeeBenefitDialog = (() => {
                                 <option value="3">Flat Rate</option>
                             </select>
                         </div>
-                   
-                       
+
                         <div class="col-3 flat_tax_rate d-none">
                             <div class="vs-material-field">
                                 <input type="text" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" placeholder=" " />

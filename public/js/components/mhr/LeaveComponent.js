@@ -263,13 +263,13 @@ var LeaveComponent = (function () {
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave">Modify Leave</span>',
+                    html:'<span class="ps-2  " vslang="titles.Modify Leave"></span>',
                     icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"edit_leave"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave">Delete Leave</span>',
+                    html:'<span class="ps-2  " vslang="titles.Delete Leave"></span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_leave"
@@ -355,7 +355,7 @@ var LeaveComponent = (function () {
     mThis.acceptRequest = (id, menuLink) => {
         // if (!AuthManager.allowed(260, false)) return;
         cv_interact.confirm(
-            'Are you sure to accept this request?',
+            'accept_request',
             {
                 'langSection': "message_box_default",
                 'translate': true,
@@ -413,7 +413,7 @@ var LeaveComponent = (function () {
             }
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this leave request?',{
+        cv_interact.confirm('delete_leave_request',{
             title: 'Delete Leave Request',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -585,11 +585,11 @@ const LeaveRequestDialog = (()=>{
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated set leave successfully");
+                                            cv_interact.success("update_set_leave_successfully");
                                         }
                                         else
                                         {
-                                            cv_interact.success("Set leave successfully");
+                                            cv_interact.success("set_leave_successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -598,7 +598,7 @@ const LeaveRequestDialog = (()=>{
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Leave Request",
-                    modifyTitle: "vslang:titles.Edit Leave",
+                    modifyTitle: "vslang:titles.Modify Leave",
                     targetProp: "leave_request",
                     api: {
                         endpoint: [
