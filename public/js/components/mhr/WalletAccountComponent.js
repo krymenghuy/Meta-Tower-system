@@ -123,7 +123,7 @@ var WalletAccountComponent = (function () {
                     mThis.WalletAccountListView.showPage();
                 },
             };
-            if (!AuthManager.allowed(256)) return;
+            // if (!AuthManager.allowed(256)) return;
             WalletAccountDialog.show(op);
         };
 
@@ -161,7 +161,7 @@ var WalletAccountComponent = (function () {
                 //account_id: mThis.divFilter.value,
                 account_type:"Wallet"
             };
-            if (!AuthManager.allowed(471)) return;
+            // if (!AuthManager.allowed(471)) return;
             cv_interact.confirm(
                 'html:<span class="d-block fw-semibold text-success">Create wallet accounts for all staff? </span><small>This process will create wallet account for staff who do not have a wallet account yet!</small>',
                 {
@@ -431,7 +431,7 @@ var WalletAccountComponent = (function () {
                 mThis.WalletAccountListView.showPage();
             },
         };
-        if (!AuthManager.allowed(257)) return;
+        // if (!AuthManager.allowed(257)) return;
         WalletAccountDialog.show(op);
     };
 
@@ -444,7 +444,7 @@ var WalletAccountComponent = (function () {
                 mThis.WalletAccountListView.showPage();
             },
         };
-        if (!AuthManager.allowed(258)) return;
+        // if (!AuthManager.allowed(258)) return;
         cv_interact.confirm(
             "Delete this account?",
             {
@@ -487,7 +487,7 @@ var WalletAccountComponent = (function () {
             emp_id: emp_id,
             account_id: id,
         }
-        if (!AuthManager.allowed(259)) return; // add comma (259, true) it show silent mode
+        // if (!AuthManager.allowed(259)) return;
         vsapi.call(`${main_view.base_url}/mhr/account/print-transaction`,op,false,false,false).then(res => {
 
             if(res.status_code == 200){

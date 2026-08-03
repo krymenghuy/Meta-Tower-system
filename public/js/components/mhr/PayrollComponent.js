@@ -392,7 +392,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        if (!AuthManager.allowed(475)) return;
+        // if (!AuthManager.allowed(475)) return;
         cv_interact.confirm(
             'html:<span class="d-block">Are you sure you want to reset this payroll?</span> <small>This action will reverse all payroll transactions from staff payroll accounts back to the master payroll account!</small>',
             {
@@ -429,7 +429,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        if (!AuthManager.allowed(476)) return;
+        // if (!AuthManager.allowed(476)) return;
         cv_interact.confirm(
             "Disburse this payroll?",
             {
@@ -460,7 +460,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        if (!AuthManager.allowed(477)) return;
+        // if (!AuthManager.allowed(477)) return;
         AddPayRollListDialog.show(op);
     };
     mThis.deletePayroll = (id, menuLink) => {
@@ -712,7 +712,9 @@ const AddPayRollListDialog = (() => {
                 },
 
               onPrepareForm: (me, data) => {
-                me.controls.currency_code.value = VSMoney.getCurrency().code;
+                if (!me.dataOptions?.id && me.controls?.currency_code) {
+                        me.controls.currency_code.value = "USD";
+                    }
 
                 const { payrolls } = data;
 

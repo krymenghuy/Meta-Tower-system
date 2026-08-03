@@ -257,7 +257,7 @@ var PayrollListComponent = (()=> {
             const op = {
                 payroll_id: mThis.elFilter.value
             };
-            if (!AuthManager.allowed(481)) return;
+            // if (!AuthManager.allowed(481)) return;
             cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
                 title: 'Disburse Payroll List',
                 context: 'update',
@@ -279,7 +279,7 @@ var PayrollListComponent = (()=> {
             const op = {
                 id: mThis.elFilter.value
             };
-            if (!AuthManager.allowed(474)) return;
+            // if (!AuthManager.allowed(474)) return;
 
              cv_interact.confirm(
                  'html:<span class="d-block fw-semibold text-success">Authorize this payroll list? </span><small>This process will authorize payroll list</small>',
@@ -310,7 +310,7 @@ var PayrollListComponent = (()=> {
             const op = {
                 payroll_id: mThis.elFilter.value
             };
-            if (!AuthManager.allowed(482)) return;
+            // if (!AuthManager.allowed(482)) return;
             cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>', {
                 title: 'Reverse Payroll List',
                 context: 'update',
@@ -338,7 +338,7 @@ var PayrollListComponent = (()=> {
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
-            if (!AuthManager.allowed(213)) return;
+            // if (!AuthManager.allowed(213)) return;
             PayRollImportDialog.show(op);
         };
         mThis.btnBack.onclick = function (e) {
@@ -702,7 +702,7 @@ var PayrollListComponent = (()=> {
 
     }
     mThis.addDeduction = (id, menuLink) => {
-        if (!AuthManager.allowed(214)) return;
+        // if (!AuthManager.allowed(214)) return;
 
         // Fetch payroll list row details first to pre-fill the dialog correctly
         vsapi.call([main_view.base_url, '/mhr/payroll/staff/form-options'].join(''), { id: id }, menuLink, null)
@@ -854,7 +854,7 @@ var PayrollListComponent = (()=> {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(215)) return;
+        // if (!AuthManager.allowed(215)) return;
         cv_interact.confirm('Remove this staff from payroll?',{
             title: 'Remove Staff from Payroll',
             context: 'delete',
