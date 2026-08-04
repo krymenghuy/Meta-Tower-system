@@ -1,4 +1,4 @@
-"use strict";
+    "use strict";
 
 var TenantComponent = (function () {
     const mThis = {};
@@ -1527,7 +1527,7 @@ var TenantComponent = (function () {
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> <span vslang="titles.Identity Documents">Identity Documents</span></h5>
-                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
+                        <button type="button" class="fw-light btn-vs-save w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
                             <span vslang="buttons.Upload Document">Upload Document</span>
                         </button>
                     </div>
@@ -2122,14 +2122,14 @@ const CreateTenantDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
@@ -2374,12 +2374,12 @@ const TenantDocumentDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me) => me.hide(false),
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             if (!me.controls.document_type.value) {
                                 cv_interact.error("select_document_type");

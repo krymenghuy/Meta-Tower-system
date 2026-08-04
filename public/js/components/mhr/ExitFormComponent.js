@@ -43,7 +43,7 @@ var ExitFormComponent = (function () {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                if (data.is_finished == 1) {
+                if (data.is_finished == 2) {
                     return `<span class="badge bg-success-subtle text-success border border-success" style="min-width: 100px;">Done</span>`;
                 }
                 return `<span class="badge bg-warning-subtle text-warning border border-warning" style="min-width: 100px;">Pending</span>`;
@@ -287,8 +287,8 @@ const ExitFormDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <select data-style="material" name="is_finished" class="form-control data-input" data-field="is_finished" placeholder="${LocaleManager.trans("Status", "labels")}">
-                                    <option value="0">Pending</option>
-                                    <option value="1">Done</option>
+                                    <option value="1">Pending</option>
+                                    <option value="2">Done</option>
                                 </select>
                             </div>
                         </div>`,
@@ -421,7 +421,7 @@ const ViewExitFormDialog = (() => {
             "</div>",
             "</td>",
             "</tr>",
-            "</tbody>",
+            "</tbody>", 
             "</table>",
             "</div>",
             "</div>",
@@ -580,10 +580,8 @@ const ViewExitFormDialog = (() => {
                     form_header.querySelector(".form_title").innerHTML = d?.title || "";
                     emp_info.querySelector(".employee_name").innerHTML = employee.emp_name || "-";
                     emp_info.querySelector(".employee_code").innerHTML = employee.code || "-";
-                    emp_info.querySelector(".employee_effective_date").innerHTML =
-                        employee.efective_date || "-";
-                    emp_info.querySelector(".employee_branch").innerHTML =
-                        employee.branch_name || "-";
+                    emp_info.querySelector(".employee_effective_date").innerHTML = employee.effective_date || "-";
+                    emp_info.querySelector(".employee_branch").innerHTML = employee.branch_name || "-";
 
                     tbl.querySelectorAll(".exit_form_check_box").forEach((cb) => {
                         cb.onchange = (event) => {

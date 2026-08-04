@@ -35,7 +35,7 @@ class Warning extends VSModel
             'remarks' => '0|string|1000',
         ];
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
-        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars, 'issues' => $chars], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
