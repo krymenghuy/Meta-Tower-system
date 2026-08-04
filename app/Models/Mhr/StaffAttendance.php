@@ -162,6 +162,9 @@ class StaffAttendance extends VSModel
             ->selectRaw('a.id, a.emp_id, emp.name as employee_name, emp.code as employee_code, emp.position_id, a.attendance_date, a.scan_time, a.scan_action, a.work_shift_id, a.remarks, a.action_type, a.session')
             ->where('a.id', $id)
             ->first();
+        if($row) {
+            setOfficialDates($row, ['attendance_date'], [''],['']);
+        }
         if (!$row) {
             return response()->json([
                 'message' => 'Attendance ID not found.',

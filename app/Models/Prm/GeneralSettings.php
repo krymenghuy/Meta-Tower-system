@@ -261,7 +261,7 @@ class GeneralSettings //extends Model
 
     static function options_nationality($ss)
     {
-        $rows = DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
+        $rows = DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('id ASC')->get();
         $new_row = [];
         $new_row[] = (object) [
             // 'nationality' => 'Select Nationality',
@@ -759,7 +759,7 @@ class GeneralSettings //extends Model
     {
         $q = DB::table('employees as e')
             // ->where('e.subs_id', hex2bin($ss->subs_id))
-            ->selectRaw('id, name, code, sex, name_kh, phone_number, email, position_id, photo_file_name');
+            ->selectRaw('id, name, code, sex, name_kh, phone_number, email, position_id,work_shift_id, photo_file_name');
 
         if (!empty($emp_status_ids)) {
             $q->whereIn('e.status_id', (array) $emp_status_ids);

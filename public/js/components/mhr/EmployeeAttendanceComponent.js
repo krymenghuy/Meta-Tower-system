@@ -22,23 +22,18 @@ var EmployeeAttendanceComponent = (function () {
             data: "",
         },
         {
-            transTitle: "titles.Employee Code",
-            className: "align-middle text-capitalize text-nowrap",
+            transTitle: "titles.Employee ID",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-primary-custom" >${data.emp_code}</span>`;
+                return `<span class="text-primary-custom" >${data.emp_code ?? '_'}</span>`;
             },
         },
         {
             transTitle: "titles.Full Name",
-            className: "name text-capitalize align-middle",
+            className: "align-middle",
             data: (data, index, tr) => {
-                const sex =
-                    data.sex === "M"
-                        ? "Male"
-                        : data.sex === "F"
-                          ? "Female"
-                          : "Other";
-                return `<p class="d-flex flex-column">
+                const sex = data.sex === "M" ? "Male" : data.sex === "F" ? "Female" : "Other";
+                return `<p class="d-flex flex-column" style="width:120px;">
                     <span class="text-Capitalize">${data.name}</span>
                     <small class="text-muted">${sex}</small>
                 </p>`;
@@ -46,33 +41,33 @@ var EmployeeAttendanceComponent = (function () {
         },
         {
             transTitle: "titles.Position",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span class="text-primary-custom" >${data.position}</span>`;
+                return `<span class="text-primary-custom" >${data.position ?? "_"}</span>`;
             },
         },
         {
-            transTitle: "titles.Date",
-            className: "text-capitalize align-middle",
+            transTitle: "titles.Attendance Date",
+            className: "text-nowrap align-middle",
             data: (data, index, tr) => {
-                return data.attendance_date ?? "";
+                return data.attendance_date ?? "_";
             },
         },
         {
             transTitle: "titles.Work Shift",
-            className: "text-capitalize align-middle",
+            className: "text-nowrap align-middle",
             data: "work_shift",
         },
+        // {
+        //     transTitle: "titles.Session",
+        //     className: "text-nowrap align-middle",
+        //     data: (data) => {
+        //         return data.session ?? "-";
+        //     },
+        // },
         {
-            transTitle: "titles.Session",
-            className: "text-capitalize align-middle",
-            data: (data) => {
-                return data.session ?? "-";
-            },
-        },
-        {
-            transTitle: "titles.Scan Info",
-            className: "align-middle",
+            transTitle: "titles.Scan Time",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 const time = data.scan_time;
                 if (!time) return "";
@@ -82,51 +77,19 @@ var EmployeeAttendanceComponent = (function () {
                 const ampm = hours >= 12 ? "PM" : "AM";
                 hours = hours % 12 || 12;
                 const formattedTime = `${hours}:${minutes} ${ampm}`;
-
-                const isCheckIn = (data.scan_action || "").toLowerCase().includes("in");
-                const iconClass = isCheckIn ? "fa-right-to-bracket" : "fa-right-from-bracket";
-                const colorClass = isCheckIn ? "success" : "warning";
-                const actionLabel = isCheckIn ? "IN" : "OUT";
-
-                return `
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-${colorClass}-subtle text-${colorClass}" style="width: 32px; height: 32px; flex-shrink: 0;">
-                            <i class="fa-solid ${iconClass}" style="font-size: 14px;"></i>
-                        </div>
-                        <span class="fw-semibold text-${colorClass}" style="font-size: 90%; letter-spacing: 0.5px;">${actionLabel}</span>
-                        <span class="text-${colorClass} fs-5 px-1">&bull;</span>
-                        <span class="text-dark fw-semibold" style="font-size: 90%;">${formattedTime}</span>
-                    </div>
-                `;
+                return `<span class="d-block text-prm-custom">${formattedTime}</span>`;
             },
         },
-
-        {
-            transTitle: "titles.Remark",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
-                    </div>
-                `;
-            },
-        },
-
         {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const status = data.action_type ?? "Present";
+                const status = data.scan_action || "";
                 let badgeClass = "bg-success-subtle text-success border border-success";
-                if (status === "Late") {
-                    badgeClass = "bg-warning-subtle text-warning border border-warning";
-                } else if (status === "Absent") {
+                if (status === "Check In") {
+                    badgeClass = "bg-success-subtle text-success border border-success";
+                } else if (status === "Check Out") {
                     badgeClass = "bg-danger-subtle text-danger border border-danger";
-                } else if (status === "Leave" || status === "Permission" || status === "Half Day") {
-                    badgeClass = "bg-info-subtle text-info border border-info";
-                } else if (status === "Holiday" || status === "Weekend") {
-                    badgeClass = "bg-secondary-subtle text-secondary border border-secondary";
                 }
                 return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
             }
@@ -188,7 +151,7 @@ var EmployeeAttendanceComponent = (function () {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
@@ -375,7 +338,7 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                              <div class="col-6">
-                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans('Attendance Type', 'labels')}">
+                                 <select data-style="material" data-field="scan_action" name="scan_action" class="data-input form-control" placeholder="${LocaleManager.trans('Action', 'labels')}">
                                      <option value="Check In">Check In</option>
                                      <option value="Check Out">Check Out</option>
                                  </select>
@@ -388,11 +351,11 @@ const StaffAttendanceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans('Work Shift', 'titles')}">
+                                <select data-style="material" data-field="work_shift_id" name="work_shift_id" class="data-input form-control" placeholder="${LocaleManager.trans('Work Shift', 'titles')}" disabled></select>
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}"></select>
+                                <select data-style="material" data-field="position_id" name="position_id" class="data-input form-control" placeholder="${LocaleManager.trans('Position', 'labels')}" disabled></select>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
@@ -493,6 +456,7 @@ const StaffAttendanceDialog = (() => {
                         name: "Name",
                     },
                     onSelect: (employee) => {
+                        console.log("Selected employee:", employee);
                         if (me.controls.employee_code) {
                             me.controls.employee_code.value = employee.code || "";
                         }
@@ -504,6 +468,13 @@ const StaffAttendanceDialog = (() => {
                             me.controls.position_id.dispatchEvent(new Event("change"));
                             if (window.jQuery) {
                                 jQuery(me.controls.position_id).change();
+                            }
+                        }
+                        if (employee.work_shift_id && me.controls.work_shift_id) {
+                            me.controls.work_shift_id.value = employee.work_shift_id;
+                            me.controls.work_shift_id.dispatchEvent(new Event("change"));
+                            if (window.jQuery) {
+                                jQuery(me.controls.work_shift_id).change();
                             }
                         }
                     },

@@ -54,12 +54,12 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_list_card.css') }}?v=1">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_list_card.css') }}?v=3">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_skill.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_education.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_education.css') }}?v=3">
 <link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_experience.css') }}?v=3">
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_document.css') }}?v=2">
-<link rel="stylesheet" href="{{ asset('assets/css/mhr/tax_allowance.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/employee_document.css') }}?v=3">
+<link rel="stylesheet" href="{{ asset('assets/css/mhr/tax_allowance.css') }}?v=3">
 
 <style>
     /* List cards (same pattern as tenant) */

@@ -19,8 +19,8 @@ class ShiftDetailsController extends Controller
     public function saveShiftDetails(Request $req)
     {
         $id = $req->shift_details_id ?? $req->id;
-        $prn_code = $id ? 487 : 488;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        // $prn_code = $id ? 487 : 488;
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -53,7 +53,7 @@ class ShiftDetailsController extends Controller
 
     public function deleteShiftDetails(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 489);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
