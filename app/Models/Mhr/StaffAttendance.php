@@ -85,36 +85,33 @@ class StaffAttendance extends VSModel
     {
         $filter = (object) $filter;
         $branch_id = $filter->branch_id ?? null;
-        $position_id = $filter->position_id ?? null;
+        $department_id = $filter->department_id ?? null;
         $emp_type_id = $filter->emp_type_id ?? null;
         $work_shift_id = $filter->work_shift_id ?? null;
         $attendance_date = $filter->attendance_date ?? null;
-        $search_value = escape_like_str($filter->search_value ?? null);
+        $search_value = $filter->search_value ?? null;
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
-        $scan_date = DBX::formatDate('a.attendance_date', 'attendance_date');
-        $dob = DBX::formatDate('emp.date_of_birth', 'dob');
+        $str_search = '1=1';
+
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
+        }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'emp.position_id', '=', 'p.id')
+            ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
-            ->selectRaw('a.id, a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code as emp_code,'
-                . $dob . ', ws.name as work_shift,'
-                . $scan_date . ', a.scan_time, a.scan_action, a.remarks, p.name as position, a.action_type, a.session')
+            ->whereRaw($str_search)
+            ->selectRaw('a.id, a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code as emp_code,emp.date_of_birth, ws.name as work_shift,a.attendance_date, a.scan_time, a.scan_action, a.remarks, p.name as position, a.action_type, a.session')
             ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
-        if ($search_value) {
-            $query->where(function ($subQuery) use ($search_value) {
-                $subQuery->where('emp.code', 'LIKE', "%{$search_value}%")
-                    ->orWhere('emp.name', 'LIKE', "%{$search_value}%")
-                    ->orWhere('emp.phone_number', 'LIKE', "%{$search_value}%");
-            });
-        }
         if ($branch_id) {
             $query->where('emp.branch_id', $branch_id);
         }
-        if ($position_id) {
-            $query->where('p.id', $position_id);
+        if ($department_id) {
+            $query->where('d.id', $department_id);
         }
         if ($emp_type_id) {
             $query->where('emp.emp_type_id', $emp_type_id);
