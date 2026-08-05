@@ -87,8 +87,8 @@ var PayrollComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data) => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom">${data.update_user ?? ""}</span>
-                <span class="text-muted small">${data.update_date ?? ""}</span>
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? "_"}</span>
+                <span class="text-muted small">${data.updated_at ?? "_"}</span>
             </div>`,
         },
         {
@@ -518,13 +518,15 @@ var PayrollComponent = new (function () {
     };
 
     mThis.getFilterData = () => {
-        const filters = {
+        const p = {
             search_value: mThis.elSearch.value,
+            disbursed: mThis.elDisbursed.value,
+            authorized: mThis.elAuthorized.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            filters[el.dataset.field] = el.value;
+            p[el.dataset.field] = el.value;
         });
-        return filters;
+        return p;
     };
     mThis.prepareFormOptions = () => {
         vsapi
@@ -541,9 +543,9 @@ var PayrollComponent = new (function () {
                     d.authorized,
                     "id",
                     "name",
-                    true,
-                    "All",
-                    null,
+                    "",
+                    "All Authorization",
+                    "",
                 );
                 VSUtil.setComboItems(
                     mThis.elDisbursed,
@@ -551,7 +553,7 @@ var PayrollComponent = new (function () {
                     "id",
                     "name",
                     "",
-                    "All",
+                    "All Disbursement",
                     "",
                 );
             });
