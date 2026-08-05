@@ -22,38 +22,90 @@ class Warning extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null)
+   public function upsert($arr = [], $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
+        $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'emp_id' => '1|number|exists=employees.id|text=select_employee',
+            'emp_id'          => '1|number|exists=employees.id|text=select_employee',
             'warning_type_id' => '1|number|text=warning_type',
-            'warning_date' => '1|date|text=warning_date',
-            'issues' => '1|string|250|text=issues',
-            'remarks' => '0|string|1000',
+            'warning_date'    => '1|date|text=warning_date',
+            'issues'          => '1|string|250|text=issues',
+            'remarks'         => '0|string|1000',
         ];
+
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
-        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
-        if ($res->error) return DV::error($res->error);
+
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            true,
+            ['remarks' => $chars],
+            $ss->lang,
+            false
+        );
+        if ($res->error) {
+            return DV::error($res->error);
+        }
         $inputs = $res->values;
-        $d = (object) $inputs;
+        $exists = DB::table('emp_warnings')
+            ->where('emp_id', $inputs['emp_id'])
+            ->where('warning_type_id', $inputs['warning_type_id'])
+            ->when($id, function ($q) use ($id) {
+                $q->where('id', '!=', $id);
+            })
+            ->exists();
+        if ($exists) {
+            return DV::error("The employee already has a warning of this type.");
+        }
+        DB::beginTransaction();
 
-        $emp_id = $inputs['emp_id'];
-        if (!$d->emp_id) return DV::error('Employee ID is missing');
-
-        $employee_info = DB::table('employees as emp')
-            ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
-            ->where('emp.id', $emp_id)
-            ->selectRaw('emp.id, emp.status_id, emp.name, emp.code, p.name as position_name')
-            ->first();
-
-        if (!$employee_info) return DV::error('It seems the employee information does not exist');
-        if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
-
-        $id = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1, false);
-        return DV::depends($id, ['action', 'warning saved'], 'failed_to_save');
+        try {
+            $warningId = DBX::saveData($ss,'emp_warnings',['id' => $id],$inputs,[],1);
+            if (!$warningId) {
+                DB::rollBack();
+                return DV::error("Failed to save employee warning.");
+            }
+            if (!$id) {
+                $eventName = 'Employee Warnings';
+                $eventId = Employee::getEventId($eventName);
+                if (!$eventId) {
+                    $event = Event::createEvent(['name' => $eventName],$ss);
+                    if ($event->status_code != 200 || empty($event->data['id'])) {
+                        DB::rollBack();
+                        return DV::error("Failed to create employee warning event.");
+                    }
+                    $eventId = $event->data['id'];
+                }
+                $eventSaved = DBX::saveData(
+                    $ss,
+                    'emp_events',
+                    [],
+                    [
+                        'emp_id'     => $inputs['emp_id'],
+                        'event_id'   => $eventId,
+                        'impact'     => 'Neutral',
+                        'remarks'    => $inputs['remarks'] ?? '',
+                        'event_date' => $inputs['warning_date'],
+                        'branch_id'  => $branch_id,
+                    ],
+                    [],
+                    1,
+                    false
+                );
+                if (!$eventSaved) {
+                    DB::rollBack();
+                    return DV::error("Failed to save employee event.");
+                }
+            }
+            DB::commit();
+            return DV::depends($warningId,['id' => $warningId,'emp_warnings' => $inputs]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return DV::error($e->getMessage());
+        }
     }
 
     public function getWarningListPaginate($arr, $ss)
@@ -134,7 +186,7 @@ class Warning extends VSModel
 
         $warning_types = DB::table('warning_types')
             ->select('id', 'name')
-            ->orderBy('name')
+            ->orderBy('id')
             ->get();
 
         $employees = GeneralSettings::options_employee(10, $ss);

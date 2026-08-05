@@ -407,15 +407,6 @@ var EmployeeManagementComponent = (function () {
                             title="Movement">
                             <i class="fa-solid fa-right-left fs-5 ps-2"></i>
                         </button>
-
-                        <button type="button"
-                            class="btn d-none btn-success btn-sm movement_detail"
-                            data-id="${data.id}"
-                            data-status="${data.status_id}"
-                            title="Movement Detail">
-                            <i class="fa-regular fa-address-book fs-5 ps-2"></i>
-                        </button>
-
                         <button type="button"
                             class="btn btn-info btn-sm set_resign"
                             data-id="${data.id}"
@@ -548,11 +539,7 @@ var EmployeeManagementComponent = (function () {
                 mThis.movement(btn.dataset.id, btn);
                 return;
             }
-            btn = VSUtil.closestLimited(e.target, ".movement_detail");
-            if (btn) {
-                mThis.movementDetail(btn.dataset.id, btn);
-                return;
-            }
+       
         });
     };
 
@@ -567,8 +554,8 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis.movement = (id, menuLink) => {
-        if (typeof ProfileMovementDialog === "undefined") return;
-        ProfileMovementDialog.show({
+        if (typeof MovementDialog === "undefined") return;
+        MovementDialog.show({
             id: null,
             emp_id: id,
             employee: mThis.currentEmployeeProfile || null,
@@ -578,16 +565,6 @@ var EmployeeManagementComponent = (function () {
             },
         });
     };
-
-    mThis.movementDetail = (id, menuLink) => {
-        if (typeof EmployeeMovementHistoryDialog === "undefined") return;
-        EmployeeMovementHistoryDialog.show({
-            emp_id: id,
-            employee: mThis.currentEmployeeProfile || null,
-            btn: menuLink,
-        });
-    };
-
     mThis.setResign = (id, menuLink) => {
         if (typeof ProfileResignDialog === "undefined") return;
         ProfileResignDialog.show({
