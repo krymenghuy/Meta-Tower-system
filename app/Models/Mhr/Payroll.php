@@ -128,7 +128,6 @@ class Payroll
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -136,53 +135,51 @@ class Payroll
         }
 
         $skip_rows = ($current_page - 1) * $per_page;
-
         $search_value = $d->search_value ?? null;
         $branch_id = $d->branch_id ?? null;
         $authorized = isset($d->authorized) ? $d->authorized : null;
         $disbursed = isset($d->disbursed) ? $d->disbursed : null;
-
-        $start_date = DBX::formatDate('p.start_date', 'start_date');
-        $end_date = DBX::formatDate('p.end_date', 'end_date');
-
-        $audit_info = DBX::query_user_info('p', 'update_date', true, 'create_date');
-        $query = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month, p.year,
-                        ' . $start_date . ', ' . $end_date . ',
-                         p.p_number,p.head_count ,p.total, p.authorized, p.disbursed,
-                         p.currency_code, p.exchange_rate,' . $audit_info);
-        if ($branch_id) {
-            $query->where('p.branch_id', $branch_id);
-        }
+        $str_search = '1=1';
+        $str_moreWhere = '2=2';
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->where(function ($q) use ($search_value) {
-                $q->where('p.name', 'LIKE', "%{$search_value}%")
-                    ->orWhere('p.p_number', 'LIKE', "%{$search_value}%");
-            });
+            $str_search = '(p.name LIKE \'%' . $search_value . '%\' OR p.p_number LIKE \'%' . $search_value . '%\')';
         }
-        if ($authorized !== null) {
-            $query->where('p.authorized', $authorized);
+        if($branch_id){
+            $str_moreWhere .= ' AND p.branch_id =' . $branch_id;
         }
-        if ($disbursed !== null) {
-            $query->where('p.disbursed', $disbursed);
+        if($authorized){
+            $str_moreWhere .= ' AND p.authorized =' . $authorized;
         }
-
+        if($disbursed){
+            $str_moreWhere .= ' AND p.disbursed =' . $disbursed;
+        }
+        $query = DB::table('payrolls as p')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw('p.id, p.name, p.month, p.year,
+                         p.start_date,p.end_date,
+                         p.p_number,p.head_count ,p.total, p.authorized, p.disbursed,
+                         p.currency_code, p.exchange_rate,p.updated_at,p.update_user');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach ($rows as $row) {
+            setOfficialDates($row, ['start_date', 'end_date'], ['updated_at'], ['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 
     function getDetails($id)
     {
-        $start_date = DBX::formatDate('p.start_date', 'start_date');
-        $end_date = DBX::formatDate('p.end_date', 'end_date');
         $row = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month, p.year,' . $start_date . ', ' . $end_date . ', p.p_number, p.head_count,p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month, p.year,p.start_date,p.end_date, p.p_number, p.head_count,p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.id', $id)
             ->first();
+        if($row){
+            setOfficialDates($row, ['start_date', 'end_date'], ['updated_at'], ['']);
+        }
         return $row;
     }
 
