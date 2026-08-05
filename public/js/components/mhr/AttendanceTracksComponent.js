@@ -162,14 +162,14 @@ var AttendanceTracksComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit WorkShift"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_shift-details",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete WorkShift"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_shift-details",
                 },
@@ -198,7 +198,6 @@ var AttendanceTracksComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("Scanpoint is updated successfully!");
                 mThis.WorkshiftListView();
             },
         };
@@ -212,9 +211,9 @@ var AttendanceTracksComponent = (function () {
         };
         // if (!AuthManager.allowed(489)) return;
         cv_interact.confirm(
-            "Are you sure you want to delete this scanpoint?",
+            "confirm_delete",
             {
-                title: "Delete Scanpoint",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -230,7 +229,7 @@ var AttendanceTracksComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted successfully!");
+                                cv_interact.success("Deleted shift details successfully!");
                                 mThis.WorkshiftListView();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -408,6 +407,11 @@ const ShiftDetailDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update success shift details");
+                                        } else {
+                                            cv_interact.success("create success shift details");
+                                        }
                                 } else cv_interact.error(res.error_message);
                             });
                     },
@@ -432,7 +436,6 @@ const ShiftDetailDialog = (() => {
                 // },
             },
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
                 let id = op.id;
                 const days = me.divModal.querySelectorAll(".days");
                 if (id && data?.shift_details) {

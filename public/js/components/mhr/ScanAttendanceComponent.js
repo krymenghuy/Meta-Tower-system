@@ -22,7 +22,7 @@ var ScanAttendanceComponent = (() => {
     mThis.elCurrentDate = mThis.self.querySelector('#_scan_current_date');
     mThis.elOption = mThis.self.querySelector('#_scan_option');
     mThis.employeeTable = mThis.self.querySelector('#employee_Info_container');
-    mThis.employeeImageBox = mThis.self.querySelector('#student_img_box');
+    mThis.employeeImageBox = mThis.self.querySelector('#employee_img_box');
 
 
     mThis.init = () => {

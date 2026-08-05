@@ -269,7 +269,8 @@ return [
         'work_shift_is_assigned_to_employee' => 'វេនការងារនេះត្រូវបានកំណត់ឱ្យបុគ្គលិករួចហើយ។',
         'select_leave_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
 
-        
+        'emp_already_leave' => 'បុគ្គលិកមានច្បាប់រួចហើយក្នុងចន្លោះកាលបរិច្ឆេទនេះ។',
+
 
 
 
@@ -891,7 +892,7 @@ return [
         'Nontaxable BFT' => 'BFT មិនជាប់ពន្ធ',
         'Taxable BFT' => 'BFT ជាប់ពន្ធ',
         'BFT (Flat Tax)' => 'BFT (ពន្ធអត្រាថេរ)',
-        'Deduction' => 'ការកាត់ប្រាក់', 
+        'Deduction' => 'ការកាត់ប្រាក់',
         'Allowance' => 'ប្រាក់ឧបត្ថម្ភ',
         'Tax Rate' => 'អត្រាពន្ធ',
         'Tax Base' => 'មូលដ្ឋានពន្ធ',
@@ -908,7 +909,7 @@ return [
         'Internal Holder' => "អ្នកកាន់កាតខាងក្នុង",
         "Search by prefix: e- for Employee, t- for Tenant, or m- for Member" => "ស្វែងរកតាមអក្សរចាប់ពីនេះ: e- សម្រាប់បុគ្គលិក, t- សម្រាប់អ្នកជួល, ឬ m- សម្រាប់សមាជិក",
         'Select Unit' => "ជ្រើសរើសបន្ទប់",
-        'Select Category'=> "សូមជ្រើសរើសប្រភេទ",
+        'Select Category' => "សូមជ្រើសរើសប្រភេទ",
 
         'Benefit Disbursement' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
         'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
@@ -935,11 +936,20 @@ return [
         'Delete Leave' => 'លុបថ្ងៃឈប់សម្រាក',
 
         'Excuse Leave Request' => 'សំណើសុំច្បាប់មានការអនុញ្ញាត',
-        
+        'Excuse Reason' => 'មូលហេតុ',
+        'Warning' => 'ការព្រមាន',
+        'Modify Uninformed Leave' => 'កែប្រែអវត្តមានគ្មានច្បាប់',
+        'Delete Uninformed Leave' => 'លុបអវត្តមានគ្មានច្បាប់',
+        'Absent Period' => 'រយៈពេលអវត្តមាន',
+        'Attendance Status' => 'ស្ថានភាពវត្តមាន',
+        'Decision' => 'ការសម្រេចចិត្ត',
+        'Disbursed' => 'បានបើកប្រាក់',
 
-        
 
-        
+
+
+
+
 
 
 
@@ -1102,7 +1112,7 @@ return [
         'Payroll' => 'ប្រាក់ខែ',
 
         'Wallet Accounts' => 'គណនីឌីជីថល',
-        'Benefit Disbursements' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',  
+        'Benefit Disbursements' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
 
         'Deductions' => 'ការកាត់ប្រាក់',
         'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
@@ -1255,7 +1265,7 @@ return [
         'Create Work Shift' => 'បង្កើតវេនការងារ',
         'Create Employee' => 'បង្កើតបុគ្គលិក',
 
-        'Add Uninformed Leave' => 'បង្កើតការស្នើសុំថ្ងៃឈប់សម្រាក'
+        'Add Uninformed Leave' => 'បង្កើតការស្នើសុំថ្ងៃឈប់សម្រាក',
 
     ],
     'filters' => [
@@ -1600,11 +1610,11 @@ return [
         'New Salary' => 'ប្រាក់បៀវត្សថ្មី',
         'Current Work Shift' => 'វេនការងារបច្ចុប្បន្ន',
         'New Work Shift' => 'វេនការងារថ្មី',
-       
+
         'Status' => 'ស្ថានភាព',
         'Reason' => 'មូលហេតុ',
-        
-        
+
+
 
 
 
@@ -1641,7 +1651,7 @@ return [
         'update_success_status' => 'ស្ថានភាពត្រូវបានកែប្រែដោយជោគជ័យ។',
         'update_failed_status' => 'មិនអាចកែប្រែស្ថានភាពបានទេ។',
         'upload_failed_photo' => 'ការផ្ទុករូបភាពឡើងបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។',
-        
+
         'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
         'service_request_accepted' => 'សំណើសេវាកម្មត្រូវបានទទួលយកដោយជោគជ័យ!',
 
@@ -1848,7 +1858,7 @@ return [
         'update_success_team' => 'Team updated successfully.',
 
 
-        
+
         'create_success_team' => 'បានបង្កើតក្រុមដោយជោគជ័យ។',
         'update_success_team' => 'បានកែប្រែក្រុមដោយជោគជ័យ។',
 
@@ -1911,10 +1921,24 @@ return [
         'update_set_leave_successfully' => 'បានកែប្រែថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
         'delete_set_leave?' => 'តើអ្នកប្រាកដទេថាចង់លុបថ្ងៃឈប់សម្រាកនេះ?',
         'delete_set_leave_successfully' => 'លុបថ្ងៃឈប់សម្រាកដោយជោគជ័យ។',
-        
-         'delete_leave_request' => 'តើអ្នកប្រាកដទេថាចង់លុបសំណើឈប់សម្រាកនេះ?',
-         'accept_request' => 'តើអ្នកប្រាកដទេថាចង់យល់ព្រមនឹងសំណើនេះ?',
-         'delete_leave_request_success' => 'លុបសំណើឈប់សម្រាកដោយជោគជ័យ។',
+
+        'delete_leave_request' => 'តើអ្នកប្រាកដទេថាចង់លុបសំណើឈប់សម្រាកនេះ?',
+        'accept_request' => 'តើអ្នកប្រាកដទេថាចង់យល់ព្រមនឹងសំណើនេះ?',
+        'delete_leave_request_success' => 'លុបសំណើឈប់សម្រាកដោយជោគជ័យ។',
+
+        'update_uninformed_success' => 'កែប្រែអវត្តមានគ្មានច្បាប់ដោយជោគជ័យ។',
+        'set_uninformed_success' => 'បានកំណត់អវត្តមានគ្មានច្បាប់ដោយជោគជ័យ។',
+
+        'delete_uninformed' => 'តើអ្នកប្រាកដទេថាចង់លុបអវត្តមានគ្មានច្បាប់នេះ?',
+        'delete_uninformed_success' => 'លុបអវត្តមានគ្មានច្បាប់ដោយជោគជ័យ។',
+        'deduct_already_issued' => 'បានអនុវត្តការកាត់ប្រាក់សម្រាប់អវត្តមាននេះរួចហើយ។',
+        'warning_already_issued' => 'បានអនុវត្តការព្រមានសម្រាប់អវត្តមាននេះរួចហើយ។',
+        'Leave excused successfully' => 'បានអនុម័តការសុំច្បាប់ដោយជោគជ័យ។',
+
+        'disburse_payroll' => 'តើអ្នកចង់អនុវត្តការបើកប្រាក់បៀវត្សរ៍នេះឬទេ?',
+        'authorize_payroll' => 'តើអ្នកចង់អនុម័តប្រាក់បៀវត្សរ៍នេះឬទេ?',
+        'reset_payroll_confirm' => '<span class="d-block">តើអ្នកពិតជាចង់កំណត់ប្រាក់បៀវត្សរ៍នេះឡើងវិញមែនទេ?</span> <small>សកម្មភាពនេះនឹងបង្វែររាល់ប្រតិបត្តិការបើកប្រាក់បៀវត្សរ៍ពីគណនីបុគ្គលិកត្រឡប់ទៅកាន់គណនីមេវិញ!</small>',
+
 
 
 

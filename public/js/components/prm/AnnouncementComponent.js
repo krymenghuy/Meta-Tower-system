@@ -575,7 +575,7 @@ const AnnouncementDialog = (() => {
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="form-label small d-block" style="color:#757575;" vslang="labels.Description"></label>
-                                    <textarea name="description" id="description" class="data-input form-control" data-field="description" placeholder="Enter announcement description..."></textarea>
+                                    <textarea name="description" id="description" class="data-input form-control" data-field="description" placeholder="Enter announcement description"></textarea>
                                 </div>
                             </div>
 
@@ -652,11 +652,12 @@ const AnnouncementDialog = (() => {
                 `;
                 },
 
-                contentCreated: (me) => {
+                 contentCreated: (me) => {
                     const textarea = me.divModal.querySelector(
                         'textarea[name="description"]',
                     );
                     if (textarea && typeof CKEDITOR !== "undefined") {
+
                         me.editor = CKEDITOR.replace(textarea, {
                             versionCheck: false,
                             toolbar: [
@@ -676,14 +677,13 @@ const AnnouncementDialog = (() => {
                                         "JustifyCenter",
                                         "JustifyRight",
                                     ],
-                                },
-                                { name: "links", items: ["Link"] },
-                                { name: "insert", items: ["Image"] },
+                                }
                             ],
-                            removePlugins: "elementspath",
+                            removePlugins: "elementspath,image,link",
                             resize_enabled: false,
                             height: 150,
-                            placeholder: "Enter announcement description...",
+                            placeholder: "Enter announcement description",
+                            image_previewText: ' ' // Removes dummy text
                         });
                     }
                 },
@@ -782,14 +782,14 @@ const AnnouncementDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             if (me.editor) {
                                 me.editor.updateElement();

@@ -92,20 +92,20 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                     <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                         <ul class="kt-menu__subnav">
-                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(402); ?>>
-                                <a href="MovementComponent" modid="402" class="menu-item kt-menu__link">
-                                    <span class="kt-menu__link-icon">
-                                        <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
-                                    </span>
-                                    <span class="font-color kt-menu__link-text" vslang="menus.Movements">Movements</span>
-                                </a>
-                            </li>
                             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(403); ?>>
                                 <a href="EmployeeBenefitComponent" modid="403" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons" src="{{ asset('assets/images/icons/transaction.svg') }}" />
                                     </span>
                                     <span class="font-color kt-menu__link-text" vslang="menus.Benefits">Benefits</span>
+                                </a>
+                            </li>
+                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(402); ?>>
+                                <a href="MovementComponent" modid="402" class="menu-item kt-menu__link">
+                                    <span class="kt-menu__link-icon">
+                                        <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
+                                    </span>
+                                    <span class="font-color kt-menu__link-text" vslang="menus.Movements">Movements</span>
                                 </a>
                             </li>
                             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(404); ?>>

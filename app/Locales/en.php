@@ -226,6 +226,9 @@ return [
         'amount_is_required' => 'Amount is required.',
         'select_leave_type' => 'Please select a leave type.',
 
+        'emp_already_leave' => 'The employee already has leave for the specified date range.',
+
+
 
     ],
     'api_body_keys' => [
@@ -248,6 +251,9 @@ return [
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
+
+       
+
 
 
 
@@ -550,6 +556,18 @@ return [
         'accept_request' => 'Are you sure to accept this request?',
         'delete_leave_request_success' => 'Delete leave request successfully.',
 
+        'update_uninformed_success' => 'Updated uninformed leave successfully',
+        'set_uninformed_success' => 'Set uninformed leave successfully',
+
+        'delete_uninformed' => 'Delete this uninformed leave?',
+        'delete_uninformed_success' => 'Delete uninformed leave successfully.',
+        'deduct_already_issued' => 'Deduct has already been issued for this absence.',
+        'warning_already_issued' => 'Warning has already been issued for this absence.',
+
+
+        'disburse_payroll' => 'Are you sure you want to disburse this payroll?',
+        'authorize_payroll' => 'Are you sure you want to authorize payroll?',
+        'reset_payroll' => 'Are you sure you want to reset this payroll?',
 
 
 
@@ -586,3 +604,4 @@ return [
         'Create Tenant' => 'Create Tenant',
     ],
 ];
+
