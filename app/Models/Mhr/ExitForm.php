@@ -41,7 +41,7 @@ class ExitForm extends VSModel
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id|text=select_employee',
             'name' => '1|string|0-250|text=name_required::@key;@max;@value',
-            'is_finished' => '1|choice|0,1|default=0',
+            'is_finished' => '1|choice|1,2|default=1',
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
         $res = DBX::validateObject($arr, $v_rule, true, ['name' => $pos_char], $ss->lang, false, null);
@@ -55,9 +55,6 @@ class ExitForm extends VSModel
         }
 
         $inputs = $res->values;
-        if (!$id) {
-            $inputs['is_finished'] = 0;
-        }
         $d = (object) $inputs;
         self::mapFinishedInput($inputs);
 
@@ -76,19 +73,22 @@ class ExitForm extends VSModel
             }
         }
 
-        $is_update = $id ? true : false;
         $id = DBX::saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
-            if ($d->is_finished == 1 && $is_update) {
+            $has_items = DB::table('exit_form_items')->where('form_id', $id)->exists();
+            if (!$has_items) {
+                self::createExitFormItems($id, $ss);
+            }
+
+            if ($inputs['status_id'] == 2) {
                 DB::table('exit_form_items')->where('form_id', $id)->update(['status_id' => 1]);
-            } elseif (!$d->is_finished) {
-                if (self::hasUnfinishedItems($id)) {
-                    DB::table('exit_forms')->where('id', $id)->update(['status_id' => 1]);
-                } else {
-                    self::createExitFormItems($id, $ss);
+            } else {
+                if ($has_items && !self::hasUnfinishedItems($id)) {
+                    DB::table('exit_forms')->where('id', $id)->update(['status_id' => 2]);
+                    $inputs['status_id'] = 2;
                 }
             }
-            $inputs['is_finished'] = $inputs['status_id'] ?? 0;
+            $inputs['is_finished'] = $inputs['status_id'] ?? 1;
             return DV::depends($id, ['exit_forms' => $inputs, 'id' => $id]);
         }
 
@@ -111,11 +111,10 @@ class ExitForm extends VSModel
 
     static function createExitFormItems($form_id, $ss)
     {
-        $is_finished = DB::table('exit_forms')->where('id', $form_id)->value('status_id');
-        if ($is_finished == 1) {
+        $has_items = DB::table('exit_form_items')->where('form_id', $form_id)->exists();
+        if ($has_items) {
             return;
         }
-        DB::table('exit_form_items')->where('form_id', $form_id)->delete();
         $rows = DB::table('check_points as cp')
             ->join('check_point_categories as cc', 'cc.id', '=', 'cp.category_id')
             ->selectRaw('cp.id, cp.name as name, cp.category_id, cc.name as category, cc.id as category_id')
@@ -159,7 +158,7 @@ class ExitForm extends VSModel
                 ->where('efi.id', $exit_form_item_id)
                 ->where('efi.form_id', $d->form_id)
                 ->update(['status_id' => $d->status_id]);
-            $is_finished = self::hasUnfinishedItems($form_id) ? 0 : 1;
+            $is_finished = self::hasUnfinishedItems($form_id) ? 1 : 2;
             DB::table('exit_forms')->where('id', $form_id)->update(['status_id' => $is_finished]);
         }
         return DV::depends(1, 'success');

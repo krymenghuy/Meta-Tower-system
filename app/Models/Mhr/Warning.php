@@ -37,18 +37,8 @@ class Warning extends VSModel
         ];
 
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
-
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            true,
-            ['remarks' => $chars],
-            $ss->lang,
-            false
-        );
-        if ($res->error) {
-            return DV::error($res->error);
-        }
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars, 'issues' => $chars], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $exists = DB::table('emp_warnings')
             ->where('emp_id', $inputs['emp_id'])

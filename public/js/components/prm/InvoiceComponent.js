@@ -4056,156 +4056,160 @@ const InvoiceSettingDialog = (() => {
 })();
 
 
-const OverdueAlertsDialog = (() => {
-    let dialog = null;
+    const OverdueAlertsDialog = (() => {
+        let dialog = null;
 
-    return {
-        show(op = {}) {
+        return {
+            show(op = {}) {
 
-            dialog ??= GeneralDialog.getOrCreate({
-                instanceKey: "overdue_invoice_alerts_dialog",
-                dialogOptions: {
-                    width: "800px",
-                    showFooter: true,
-                    // Make sure GeneralDialog actually reads a `title` key —
-                    // this was likely the cause of "No title Set" in the header.
-                    title: "Admin Alert: Invoice Payment Overdue Notifications"
-                },
+                dialog ??= GeneralDialog.getOrCreate({
+                    instanceKey: "overdue_invoice_alerts_dialog",
+                    dialogOptions: {
+                        width: "800px",
+                        showFooter: true,
+                        // Make sure GeneralDialog actually reads a `title` key —
+                        // this was likely the cause of "No title Set" in the header.
+                        title: "Admin Alert: Invoice Payment Overdue Notifications"
+                    },
 
-                prepareFormOptions: {
-                    createTitle:
-                        "Admin Alert: Invoice Payment Overdue Notifications",
-                    modifyTitle:
-                        "Admin Alert: Invoice Payment Overdue Notifications",
-                    targetProp: "alerts_data"
-                },
+                    prepareFormOptions: {
+                        createTitle:
+                            "Admin Alert: Invoice Payment Overdue Notifications",
+                        modifyTitle:
+                            "Admin Alert: Invoice Payment Overdue Notifications",
+                        targetProp: "alerts_data",
 
-                // Build HTML layout (Runs once)
-                createContent() {
-                    return `
-                        <div class="p-3">
-                            <!-- Alert Summary Header Banner -->
-                            <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-4"
-                                 style="background: linear-gradient(135deg, #fff4e5, #ffe9cc); border: 1px solid #ffd9a0;">
-                                <div class="d-flex align-items-center justify-content-center rounded-circle"
-                                     style="width: 46px; height: 46px; background: #ff9f1c; flex-shrink: 0;">
-                                    <i class="fa-solid fa-bell fs-5 text-white"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-1 fw-bold text-dark">Payment Attention Required</h6>
-                                    <small class="text-muted">
-                                        Found
-                                        <strong id="_cnt_overdue_text" class="text-danger">0</strong>
-                                        overdue invoice(s).
-                                    </small>
-                                </div>
-                            </div>
+                        
+                    },
 
-                            <!-- Scrollable Invoice Alerts List Container -->
-                            <div id="_invoice_alert_list_container"
-                                 class="rounded-4"
-                                 style="max-height: 400px; overflow-y: auto; background:#f7f8fa; padding: 4px;">
-                                <div class="text-center text-muted py-5">
-                                    <i class="fa-solid fa-spinner fa-spin me-2"></i>Loading alerts...
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                },
-
-                // Cache DOM element references (Runs once)
-                contentCreated(me) {
-                    me.elListContainer = me.divModal.querySelector(
-                        "#_invoice_alert_list_container"
-                    );
-                    me.elCntOverdue = me.divModal.querySelector(
-                        "#_cnt_overdue_text"
-                    );
-                },
-
-                // Runs every time the dialog opens
-                onPrepareForm(me) {
-                    const alerts = op.data.alerts_data || [];
-
-                    let overdueCount = 0;
-                    let upcomingCount = 0;
-
-                    if (!Array.isArray(alerts) || alerts.length === 0) {
-                        me.elListContainer.innerHTML = `
-                            <div class="text-center text-muted py-5">
-                                <i class="fa-solid fa-circle-check text-success fs-2 d-block mb-2"></i>
-                                <span>No overdue or pending invoice alerts found.</span>
-                            </div>
-                        `;
-                        me.elCntOverdue.textContent = "0";
-                        return;
-                    }
-
-                    // Render alert items
-                    const itemsHtml = alerts
-                        .map(item => {
-                            const isDanger = item.alert_type === "danger";
-                            if (isDanger) overdueCount++;
-                            else upcomingCount++;
-
-                            const accentColor = isDanger ? "#e5384d" : "#ff9f1c";
-                            const iconClass = isDanger
-                                ? "fa-solid fa-triangle-exclamation"
-                                : "fa-solid fa-clock";
-                            const badgeBg = isDanger ? "#e5384d" : "#ff9f1c";
-
-                            return `
-                            <div class="d-flex align-items-center justify-content-between gap-3 p-3 mb-2 bg-white rounded-3"
-                                 style="border-left: 4px solid ${accentColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                                <div class="d-flex align-items-start gap-3">
+                    // Build HTML layout (Runs once)
+                    createContent() {
+                        return `
+                            <div class="p-3">
+                                <!-- Alert Summary Header Banner -->
+                                <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-4"
+                                    style="background: linear-gradient(135deg, #fff4e5, #ffe9cc); border: 1px solid #ffd9a0;">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle"
-                                         style="width: 34px; height: 34px; background: ${accentColor}1a; flex-shrink: 0;">
-                                        <i class="${iconClass}" style="color:${accentColor}; font-size: 14px;"></i>
+                                        style="width: 46px; height: 46px; background: #ff9f1c; flex-shrink: 0;">
+                                        <i class="fa-solid fa-bell fs-5 text-white"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark">
-                                            ${item.code}
-                                            <span class="fw-normal" style="font-size: 12.5px; color:#000;">
-                                                (${item.tenant_name || "N/A"})
-                                            </span>
-                                        </div>
-                                        <small class="d-block mt-1" style="color:#000;">
-                                            ${item.message || ""}
+                                        <h6 class="mb-1 fw-bold text-dark">Payment Attention Required</h6>
+                                        <small class="text-muted">
+                                            Found
+                                            <strong id="_cnt_overdue_text" class="text-danger">0</strong>
+                                            overdue invoice(s).
                                         </small>
                                     </div>
                                 </div>
-                                <div class="text-end ms-3" style="flex-shrink: 0;">
-                                    <span class="d-inline-block px-2 py-1 mb-1 rounded-pill fw-semibold"
-                                          style="background:${badgeBg}; color:#fff; font-size: 12.5px;">
-                                        Due: $${Number(item.due_amount || 0).toFixed(2)}
-                                    </span>
-                                    <small class="d-block text-muted" style="font-size: 11px;">
-                                        ${item.due_date || ""}
-                                    </small>
+
+                                <!-- Scrollable Invoice Alerts List Container -->
+                                <div id="_invoice_alert_list_container"
+                                    class="rounded-4"
+                                    style="max-height: 400px; overflow-y: auto; background:#f7f8fa; padding: 4px;">
+                                    <div class="text-center text-muted py-5">
+                                        <i class="fa-solid fa-spinner fa-spin me-2"></i>Loading alerts...
+                                    </div>
                                 </div>
                             </div>
                         `;
-                        })
-                        .join("");
+                    },
 
-                    me.elCntOverdue.textContent = overdueCount;
-                    me.elListContainer.innerHTML = itemsHtml;
-                },
+                    // Cache DOM element references (Runs once)
+                    contentCreated(me) {
+                        me.elListContainer = me.divModal.querySelector(
+                            "#_invoice_alert_list_container"
+                        );
+                        me.elCntOverdue = me.divModal.querySelector(
+                            "#_cnt_overdue_text"
+                        );
+                    },
 
-                buttons: [
-                    {
-                       label: '<span vslang="buttons.Close">Close</span>',
-                        cssClass: "btn btn-primary",
-                        click(me) {
-                            me.hide(false);
+                    // Runs every time the dialog opens
+                    onPrepareForm(me) {
+                        const alerts = op.data.alerts_data || [];
+
+                        let overdueCount = 0;
+                        let upcomingCount = 0;
+
+                        if (!Array.isArray(alerts) || alerts.length === 0) {
+                            me.elListContainer.innerHTML = `
+                                <div class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-circle-check text-success fs-2 d-block mb-2"></i>
+                                    <span>No overdue or pending invoice alerts found.</span>
+                                </div>
+                            `;
+                            me.elCntOverdue.textContent = "0";
+                            return;
                         }
-                    }
-                ],
 
-                onClose(actionDone, payload) {}
-            });
+                        // Render alert items
+                        const itemsHtml = alerts
+                            .map(item => {
+                                const isDanger = item.alert_type === "danger";
+                                if (isDanger) overdueCount++;
+                                else upcomingCount++;
 
-            dialog.show(op);
-        }
-    };
-})();
+                                const accentColor = isDanger ? "#e5384d" : "#ff9f1c";
+                                const iconClass = isDanger
+                                    ? "fa-solid fa-triangle-exclamation"
+                                    : "fa-solid fa-clock";
+                                const badgeBg = isDanger ? "#e5384d" : "#ff9f1c";
+
+                                return `
+                                <div class="d-flex align-items-center justify-content-between gap-3 p-3 mb-2 bg-white rounded-3"
+                                    style="border-left: 4px solid ${accentColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                            style="width: 34px; height: 34px; background: ${accentColor}1a; flex-shrink: 0;">
+                                            <i class="${iconClass}" style="color:${accentColor}; font-size: 14px;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">
+                                                ${item.code}
+                                                <span class="fw-normal" style="font-size: 12.5px; color:#000;">
+                                                    (${item.tenant_name || "N/A"})
+                                                </span>
+                                            </div>
+                                            <small class="d-block mt-1" style="color:#000;">
+                                                ${item.message || ""}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end ms-3" style="flex-shrink: 0;">
+                                        <span class="d-inline-block px-2 py-1 mb-1 rounded-pill fw-semibold"
+                                            style="background:${badgeBg}; color:#fff; font-size: 12.5px;">
+                                            Due: $${Number(item.due_amount || 0).toFixed(2)}
+                                        </span>
+                                        <small class="d-block text-muted" style="font-size: 11px;">
+                                            ${item.due_date || ""}
+                                        </small>
+                                    </div>
+                                </div>
+                            `;
+                            })
+                            .join("");
+
+                        me.elCntOverdue.textContent = overdueCount;
+                        me.elListContainer.innerHTML = itemsHtml;
+                    },
+
+                    buttons: [
+                        {
+                        label: '<span vslang="buttons.Close">Close</span>',
+                            cssClass: "btn btn-primary",
+                            click(me) {
+                                me.hide(false);
+                            }
+                        }
+                    ],
+
+                    onClose(actionDone, payload) {}
+                });
+
+                dialog.show(op);
+            }
+        };
+    })();
+
+
