@@ -24,11 +24,11 @@ class RequestService extends VSModel
 
     public function upsert($arr = [], $ss = null)
     {
-        $id = $arr->id ?? null;
+        $id = $arr['id'] ?? $arr->id ?? null;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        $branch_id = $ss->branch_id ?? null;
 
-       $v_rule = [
+        $v_rule = [
             'tenant_id'      => '1|number|exists=tenants.id|text=select_tenant',
             'space_id'       => '1|number|exists=building_spaces.id|text=select_unit',
             'category_id'    => '1|number|exists=service_categories.id|text=select_category',
@@ -48,30 +48,41 @@ class RequestService extends VSModel
         if ($res->error) return DV::error($res->error);
 
         $input = $res->values;
+        
+        if (!empty($ss->official_id)) {
+            $input['tenant_id'] = $ss->official_id;
+        }
+
         $scheduledDate = $input['scheduled_date'];
         $startTime = date('H:i:s', strtotime($input['start_time']));
         $now = time();
         $startDT = strtotime($scheduledDate . ' ' . $startTime);
+        
         if ($startDT <= $now) {
             return DV::error('Cannot schedule in the past.');
         }
-        if ($input['unit_type'] == 2 && empty($input['duration_hours'])) {
+
+        $unitType = $input['unit_type'] ?? 1;
+        if ($unitType == 2 && empty($input['duration_hours'])) {
             return DV::error('Please select duration hour.');
         }
+
         $duration = $input['duration_hours'] ?? 0;
         $start = $startTime;
         $end = $start;
-        if ($input['unit_type'] == 2 && $duration > 0) {
+        
+        if ($unitType == 2 && $duration > 0) {
             $end = date('H:i:s', strtotime("+{$duration} hours", strtotime($start)));
         }
+
         $overlap = DB::table('service_requests')
-            ->where('tenant_id', $input['tenant_id'] = $ss->official_id)
+            ->where('tenant_id', $input['tenant_id'])
             ->where('service_id', $input['service_id'])
             ->where('scheduled_date', $scheduledDate)
             ->where('status_id', 1)
             ->when($id, fn($q) => $q->where('id', '<>', $id))
-            ->where(function ($q) use ($start, $end, $input) {
-                if ($input['unit_type'] == 1) {
+            ->where(function ($q) use ($start, $end, $unitType) {
+                if ($unitType == 1) {
                     $q->where('start_time', $start);
                 } else {
                     $q->whereRaw('start_time < ?', [$end])
@@ -84,37 +95,27 @@ class RequestService extends VSModel
             return DV::error('This time slot overlaps with an existing pending request.');
         }
 
-        if ($input['unit_type'] == 2) {
-            $service = DB::table('services')
-                ->where('id', $input['service_id'])
-                ->first(['price']);
+        $service = DB::table('services')->where('id', $input['service_id'])->first(['price']);
+        if (!$service) return DV::error('Service not found.');
+        if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
 
-            if (!$service) return DV::error('Service not found.');
-            if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
-
+        $input['price'] = (float)$service->price;
+        if ($unitType == 2) {
             $input['total_price'] = round($service->price * $duration, 2);
-            $input['price'] = $service->price;
         } else {
-            $service = DB::table('services')->where('id', $input['service_id'])->first(['price']);
-
-            if (!$service) return DV::error('Service not found.');
-            if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
-
             $input['total_price'] = round($service->price, 2);
-            $input['price'] = $service->price;
         }
 
         $input['request_date'] = !empty($input['request_date']) ? date('Ymd', strtotime($input['request_date'])) : date('Ymd');
         $created = !$id;
 
-        // $input['tenant_id'] = $ss->official_id;
-
-        try {
+       try {
             $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-            $return_data = [];
+            if (!$save_id) {
+                return DV::error('Error saving service request!');
+            }
 
             if ($created) {
-
                 $codeRes = setOfficialCode(
                     $branch_id,
                     'service_request_code_control',
@@ -125,22 +126,26 @@ class RequestService extends VSModel
                     null
                 );
 
-                 \Log::info(array($codeRes));
-
                 if (!empty($codeRes->code)) {
-                    $return_data['code'] = $codeRes->code;
+                    $input['code'] = $codeRes->code;
                 }
-
                 $message = 'Service request created successfully';
             } else {
-                $return_data['code'] = DB::table('service_requests')
+                $input['code'] = DB::table('service_requests')
                     ->where('id', $id)
                     ->value('code');
 
                 $message = 'Service request updated successfully';
             }
 
-            return DV::success($return_data + ['message' => $message]);
+            // Standardize return structure to match saveService
+            return DV::depends(1, [
+                'service_request' => $input,
+                'id'              => $save_id,
+                'code'            => $input['code'] ?? null,
+                'message'         => $message
+            ]);
+
         } catch (\Throwable $e) {
             Log::error('Service request save failed', [
                 'error' => $e->getMessage(),
@@ -155,19 +160,21 @@ class RequestService extends VSModel
     {
         $d = (object) $arr;
         $search_value      = $d->search_value ?? null;
-        // $tenant_id = $d->tenant_id ?? null;
-        $category_id         = $d->category_id ?? null;
-        $service_id          = $d->service_id ?? null;
+        $category_id       = $d->category_id ?? null;
+        $service_id        = $d->service_id ?? null;
         $status_id         = $d->status_id ?? null;
         $current_page      = $d->current_page ?? 1;
         $per_page          = $d->per_page ?? 10;
+
         if (!is_numeric($current_page) || !is_numeric($per_page)) {
             return null;
         }
+
         $skip_rows = ($current_page - 1) * $per_page;
         $str_search = "1=1";
         $str_moreWhere = "2=2";
-        $tenant_id = $ss->official_id;
+        $tenant_id = $ss->official_id ?? null;
+
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
@@ -181,10 +188,10 @@ class RequestService extends VSModel
         if ($status_id) {
             $str_moreWhere .= ' AND sr.status_id =' . $status_id;
         }
+
         if ($service_id) {
             $str_moreWhere .= ' AND sr.service_id =' . $service_id;
         }
-
 
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
@@ -214,10 +221,10 @@ class RequestService extends VSModel
         $clone_query = clone $query;
         $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
+
         foreach ($rows as $row) {
             $scheduledDateTime = strtotime($row->scheduled_date . ' ' . $row->start_time);
             if ($row->status_id == 1 && !empty($row->scheduled_date) && !empty($row->start_time) && $scheduledDateTime < time()) {
-                // $row->status_name = 'Expired';
                 DB::table('service_requests')
                     ->where('id', $row->id)
                     ->update([
@@ -228,16 +235,16 @@ class RequestService extends VSModel
             $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : ($row->unit_type == '3' ? 'Unit' : ''));
             $row = setOfficialDates($row, ['complete_date', 'request_date', 'scheduled_date'], ['updated_at', 'created_at'], []);
         }
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     static function getServiceRequestDetails($id, $ss = null)
     {
-        $row =  DB::table('service_requests as sr')
+        $row = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
-            // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') 
             ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->where('sr.id', $id)
             ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
@@ -248,12 +255,13 @@ class RequestService extends VSModel
                 sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, s.category_id, sc.name as service_category
             ")
             ->first();
+
         if ($row) {
             setOfficialDates($row, ['scheduled_date', 'complete_date'], [], []);
         }
+
         return $row;
     }
-
 
     public function getFormOptions($arr = [], $ss = null)
     {
@@ -274,12 +282,9 @@ class RequestService extends VSModel
     {
         $id = $id ?? $this->id;
         $req = DB::table('service_requests')->where('id', $id)->select('status_id')->first();
-        if ($req->status_id == 4) {
+        if ($req && $req->status_id == 4) {
             return DV::error('This request has already been completed and cannot be deleted.');
         }
-        // if($req->status_id == 3){
-        //     return DV::error('This request has already been rejected, so it cannot be deleted.');
-        // }
 
         $deleted = self::deleteBy(['id' => $id]);
         return DV::depends($deleted, 'Failed to delete service request');
@@ -319,19 +324,16 @@ class RequestService extends VSModel
             return DV::error('Request already processed.');
         }
 
-        // Check if another request already uses same slot
         $exists = DB::table('service_requests')
             ->where('id', '!=', $id)
             ->where('service_id', $req->service_id)
             ->where('scheduled_date', $req->scheduled_date)
             ->where('start_time', $req->start_time)
-            ->where('status_id', 2) // Accepted only
+            ->where('status_id', 2)
             ->exists();
 
         if ($exists) {
-            return DV::error(
-                'Another request has already been accepted for this date and time.'
-            );
+            return DV::error('Another request has already been accepted for this date and time.');
         }
 
         $updated = DB::table('service_requests')
@@ -351,10 +353,10 @@ class RequestService extends VSModel
             'message' => 'Request accepted successfully'
         ]);
     }
+
     function rejectRequest($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-
         $d = (object) $arr;
 
         $id = $d->id ?? $d->discount_id ?? null;
@@ -418,9 +420,7 @@ class RequestService extends VSModel
     function completeRequest($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-
         $d = (object) $arr;
-
         $id = $d->id ?? null;
 
         if (empty($id)) {

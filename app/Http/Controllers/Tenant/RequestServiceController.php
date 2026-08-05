@@ -17,21 +17,41 @@ class RequestServiceController extends Controller
         $this->request_service = new RequestService();
     }
 
-    public function saveServiceRequest(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $id = $req->id ?? $req->request_id;
+    // public function saveServiceRequest(Request $req)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+    //     $id = $req->id ?? $req->request_id;
 
-        $params = $req->all();
-        if (isset($ss->official_id) && $ss->official_id) {
-            $params['tenant_id'] = $ss->official_id;
+    //     $params = $req->all();
+    //     if (isset($ss->official_id) && $ss->official_id) {
+    //         $params['tenant_id'] = $ss->official_id;
+    //     }
+    //     $res = $this->request_service->upsert($params, $req->all());
+    //     return JDV::raw($res);
+    // }
+
+    public function saveServiceRequest(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+
+            $id = $req->id ?? $req->request_id;
+            $params = $req->all();
+
+            if (isset($ss->official_id) && $ss->official_id) {
+                $params['tenant_id'] = $ss->official_id;
+            }
+
+            // Pass $ss as the second parameter
+            $res = $this->request_service->upsert($params, $ss);
+
+            return JDV::raw($res);
         }
-        $res = $this->request_service->upsert($params, $ss);
-        return JDV::raw($res);
-    }
 
     public function getServiceRequestList(Request $req)
     {
