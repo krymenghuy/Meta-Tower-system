@@ -127,7 +127,35 @@ class StaffAttendance extends VSModel
             }
         }
         $count = $query->count();
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $rows = $query->get()
+            ->groupBy(fn ($item) => $item->emp_id . '_' . $item->attendance_date)
+            ->map(function ($group) {
+                $first = $group->first();
+
+                return (object)[
+                    'emp_code' => $first->emp_code,
+                    'name' => $first->name,
+                    'sex' => $first->sex,
+                    'position' => $first->position,
+                    'attendance_date' => $first->attendance_date,
+                    'work_shift' => $first->work_shift,
+                    'scan_info' => $group->map(function ($item) {
+                        return [
+                            'time' => $item->scan_time,
+                            'action' => $item->scan_action,
+                            'action_type' => $item->action_type,
+                        ];
+                    })->values(),
+                ];
+            })
+            ->values();
+
+        $count = $rows->count();
+
+        $rows = $rows->slice($skip_rows, $per_page)->values();
+        foreach ($rows as $row) {
+            setOfficialDates($row, ['attendance_date'], [''], ['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     function attendanceList($arr, $ss = null)

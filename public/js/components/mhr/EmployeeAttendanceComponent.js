@@ -47,68 +47,118 @@ var EmployeeAttendanceComponent = (function () {
             },
         },
         {
+            transTitle: "titles.Work Shift",
+            className: "text-nowrap align-middle",
+            data: "work_shift",
+        },
+        {
             transTitle: "titles.Attendance Date",
             className: "text-nowrap align-middle",
             data: (data, index, tr) => {
                 return data.attendance_date ?? "_";
             },
         },
+    
         {
-            transTitle: "titles.Work Shift",
-            className: "text-nowrap align-middle",
-            data: "work_shift",
-        },
-        // {
-        //     transTitle: "titles.Session",
-        //     className: "text-nowrap align-middle",
-        //     data: (data) => {
-        //         return data.session ?? "-";
-        //     },
-        // },
-        {
-            transTitle: "titles.Scan Time",
-            className: "align-middle text-nowrap",
+            title: "Scan Info",
+            className: "align-middle text-center",
             data: (data) => {
-                const time = data.scan_time;
-                if (!time) return "";
-                const timeParts = time.split(":");
-                let hours = parseInt(timeParts[0]);
-                const minutes = timeParts[1];
-                const ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12 || 12;
-                const formattedTime = `${hours}:${minutes} ${ampm}`;
-                return `<span class="d-block text-prm-custom">${formattedTime}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = data.scan_action || "";
-                let badgeClass = "bg-success-subtle text-success border border-success";
-                if (status === "Check In") {
-                    badgeClass = "bg-success-subtle text-success border border-success";
-                } else if (status === "Check Out") {
-                    badgeClass = "bg-danger-subtle text-danger border border-danger";
+                if (!Array.isArray(data.scan_info) || data.scan_info.length === 0) {
+                    return '<span class="text-muted">-</span>';
                 }
-                return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
-            }
-        },
 
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
                 return `
-                    <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_attendance_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
-                            </a>
-                        </div>
+                    <div class="d-flex flex-column gap-2">
+                        ${data.scan_info.map((info) => {
+
+                            const timeParts = (info.time || "00:00").split(":");
+                            let hours = parseInt(timeParts[0], 10);
+                            const minutes = timeParts[1] || "00";
+
+                            const ampm = hours >= 12 ? "PM" : "AM";
+                            hours = hours % 12 || 12;
+
+                            const formattedTime = `${hours}:${minutes} ${ampm}`;
+
+                            let badgeClass = "bg-secondary text-secondary";
+
+                            switch ((info.action || "").toLowerCase()) {
+                                case "check in":
+                                    badgeClass = "bg-success text-white";
+                                    break;
+
+                                case "check out":
+                                    badgeClass = "bg-danger text-white";
+                                    break;
+
+                                case "break":
+                                    badgeClass = "bg-warning text-white";
+                                    break;
+                            }
+
+                            return `
+                                <div class="d-flex justify-content-between align-items-center border rounded-3 px-3 py-2 bg-light">
+                                    <span class="badge ${badgeClass}" style="width:80px;">
+                                        ${info.action}
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="fa-solid fa-arrow-right-long"></i>
+                                    </span>
+                                    <span class="text-muted small">
+                                        <i class="fa-regular fa-clock me-1"></i>
+                                        ${formattedTime}
+                                    </span>
+                                </div>
+                            `;
+                        }).join("")}
                     </div>
                 `;
-            }
+            },
         },
+        // {
+        //     transTitle: "titles.Scan Time",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => {
+        //         const time = data.scan_time;
+        //         if (!time) return "";
+        //         const timeParts = time.split(":");
+        //         let hours = parseInt(timeParts[0]);
+        //         const minutes = timeParts[1];
+        //         const ampm = hours >= 12 ? "PM" : "AM";
+        //         hours = hours % 12 || 12;
+        //         const formattedTime = `${hours}:${minutes} ${ampm}`;
+        //         return `<span class="d-block text-prm-custom">${formattedTime}</span>`;
+        //     },
+        // },
+        // {
+        //     transTitle: "titles.Status",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const status = data.scan_action || "";
+        //         let badgeClass = "bg-success-subtle text-success border border-success";
+        //         if (status === "Check In") {
+        //             badgeClass = "bg-success-subtle text-success border border-success";
+        //         } else if (status === "Check Out") {
+        //             badgeClass = "bg-danger-subtle text-danger border border-danger";
+        //         }
+        //         return `<span class="badge ${badgeClass} px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="min-width: 100px; font-size: 75%; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;">${status}</span>`;
+        //     }
+        // },
+
+        // {
+        //     className: 'col_action align-middle',
+        //     data: function (data, row, display) {
+        //         return `
+        //             <div class="d-flex justify-content-center align-items-center">
+        //                 <div class="text-center gap-2 d-flex flex-wrap">
+        //                         <a href="javascript:void(0)" class="btn_attendance_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+        //                             <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
+        //                     </a>
+        //                 </div>
+        //             </div>
+        //         `;
+        //     }
+        // },
 
         
 
@@ -359,7 +409,7 @@ const StaffAttendanceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" name="session" class="data-input form-control form_input" data-field="session" placeholder=" " />
+                                    <input type="text" name="session" class="data-input form-control" data-field="session" placeholder=" " />
                                     <label vslang="labels.Session"></label>
                                 </div>
                             </div>
