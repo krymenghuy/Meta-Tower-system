@@ -772,4 +772,66 @@ class Tenant
             'floors' => GeneralSettings::options_floor($ss),
         ];
     }
+
+
+    // mobile app 
+
+    public static function getDefaultBranch($ss) {
+        return DVX::getOne(DB::table('branches')->where('is_default',1)->where('is_active',1));
+    }
+    public static function getDefaultRole($ss) {
+        return DVX::getOne(DB::table('roles')->where('is_default',1)->where('is_active',1));
+    }
+
+    public static function registerMobile($arr){
+        $subs_id = getCurrentSubsId(true);
+        $ss = (object)['subs_id'=>$subs_id,'user_id'=>1,'branch_id'=>1,'lang'=>'en','full_name'=>'admin','user_class'=>'admin'];
+        $v_rule = [
+            'login_name' => '1|string|1-150',
+            'password' => '1|string|0-150',
+            'phone_number' => '1|phone|1-50',
+            'email' => '0|email|1-150',
+            'name' => '1|string|1-200',
+            'sex' => '1|choice|F,M',
+        ];
+        $defaultBranch = self::getDefaultBranch($ss);
+        $defaultRole = self::getDefaultRole($ss);
+        if(!$defaultRole) return DV::error('Parent default role has not been defined by Admin');
+        if(!$defaultBranch) return DV::error('It seems no default campus or branch available!');
+        $res = DBX::validateObject($arr,$v_rule,false,[],'en',0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        if(strlen($inputs['password']) > 20 || strlen($inputs['password']) < 6) return DV::error('password must be between 6 and 20');
+
+        $guardian = [
+            'name' => $d->name,
+            'phone_number' => $d->phone_number,
+            'email' => $d->email,
+            'sex' => $d->sex,
+            'role' => $d->sex == 'F' ? 'mother':'father'
+        ];
+        $newGuardianId = DBX::saveData($ss,'guardians',['id' => null,],$guardian,[],1);
+        if($newGuardianId >0){
+            $official_id = $newGuardianId;
+            $um_arr= [
+                'login_name' =>$d->login_name,
+                'user_class' => 'parent',
+                'role_id' => $defaultRole->id,
+                'branch_id'=>$defaultBranch->id,
+                'email' => $d->email,
+                'password' => $d->password,
+                'full_name' => $d->name,
+                "official_id" => $official_id,
+            ];
+            $um = new User();
+            $x = $um->save($um_arr,null,$ss);
+            if($x->status != 'OK') return DV::error($x->error_message);
+            return DV::depends(1, ['message' => 'Registration successful']);
+        }
+        // \Log::error('Registration for parent failed. This usually caused by the fact that the Primary key field ID is not auto_increment');
+        return DV::error('Something went wrong with the registration');
+    }
+
+
 }
