@@ -29,156 +29,169 @@ var PayrollComponent = new (function () {
     ];
 
     mThis.cols = [
-        {
-            title: "",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "",
-        },
-        {
-            transTitle: "titles.Name",
-            className: "align-middle text-nowrap",
-            data: (data) => `<div class="d-block">
-                            <p class="p-0 m-0">${data.name}</p>
-                            <span class="text-danger-emphasis">${
-                                data.p_number
-                                    ? data.p_number == 1
-                                        ? "(First)"
-                                        : data.p_number == 2
-                                          ? "(Second)"
-                                          : "Other"
-                                    : ""
-                            }</span>
-
-                        </div>`,
-        },
-        {
-            transTitle: "titles.Duration",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<span class="text-prm-custom">(${data.start_date ?? ""}​ ~ ${data.end_date ?? ""}</small>)</span>`,
-        },
-        {
-            transTitle: "titles.Staff Count",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<a href="javascript:void(0);" class="text-success show_payroll_list" data-id="${data.id}">${data.head_count}</a>`,
-        },
-
-        {
-            transTitle: "titles.Total",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(
-                    data.total,
-                    data.currency_code ?? "USD",
-                )}</p>`;
-            },
-        },
-        {
-            transTitle: "titles.Exchange Rate",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                let x_rate = data.exchange_rate;
-                return `<p class="p-0 m-0">${x_rate}</p>`;
-            },
-        },
-        {
-            transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
-            data: (data) => `
+    {
+        title: "",
+        className: "align-middle text-center",
+        data: "",
+    },
+    {
+        transTitle: "titles.Name",
+        className: "align-middle text-nowrap",
+        data: (data) => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom">${data.update_user ?? "_"}</span>
-                <span class="text-muted small">${data.updated_at ?? "_"}</span>
+                <span class="text-prm-custom">${data.name}</span>
+                <small class="text-muted">
+                    <i class="fa-solid fa-hashtag me-1"></i><span class="text-danger-emphasis">${ data.p_number ? data.p_number == 1 ? "(First)" : data.p_number == 2 ? "(Second)" : "Other" : "" }</span>
+                </small>
+            </div>
+        `,
+    },
+    {
+        transTitle: "titles.Staff Count",
+        className: "text-center align-middle",
+        data: (data) => `
+            <a href="javascript:void(0)"
+               class="show_payroll_list badge bg-light text-dark border px-3 py-2"
+               data-id="${data.id}">
+                <i class="fa-solid fa-users me-1 text-primary"></i>
+                <span>${data.head_count}</span>
+            </a>
+        `,
+    },
+    {
+        transTitle: "titles.Duration",
+        className: "align-middle",
+        data: (data) => `
+            <span class="badge bg-light text-dark border px-3 py-2">
+                <i class="fa-regular fa-calendar me-1 text-primary"></i>
+                ${data.start_date ?? "-"} - ${data.end_date ?? "-"}
+            </span>
+        `,
+    },
+   
+    {
+        transTitle: "titles.Total",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="fw-bold text-success">
+                ${VSMoney.formatAmount(data.total, data.currency_code ?? "USD")}
+            </span>
+        `,
+    },
+    {
+        transTitle: "titles.Exchange Rate",
+        className: "align-middle text-nowrap text-center",
+        data: (data) => `
+            <span class="badge bg-light text-dark border px-3 py-2">
+                 ${VSMoney.formatAmount(data.exchange_rate,"KHR")}
+            </span>
+        `,
+    },
+   {
+        transTitle: "titles.Last Updated",
+        className: "align-middle text-nowrap",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                <span class="text-muted small">${data.updated_at ?? ""}</span>
             </div>`,
-        },
-        {
-            transTitle: "titles.Authorize",
-            className: "authorized text-nowrap align-middle",
-            data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-2";
-                let bg_color = "";
-                let cls_icon = "";
-
-                if (data.authorized === 1) {
-                    cls_class =
-                        "bg-success-subtle text-success border border-success";
-                    cls_icon = "fa-solid fa-check";
-                } else if (data.authorized === 0) {
-                    cls_class =
-                        "bg-warning-subtle text-warning border border-warning";
-                    cls_icon = "fa-regular fa-clock";
-                }
-
-                return `<div><a class="d-block" data-authorized="${
-                    data.authorized
-                }" data-id="${data.id}" href="javascript:void(0)">
-                            <span class="badge ${cls_class}" style="min-width: 100px;">
-                            <i class="${cls_icon}"></i>
-                                ${data.authorized == 0 ? "Pending" : "Approved"}
-                            </span>
-                        </a></div>`;
-            },
-        },
-        {
-            transTitle: "titles.Disbursed",
-            className: "status text-nowrap align-middle",
-            data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-2";
-                let bg_color = "";
-                let cls_icon = "";
-
-                if (data.disbursed === 1) {
-                    cls_class =
-                        "bg-success-subtle text-success border border-success";
-                    cls_icon = "fa fa-check";
-                } else if (data.disbursed === 0) {
-                    cls_class =
-                        "bg-warning-subtle text-warning border border-warning";
-                    cls_icon = "fa-solid fa-hourglass";
-                }
-
-                return `<div><a class="d-block" data-status="${
+    },
+    {
+        transTitle: "titles.Authorize",
+        className: "align-middle text-nowrap text-center",
+        data: (data) => `
+            <span class="badge px-3 py-2 ${
+                data.authorized
+                    ? "bg-success text-white"
+                    : "bg-warning text-white"
+            }">
+                <i class="fa-solid ${
+                    data.authorized ? "fa-check-circle" : "fa-clock"
+                } me-1"></i>
+                ${data.authorized ? "Approved" : "Pending"}
+            </span>
+        `,
+    },
+    {
+        transTitle: "titles.Disbursed",
+        className: "align-middle text-nowrap text-center",
+        data: (data) => `
+            <span class="badge px-3 py-2 ${
+                data.disbursed
+                    ? "bg-success text-white"
+                    : "bg-warning text-white"
+            }">
+                <i class="fa-solid ${
                     data.disbursed
-                }" data-id="${data.id}" href="javascript:void(0)">
-                            <span  class="badge ${cls_class}" style="min-width: 100px;">
-                            <i class="${cls_icon}" style="font-size: 10px;"></i>
-                                ${data.disbursed == 0 ? "Pending" : "Disbursed"}
-                            </span>
-                        </a></div>`;
-            },
-        },
-        {
-            transTitle: "titles.Action",
-            className: "align-middle",
-            data: (data) =>
-                `<div class="d-flex align-items-center gap-1">
-                    <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
-                            style="width: 25px; height: 25px;" id="_btnAuthorized">
-                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Authorize", "titles")}</span></i>
-                    </button>
-                    <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
-                            style="width: 25px; height: 25px;" id="_btnReset">
-                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Reset", "titles")}</span></i>
-                    </button>
-                    <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
-                            style="width: 25px; height: 25px;" id="_btnDisburse">
-                            <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans("Disburse", "titles")}</span></i>
-                    </button>
-                </div>`,
-        },
-        {
-            title: "",
-            className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-end align-items-end">
-                    <a href="javascript:void(0)"
-                       class="btn_payroll_action"
-                       data-id="${data.id}">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>`,
-        },
-    ];
+                        ? "fa-money-check-dollar"
+                        : "fa-hourglass-half"
+                } me-1"></i>
+                ${data.disbursed ? "Disbursed" : "Pending"}
+            </span>
+        `,
+    },
+    {
+        transTitle: "titles.Action",
+        className: "align-middle",
+        data: (data) => `
+            <div class="d-flex align-items-center gap-2">
+
+                <button
+                    class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-2 border-0"
+                    data-id="${data.id}"
+                    style="width:25px; height:25px;"
+                    id="_btnAuthorized">
+                    <i class="fa-solid fa-check tool-tip" style="color:#fff;">
+                        <span class="tool-tiptext">
+                            ${LocaleManager.trans("Authorize", "titles")}
+                        </span>
+                    </i>
+                </button>
+
+                <button
+                    class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-2 border-0"
+                    data-id="${data.id}"
+                    style="width:25px; height:25px;"
+                    id="_btnReset">
+                    <i class="fa-solid fa-reply fs-10 tool-tip" style="color:#fff;">
+                        <span class="tool-tiptext">
+                            ${LocaleManager.trans("Reset", "titles")}
+                        </span>
+                    </i>
+                </button>
+
+                <button
+                    class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-2 border-0"
+                    data-id="${data.id}"
+                    style="width:25px; height:25px;"
+                    id="_btnDisburse">
+                    <i class="fa-solid fa-square-check fs-6 tool-tip" style="color:#fff;">
+                        <span class="tool-tiptext">
+                            ${LocaleManager.trans("Disburse", "titles")}
+                        </span>
+                    </i>
+                </button>
+
+            </div>
+        `,
+    },
+    {
+        title: "",
+        className: "col_action align-middle",
+        data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <a
+                    href="javascript:void(0)"
+                    class="btn_payroll_action"
+                    data-id="${data.id}">
+                    <img
+                        src="${main_view.asset_url}/images/icons/more_vert (3).svg"
+                        alt="More Actions">
+                </a>
+            </div>
+        `,
+    },
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -215,7 +228,7 @@ var PayrollComponent = new (function () {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
         };
@@ -278,27 +291,27 @@ var PayrollComponent = new (function () {
             menus: [
                 {
                     html: '<span class="ps-2" vslang=titles.Authorize> Authorize </span>',
-                    icon: '<i class="fa-regular fa-circle-check"></i>',
+                    icon: '<i class="fa-regular fa-circle-check fs-5 text-primary"></i>',
                     name: "change_authorize",
                 },
                 {
                     html: '<span class="ps-2" vslang=titles.Reset> Reset</span>',
-                    icon: '<i class="fa fa-reply"></i>',
+                    icon: '<i class="fa fa-reply fs-5 text-danger"></i>',
                     name: "reset_authorize",
                 },
                 {
                     html: '<span class="ps-2" vslang=titles.Disburse All> Disburse All</span>',
-                    icon: '<i class="fa-solid fa-square-check"></i>',
+                    icon: '<i class="fa-solid fa-square-check fs-5 text-success"></i>',
                     name: "change_disbursed",
                 },
                 {
                     html: '<span class="ps-2" vslang=titles.Modify Payroll>Modify Payroll</span>',
-                    icon: '<i class="fa-regular fa-edit fs-5"></i>',
+                    icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>',
                     name: "edit_payroll",
                 },
                 {
                     html: '<span class="ps-2" vslang=titles.Delete Payroll>Delete Payroll</span>',
-                    icon: '<i class="fa-regular fa-trash-can fs-5"></i>',
+                    icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>',
                     name: "delete_payroll",
                 },
             ],

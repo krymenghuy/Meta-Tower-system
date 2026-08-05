@@ -43,18 +43,16 @@
 
     <div class="d-none" id="view_transaction">
         <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
-            <div class="d-flex px-3 pt-3">
-                <button id="_btn_backTo_account" style="background-color:#2b3991; width:100px;"
-                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+            <div class="d-flex px-3">
+                <button type="button" id="_btn_backTo_account" class="btnAddNewPrm">
                     <i class="fa-solid fa-angles-left"></i>
-                    <span class="" vslang="buttons.Back">Back</span>
+                    <span vslang="buttons.Back">Back</span>
                 </button>
             </div>
-            <div class="d-flex px-3 pt-3">
-                <button id="_print_transaction" style="background-color:#2b3991; width:100px;"
-                    class="btn text-white shadow rounded-4 m-2 p-2" type="button" id="_print_transaction">
+            <div class="d-flex px-3">
+                <button type="button" class="btnAddNewPrm" id="_print_transaction">
                     <i class="fa-solid fa-print"></i>
-                    <span class="" vslang="buttons.Print">Print</span>
+                    <span vslang="buttons.Print">Print</span>
                 </button>
             </div>
         </div>

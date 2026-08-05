@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Vsd\Vsloquent\VSModel;
 use Vsd\Money\Models\VSMoney;
-use App\Models\Prm\CompanyProfile;
+use App\Models\CompanyProfile;
 use App\Models\Prm\GeneralSettings;
 
 
