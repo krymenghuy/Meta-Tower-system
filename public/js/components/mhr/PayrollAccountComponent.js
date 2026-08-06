@@ -15,89 +15,89 @@ var PayrollAccountComponent = (function () {
     mThis.divListView = mThis.self.querySelector('#_account_list');
 
     mThis.cols = [
-        {
-            transTitle: "titles.No",
-            className: "align-middle",
-            data: (data, index, i) => {
-                return index + 1;
-            },
-        },
-        {
-            transTitle: "titles.Employee",
-            className: "align-middle text-capitalize text-nowrap w-15",
-            data: (data, index, tr) => {
-                return `
-                                <span style="font-size: 14px; font-weight: bold;">${
-                                    data.emp_name ?? ""
-                                }</span>
-                                <br/>
-                                <span style="font-size: 11px; color: gray;">${
-                                    data.position ?? ""
-                                }</span>
-                            </div>
-                        </div>`;
-            },
-        },
-        {
-            transTitle: "titles.Account Type",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                 return `<div class="text-primary-custom" style="width:80px;">
-                            <span class="badge text-danger-emphasis bg-danger-emphasis border border-danger-emphasis text-capitalize d-inline-block text-center" style="min-width:70px">
-                                ${data.account_type ?? ""}
-                            </span>
-                        </div>`;
-            },
-        },
-        {
-            transTitle: "titles.Account Number",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
-            },
-        },
-        {
-            transTitle: "titles.Balance",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
-            },
-        },
-
-        {
-            transTitle: "titles.Last Balance Date",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
-            },
-        },
-        {
-            transTitle: "titles.Currency",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
-            },
-        },
-        {
-            className: "col_action align-middle",
-            data: (data) => `
-            <div class="d-flex justify-content-end align-items-end">
-                <div class="text-end gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${
-                        data.action_id > 1 ? "d-none" : "btn_account_action"
-                    }" data-id="${data.id}" data-emp_id="${
-                data.emp_id
-            }" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
-                        <img src="${
-                            main_view.asset_url
-                        }/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>
-            </div>`,
-        },
-    ];
+    {
+        transTitle: "titles.No",
+        className: "align-middle text-center",
+        data: (data, index) => index + 1,
+    },
+    {
+        transTitle: "titles.Employee",
+        className: "align-middle text-nowrap",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-prm-custom">
+                    ${data.emp_name ?? "_"}
+                </span>
+                <small class="text-muted">
+                    ${data.position ?? "_"}
+                </small>
+            </div>
+        `,
+    },
+    {
+        transTitle: "titles.Account Type",
+        className: "align-middle text-center",
+        data: (data) => `
+        <div class="text-primary-custom">
+            <span class="badge rounded-2 bg-primary text-white border px-3 py-2 text-capitalize" style="width:90px;">
+                ${data.account_type ?? "_"}
+            </span>
+        </div>
+        `,
+    },
+    {
+        transTitle: "titles.Account Number",
+        className: "align-middle",
+        data: (data) => `
+            <span class="fw-medium text-dark">
+                ${data.account_number ?? "_"}
+            </span>
+        `,
+    },
+    {
+        transTitle: "titles.Balance",
+        className: "align-middle",
+        data: (data) => `
+            <span class="fw-bold text-success">
+                ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
+            </span>
+        `,
+    },
+    {
+        transTitle: "titles.Last Balance Date",
+        className: "align-middle text-nowrap",
+        data: (data) => `
+            <span class="text-nowrap text-muted">
+                ${data.last_balance_date ?? "_"}
+            </span>
+        `,
+    },
+    {
+        title: "",
+        className: "align-middle text-end",
+        data: (data) => `
+            <div class="d-flex justify-content-end">
+                ${
+                    data.action_id > 1
+                        ? ""
+                        : `
+                        <a href="javascript:void(0)"
+                           class="btn_account_action d-inline-flex align-items-center justify-content-center"
+                           data-id="${data.id}"
+                           data-emp_id="${data.emp_id}"
+                           data-statusid="${data.status_id}"
+                           aria-haspopup="true"
+                           aria-expanded="false"
+                           title="More Actions">
+                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg"
+                                 alt="Actions">
+                        </a>
+                    `
+                }
+            </div>
+        `,
+    },
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -255,11 +255,6 @@ var PayrollAccountComponent = (function () {
             </style>
             <div class="transaction_card overflow-y-auto overflow-x-hidden">
                 <div class="transaction_header">
-                    <div class="transaction_logo">
-                        <img src="${
-                            main_view.base_url
-                        }/assets/images/logo/lc_logo.svg" alt="Company Logo">
-                    </div>
                     <div class="transaction_title">
                         <h4>Transaction</h4>
                     </div>
@@ -269,8 +264,8 @@ var PayrollAccountComponent = (function () {
                         <div class="col-2">
                             <div class="transaction_image">
                                 <img src="${
-                                    employee.image_url
-                                }" alt="Profile Image">
+                                    employee.image_url || main_view.asset_url + "/images/default/default-staff.png"
+                                }" alt="image">
                             </div>
                         </div>
                         <div class="col-5 p_profile_left">
@@ -292,9 +287,8 @@ var PayrollAccountComponent = (function () {
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Balance</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${
-                                    employee.balance
-                                }</p>
+                                <p class="text-nowrap text-capitalize">${VSMoney.formatAmount(employee.balance, data.currency_code ?? 'USD')}</p>
+                                
                             </div>
                         </div>
                         <div class="col-5 p_profile_right">
@@ -315,9 +309,7 @@ var PayrollAccountComponent = (function () {
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Last Balance Date</p>
                                 <p class="px-4">:</p>
-                                <p class="text-nowrap text-capitalize">${
-                                    employee.last_balance_date
-                                }</p>
+                                <p class="text-nowrap text-capitalize">${employee.last_balance_date}</p>
                             </div>
                         </div>
                     </div>
@@ -355,18 +347,16 @@ var PayrollAccountComponent = (function () {
                                                 ? "text-success"
                                                 : "text-danger"
                                         }">
-                                            ${Number(trx.amount)
-                                                .toLocaleString("en-US")
-                                                .replace(/,/g, " ")}
+                                            ${VSMoney.formatAmount(trx.amount, employee.currency_code ?? 'USD')}
                                         </td>
                                         <td>${trx.created_at}</td>
                                         <td>
-                                            <span class="${
+                                            <span class="badge ${
                                                 trx.status === "in"
-                                                    ? "text-success"
-                                                    : "text-danger"
+                                                    ? "bg-success"
+                                                    : "bg-danger"
                                             }">
-                                                ${trx.status}
+                                                ${trx.status === "in" ? "Money In" : "Money Out"}
                                             </span>
                                         </td>
                                         <td>${trx.remarks ?? 'N/A'}</td>
@@ -410,32 +400,32 @@ var PayrollAccountComponent = (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Deposit Cash">Deposit Cash</span>',
-                    icon: `<i class="fa fa-calculator"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Cash Deposit">Cash Deposit</span>',
+                    icon: `<i class="fa fa-calculator text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "deposit_amount",
+                    name: "cash_deposit",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transactios">View Transaction</span>',
-                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    icon: `<i class="fa-regular fa-eye text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_transaction",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Transfer">Transfer</span>',
-                    icon: `<i class="fa-solid fa-money-bill-transfer"></i>`,
+                    icon: `<i class="fa-solid fa-money-bill-transfer text-info fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "transfer",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Account Details"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Modify Account"></span>',
+                    icon: `<i class="fa-regular fa-edit text-warning fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_account",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_account",
                 },
@@ -443,10 +433,10 @@ var PayrollAccountComponent = (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
 
-                // Ensure 'deposit_amount' is part of the menu and exists before hiding it
-                if (menu.deposit_amount) {
-                    menu.deposit_amount.style.display = "block";
-                }
+                // Ensure 'cash_deposit' is part of the menu and exists before hiding it
+                // if (menu.cash_deposit) {
+                //     menu.cash_deposit.style.display = "block";
+                // }
             },
 
             onClick: (menuLink, id, name) => {
@@ -455,8 +445,8 @@ var PayrollAccountComponent = (function () {
                         mThis.transfer(id, menuLink);
                         break;
                     }
-                    case "deposit_amount": {
-                        mThis.deposit_amount(id, menuLink);
+                    case "cash_deposit": {
+                        mThis.cash_deposit(id, menuLink);
                         break;
                     }
                     case "view_transaction": {
@@ -491,7 +481,7 @@ var PayrollAccountComponent = (function () {
         // if (!AuthManager.allowed(327)) return;
         TransferDialog.show(op);
     };
-    mThis.deposit_amount = (id, menuLink) => {
+    mThis.cash_deposit = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -814,40 +804,46 @@ const DepositDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        '<div class="row">',
-                        '<div class="form-group col-6">',
-                        '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
-                        '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-6">',
-                        '<label for="balance" class="form-label" vslang="titles.Master Balance"></label>',
-                        '<input name="balance" class="data-input form-control" data-field="balance" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-12">',
-                        '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
-                        '<select class="modal-select data-input" name="account_type" data-field="account_type" disabled>',
-                        '<option value="Payroll">Payroll</option>',
-                        '<option value="Wallet">Wallet</option>',
-                        "</select>",
-                        "</div>",
-                        '<div class="form-group col-6">',
-                        '<label for="amount" class="form-label" vslang="titles.Amount"></label>',
-                        '<input name="amount" class="form-control data-input" data-field="amount" />',
-                        "</div>",
-                        '<div class="form-group col-6">',
-                        '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
-                        '<input name="currency_code" class="data-input form-control" data-field="currency_code" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-md-12">',
-                        '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
-                        '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
-                        "</div>",
-                        "</div>",
+                        `<div class="row g-3">
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <input name="account_name" class="data-input form-control" data-field="account_name" placeholder=" " disabled />
+                                <label vslang="titles.Account Name"></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select data-style="material" name="account_type" class="data-input form-control" data-field="account_type" disabled placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                                <option value="Payroll" >Payroll</option>
+                                <option value="Wallet">Wallet</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="balance" class="data-input form-control" data-field="balance" placeholder=" " disabled />
+                                <label vslang="titles.Master Balance"></label>
+                            </div>
+                        </div>                     
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
+                                <label vslang="titles.Amount"></label>
+                            </div>
+                        </div>
+                         <div class="col-6">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency", "labels")}" ></select>
+                        </div>
+                       <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks" placeholder=" "></textarea>
+                                <label vslang="titles.Remark"></label>
+                            </div>
+                        </div>
+                        </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
@@ -866,16 +862,15 @@ const DepositDialog = (() => {
                 ],
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span vslang="titles.Submit">Submit</span>',
-                        cssClass: "btn btn-primary",
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -904,8 +899,8 @@ const DepositDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Deposit Cash",
-                    modifyTitle: "Deposit Cash",
+                    createTitle: "Cash Deposit",
+                    modifyTitle: "Cash Deposit",
                     targetProp: "account",
                     api: {
                         endpoint: [
@@ -917,18 +912,11 @@ const DepositDialog = (() => {
                         },
                     },
                        onResponse: (me, res)=>{
-                        //  console.log('result from api "/form-options": ', res);
                        }
                 },
 
                 onPrepareForm: (me,acc) => {
-                    LocaleManager.translateZone(me.divModal);
-                    // me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
-                    // me.controls.account_number.value = acc.account_number;
-                    // me.controls.currency_code.value = acc.currency_code;
-                    // me.controls.account_name.setAttribute('readonly',true);
-                    // me.controls.account_number.setAttribute('readonly',true);
-                    // me.controls.currency_code.setAttribute('readonly',true);
+         
                 },
             });
         dialog.show(op);
