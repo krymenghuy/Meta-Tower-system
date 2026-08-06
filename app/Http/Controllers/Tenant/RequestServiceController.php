@@ -153,5 +153,23 @@ class RequestServiceController extends Controller
     }
 
 
+  // mobile 
+    public function saveServiceRequestMobile(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $id = $req->id ?? $req->request_id;
+
+            $params = $req->all();
+            if (isset($ss->official_id) && $ss->official_id) {
+                $params['tenant_id'] = $ss->official_id;
+            }
+            $res = $this->request_service->saveServiceRequestMobile($params, $ss);
+            return JDV::raw($res);
+        }        
+
+
 
 }

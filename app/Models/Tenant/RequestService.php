@@ -48,7 +48,7 @@ class RequestService extends VSModel
         if ($res->error) return DV::error($res->error);
 
         $input = $res->values;
-        
+
         if (!empty($ss->official_id)) {
             $input['tenant_id'] = $ss->official_id;
         }
@@ -57,7 +57,7 @@ class RequestService extends VSModel
         $startTime = date('H:i:s', strtotime($input['start_time']));
         $now = time();
         $startDT = strtotime($scheduledDate . ' ' . $startTime);
-        
+
         if ($startDT <= $now) {
             return DV::error('Cannot schedule in the past.');
         }
@@ -70,7 +70,7 @@ class RequestService extends VSModel
         $duration = $input['duration_hours'] ?? 0;
         $start = $startTime;
         $end = $start;
-        
+
         if ($unitType == 2 && $duration > 0) {
             $end = date('H:i:s', strtotime("+{$duration} hours", strtotime($start)));
         }
@@ -109,7 +109,7 @@ class RequestService extends VSModel
         $input['request_date'] = !empty($input['request_date']) ? date('Ymd', strtotime($input['request_date'])) : date('Ymd');
         $created = !$id;
 
-       try {
+        try {
             $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
             if (!$save_id) {
                 return DV::error('Error saving service request!');
@@ -145,7 +145,6 @@ class RequestService extends VSModel
                 'code'            => $input['code'] ?? null,
                 'message'         => $message
             ]);
-
         } catch (\Throwable $e) {
             Log::error('Service request save failed', [
                 'error' => $e->getMessage(),
@@ -435,5 +434,141 @@ class RequestService extends VSModel
             ]);
 
         return DV::depends($complete, ['action' => 'complete']);
+    }
+
+
+
+    // create funtion service request for mobile 
+    public function saveServiceRequestMobile($arr = [], $ss = null)
+    {
+        $id = $arr['id'] ?? $arr->id ?? null;
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id ?? null;
+
+        \Log::info(print_r($ss, true));
+
+        $v_rule = [
+            'tenant_id'      => '0|number|exists=tenants.id',
+            'space_id'       => '1|number|exists=building_spaces.id|text=select_unit',
+            'service_id'     => '1|number|exists=services.id|text=select_service',
+            'unit_type'      => '0|choice|1,2,3',
+            'duration_hours' => '0|numeric|min:0.5|max:99.9|text=duration_hours_required',
+            'request_date'   => '0|date',
+            'scheduled_date' => '1|date|text=scheduled_date_required',
+            'start_time'     => '1|time|text=start_time_required',
+            'remarks'        => '0|string|0-255',
+        ];
+
+        $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
+
+        $res = DBX::validateObject($arr, $v_rule, 1, ['remarks' => $allowed_chars], $ss->lang ?? 'en', 0, null);
+        if ($res->error) return DV::error($res->error);
+
+        $input = $res->values;
+
+        // Fetch service details without 'unit_type'
+        $service = DB::table('services')
+            ->where('id', $input['service_id'])
+            ->first(['price', 'category_id']);
+
+        if (!$service) return DV::error('Service not found.');
+        if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
+
+        $unitType = $input['unit_type'] ?? 1;
+        $input['category_id'] = $service->category_id ?? null;
+
+        $scheduledDate = $input['scheduled_date'];
+        $startTime = date('H:i:s', strtotime($input['start_time']));
+        $now = time();
+        $startDT = strtotime($scheduledDate . ' ' . $startTime);
+
+        if ($startDT <= $now) {
+            return DV::error('Cannot schedule in the past.');
+        }
+
+        if ($unitType == 2 && empty($input['duration_hours'])) {
+            return DV::error('Please select duration hour.');
+        }
+
+        $duration = $input['duration_hours'] ?? 0;
+        $start = $startTime;
+        $end = $start;
+
+        if ($unitType == 2 && $duration > 0) {
+            $end = date('H:i:s', strtotime("+{$duration} hours", strtotime($start)));
+        }
+
+        $overlap = DB::table('service_requests')
+            ->where('service_id', $input['service_id'])
+            ->where('scheduled_date', $scheduledDate)
+            ->where('status_id', 1)
+            ->when($id, fn($q) => $q->where('id', '<>', $id))
+            ->where(function ($q) use ($start, $end, $unitType) {
+                if ($unitType == 1) {
+                    $q->where('start_time', $start);
+                } else {
+                    $q->whereRaw('start_time < ?', [$end])
+                        ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration_hours * 3600)) > ?', [$start]);
+                }
+            })
+            ->exists();
+
+        if ($overlap) {
+            return DV::error('This time slot overlaps with an existing pending request.');
+        }
+
+        $input['price'] = (float)$service->price;
+        if ($unitType == 2) {
+            $input['total_price'] = round($service->price * $duration, 2);
+        } else {
+            $input['total_price'] = round($service->price, 2);
+        }
+
+        $input['request_date'] = !empty($input['request_date']) ? date('Ymd', strtotime($input['request_date'])) : date('Ymd');
+        $created = !$id;
+
+        try {
+            $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
+            if (!$save_id) {
+                return DV::error('Error saving service request!');
+            }
+
+            if ($created) {
+                $codeRes = setOfficialCode(
+                    $branch_id,
+                    'service_request_code_control',
+                    'service_requests',
+                    ['id' => $save_id],
+                    'REQ-',
+                    5,
+                    null
+                );
+
+                if (!empty($codeRes->code)) {
+                    $input['code'] = $codeRes->code;
+                }
+                $message = 'Service request created successfully';
+            } else {
+                $input['code'] = DB::table('service_requests')
+                    ->where('id', $id)
+                    ->value('code');
+
+                $message = 'Service request updated successfully';
+            }
+
+            return DV::depends(1, [
+                'service_request' => $input,
+                'id'              => $save_id,
+                'code'            => $input['code'] ?? null,
+                'message'         => $message
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Service request save failed', [
+                'error' => $e->getMessage(),
+                'data'  => $input
+            ]);
+
+            return DV::error('Failed to save service request.');
+        }
     }
 }
