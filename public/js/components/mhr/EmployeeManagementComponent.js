@@ -933,8 +933,7 @@ const EmployeeDialog = (() => {
                                 p.status_id = p.status_id || 10;
                             }
 
-                            vsapi.call([main_view.base_url, "/mhr/employee/save"].join(""), p, {loader: false,agent :btn})
-                                .then((res) => {
+                            vsapi.call([main_view.base_url, "/mhr/employee/save"].join(""), p, {loader: false,agent :btn}).then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {

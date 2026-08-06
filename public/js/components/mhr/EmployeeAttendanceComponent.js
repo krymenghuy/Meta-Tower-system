@@ -482,8 +482,6 @@ const StaffAttendanceDialog = (() => {
                 },
             ],
             contentCreated: (me, divModal) => {
-                DateTimePicker.init(me.controls.attendance_date);
-
                 me.searchEmployee = VSSearchInput.init(me.controls.employee, {
                     type: "select",
                     prefetch: true,
@@ -549,13 +547,10 @@ const StaffAttendanceDialog = (() => {
                         return { id: op.id };
                     },
                 },
-                // onResponse: (me, res) => {
-                //     console.log('result from api "/form-options": ', res);
-                // },
+             
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
             },
         });
 

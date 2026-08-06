@@ -284,19 +284,17 @@ class Account extends VSModel
 
     function getFormOptions($id, $ss)
     {
-        $account = null;
-        if ($id) {
-            $account = self::getDetails($id);
-        }
+       
+        $account = $id ? self::getDetails($id) : null;
         return (object) [
+            'account' => $account,
             'departments' => GeneralSettings::options_department($ss),
             'currency_codes' => VSMoney::options_currency($ss),
-            'employees' => GeneralSettings::options_employee([10, 20], $ss),
+            'employees' => GeneralSettings::options_employee_with_account($ss),
             'accounts' => [
                 ['id' => '1', 'name' => 'Master Account'],
                 ['id' => '0', 'name' => 'Staff Account'],
             ],
-            'account' => $account,
         ];
     }
 

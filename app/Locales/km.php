@@ -306,7 +306,7 @@ return [
         'No_renewal_history' => 'គ្មានប្រវត្តិនៃការបន្តកិច្ចសន្យាសម្រាប់កិច្ចសន្យានេះទេ។',
         'Renewals_will_appear' => 'ការបន្តកិច្ចសន្យានឹងបង្ហាញនៅទីនេះនៅពេលកិច្ចសន្យាត្រូវបានបន្ត។',
         'All Statuses' => 'ស្ថានភាពទាំងអស់',
-
+        'modify_account' => 'កែប្រែគណនី',
 
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
         'Modify Service Price' => 'កែប្រែតម្លៃសេវាកម្ម',
@@ -1948,9 +1948,11 @@ return [
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Policy' => 'គោលនយោបាយ',
         'Disbursed' => 'បានបើកប្រាក់',
+        'create_success_payroll_account' => 'គណនីបើកប្រាក់បៀវត្សត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_payroll_account' => 'គណនីបើកប្រាក់បៀវត្សត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_payroll_account' => 'គណនីបើកប្រាក់បៀវត្សត្រូវបានលុបដោយជោគជ័យ។',
 
-
-
+        'create_cash_deposit_success' => 'ការដាក់ប្រាក់សុទ្ធត្រូវបានបង្កើតដោយជោគជ័យ។',
 
 
 

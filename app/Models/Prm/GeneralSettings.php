@@ -775,4 +775,16 @@ class GeneralSettings //extends Model
 
         return $rows;
     }
+     public static function options_employee_with_account($ss)
+    {
+        return DB::table('employees as e')
+            ->where('e.status_id', 10)
+            ->select(
+                'e.id',
+                'e.code',
+                'e.name',
+                'e.phone_number'
+            )
+            ->get();
+    }
 }
