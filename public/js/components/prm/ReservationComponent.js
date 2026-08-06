@@ -596,7 +596,6 @@ const CreateReservationDialog = (() => {
                     amenitySelect.onchange = e =>
                         applyAmenityData(e.target.value);
                     if (me.dataOptions.id > 0) {
-                        console.log(1221, data);
                         me.controls.tenant_id.value = details.tenant_id;
                         setTimeout(() => {
                             if (details.amenity_id) {
@@ -632,8 +631,6 @@ const CreateReservationDialog = (() => {
 
                             // op.tenant_id = me._selectedTenantId;
                             op.id = me.dataOptions.id;
-                            console.log(123, op);
-
                             vsapi
                                 .call(
                                     [

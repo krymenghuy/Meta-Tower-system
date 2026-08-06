@@ -569,9 +569,11 @@ return [
         'authorize_payroll' => 'Are you sure you want to authorize payroll?',
         'reset_payroll' => 'Are you sure you want to reset this payroll?',
 
+        'create_success_payroll_account' => 'Payroll account has been created successfully.',
+        'update_success_payroll_account' => 'Payroll account has been updated successfully.',
+        'delete_success_payroll_account' => 'Payroll account has been deleted successfully.',
 
-
-
+        'create_cash_deposit_success' => 'Cash deposit has been created successfully.',
 
 
 

@@ -418,10 +418,10 @@ var PayrollAccountComponent = (function () {
                     name: "transfer",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify Account"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Detail Account"></span>',
                     icon: `<i class="fa-regular fa-edit text-warning fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_account",
+                    name: "detail_account",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
@@ -453,7 +453,7 @@ var PayrollAccountComponent = (function () {
                         mThis.viewTransaction(id, menuLink);
                         break;
                     }
-                    case "edit_account": {
+                    case "detail_account": {
                         mThis.editAccount(id, menuLink);
                         break;
                     }
@@ -531,6 +531,7 @@ var PayrollAccountComponent = (function () {
             },
         };
         // if (!AuthManager.allowed(211)) return;
+        console.log("Editing account with ID:", id);
         AccountDialog.show(op);
     };
 
@@ -545,9 +546,9 @@ var PayrollAccountComponent = (function () {
         };
         // if (!AuthManager.allowed(212)) return;
         cv_interact.confirm(
-            "Delete this account?",
+            "confirm_delete",
             {
-                title: "Delete Account",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -563,7 +564,7 @@ var PayrollAccountComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_payroll_account");
                                 mThis.AccountListView.showPage();
                             } else cv_interact.error(res.error_message);
                         });
@@ -595,40 +596,17 @@ var PayrollAccountComponent = (function () {
             p[f] = el.value;
         });
         mThis.rem_filter = main_filters;
-        console.log(1111,p);
-        
         return p;
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi
-            .call(
-                `${main_view.base_url}/mhr/account/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elDepartment,
-                    d.departments,
-                    "id",
-                    "name",
-                    "",
-                    'All Departments',
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elAccount,
-                    d.accounts,
-                    "id",
-                    "name",
-                    "",
-                    'All Accounts',
-                    ""
-                );
+        vsapi.call(`${main_view.base_url}/mhr/account/form-options`,null,{loader:false}).then((res) => {
+            if(res.status_code === 200){
+                const d = res.data;
+                VSUtil.setComboItems(mThis.elDepartment,d.departments,"id","name","",'All Departments',"");
+                VSUtil.setComboItems(mThis.elAccount,d.accounts,"id","name",null,null,1);
                 onFinish();
+            }
             });
     };
 
@@ -649,7 +627,7 @@ var PayrollAccountComponent = (function () {
 const AccountDialog = (() => {
     const self = {};
     let dialog = null;
-    self.show = (op) => {
+    self.show = op => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -659,18 +637,22 @@ const AccountDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                        <div class="col-6">
-                            <select data-style="material" name="employee" class="data-input form-control"  data-field="emp_id" placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        <input type="hidden" class="data-input" data-field="emp_id" />
+                         <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="employee" class="data-input form-control" data-field="employee_name" placeholder=" " autocomplete="off" />
+                                <label vslang="labels.Employee"></label>
+                            </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
-                                <option value="Payroll">Payroll</option>
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}" disabled>
+                                <option value="Payroll" selected>Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " />
+                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " disabled />
                                 <label vslang="titles.Account Number"></label>
                             </div>
                         </div>
@@ -681,27 +663,48 @@ const AccountDialog = (() => {
                             </div>
                         </div>
                           <div class="col-6">
-                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}"></select>
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}" disabled></select>
                         </div>
                     </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    const currency_codeField = me.controls.currency_code;
-                    if (currency_codeField && !currency_codeField.value) {
-                        currency_codeField.value = VSMoney.getCurrency().code;
-                    }
-                  
+
+                    me.searchEmployee = VSSearchInput.init(me.controls.employee, {
+                        type: "select",
+                        prefetch: true,
+                        api: {
+                            endpoint: `${main_view.base_url}/mhr/account/form-options`,
+                        },
+                        processResponse: (res) => {
+                            const employees = res?.data?.employees || [];
+                            return (Array.isArray(employees) ? employees : []).map((i) => ({
+                                ...i,
+                                code: i.code || "",
+                                name: i.name || "",
+                            }));
+                        },
+                        showColumnHeader: true,
+                        columns: {
+                            code: "Code",
+                            name: "Name",
+                        },
+                        onSelect: (employee) => {
+                           if (me.controls.emp_id) {
+                                    me.controls.emp_id.value =
+                                        employee.id || "";
+                            console.log("Selected employee:", me.controls.emp_id.value);
+
+                                }
+                            if (me.controls.account_number) {
+                                me.controls.account_number.value = `${employee.code}-P`;
+                            }
+                        }
+                    });
+
+                    me.searchEmployee.reset("");
                 },
                 configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span class="choices__item_text"> ${d.name} </span>  <span>${d.position}</span></div></div>`;
-                        },
-                        valueField: "id",
-                    },
                     {
                         name: "currency_code",
                         data: "currency_codes",
@@ -738,15 +741,11 @@ const AccountDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        // if (me.dataOptions.id > 0) {
-                                        //     cv_interact.success(
-                                        //         "Updated payroll account successfully"
-                                        //     );
-                                        // } else {
-                                        //     cv_interact.success(
-                                        //         "Added payroll account successfully"
-                                        //     );
-                                        // }
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success("update_success_payroll_account");
+                                        } else {
+                                            cv_interact.success("create_success_payroll_account");
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -754,26 +753,37 @@ const AccountDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Account",
-                    modifyTitle: "vslang:titles.Modify Account",
+                    modifyTitle: "vslang:titles.Detail Account",
                     targetProp: "account",
                     api: {
                         endpoint: [
                             main_view.base_url,
                             "/mhr/account/form-options",
                         ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
+                        params: (me,op) => {
+                            return { id: op.id};
                         },
                     },
                 },
 
-               onPrepareForm: (me) => {
-                    const isEdit = me.dataOptions.id > 0;
-                    if (isEdit) {
-                        me.setReadOnly(true, ["employee","currency_code"]);
-                        me.controls.account_number.disabled = true;
-                        me.controls.balance.disabled = true;
+               onPrepareForm: (me,data) => {
+                    if (!me.dataOptions?.id && me.controls?.currency_code) {
+                        me.controls.currency_code.value = "USD";
                     }
+                    me.controls.account_type.value = "Payroll";
+                    const isEdit = me.dataOptions.id > 0;
+                     const details = data?.account || {};
+                    if (isEdit) {
+                        me.controls.balance.disabled = true;
+                        me.controls.employee.disabled = true;
+                         me.controls.emp_id.value = details.emp_id;
+                            if (me.controls.employee) {
+                                me.controls.employee.value =
+                                    details.account_name || "";
+                            }
+                    }
+               
+                
                 }
             });
         dialog.show(op);
@@ -863,22 +873,10 @@ const DepositDialog = (() => {
                             p.id = me.dataOptions.id;
 
                             // if (!AuthManager.allowed(326)) return;
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/mhr/account/deposit",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
+                            vsapi.call([main_view.base_url,"/mhr/account/deposit",].join(""),p,{loader: false,agent :btn}).then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        cv_interact.success(
-                                            "Updated balance successfully"
-                                        );
+                                        cv_interact.success("create_cash_deposit_success");
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
