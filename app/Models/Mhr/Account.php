@@ -133,19 +133,19 @@ class Account extends VSModel
     {
         $d = (object) $arr;
 
-        $isMasterAccount = (int) ($d->is_master_account ?? 0);
-        $branchId       = $d->branch_id ?? null;
-        $departmentId   = $d->department_id ?? null;
-        $accountType    = $d->account_type ?? 'Standard';
-        $searchValue    = trim($d->search_value ?? '');
+        $is_master_account = $d->is_master_account ?? 0;
+        $branch_id       = $d->branch_id ?? null;
+        $department_id   = $d->department_id ?? null;
+        $account_type    = $d->account_type ?? 'Standard';
+        $search_value    = $d->search_value ?? null;
 
-        $currentPage = max((int) ($d->current_page ?? 1), 1);
-        $perPage     = max((int) ($d->per_page ?? 10), 1);
-        $skipRows    = ($currentPage - 1) * $perPage;
+        $current_page = $d->current_page ?? 1;
+        $per_page     = $d->per_page ?? 10;
+        $skip_rows    = ($current_page - 1) * $per_page;
 
-        $balanceDate = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
-        if ($isMasterAccount) {
+        if ($is_master_account) {
 
             $query = DB::table('accounts as a')
                 ->selectRaw("
@@ -157,7 +157,7 @@ class Account extends VSModel
                 a.account_number,
                 a.balance,
                 a.currency_code,
-                {$balanceDate},
+                {$balance_date},
                 NULL AS emp_photo
             ")
                 ->where('a.id', 1);
@@ -176,29 +176,29 @@ class Account extends VSModel
                 a.account_number,
                 a.balance,
                 a.currency_code,
-                {$balanceDate},
+                {$balance_date},
                 e.photo_file_name AS emp_photo
             ")
-                ->where('a.account_type', $accountType);
+                ->where('a.account_type', $account_type);
 
             // Search
-            if ($searchValue !== '') {
+            if ($search_value !== '') {
 
-                $searchValue = escape_like_str($searchValue);
+                $search_value = escape_like_str($search_value);
 
-                $query->where(function ($q) use ($searchValue) {
-                    $q->where('e.name', 'LIKE', "%{$searchValue}%")
-                        ->orWhere('a.account_number', 'LIKE', "%{$searchValue}%");
+                $query->where(function ($q) use ($search_value) {
+                    $q->where('e.name', 'LIKE', "%{$search_value}%")
+                        ->orWhere('a.account_number', 'LIKE', "%{$search_value}%");
                 });
 
             } else {
 
-                if (!empty($branchId)) {
-                    $query->where('e.branch_id', $branchId);
+                if (!empty($branch_id)) {
+                    $query->where('e.branch_id', $branch_id);
                 }
 
-                if (!empty($departmentId)) {
-                    $query->where('p.department_id', $departmentId);
+                if (!empty($department_id)) {
+                    $query->where('p.department_id', $department_id);
                 }
             }
         }
@@ -209,16 +209,11 @@ class Account extends VSModel
 
         // Get paginated rows
         $rows = $query
-            ->offset($skipRows)
-            ->limit($perPage)
+            ->offset($skip_rows)
+            ->limit($per_page)
             ->get();
 
-        return new LengthAwarePaginator(
-            $rows,
-            $count,
-            $perPage,
-            $currentPage
-        );
+        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
 
     function getDetails($id)
@@ -299,9 +294,9 @@ class Account extends VSModel
             'employees' => GeneralSettings::options_employee([10, 20], $ss),
             'accounts' => [
                 ['id' => '1', 'name' => 'Master Account'],
-                ['id' => '2', 'name' => 'Staff Account'],
+                ['id' => '0', 'name' => 'Staff Account'],
             ],
-            // 'accounts' => $account,
+            'account' => $account,
         ];
     }
 

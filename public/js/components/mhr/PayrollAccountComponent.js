@@ -212,10 +212,10 @@ var PayrollAccountComponent = (function () {
             <style>
                 .transaction_card {
                     border: 1px solid #ccc;
-                    border-radius: 5px;
+                    border-radius: 6px;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                     padding: 10px;
-                    width: 98%;
+                    width: 100%;
                 }
                 .transaction_header {
                     display: flex;
@@ -527,10 +527,10 @@ var PayrollAccountComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.AccountListView.showPage();
+                mThis.AccountListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(211)) return;
+        // if (!AuthManager.allowed(211)) return;
         AccountDialog.show(op);
     };
 
@@ -595,7 +595,7 @@ var PayrollAccountComponent = (function () {
             p[f] = el.value;
         });
         mThis.rem_filter = main_filters;
-        console.log(22,p);
+        console.log(1111,p);
         
         return p;
     };
@@ -615,16 +615,18 @@ var PayrollAccountComponent = (function () {
                     d.departments,
                     "id",
                     "name",
-                    '',
-                    'All Departments'
+                    "",
+                    'All Departments',
+                    ""
                 );
                 VSUtil.setComboItems(
                     mThis.elAccount,
                     d.accounts,
                     "id",
                     "name",
-                    '',
-                    'All Accounts'
+                    "",
+                    'All Accounts',
+                    ""
                 );
                 onFinish();
             });
@@ -678,21 +680,16 @@ const AccountDialog = (() => {
                                 <label vslang="titles.Balance"></label>
                             </div>
                         </div>
-                           <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder=" " />
-                                <label vslang="titles.Currency"></label>
-                            </div>
+                          <div class="col-6">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}"></select>
                         </div>
                     </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
-                    
                     if (currency_codeField && !currency_codeField.value) {
                         currency_codeField.value = VSMoney.getCurrency().code;
-
                     }
                   
                 },
@@ -715,15 +712,14 @@ const AccountDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         },
                     },
                     {
                         label: '<span vslang="buttons.Save">Save</span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
 
@@ -758,8 +754,8 @@ const AccountDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Account",
-                    modifyTitle: "vslang:titles.Detail Account",
-                    targetProp: "accounts",
+                    modifyTitle: "vslang:titles.Modify Account",
+                    targetProp: "account",
                     api: {
                         endpoint: [
                             main_view.base_url,
@@ -771,25 +767,14 @@ const AccountDialog = (() => {
                     },
                 },
 
-                onPrepareForm: (me) => {
-                    LocaleManager.translateZone(me.divModal);
-                    me.setReadOnly(true,['account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
-                    const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly,['balance','employee'],isReadOnly? null : {"balance":"0.00"});
-                    // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';
-                    // me.controls.account_name.setAttribute('readonly',true);
-
-                    const balanceField = me.divModal.querySelector(
-                        '[data-field="balance"]'
-                    );
-                    if (balanceField) {
-                        if (me.dataOptions && me.dataOptions.id) {
-                            balanceField.disabled = true;
-                        } else {
-                            balanceField.disabled = false;
-                        }
+               onPrepareForm: (me) => {
+                    const isEdit = me.dataOptions.id > 0;
+                    if (isEdit) {
+                        me.setReadOnly(true, ["employee","currency_code"]);
+                        me.controls.account_number.disabled = true;
+                        me.controls.balance.disabled = true;
                     }
-                },
+                }
             });
         dialog.show(op);
     };
@@ -813,11 +798,11 @@ const DepositDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <input name="account_name" class="data-input form-control" data-field="account_name" placeholder=" " disabled />
-                                <label vslang="titles.Account Name"></label>
+                                <label vslang="titles.Account"></label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="account_type" class="data-input form-control" data-field="account_type" disabled placeholder="${LocaleManager.trans('Account Type', 'labels')}">
+                            <select data-style="material" name="account_type" class="data-input form-control" data-field="account_type" disabled placeholder="${LocaleManager.trans('Type', 'labels')}">
                                 <option value="Payroll" >Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
@@ -830,7 +815,7 @@ const DepositDialog = (() => {
                         </div>                     
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
+                                <input type="text" name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
                                 <label vslang="titles.Amount"></label>
                             </div>
                         </div>
@@ -851,6 +836,7 @@ const DepositDialog = (() => {
                     if (currency_codeField && !currency_codeField.value) {
                         currency_codeField.value = VSMoney.getCurrency().code;
                     }
+                    applyNumberInput(me.controls.amount);
                 },
                 configSelect: [
                     {

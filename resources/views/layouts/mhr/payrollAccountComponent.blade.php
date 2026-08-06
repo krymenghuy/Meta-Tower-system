@@ -42,21 +42,21 @@
     </div>
 
     <div class="d-none" id="view_transaction">
-        <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
+        <div class="d-flex w-100 bg-white rounded-3 shadow mt-2 p-3 justify-content-between">
             <div class="d-flex px-3">
-                <button type="button" id="_btn_backTo_account" class="btnAddNewPrm">
-                    <i class="fa-solid fa-angles-left"></i>
-                    <span vslang="buttons.Back">Back</span>
-                </button>
+                <a href="javascript:void(0)" id="_btn_backTo_account"
+                    class="d-flex align-items-center gap-2 shadow-sm rounded-2 btn-outline-secondary btn btn-sm">
+                    <i class="fa-angles-left fa-solid fs-5"></i><span vslang="buttons.Back">Back</span>
+                </a>
             </div>
             <div class="d-flex px-3">
-                <button type="button" class="btnAddNewPrm" id="_print_transaction">
+                <button type="button" class="w-100 btnAddNewPrm" id="_print_transaction">
                     <i class="fa-solid fa-print"></i>
                     <span vslang="buttons.Print">Print</span>
                 </button>
             </div>
         </div>
-        <div id="_transaction_info" class="m-4" style="height:500px; overflow-y:auto;"> </div>
+        <div id="_transaction_info" class="bg-white rounded-2 p-3 mt-3" style="height:500px; overflow-y:auto;"> </div>
     </div>
 
 </div>
