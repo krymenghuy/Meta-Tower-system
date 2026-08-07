@@ -821,7 +821,9 @@ return [
         'Delete Position' => 'លុបមុខតំណែង',
         'Department' => 'នាយកដ្ឋាន',
         'All Department' => 'នាយកដ្ឋាន',
-
+        'All Disbursement' => 'ការបើកប្រាក់ទាំងអស់',
+        'All Authorization' => 'ការអនុម័តទាំងអស់',
+        'All Account' => 'គណនីទាំងអស់',
         'Staff Group' => 'ក្រុមបុគ្គលិក',
         'Salary' => 'ប្រាក់បៀវត្សរ៍',
 
@@ -1952,6 +1954,11 @@ return [
         'update_success_payroll_account' => 'គណនីបើកប្រាក់បៀវត្សត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_payroll_account' => 'គណនីបើកប្រាក់បៀវត្សត្រូវបានលុបដោយជោគជ័យ។',
 
+        'create_success_wallet_account' => 'គណនីកាបូបឌីជីថលត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_wallet_account' => 'គណនីកាបូបឌីជីថលត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_wallet_account' => 'គណនីកាបូបឌីជីថលត្រូវបានលុបដោយជោគជ័យ។',
+
+      
         'create_cash_deposit_success' => 'ការដាក់ប្រាក់សុទ្ធត្រូវបានបង្កើតដោយជោគជ័យ។',
 
 

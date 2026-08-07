@@ -23,30 +23,28 @@ var WalletAccountComponent = (function () {
         },
         {
             transTitle: "titles.Employee",
-            className: "align-middle text-capitalize text-nowrap w-15",
+            className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt=""style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${
-                                    data.emp_name ?? ""
-                                }</span>
+                                <span>${data.emp_name ?? "_"}</span>
                                 <br/>
-                                <span style="font-size: 11px; color: gray;">${
-                                    data.position ?? ""
-                                }</span>
+                                <small class="text-muted">${data.position ?? "_"}</small>
                             </div>
                         </div>`;
             },
         },
         {
             transTitle: "titles.Account Type",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${
-                    data.account_type ?? ""
-                }</p>`;
-            },
+            className: "align-middle text-center",
+            data: (data) => `
+            <div class="text-primary-custom">
+                <span class="badge rounded-2 bg-primary text-white border px-3 py-2 text-capitalize" style="width:90px;">
+                    ${data.account_type ?? "_"}
+                </span>
+            </div>
+            `,
         },
 
         {
@@ -60,22 +58,17 @@ var WalletAccountComponent = (function () {
         {
             transTitle: "titles.Balance",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
-            },
+            data: (data) => `
+                <span class="fw-bold text-success">
+                    ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
+                </span>
+            `,
         },
         {
             transTitle: "titles.Last Balance Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
-            },
-        },
-        {
-            transTitle: "titles.Currency",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
             },
         },
         {
@@ -380,19 +373,19 @@ var WalletAccountComponent = (function () {
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transactions"></span>',
-                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    icon: `<i class="fa-regular fa-eye text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_wallet_transaction",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Wallet Details"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_wallet_account",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Wallet"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_wallet_account",
                 },
@@ -446,9 +439,9 @@ var WalletAccountComponent = (function () {
         };
         // if (!AuthManager.allowed(258)) return;
         cv_interact.confirm(
-            "Delete this account?",
+            "confirm_delete",
             {
-                title: "Delete Account",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -464,7 +457,7 @@ var WalletAccountComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
+                                cv_interact.success("delete_success_wallet_account");
                                 mThis.WalletAccountListView.showPage();
                             }
                             else {
@@ -507,7 +500,7 @@ var WalletAccountComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-               VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
+               VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '',LocaleManager.trans("All Department", "titles"),"");
                onFinish();
 
             });
@@ -558,58 +551,73 @@ const WalletAccountDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                    `<div class="row g-3">
-                        <div class="col-12">
-                            <select data-style="material" name="employee" class="form-control data-input"  data-field="emp_id"
-                            placeholder="${LocaleManager.trans('Employee', 'labels')}"></select>
+                        `<div class="row g-3">
+                        <input type="hidden" class="data-input" data-field="emp_id" />
+                         <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="employee" class="data-input form-control" data-field="employee_name" placeholder=" " autocomplete="off" />
+                                <label vslang="labels.Employee"></label>
+                            </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}">
-                                <option value="Payroll">Payroll</option>
+                            <select data-style="material" class="data-input form-control" name="account_type" data-field="account_type" placeholder="${LocaleManager.trans('Account Type', 'labels')}" disabled>
+                                <option value="Payroll" selected>Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " />
+                                <input type="text" name="account_number" class="form-control data-input" data-field="account_number" placeholder=" " disabled />
                                 <label vslang="titles.Account Number"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="text" name="balance" class="form-control data-input" data-field="balance" placeholder=" " />
                                 <label vslang="titles.Balance"></label>
                             </div>
                         </div>
-                           <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="currency_code" class="form-control data-input" data-field="currency_code" placeholder=" " />
-                                <label vslang="titles.Currency"></label>
-                            </div>
+                          <div class="col-3">
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}" disabled></select>
                         </div>
-                       
-                </div>`,
+                    </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    const currency_codeField = me.controls.currency_code;
-                    if (currency_codeField && !currency_codeField.value) {
-                        currency_codeField.value = VSMoney.getCurrency().code;
-                    }
-                    const accountField = me.controls.account_type;
-                    if (accountField && !accountField.value) {
-                        accountField.value = "Wallet";
-                    }
+                     me.searchEmployee = VSSearchInput.init(me.controls.employee, {
+                        type: "select",
+                        prefetch: true,
+                        api: {
+                            endpoint: `${main_view.base_url}/mhr/account/form-options`,
+                        },
+                        processResponse: (res) => {
+                            const employees = res?.data?.employees || [];
+                            return (Array.isArray(employees) ? employees : []).map((i) => ({
+                                ...i,
+                                code: i.code || "",
+                                name: i.name || "",
+                            }));
+                        },
+                        showColumnHeader: true,
+                        columns: {
+                            code: "Code",
+                            name: "Name",
+                        },
+                        onSelect: (employee) => {
+                           if (me.controls.emp_id) {
+                                    me.controls.emp_id.value =
+                                        employee.id || "";
+                            console.log("Selected employee:", me.controls.emp_id.value);
+
+                                }
+                            if (me.controls.account_number) {
+                                me.controls.account_number.value = `${employee.code}-W`;
+                            }
+                        }
+                    });
+                    me.searchEmployee.reset("");
                 },
                 configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
-                        },
-                        valueField: "id",
-                    },
                     {
                         name: "currency_code",
                         data: "currency_codes",
@@ -619,10 +627,9 @@ const WalletAccountDialog = (() => {
                 ],
                 buttons: [
                     {
-                        label: '<span vslang="titles.Cancel"></span>',
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         },
                     },
@@ -637,10 +644,10 @@ const WalletAccountDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated wallet account successfully");
+                                            cv_interact.success("update_success_wallet_account");
                                         }
                                         else{
-                                        cv_interact.success("Added wallet account successfully");
+                                        cv_interact.success("create_success_wallet_account");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -656,25 +663,28 @@ const WalletAccountDialog = (() => {
                             main_view.base_url,
                             "/mhr/account/form-options",
                         ].join(""),
-                        params: (op) => {
+                        params: (me,op) => {
                             return { id: op.id };
                         },
                     },
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    const accountRecord = data?.account;
-                    if (accountRecord) {
-                        if (me.controls.employee) me.controls.employee.value = accountRecord.emp_id || "";
-                        if (me.controls.account_type) me.controls.account_type.value = accountRecord.account_type || "";
-                        if (me.controls.account_number) me.controls.account_number.value = accountRecord.account_number || "";
-                        if (me.controls.balance) me.controls.balance.value = accountRecord.balance || "0.00";
-                        if (me.controls.currency_code) me.controls.currency_code.value = accountRecord.currency_code || VSMoney.getCurrency().code;
+                    if (!me.dataOptions?.id && me.controls?.currency_code) {
+                        me.controls.currency_code.value = "USD";
                     }
-                    me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
-                    const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly,['balance','employee'], isReadOnly? null : {"balance":"0.00"});
+                    me.controls.account_type.value = "Wallet";
+                    const isEdit = me.dataOptions.id > 0;
+                     const details = data?.account || {};
+                    if (isEdit) {
+                        me.controls.balance.disabled = true;
+                        me.controls.employee.disabled = true;
+                         me.controls.emp_id.value = details.emp_id;
+                            if (me.controls.employee) {
+                                me.controls.employee.value =
+                                    details.account_name || "";
+                            }
+                    }
                 },
             });
 

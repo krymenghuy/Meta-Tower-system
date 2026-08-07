@@ -556,7 +556,7 @@ var PayrollComponent = new (function () {
                     "id",
                     "name",
                     "",
-                    "All Authorization",
+                    LocaleManager.trans("All Authorization", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -565,7 +565,7 @@ var PayrollComponent = new (function () {
                     "id",
                     "name",
                     "",
-                    "All Disbursement",
+                    LocaleManager.trans("All Disbursement", "titles"),
                     "",
                 );
             });
