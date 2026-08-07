@@ -257,8 +257,8 @@ var AttendanceTracksComponent = (function () {
                         "id",
                         "name",
                         "",
-                        LocaleManager.trans("All Shifts", "titles"),
-                        "",
+                        "All Shifts",
+                        1,
                     );
                 }
             });

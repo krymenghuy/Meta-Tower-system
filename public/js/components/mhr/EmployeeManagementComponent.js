@@ -325,7 +325,7 @@ var EmployeeManagementComponent = (function () {
                                 </ul>
                             </div>
                             <footer class="emp-list-card-footer">
-                                <span class="emp-list-card-footer-meta text-white">
+                                <span class="emp-list-card-footer-meta  text-white">
                                     <span vslang="titles.Last Updated"></span>: <span class="text-capitalize">${d.update_user ?? "_"}</span>
                                 </span>
                                 <a href="javascript:void(0)" class="emp-list-card-footer-link see-employee-detail" data-id="${d.id}">
@@ -548,7 +548,7 @@ var EmployeeManagementComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.showPage("profile_view", { id: id });
+                mThis.showPage("employee_list", mThis.getFilterData());
             },
         });
     };

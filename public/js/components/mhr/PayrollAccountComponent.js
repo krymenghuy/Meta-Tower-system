@@ -1103,7 +1103,7 @@ const TransferDialog = (() => {
                                                         .call(
                                                             [
                                                                 main_view.base_url,
-                                                                "/hr/account/transfer",
+                                                                "/mhr/account/transfer",
                                                             ].join(""),
                                                             p,
                                                             null,

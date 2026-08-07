@@ -946,7 +946,7 @@ return [
         'Attendance Status' => 'ស្ថានភាពវត្តមាន',
         'Decision' => 'ការសម្រេចចិត្ត',
         'Disbursed' => 'បានបើកប្រាក់',
-
+        'Import Staff List' => 'នាំចូលបញ្ជីបុគ្គលិក',
 
 
 
@@ -1147,6 +1147,7 @@ return [
         'Purchase Orders' => 'បញ្ជាទិញទំនិញ',
         'Quick Order' => 'បញ្ជាលឿន',
         'Cancel' => 'បោះបង់',
+        'Import' => 'នាំចូល',
         'Submit' => 'បញ្ជូន',
         'Add' => 'បន្ថែម',
         'OK' => 'បាទ',
@@ -1505,7 +1506,7 @@ return [
         'Bank Transfer' => 'ប្រតិបត្តិការធនាគារ',
         'Entered:' => 'បានបញ្ចូល:',
 
-        'Search by name, code or phone' => 'ស្វែងរកតាមឈ្មោះ កូដ ឬលេខទូរស័ព្ទ',
+        'Search by name, code' => 'ស្វែងរកតាមឈ្មោះ  ឬកូដ',
 
         'Occupancy by Floor' => 'តារាងបែងចែកជាន់',
         'Monthly Revenue' => 'ប្រាក់ចំណូលប្រចាំខែ',

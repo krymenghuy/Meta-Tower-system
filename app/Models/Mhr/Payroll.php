@@ -498,7 +498,7 @@ class Payroll
         $id = $id ?? $this->id;
         $master_account_id = 1;
         $authorized = self::isAuthorized($id);
-        if (!$authorized) return DV::error('Payroll is not authorizad yet!');
+        if (!$authorized) return DV::error('Payroll is not authorized yet!');
         $isDisbursed = self::isDisbursed($id);
         if (!$isDisbursed) {
             return DV::error('Payroll is not yet disbursed!');

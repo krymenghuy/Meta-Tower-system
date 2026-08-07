@@ -12,9 +12,9 @@
                     <select type="id" id="_emp_type_id" class="filter-field data-input" data-field="emp_type_id"></select>
                 </div>
 
-                <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+                <div class="ms-md-auto text-md-end col-12 col-md-auto">
                     <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddEmployee">
-                        <i class="fa-solid fa-user-plus" style="color: rgb(249, 251, 255);"></i>
+                        <i class="fa-solid fa-user-plus"></i>
                         <span vslang="buttons.Create Employee"></span>
                     </button>
                 </div>
