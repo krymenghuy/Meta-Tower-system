@@ -603,7 +603,7 @@ const AddPayRollListDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -615,7 +615,7 @@ const AddPayRollListDialog = (() => {
 
                     return [
                         `<div class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <select data-style="material" name="month" class="data-input" data-field="month" placeholder="${LocaleManager.trans("Month", "labels")}">
                                 ${months
                                     .map(
@@ -625,7 +625,7 @@ const AddPayRollListDialog = (() => {
                                     .join("")}
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <select data-style="material" name="year" class="data-input" data-field="year" placeholder="${LocaleManager.trans("Year", "labels")}">
                                 <option value="0">select year</option>
                                 ${years
@@ -636,35 +636,35 @@ const AddPayRollListDialog = (() => {
                                     .join("")}
                             </select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <select data-style="material" name="p_number" class="data-input form-control" data-field="p_number" id="p_number" placeholder="${LocaleManager.trans("Payroll Number", "labels")}">
                                 <option value="0">select number</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                             </select>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input name="name" class="form-control data-input form_input" data-field="name" placeholder=" " />
                                 <label vslang="titles.Name"></label>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input data-type="date" name="start_date" class="form-control data-input" data-field="start_date" required />
                                 <label vslang="labels.Start Date"></label>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input data-type="date" name="end_date" class="form-control data-input" data-field="end_date" required />
                                 <label vslang="labels.End Date"></label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency Code", "labels")}" disabled></select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input type="number" name="exchange_rate" class="form-control data-input" data-field="exchange_rate" placeholder=" " />
                                 <label vslang="labels.Exchange Rate"></label>

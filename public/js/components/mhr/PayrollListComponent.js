@@ -388,7 +388,7 @@ var PayrollListComponent = (()=> {
             menus:[
                 {
                     html: '<span class="ps-2 " vslang="titles.View Pay Slip"></span>',
-                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    icon: `<i class="fa-regular fa-eye fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "pay_slip",
                 },
@@ -406,7 +406,7 @@ var PayrollListComponent = (()=> {
                 // },
                 {
                     html:'<span class="ps-2  " vslang="titles.Remove from List"></span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_payroll_list"
                 },
@@ -896,6 +896,7 @@ var PayrollListComponent = (()=> {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/mhr/payroll/staff/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
+            
             let payroll_id = null;
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
@@ -937,14 +938,13 @@ const PayRollImportDialog = (()=>{
      self.show = (op)=>{
 
         dialogImport = dialogImport || new GeneralDialog({
-            cssClass:'modal-md',
+            cssClass:'modal-md vs-modal',
             backdrop: 'static',
             keyboard:true,
             createContent:()=>{
                  return [`<div class="row">
-                 <div class="form-group col-12">
-                     <label for="payroll_name" class="form-label" vslang="titles.Payroll"></label>
-                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
+                 <div class="col-md-12">
+                     <select data-style="material" name="payroll_name" class="form-control data-input"  data-field="payroll_id" placeholder="Payroll"></select>
                  </div>
 
               </div>`].join('');
@@ -959,16 +959,15 @@ const PayRollImportDialog = (()=>{
             ],
             buttons:[
                {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
+                label:'<span vslang="buttons.Cancel"></span>',
+                cssClass:'btn-vs-cancel',
                 click:(me,btn)=>{
-                    //Close with Cancel button
                     me.hide(false);
                 }
                },
                {
-                label:'<span>Import</span>',
-                cssClass:'btn btn-primary',
+                label:'<span vslang="buttons.Import"></span>',
+                cssClass:'btn-vs-save',
                 click:(me,btn)=>{
                     const p = me.getData();
 
@@ -978,7 +977,7 @@ const PayRollImportDialog = (()=>{
                        if(res.status_code ==200){
                          const successCount = res.data.success_count ?? 0;
                           if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
-                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles');
+                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles1');
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
                     });
@@ -986,7 +985,7 @@ const PayRollImportDialog = (()=>{
                }
             ],
             prepareFormOptions:{
-               createTitle:'Import Staff List',
+               createTitle:'vslang:titles.Import Staff List',
                modifyTitle:'Edit',
                targetProp: 'payroll_list',
                api:{
@@ -998,7 +997,6 @@ const PayRollImportDialog = (()=>{
             },
 
             onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
                  me.controls.payroll_name.value = me.dataOptions.payroll_id;
                  me.controls.payroll_name.setAttribute('disabled',true);
             }
