@@ -573,6 +573,11 @@ return [
         'update_success_payroll_account' => 'Payroll account has been updated successfully.',
         'delete_success_payroll_account' => 'Payroll account has been deleted successfully.',
 
+        'create_success_wallet_account' => 'Wallet account created successfully.',
+        'update_success_wallet_account' => 'Wallet account updated successfully.',
+        'delete_success_wallet_account' => 'Wallet account deleted successfully.',
+
+
         'create_cash_deposit_success' => 'Cash deposit has been created successfully.',
 
 

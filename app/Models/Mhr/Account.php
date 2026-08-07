@@ -203,17 +203,22 @@ class Account extends VSModel
             }
         }
 
-        // Clone query before count (important for hosting compatibility)
-        $countQuery = clone $query;
-        $count = $countQuery->count();
+        $count = $query->count('a.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        // Get paginated rows
-        $rows = $query
-            ->offset($skip_rows)
-            ->limit($per_page)
-            ->get();
-
-        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
+        foreach ($rows as $row) {
+            if ($is_master_account == 1) {
+                //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
+                $c_id = getCurrentSubs(true)->subscriber_id;
+                $subs_id = $ss->subs_id;
+                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id' => $c_id, 'subs_id' => $subs_id]);
+                unset($row->emp_photo);
+            } else {
+                $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+                unset($row->emp_photo);
+            }
+        }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function getDetails($id)
@@ -514,7 +519,7 @@ class Account extends VSModel
         return DV::error('Error saving transaction');
     }
 
-    function getAccountInfo($arr, $ss)
+    function getAccountInfo1($arr, $ss)
     {
         $d = (object) $arr;
         $account_type = DB::table('accounts')->where('account_number', $d->account_number)->value('account_type');
@@ -526,6 +531,26 @@ class Account extends VSModel
             'emp_name' => $emp_name,
             'currency_code' => $currency_code
 
+        ]);
+    }
+    function getAccountInfo($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        $account = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->where('a.account_number', $d->account_number)
+            ->select(
+                'a.account_type',
+                'a.currency_code',
+                'e.name as emp_name'
+            )
+            ->first();
+
+        return DV::depends(1, [
+            'account_type'  => $account->account_type ?? null,
+            'emp_name'      => $account->emp_name ?? null,
+            'currency_code' => $account->currency_code ?? null,
         ]);
     }
 
