@@ -278,13 +278,13 @@ class Account extends VSModel
     {
         $id = $id ?? $this->id;
         if ($id == 1) {
-            return DV::error('Cannot delete master account');
+            return DV::error('cannot_delete_master_account');
         }
         foreach (self::$fk_tables as $table => $field) {
             DB::table($table)->where($field, $id)->delete();
         }
         $x = DB::table('accounts')->where('id', $id)->delete();
-        return DV::depends($x, null, 'Problem in deleting account');
+        return DV::depends($x, null, 'failed_delete_account');
     }
 
     function getFormOptions($id, $ss)

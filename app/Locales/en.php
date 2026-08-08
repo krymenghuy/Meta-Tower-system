@@ -580,9 +580,18 @@ return [
 
         'create_cash_deposit_success' => 'Cash deposit has been created successfully.',
 
-
-
-
+        'cannot_delete_authorized_payroll' => 'Cannot delete an authorized payroll.',
+        'payroll_not_authorized' => 'Payroll has not been authorized yet!',
+        'payroll_not_disbursed' => 'Payroll has not been disbursed yet!',
+        'payroll_id_not_exist' => 'Payroll ID does not exist.',
+        'failed_reset_payroll' => 'Failed to reset payroll!',
+        'payroll_not_disbursed_employee' => 'Payroll has not been disbursed to any employees yet.',
+        'failed_reset_payroll_transaction' => 'Failed to reset payroll because some payment transactions could not be reversed to the master payroll account.',
+        'cannot_delete_master_account' => 'Cannot delete master account.',
+        'failed_delete_account' => 'Failed to delete account.',
+        'cannot_authorize_empty_payroll' => 'Cannot authorize payroll because no employees have been added.',
+        'payroll_already_authorized' => 'Payroll is already authorized.',
+        'master_payroll_account_not_created' => 'Master payroll account has not been created yet!',
 
 
 

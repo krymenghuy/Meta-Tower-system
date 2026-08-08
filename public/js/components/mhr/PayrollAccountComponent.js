@@ -539,7 +539,6 @@ var PayrollAccountComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("Deleted successfully");
                 mThis.AccountListView.showPage();
             },
         };
@@ -547,9 +546,11 @@ var PayrollAccountComponent = (function () {
         cv_interact.confirm(
             "confirm_delete",
             {
-                title: "Delete",
-                context: "delete",
-                confirmButtonText: "Delete",
+                'langSection': "message_box_default",
+                'translate': true,
+                'title': "deleted",
+                'context': "delete",
+                'confirmButtonText': "Delete",
             },
             function (e) {
                 if (e) {
@@ -1058,8 +1059,8 @@ const TransferDialog = (() => {
                         cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
-                            p.account_type = me.account_type;
-                            p.currency_code = me.currency_code;
+                            // p.account_type = me.account_type;
+                            // p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
                             p.to_account_currency_code = me.to_account_currency_code;
                             p.id = me.dataOptions.id;
@@ -1099,6 +1100,8 @@ const TransferDialog = (() => {
                                                 if (confirmation) {
                                                     p.from_account = {'account_number':p.account_number}
                                                     p.to_account = {'account_number':p.to_account_number}
+                                                    console.log(3333,p);
+                                                    
                                                     vsapi
                                                         .call(
                                                             [
@@ -1110,21 +1113,17 @@ const TransferDialog = (() => {
                                                             null
                                                         )
                                                         .then((res) => {
-                                                            if (
-                                                                res.status_code ===
-                                                                    200 &&
-                                                                res.data
-                                                            ) {
+                                                    console.log(123456,res);
+
+                                                            if (res.status_code == 200 && res.data) {
                                                                 let formattedData = `
-                                                        Transfer Successful
-                                                        From: ${res.data.from_account_number}
-                                                        To: ${res.data.to_account_number}
-                                                    `;
-                                                                cv_interact.success(
-                                                                    formattedData
-                                                                );
+                                                                    Transfer Successful
+                                                                    From: ${res.data.from_account_number}
+                                                                    To: ${res.data.to_account_number}
+                                                                `;
+                                                                cv_interact.success(formattedData);
                                                                 AccountManagementComponent.AccountListView.showPage();
-                                                                me.hide(false);
+                                                                me.hide(true);
                                                             } else {
                                                                 cv_interact.error(
                                                                     res.error_message ||

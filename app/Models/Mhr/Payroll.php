@@ -104,7 +104,7 @@ class Payroll
         }
         $test = DB::table('payrolls as p')->where('p.name', $name)->whereRaw($str_id)->select('id')->first();
         if ($test)
-            return 'Payrll name ?? already exist::' . $name;
+            return 'Payroll name ?? already exist::' . $name;
         // return DV::error('Payrll name ?? ??already exist::'.$name .';'.$name);
 
         return null;
@@ -207,8 +207,8 @@ class Payroll
     {
         $id = $id ?? $this->id;
         $payroll = self::getProps($id, 'id,authorized');
-        if (!$payroll) return DV::error('The provided payroll ID does not exist');
-        if ($payroll->authorized == 1) return DV::error('Cannot delete authorized payroll!');
+        if (!$payroll) return DV::error('payroll_id_not_exist');
+        if ($payroll->authorized == 1) return DV::error('cannot_delete_authorized_payroll');
         DB::table('payroll_list')->where('payroll_id', $id)->delete();
         DB::table('payrolls')->where('id', $id)->delete();
         return DV::depends(1);
@@ -260,7 +260,7 @@ class Payroll
         }
         if (!$disburse_id) return;
         $payroll = self::getProps($payroll_id, 'exchange_rate, currency_code');
-        if (!$payroll) return DV::error('payroll ID does not exist');
+        if (!$payroll) return DV::error('payroll_id_not_exist');
         $emps = DB::table('payrolls as p')->join('payroll_list as l', 'l.payroll_id', '=', 'p.id')->join('payroll_list_benefits as pb', 'p.id', '=', 'l.payroll_id')->where('p.id', $payroll_id)->selectRaw('pb.emp_id, pb.emp_benefit_id')->get();
         DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->update(['disbursed' => 0, 'disburse_id' => null]);
         //$since_date = date('Y-m-d', strtotime('-12 months'));
@@ -286,9 +286,9 @@ class Payroll
         $master_account_id = 1;
 
         $payroll = self::getProps($payroll_id, 'id,name,currency_code, total,exchange_rate,head_count');
-        if (!$payroll) return DV::error('The provided payroll ID does not exist');
+        if (!$payroll) return DV::error('payroll_id_not_exist');
         if (!self::isAuthorized($payroll_id)) {
-            return DV::error('This payroll has not been authorized!');
+            return DV::error('payroll_not_authorized');
         }
 
         if ($payroll_id) DB::statement(DB::raw("update payrolls set total = (SELECT SUM(IFNULL(total_salary,0)) FROM payroll_list WHERE payroll_id = $payroll_id) WHERE id = $payroll_id"));
@@ -302,7 +302,7 @@ class Payroll
         $master_account_balance = $master_account->balance ?? 0;
         if ($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
         if (self::isDisbursed($payroll_id)) {
-            return DV::error('Payroll has already been disbursed');
+            return DV::error('payroll_not_disbursed');
         }
         $master_amount = 0;
         if ($payroll->currency_code != $master_account->currency_code) {
@@ -434,10 +434,10 @@ class Payroll
     {
         $ss = $ss ?? $this->userInfo;
         if (self::isEmpty($id)) {
-            return DV::error('Cannot authorize because the payroll is empty');
+            return DV::error('cannot_authorize_empty_payroll');
         }
         if (self::isAuthorized($id)) {
-            return DV::error('The payroll is already Authorized');
+            return DV::error('payroll_already_authorized');
         }
 
         $total = DB::table('payrolls as p')
@@ -451,7 +451,7 @@ class Payroll
         $default_account = DB::table('accounts as a')
             ->where('a.id', 1)
             ->selectRaw('balance as amount, a.id as account_id')->first();
-        if (!$default_account) return DV::error('Master payroll account is not yet created!');
+        if (!$default_account) return DV::error('master_payroll_account_not_created');
 
         $x = DB::table('payrolls')->where('id', $id)->update([
             'authorized' => 1,
@@ -473,7 +473,7 @@ class Payroll
             ->selectRaw('emp.id,emp.name, emp.code, trx.amount, a.balance')
             ->first();
         if (!$row) return null;
-        return "Staff named $row->name dosn't have enough account balance";
+        return "Staff named $row->name doesn't have enough account balance";
     }
 
     function removeStaff($emp_id, $id = null, $ss = null)
@@ -498,13 +498,13 @@ class Payroll
         $id = $id ?? $this->id;
         $master_account_id = 1;
         $authorized = self::isAuthorized($id);
-        if (!$authorized) return DV::error('Payroll is not authorized yet!');
+        if (!$authorized) return DV::error('payroll_not_authorized');
         $isDisbursed = self::isDisbursed($id);
         if (!$isDisbursed) {
-            return DV::error('Payroll is not yet disbursed!');
+            return DV::error('payroll_not_disbursed');
         }
         $payroll = self::getProps($id, 'last_disburse_id');
-        if (!$payroll) return DV::error('Payroll ID does not exist');
+        if (!$payroll) return DV::error('payroll_id_not_exist');
         $isDisbursed = self::isDisbursed($id);
         if ($isDisbursed) {
             $rows = DB::table('transactions')->where('disburse_id', $payroll->last_disburse_id)->where('status', 'in')->selectRaw('id, account_id, exchange_rate, amount, currency_code')->get();
@@ -536,9 +536,9 @@ class Payroll
                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
                 return DV::depends(1, ['failed_count' => $failed_count, 'success_count' => $success_count]);
             }
-            return DV::error("Failed to reset payroll!");
+            return DV::error("failed_reset_payroll");
         } else {
-            return DV::error('Payroll has not been disbursed to any staff');
+            return DV::error('payroll_not_disbursed_employee');
         }
     }
 
@@ -546,7 +546,7 @@ class Payroll
     {
         $ss = $ss ?? $this->userInfo;
         $authorized = self::isAuthorized($id);
-        if (!$authorized) return DV::error('Payroll is not authorizad yet!');
+        if (!$authorized) return DV::error('payroll_not_authorized');
         $isDisbursed = self::isDisbursed($id);
         $failed_count = -1;
         $success_count = 0;
@@ -563,7 +563,7 @@ class Payroll
         if ($failed_count <= 0) {
             DB::commit();
             return DV::depends(1, ['reversed_transaction_count' => $success_count]);
-        } else return DV::error('Failed to reset payroll because some payment transactions could not be reversed back to master payroll account');
+        } else return DV::error('failed_reset_payroll_transaction');
     }
 
     static function getAllBenefits($emp_id, $payroll)
@@ -1229,7 +1229,7 @@ class Payroll
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $payroll = self::getProps($id, 'id,name,authorized,disbursed');
-        if (!$payroll) return DV::error('Payroll ID does not exist');
+        if (!$payroll) return DV::error('payroll_id_not_exist');
         if ($payroll->authorized == 1 || $payroll->disbursed == 1) return DV::error('Cannot add or remove staff from payroll list because the payroll is already authorized!');
         $inputs = [
             'emp_id' => $emp_id,
