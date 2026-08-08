@@ -444,8 +444,6 @@ class PayrollList //extends Model
     function paySlip($id, $ss)
     {
         $ss = $ss ?? $this->userInfo;
-        $auth_db = config('database.connections.auth_db.database');
-
         $joining_date = DBX::formatDate('e.joining_date', 'joining_date');
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
@@ -454,8 +452,6 @@ class PayrollList //extends Model
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-            ->join("$auth_db.um_branches as b", 'b.id', '=', 'e.branch_id')
-
             ->leftJoin('payroll_list_benefits as plb', function ($join) {
                 $join->on('plb.emp_id', '=', 'pl.emp_id')
                     ->on('plb.payroll_id', '=', 'pl.payroll_id');
@@ -469,9 +465,9 @@ class PayrollList //extends Model
                         e.code as emp_code,
                         e.name as emp_name,
                         e.sex,
+                        e.phone_number,
                         e.apply_payroll_tax,
                         pos.name as emp_position,
-                        b.name as branch_name,
                         pl.p_salary,
                         pl.benefit_taxable,
                         pl.benefit_non_tax,

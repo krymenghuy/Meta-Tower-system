@@ -579,9 +579,9 @@ var PayrollListComponent = (()=> {
                         </div>
                         <div class="col-5 p_profile_right">
                             <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Branch</p>
+                                <p class="text-nowrap text-muted width-p">Phone Number</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${data.branch_name}</p>
+                                <p class="text-nowrap text-capitalize">${data.phone_number}</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Position</p>
