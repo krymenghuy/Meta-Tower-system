@@ -20,8 +20,7 @@ class AccountController extends Controller
     public function saveAccount(Request $req)
     {
         $id = $req->account_id ?? $req->id;
-        $prn_code = $id ? 315 : 256;
-        $ss = XAuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -32,7 +31,7 @@ class AccountController extends Controller
     
     public function bulkCreateAccounts(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 210);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -78,7 +77,7 @@ class AccountController extends Controller
 
     public function deleteAccount(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 212);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
