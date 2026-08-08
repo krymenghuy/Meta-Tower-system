@@ -498,12 +498,12 @@ var PayrollListComponent = (()=> {
             }
 
             .payment-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 10px;
-            padding-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                padding: 10px;
+                padding-bottom: 20px;
             }
             .payment-logo {
                 position: absolute;
@@ -540,8 +540,8 @@ var PayrollListComponent = (()=> {
         </style>
             <div class="payment_card overflow-y-auto overflow-x-hidden">
                 <div class="payment-header">
-                    <div class="payment-logo">
-                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                    <div class="payment-logo d-none">
+                        <img src="${main_view.base_url}/assets/images/meta/Meta_logo1.png" alt="Company Logo">
                         </div>
                         <div class="payment-title">
                         <h4>Pay Slip : ${data.start_date} - ${data.end_date}</h4>
@@ -558,7 +558,7 @@ var PayrollListComponent = (()=> {
                         </div>
                         <div class="col-5 p_profile_left">
                             <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                <p class="text-nowrap text-muted width-p">Name</p>
                                 <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
                             </div>
@@ -572,7 +572,7 @@ var PayrollListComponent = (()=> {
                             </div>
 
                             <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Employee ID</p>
+                                <p class="text-nowrap text-muted width-p">Code</p>
                                 <p class="px-3">:</p>
                                 <p class="text-nowrap">${data.emp_code}</p>
                             </div>

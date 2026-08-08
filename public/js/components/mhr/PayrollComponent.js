@@ -1,4 +1,5 @@
 "use strict";
+
 var PayrollComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -47,7 +48,7 @@ var PayrollComponent = new (function () {
         `,
     },
     {
-        transTitle: "titles.Staff Count",
+        transTitle: "titles.Employees",
         className: "text-center align-middle",
         data: (data) => `
             <a href="javascript:void(0)"
@@ -59,7 +60,7 @@ var PayrollComponent = new (function () {
         `,
     },
     {
-        transTitle: "titles.Duration",
+        transTitle: "titles.Payroll Period",
         className: "align-middle",
         data: (data) => `
             <span class="text-prm-custom text-nowrap">
@@ -95,39 +96,57 @@ var PayrollComponent = new (function () {
                 <span class="text-muted small">${data.updated_at ?? ""}</span>
             </div>`,
     },
-    {
-        transTitle: "titles.Authorize",
+   {
+        transTitle: "titles.Authorization",
         className: "align-middle text-nowrap text-center",
-        data: (data) => `
-            <span class="badge px-3 py-2 ${
-                data.authorized
-                    ? "bg-success text-white"
-                    : "bg-warning text-white"
-            }">
-                <i class="fa-solid ${
-                    data.authorized ? "fa-check-circle" : "fa-clock"
-                } me-1"></i>
-                ${data.authorized ? "Approved" : "Pending"}
-            </span>
-        `,
+        data: (data) => {
+            const authorized = Number(data.authorized) === 1;
+
+            return `
+                <span
+                    class="badge rounded-2 px-3 py-2 ${
+                        authorized
+                            ? "bg-success text-white"
+                            : "bg-warning text-white"
+                    }"
+                >
+                    <i class="fa-solid ${
+                        authorized
+                            ? "fa-circle-check"
+                            : "fa-clock"
+                    } me-1"></i>
+
+                    ${authorized ? "Approved" : "Pending"}
+                </span>
+            `;
+        },
     },
+
+    // Disbursement
     {
-        transTitle: "titles.Disbursed",
+        transTitle: "titles.Disbursement",
         className: "align-middle text-nowrap text-center",
-        data: (data) => `
-            <span class="badge px-3 py-2 ${
-                data.disbursed
-                    ? "bg-success text-white"
-                    : "bg-warning text-white"
-            }">
-                <i class="fa-solid ${
-                    data.disbursed
-                        ? "fa-money-check-dollar"
-                        : "fa-hourglass-half"
-                } me-1"></i>
-                ${data.disbursed ? "Disbursed" : "Pending"}
-            </span>
-        `,
+        data: (data) => {
+            const disbursed = Number(data.disbursed) === 1;
+
+            return `
+                <span
+                    class="badge rounded-2 px-3 py-2 ${
+                        disbursed
+                            ? "bg-success text-white"
+                            : "bg-warning text-white"
+                    }"
+                >
+                    <i class="fa-solid ${
+                        disbursed
+                            ? "fa-money-check-dollar"
+                            : "fa-hourglass-half"
+                    } me-1"></i>
+
+                    ${disbursed ? "Disbursed" : "Pending"}
+                </span>
+            `;
+        },
     },
     {
         transTitle: "titles.Action",
@@ -556,7 +575,7 @@ var PayrollComponent = new (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("All Authorization", "titles"),
+                    LocaleManager.trans("Authorization Status", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -565,7 +584,7 @@ var PayrollComponent = new (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("All Disbursement", "titles"),
+                    LocaleManager.trans("Disbursement Status", "titles"),
                     "",
                 );
             });
@@ -700,27 +719,13 @@ const AddPayRollListDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/mhr/payroll/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null,
-                                )
-                                .then((res) => {
+                            vsapi.call([main_view.base_url,"/mhr/payroll/save",].join(""),p,{loader:false,agent:btn}).then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_payroll",
-                                            );
+                                            cv_interact.success("update_success_payroll");
                                         } else {
-                                            cv_interact.success(
-                                                "update_success_payroll",
-                                            );
+                                            cv_interact.success("update_success_payroll");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
