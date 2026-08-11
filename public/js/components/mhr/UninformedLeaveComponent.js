@@ -7,7 +7,7 @@ var UninformedLeaveComponent = (function () {
         "#_main_leave_uninformed_component",
     );
 
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
+    // mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
     mThis.elFilter_work_shift = mThis.self.querySelector("#el_work_shift");
@@ -16,158 +16,188 @@ var UninformedLeaveComponent = (function () {
     mThis.divListView = mThis.self.querySelector("#_leave_uninformed_list");
 
     mThis.cols = [
-        {
-            transTitle: "",
-            className: "align-middle",
+        
+    {
+        title: "Day",
+        className: "align-middle text-nowrap",
+        data: (data) => {
+            const employees = Array.isArray(data.employees) ? data.employees : [];
+            return employees.map(() => `
+                <div class="d-flex align-items-center" style="height: 76px; min-width: 170px;">
+                    <div>
+                        <div class="text-prm-custom">${data.day ?? "_"}</div>
+                        <div class="small text-muted">Attendance</div>
+                    </div>
+                </div>
+            `).join("");
         },
-        {
-            transTitle: "titles.Employee",
-            className: "align-middle text-start text-nowrap",
-            data: (data) => {
-                return `
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <span class="fw-bold" style="font-size: 13px;">${data.emp_name ?? ""}</span>
-                            <br/>
-                            <span class="text-muted" style="font-size: 11px;">${data.emp_code ?? ""}</span>
+    },
+
+    {
+        title: "Staff Information",
+        className: "align-middle",
+        data: (data) => {
+            const employees = Array.isArray(data.employees)
+                ? data.employees
+                : [];
+
+            if (!employees.length) {
+                return `<span class="text-muted">No employee</span>`;
+            }
+
+            return `
+                <div style="min-width: 250px;">
+                    ${employees.map((employee) => `
+                        <div class="d-flex align-items-center"
+                             style="height: 76px;">
+
+                            <div class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light border me-3" style="width: 48px;height: 48px;min-width: 48px;">
+                                <img src="${employee.image_url ?? main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 100%;height: 100%;object-fit: cover;"/>
+                            </div>
+                            <div class="overflow-hidden">
+                                <div class="text-prm-custom text-truncate" style="max-width: 190px;">${employee.employee ?? "_"}</div>
+
+                                <div class="small text-muted">${employee.emp_code ?? "_"}</div>
+
+                            </div>
+
                         </div>
-                    </div>
-                `;
-            },
+                    `).join("")}
+                </div>
+            `;
         },
-        {
-            transTitle: "titles.Position",
-            className: "align-middle text-start",
-            data: (data) => {
-                return `
-                    <div class="d-flex flex-column">
-                        <span>${data.position_name ?? "-"}</span>
-                    </div>
-                `;
-            },
-        },
+    },
 
-        {
-            transTitle: "titles.Absent Period",
-            className: "align-middle text-center text-nowrap",
-            data: (data) => {
-                return `
-                    <span class="badge bg-light text-prm-custom border px-3 py-2">
-                        <i class="fa-regular fa-calendar me-1"></i>
-                        ${data.date_period ?? data.start_date + " - " + data.end_date}
-                    </span>
-                `;
-            },
-        },
+ 
 
-        {
-            transTitle: "titles.Issue",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-prm text-capitalize" style="width:250px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "-"}</span>
-                    </div>
-                `;
-            },
-        },
-        {
-            transTitle: "titles.Attendance Status",
-            className: "align-middle text-center",
-            data: (data) => {
-                const status = data.status;
-                let cls =
-                    "badge text-warning bg-warning-subtle border border-warning";
-                let statusText = data.status ?? "";
+   {
+    title: "Scheduled Shift",
+    className: "align-middle",
+    data: (data) => {
+        const shifts = Array.isArray(data.shifts)
+            ? data.shifts
+            : [];
 
-                if (status == "Pending") {
-                    cls =
-                        "badge text-warning bg-warning-subtle border border-warning";
-                } else if (
-                    status === "Inactive" ||
-                    status === "Uninformed" ||
-                    status === "uninformed"
-                ) {
-                    cls =
-                        "badge text-danger bg-danger-subtle border border-danger";
-                } else if (
-                    status == "Active" ||
-                    status === "Excused" ||
-                    status === "excused"
-                ) {
-                    cls =
-                        "badge text-success bg-success-subtle border border-success";
-                }
+        const employees = Array.isArray(data.employees)
+            ? data.employees
+            : [];
 
-                return `
-                    <span class="${cls} text-capitalize d-inline-block text-center"
-                        style="min-width:70px"
-                        data-status_id="${data.status_id}">
-                        ${statusText}
-                    </span>
-                `;
-            },
-        },
-        {
-            transTitle: "titles.Decision",
-            className: "align-middle text-center",
-            data: (data) => {
-                let decision = null;
-                let cls = "";
+        if (!employees.length) {
+            return "";
+        }
 
-                if (data.remarks && data.remarks.toLowerCase().includes("warning issued")) {
-                    decision = "Warning";
-                    cls = "badge text-warning bg-warning-subtle border border-warning";
-                } else if (parseFloat(data.deduction) > 0) {
-                    decision = "Deduct";
-                    cls = "badge text-danger bg-danger-subtle border border-danger";
-                }
+        // Remove duplicate time + action
+        const uniqueShifts = [];
+        const seen = new Set();
 
-                if (!decision) {
-                    return `<span class="text-muted">-</span>`;
-                }
+        shifts.forEach((shift) => {
+            const key = `${shift.time}-${shift.action}`;
 
-                return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" 
-                          style="min-width:70px;">
-                        ${decision}
-                    </span>
-                `;
-            },
-        },
-        {
-            transTitle: "titles.Last Updated",
-            className: "align-middle text-nowrap",
-            data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span class='text-primary-custom' >${data.update_user ?? '_'}</span><br/>
-                <small >${data.updated_at ?? ""}</small>
-            </div>`,
-        },
-        {
-            className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)"
-                    class="btn_leave_action"
-                    data-id="${data.id}"
-                    data-emp_id="${data.emp_id ?? ""}"
-                    data-emp_name="${data.emp_name ?? ""}"
-                    data-emp_salary="${data.emp_salary ?? 0.0}"
-                    data-deduction="${data.deduction ?? 0.0}"
-                    data-remarks="${data.remarks ?? ""}"
-                    data-start_date="${data.start_date ?? ""}"
-                    data-end_date="${data.end_date ?? ""}"
-                    data-has_warning="${data.has_warning ?? 0}"
-                    data-statusid="${data.status_id}"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    style="cursor: pointer; padding: 8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
-                    </a>
-                </div>`,
-        },
-    ];
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniqueShifts.push(shift);
+            }
+        });
+
+        const shiftHtml = uniqueShifts.length
+            ? `
+                <div class="d-flex align-items-center gap-2"
+                     style="
+                        height: 76px;
+                        min-width: 430px;
+                        overflow-x: auto;
+                     ">
+
+                    ${uniqueShifts.map((shift) => {
+
+                        const isCheckIn =
+                            shift.action === "Check In" ||
+                            shift.action === "CheckIn";
+
+                        const isCheckOut =
+                            shift.action === "Check Out" ||
+                            shift.action === "CheckOut";
+
+                        const icon = isCheckIn
+                            ? "fa-right-to-bracket"
+                            : isCheckOut
+                                ? "fa-right-from-bracket"
+                                : "fa-clock";
+
+                        const bg = isCheckIn
+                            ? "#ecfdf5"
+                            : isCheckOut
+                                ? "#fffbeb"
+                                : "#f8fafc";
+
+                        const color = isCheckIn
+                            ? "#059669"
+                            : isCheckOut
+                                ? "#d97706"
+                                : "#64748b";
+
+                        return `
+                            <div class="d-flex align-items-center"
+                                 style="
+                                    width: 135px;
+                                    min-width: 135px;
+                                    height: 50px;
+                                    padding: 8px 10px;
+                                    border-radius: 8px;
+                                    background: ${bg};
+                                    border: 1px solid #e5e7eb;
+                                 ">
+
+                                <div class="d-flex align-items-center
+                                            justify-content-center
+                                            rounded-circle me-2"
+                                     style="
+                                        width: 32px;
+                                        height: 32px;
+                                        background: white;
+                                        color: ${color};
+                                     ">
+
+                                    <i class="fa-solid ${icon}"
+                                       style="font-size: 13px;">
+                                    </i>
+
+                                </div>
+
+                                <div>
+                                    <div class="fw-semibold"
+                                         style="
+                                            font-size: 12px;
+                                            color: #374151;
+                                         ">
+                                        ${shift.time ?? "-"}
+                                    </div>
+
+                                    <div style="
+                                        font-size: 10px;
+                                        color: ${color};
+                                    ">
+                                        ${shift.action ?? "-"}
+                                    </div>
+                                </div>
+
+                            </div>
+                        `;
+                    }).join("")}
+
+                </div>
+            `
+            : `
+                <div class="d-flex align-items-center"style="height: 76px;">
+                    <span class="text-muted" style="font-size: 12px;"><i class="fa-regular fa-calendar-xmark me-1"></i>No Shift</span>
+                </div>
+            `;
+        return employees
+            .map(() => shiftHtml)
+            .join("");
+    },
+},
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -182,19 +212,19 @@ var UninformedLeaveComponent = (function () {
             listContainerClass: null,
         });
 
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
+        // mThis.btnAdd.onclick = function (e) {
+        //     e.preventDefault();
 
-            let op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-                },
-            };
+        //     let op = {
+        //         id: null,
+        //         btn: e.target,
+        //         onClose: () => {
+        //             mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+        //         },
+        //     };
 
-            UninformedLeaveDialog.show(op);
-        };
+        //     UninformedLeaveDialog.show(op);
+        // };
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
         mThis.initDropdownMenus(mThis.tblLeaves);
@@ -223,18 +253,7 @@ var UninformedLeaveComponent = (function () {
             }, 250);
         });
 
-        const elStartDate = mThis.divFilter.querySelector(
-            "[data-field='start_date']",
-        );
-        const elEndDate = mThis.divFilter.querySelector(
-            "[data-field='end_date']",
-        );
-        if (elStartDate && typeof DateTimePicker !== "undefined") {
-            DateTimePicker.init(elStartDate);
-        }
-        if (elEndDate && typeof DateTimePicker !== "undefined") {
-            DateTimePicker.init(elEndDate);
-        }
+   
 
         mThis.initAlready = true;
     };
@@ -248,10 +267,10 @@ var UninformedLeaveComponent = (function () {
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
-            if (f == "start_date") p["date"] = el.value;
             p[f] = el.value;
         });
-
+        console.log(8888,p);
+        
         return p;
     };
 

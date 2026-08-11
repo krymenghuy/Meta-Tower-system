@@ -8,13 +8,26 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_status" class="filter-field data-input" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2 d-none">
                 <select type="id" id="el_leave_type" class="filter-field data-input" data-field="leave_type_id"></select>
             </div>
+            <div class="col-md-6 col-lg-2">
+                <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                    <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" " data-field="start_date" />
+                    <label vslang="titles.Start Date" class="form-label">Start Date</label>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2">
+                <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                    <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" " data-field="end_date" />
+                    <label vslang="titles.End Date" class="form-label">End Date</label>
+                </div>
+            </div>
             
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddLeave">
-                    <i class="fa-solid fa-right-from-bracket" style="color: rgb(249, 251, 255);"></i>
+                    <i class="fa-solid fa-right-from-bracket"></i>
                     <span vslang="buttons.Leave Request"></span>
                 </button>
             </div>

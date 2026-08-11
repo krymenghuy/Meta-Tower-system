@@ -11,10 +11,11 @@ use App\Models\Mhr\Employee;
 use App\Models\Mhr\TaxBracket;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+use Vsd\Vsloquent\VSModel;
 
-class Payroll
+class Payroll extends VSModel
 {
-    protected $id = null;
+    // protected $id = null;
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)

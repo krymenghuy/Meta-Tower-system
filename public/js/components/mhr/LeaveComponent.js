@@ -277,10 +277,10 @@ var LeaveComponent = (function () {
             ],
 
             onShow:(me,container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
-                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
+                // const menu = me.getActiveMenus(container);
+                // const status_id = container.dataset.statusid;
+                // menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
+                // menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
                 // menu.edit_request.style.display = (status_id = 2) ? 'none' : 'block';
                 // menu.delete_leave.style.display = (status_id >= 2) ? 'none' : 'block';
 

@@ -163,10 +163,24 @@ class Leave extends VSModel
         if ($status_id) {
             $str_status = 'l.status_id = \'' . $status_id . '\'';
         }
-
+        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
+        $today = date('Y-m-d');
+        if ($start_date && $end_date) {
+            $end_date = convertDate($end_date);
+            $start_date = convertDate($start_date);
+            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
+                // Check if there is any overlap between the leave period and the given date range
+                $str_dates = "(
+                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
+                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
+                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+                )";
+            }
+        } else {
+            // Default to today's date if no start_date and end_date are provided
+            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
+        }
         $skip_rows = ($current_page - 1) * $per_page;
-        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
-
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
 
         $query = DB::table('leaves as l')
@@ -177,7 +191,7 @@ class Leave extends VSModel
             ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
-            ->whereNotIn('l.status_id', [4])
+            // ->whereNotIn('l.status_id', [4])
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee_name, emp.sex, p.name as position,l.start_date, l.end_date, l.leave_type_id, lt.name as leave_type, ls.name as status, l.remarks, l.update_user, l.updated_at, l.status_id, emp.photo_file_name as emp_photo,'
                 . $leave_days_calc)
             ->orderBy('l.id', 'DESC');
@@ -253,7 +267,7 @@ class Leave extends VSModel
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-     function getLeaveUninformedList($arr, $ss)
+    function getLeaveUninformedList($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
@@ -269,10 +283,10 @@ class Leave extends VSModel
         $status_id = $d->status_id ?? null;
         $leave_type_id = $d->leave_type_id ?? null;
         $work_shift_id = $d->work_shift_id ?? null;
-        // $start_date = $d->start_date ?? date('d-M-Y');
-        // $end_date = $d->end_date ?? date('d-M-Y');
-        $start_date = $d->date ?? date('d-M-Y');
-        $end_date = $d->date ?? date('d-M-Y');
+        $start_date = $d->start_date ?? date('d-M-Y');
+        $end_date = $d->end_date ?? date('d-M-Y');
+        // $start_date = $d->date ?? date('d-M-Y');
+        // $end_date = $d->date ?? date('d-M-Y');
 
         $str_search = '1=1';
         $str_work_shift = '5=5';
@@ -293,7 +307,6 @@ class Leave extends VSModel
         }
         $count = 0;
 
-        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
         $today = date('Y-m-d');
         $emp_leav_uninform_list = [
             'day' => null,
@@ -301,14 +314,14 @@ class Leave extends VSModel
         $emp_leav_uninform = [];
 
         if ($start_date && $end_date) {
-
-            $work_shifts = null;// self::getWorkShift($current_date);
+            $work_shifts = null;
             $rows = DB::table('shift_details as sd')
                 ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
                 ->whereRaw($str_work_shift)
                 ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
                 // ->where('ws.id', $work_shift_id)
                 ->get();
+
             $date = new DateTime($today);
             $day = $date->format('D');
             $ds = ShiftDetails::getScanTimes($rows, $day);
@@ -332,7 +345,12 @@ class Leave extends VSModel
                         ($q_start_date <= '$start_date' AND $q_end_date >= '$end_date')
                     )";
 
-                    $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+                    $employees = DB::table('employees as emp')
+                        ->join('work_shifts as ws','ws.id','=','emp.work_shift_id')
+                        ->where('emp.status_id',10)->whereRaw($str_search)
+                        ->whereRaw($str_work_shift)
+                        ->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')
+                        ->get();
 
                     $date = new DateTime($filterDay['date']);
                     $date = $date->format('Y-m-d');
@@ -353,34 +371,24 @@ class Leave extends VSModel
                 $count += 1;
                 $emp_leav_uninform[] = $leav_uninform;
             }
-
-            // $end_date = convertDate($end_date);
-            // $start_date = convertDate($start_date);
-            // if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
-            //     // Check if there is any overlap between the leave period and the given date range
-            //     $str_dates = "(
-            //         (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-            //         (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-            //         (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
-            //     )";
-            // }
-
         } else {
-            // Default to today's date if no start_date and end_date are provided
-            // $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
-
-            // $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
-
-            // $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-
-            $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+            $employees = DB::table('employees as emp')
+                ->join('work_shifts as ws','ws.id','=','emp.work_shift_id')
+                ->where('emp.status_id',10)
+                ->whereRaw($str_work_shift)
+                ->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')
+                ->get();
 
             $q_session_date = DBX::convertToDate('attendance_date');
             $strsearch_date = "$q_session_date = '$today'";
             // return $work_shifts[0];
 
             foreach($employees as $emp){
-                $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
+                $has_checked_in_m = DB::table('emp_attendances')
+                    ->where('session','m')
+                    ->where('emp_id',$emp->id)
+                    ->whereRaw($strsearch_date)
+                    ->value('id');
                 if(!$has_checked_in_m){
                     $emp->leave_date = $today;
                     $emp->leave_type = 'Uninformed';
@@ -391,22 +399,6 @@ class Leave extends VSModel
             }
 
         }
-
-        // return $emp_leav_uninform;
-        // return$emp_leav_uninform;
-        // $clone_query = clone $query;
-        // $count = $clone_query->count('l.id');
-
-        // $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        // foreach ($rows as $row) {
-        //     $row->image_url = '';
-        //     if (isset($row->emp_id) && $row->emp_photo) {
-        //         $row->image_url = Employee::profilePicture($row->emp_id);
-        //     }
-        //     unset($row->emp_photo);
-        // }
-
         return new LengthAwarePaginator($emp_leav_uninform, $count, $per_page, $current_page);
     }
 
