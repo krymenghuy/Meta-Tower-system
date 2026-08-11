@@ -121,8 +121,6 @@ var PayrollComponent = new (function () {
             `;
         },
     },
-
-    // Disbursement
     {
         transTitle: "titles.Disbursement",
         className: "align-middle text-nowrap text-center",
@@ -415,10 +413,12 @@ var PayrollComponent = new (function () {
                     vsapi
                         .call(`${mThis.base_url}/mhr/payroll/authorize`, p)
                         .then((res) => {
-                            if (res.status_code === 200) {
+                            if (res.status_code == 200) {
                                 cv_interact.success("Authorized successfully");
                                 mThis.PayrollListView.showPage();
-                            } else cv_interact.error(res.error_message);
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
                         });
                 }
             },

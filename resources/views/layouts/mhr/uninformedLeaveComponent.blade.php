@@ -24,12 +24,12 @@
                 </div>
             </div>
             
-           <div class="ms-md-auto text-md-end col-12 col-md-auto">
+           <!-- <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddLeave" title="Add Uninformed Leave">
                     <i class="fa-right-from-bracket fa-solid" style="color: rgb(255, 255, 255);"></i>
                     <span vslang="buttons.Add Uninformed Leave"></span>
                 </button>
-            </div>
+            </div> -->
         </div>
     </div>
     <div id="_leave_uninformed_list" class="mt-3"></div>

@@ -971,13 +971,14 @@ const PayRollImportDialog = (()=>{
                 click:(me,btn)=>{
                     const p = me.getData();
 
-                    p.id = me.dataOptions.id; //get "id" from op
-
+                    p.id = me.dataOptions.id;
+                    console.log(44,p);
+                    
                     vsapi.call( [main_view.base_url,'/mhr/payroll/import-staff'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          const successCount = res.data.success_count ?? 0;
                           if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
-                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles1');
+                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles');
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
                     });

@@ -28,7 +28,7 @@ var EmployeeBenefitComponent = new (function () {
                 return `
                         <div class="d-flex flex-column">
                             ${data.emp_name ?? "-"}
-                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
+                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "_"}</span>
                         </div>`;
             },
         },
@@ -36,7 +36,7 @@ var EmployeeBenefitComponent = new (function () {
             transTitle: "titles.Benefit",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<span>${data.benefit_name ?? "-"}</span>`;
+                return `<span>${data.benefit_name ?? "_"}</span>`;
             },
         },
         {
@@ -80,24 +80,20 @@ var EmployeeBenefitComponent = new (function () {
         },
 
         {
-            transTitle: "titles.Tax Option",
+            transTitle: "titles.Tax",
             className: "align-middle",
             data: (data) => {
                 return `
-                <p class="p-0 text-primary-custom m-0">${
-                    data.tax_option_id == "1" ? "Taxable" : ""
-                }${data.tax_option_id == "2" ? "Non Taxable" : ""}${
-                    data.tax_option_id == "3" ? "Flat Rate" : ""
-                }`;
+                <p class="p-0 text-primary-custom m-0">${data.tax_option_id == "1" ? "Tax" : ""}${data.tax_option_id == "2" ? "Non" : ""}${data.tax_option_id == "3" ? "Flat Rate" : ""}`;
             },
         },
         {
-            transTitle: "titles.Flat Tax Rate",
+            transTitle: "titles.Flat Tax",
             className: "align-middle",
             data: (data, index, tr) => {
                 return data.tax_option_id == "3"
                     ? `<p class="p-0 m-0">${data.flat_tax_rate ?? "0"} %</p>`
-                    : `<p class="p-0 m-0">N/A</p>`;
+                    : `<p class="p-0 m-0">_</p>`;
             },
         },
         {
@@ -210,13 +206,13 @@ var EmployeeBenefitComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit Employee Benefit">Edit Employee Benefit</span>',
+                    html: '<span class="ps-2  " vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_emp_benefit",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Employee Benefit">Delete Employee Benefit</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete">Delete</span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_emp_benefit",
@@ -447,7 +443,6 @@ const EmployeeBenefitDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                     const BenefitField =
                         me.divModal.querySelector("#benefit_id");
                     const taxOptionField =
@@ -529,8 +524,6 @@ const EmployeeBenefitDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            console.log(123, p);
-
                             vsapi
                                 .call(
                                     `${main_view.base_url}/mhr/emp-benefit/save`,
