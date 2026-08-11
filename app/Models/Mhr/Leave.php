@@ -202,7 +202,7 @@ class Leave extends VSModel
     }
 
 
-    function getLeaveUninformedList1($arr, $ss)
+    function getLeaveUninformedList($arr, $ss)
     {
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
@@ -253,7 +253,7 @@ class Leave extends VSModel
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-     function getLeaveUninformedList($arr, $ss)
+     function getLeaveUninformedList1($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
