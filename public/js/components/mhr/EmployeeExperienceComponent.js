@@ -150,7 +150,7 @@ var EmployeeExperienceComponent = (function () {
                                     <div class="emp-exp-item-right">
                                         ${
                                             period
-                                                ? `<span class="emp-exp-period">${mThis._escapeHtml(period)}</span>`
+                                                ? `<span class="small emp-exp-period">${mThis._escapeHtml(period)}</span>`
                                                 : ""
                                         }
                                         <div class="emp-exp-actions">
@@ -263,12 +263,6 @@ const ExperienceDialog = (() => {
                     },
                 ],
                 contentCreated: (me) => {
-                    if (me.controls.start_date) {
-                        DateTimePicker.init(me.controls.start_date);
-                    }
-                    if (me.controls.end_date) {
-                        DateTimePicker.init(me.controls.end_date);
-                    }
                 },
                 buttons: [
                     {

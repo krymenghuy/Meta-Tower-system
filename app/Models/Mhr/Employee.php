@@ -93,7 +93,7 @@ class Employee extends VSModel
             'date_of_birth'   => '1|date|text=date_of_birth_required',
             'nid'             => '1|string|1-30|text=national_id_required',
             'nid_expiry_date' => '1|date|text=identity_card_expiry_required',
-            'nssf_id'         => '1|string|1-30|text=nssf_id_required',
+            'nssf_id'         => '0|string|1-30|text=nssf_id_required',
             'passport_number' => '0|string|1-30',
             'passport_expiry_date' => '0|date|text=passport_expiry_required',
             'phone_number'    => '1|string|1-30|text=phone_number_required',
@@ -416,21 +416,26 @@ class Employee extends VSModel
     public function deleteEmployee($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $employeeExist = DB::table('employees')
-            ->where('id', $id)
-            ->exists();
-
-        if (!$employeeExist) {
-            return DV::error('Employee not found');
+        if (!is_numeric($id)) {
+            return DV::error('Invalid ID');
+        }
+        $file_name = DB::table('employees')->where('id', $id)->value('photo_file_name');
+        if ($file_name) {
+            // Delete the file from the storage
+            XPublicStorage::delete([
+                'branch_id' => null,
+                'subs_id' => $ss->subs_id,
+                'dir' => self::$img_dir,
+            ], 'images', $file_name);
         }
 
-        $deleted = DB::table('employees')
-            ->where('id', $id)
-            ->delete();
+        $deleted = DB::table('employees')->where('id', $id)->delete();
 
-        return DV::depends($deleted, null, 'Error deleting employee');
+        if (!$deleted) {
+            return DV::error('employee not found or not deleted');
+        }
+
+        return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
 
     static function savePayrollListBenefit($payroll_id, $emp_id ,$ss)
@@ -621,7 +626,7 @@ class Employee extends VSModel
 
         return DV::depends(1, ['id' => $id, 'emp_id' => $emp_id]);
     }
-     public function setResignStatus($arr = [], $id = null, $ss = null, $status_id)
+     public function setResignStatus1($arr = [], $id = null, $ss = null, $status_id)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -700,6 +705,172 @@ class Employee extends VSModel
         }
 
         return DV::error('Failed to save resignation record.');
+    }
+    public function setResignStatus($arr = [],$id = null,$ss = null,$status_id = 20) {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        if (!is_numeric($id) || (int) $id <= 0) {
+            return DV::error('Invalid employee ID.');
+        }
+        $id = (int) $id;
+        $v_rule = [
+            'effective_date' => '1|date',
+            'resign_date'    => '1|date',
+            'remarks'        => '0|string|1-300',
+        ];
+        $res = DBX::validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+        $inputs = $res->values;
+        $emp = self::getProps($id, 'status_id');
+
+        if (!$emp) {
+            return DV::error('Employee ID not found.');
+        }
+        if ((int) $emp->status_id === (int) $status_id) {
+            return DV::error(
+                'Employee is already in the selected status.'
+            );
+        }
+        $resignTimestamp = strtotime($inputs['resign_date']);
+        $effectiveTimestamp = strtotime($inputs['effective_date']);
+
+        if (!$resignTimestamp || !$effectiveTimestamp) {
+            return DV::error('Invalid resignation or effective date.');
+        }
+
+        $resignDate = date('Y-m-d', $resignTimestamp);
+        $effectiveDate = date('Y-m-d', $effectiveTimestamp);
+        $today = date('Y-m-d');
+        if ($resignDate > $effectiveDate) {
+            return DV::error(
+                'Resignation date cannot be later than the effective date.'
+            );
+        }
+        $latestResignation = DB::table('resignations')
+            ->where('emp_id', $id)
+            ->orderByDesc('effective_date')
+            ->first();
+
+        if ($latestResignation) {
+
+            $latestEffectiveDate = date(
+                'Y-m-d',
+                strtotime($latestResignation->effective_date)
+            );
+
+            if ($effectiveDate <= $latestEffectiveDate) {
+                return DV::error(
+                    'The effective date must be later than the previous resignation effective date (' .
+                    $latestEffectiveDate .
+                    ').'
+                );
+            }
+        }
+        $events = [
+            '10.20' => 'Resignation',
+            'active.20' => 'Resignation',
+        ];
+
+        $eventKey = $emp->status_id . '.' . $status_id;
+
+        $eventName = $events[$eventKey] ?? 'Resignation';
+
+        $eventId = self::getEventId($eventName);
+
+        if (!$eventId) {
+
+            $eventResult = Event::createEvent(
+                ['name' => $eventName],
+                $ss
+            );
+
+            if (
+                $eventResult->status_code == 200 &&
+                !empty($eventResult->data['id'])
+            ) {
+                $eventId = $eventResult->data['id'];
+            }
+        }
+
+        if (!$eventId) {
+            return DV::error('Failed to create or retrieve resignation event.');
+        }
+        $inputs['emp_id'] = $id;
+        $inputs['resign_date'] = $resignDate;
+        $inputs['effective_date'] = $effectiveDate;
+        try {
+
+            DB::beginTransaction();
+            $eventInputs = [
+                'emp_id'     => $id,
+                'event_id'   => $eventId,
+                'impact'     => 'Negative',
+                'remarks'    => $inputs['remarks'] ?? '',
+                'event_date' => $resignDate,
+            ];
+            $eventSaved = DBX::saveData($ss,'emp_events',[],$eventInputs,[],1,false);
+            if (!$eventSaved) {
+                DB::rollBack();
+                return DV::error('Failed to log resignation event.');
+            }
+            $resignId = DBX::saveData(
+                $ss,
+                'resignations',
+                ['id' => null],
+                $inputs,
+                [],
+                1
+            );
+
+            if (!$resignId) {
+                DB::rollBack();
+                return DV::error('Failed to save resignation record.');
+            }
+            if ($effectiveDate <= $today) {
+
+                $updated = DB::table('employees')
+                    ->where('id', $id)
+                    ->update([
+                        'status_id' => $status_id,
+                    ]);
+
+                if (!$updated) {
+                    DB::rollBack();
+
+                    return DV::error(
+                        'Failed to update employee status.'
+                    );
+                }
+            }
+
+            DB::commit();
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return DV::error(
+                'Failed to process resignation: ' . $e->getMessage()
+            );
+        }
+        return DV::depends(
+            1,
+            [
+                'id'             => $id,
+                'resign_id'      => $resignId,
+                'resign_date'    => $resignDate,
+                'effective_date' => $effectiveDate,
+                'status_id'      => $effectiveDate <= $today
+                    ? $status_id
+                    : $emp->status_id,
+                'status_updated' => $effectiveDate <= $today,
+            ],
+            $effectiveDate > $today
+                ? 'Resignation scheduled successfully. Employee status will change on the effective date.'
+                : 'Resignation processed successfully.'
+        );
     }
     static function getEventId($name)
    {

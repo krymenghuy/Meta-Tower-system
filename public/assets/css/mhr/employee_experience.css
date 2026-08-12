@@ -168,13 +168,13 @@
 }
 
 .emp-exp-period {
-    font-size: 0.72rem;
-    font-weight: 600;
+    /* font-size: 0.72rem; */
+    font-weight: 500;
     color: #64748b;
     background: #f1f5f9;
-    border-radius: 999px;
+    border-radius: 6px;
     padding: 3px 9px;
-    line-height: 1.3;
+    line-height: 1.4;
     white-space: nowrap;
 }
 

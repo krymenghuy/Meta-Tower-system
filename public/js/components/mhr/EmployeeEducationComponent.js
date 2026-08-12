@@ -126,7 +126,7 @@ var EmployeeEducationComponent = (function () {
                                     <div class="emp-edu-item-right">
                                         ${
                                             years
-                                                ? `<span class="emp-edu-years">${mThis._escapeHtml(years)}</span>`
+                                                ? `<span class="small emp-edu-years">${mThis._escapeHtml(years)}</span>`
                                                 : ""
                                         }
                                         ${

@@ -250,11 +250,11 @@ var LeaveComponent = (function () {
                 //     cssClass:"border-bottom pb-2",
                 //     name:"change_leave_request_status"
                 // },
-                 {
-                        html: '<span class="ps-2" vslang="titles.Accept"></span>',
-                        icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
-                        name: "accept_request",
-                        cssClass: "border-bottom pb-2"
+                {
+                    html: '<span class="ps-2" vslang="titles.Approve"></span>',
+                    icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
+                    name: "accept_request",
+                    cssClass: "border-bottom pb-2"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Reject"></span>',
@@ -263,13 +263,13 @@ var LeaveComponent = (function () {
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Leave"></span>',
+                    html:'<span class="ps-2  " vslang="titles.Modify"></span>',
                     icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"edit_leave"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Leave"></span>',
+                    html:'<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_leave"
