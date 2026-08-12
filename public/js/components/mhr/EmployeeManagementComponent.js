@@ -368,7 +368,7 @@ var EmployeeManagementComponent = (function () {
         const hasPhoto = !!data.image_url;
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
         const photoWrapClass = hasPhoto ? "" : " is-empty";
-
+        const taxLabel = data.apply_payroll_tax == 1 ? 'Tax' : data.apply_payroll_tax == 0 ? 'Non Tax': '';
         const addressText = data.address || "";
         const addressTitle = addressText
             ? ` title="${mThis._escapeHtml(addressText)}"`
@@ -392,23 +392,23 @@ var EmployeeManagementComponent = (function () {
                                 </span>
                             </h5>
                         </div>
-                      <div class="d-inline-flex align-items-center gap-2 group_action_movement">
-                        <button type="button" class="btn btn-warning btn-sm edit_emp_profile_info" data-id="${data.id}" data-status="${data.status_id}" title="Edit">
+                      <div class="d-inline-flex align-items-center gap-2 group_action_movement ">
+                        <button type="button" class="d-none btn btn-warning btn-sm edit_emp_profile_info" data-id="${data.id}" data-status="${data.status_id}" title="Edit">
                             <i class="fa-regular fa-pen-to-square text-white fs-5 ps-2"></i>
                         </button>
-                        <button type="button" class="btn btn-danger btn-sm delete_employee" data-id="${data.id}" data-status="${data.status_id}" title="Delete">
+                        <button type="button" class="d-none btn btn-danger btn-sm delete_employee" data-id="${data.id}" data-status="${data.status_id}" title="Delete">
                             <i class="fa-regular fa-trash-can fs-5 ps-2"></i>
                         </button>
 
                         <button type="button"
-                            class="btn btn-primary btn-sm movement"
+                            class="d-none btn btn-primary btn-sm movement"
                             data-id="${data.id}"
                             data-status="${data.status_id}"
                             title="Movement">
                             <i class="fa-solid fa-right-left fs-5 ps-2"></i>
                         </button>
                         <button type="button"
-                            class="btn btn-info btn-sm set_resign"
+                            class="d-none btn btn-info btn-sm set_resign"
                             data-id="${data.id}"
                             data-status="${data.status_id}"
                             title="Set Resign">
@@ -429,6 +429,8 @@ var EmployeeManagementComponent = (function () {
                                 ${mThis._profileLine(LocaleManager.trans("Email", "labels"), data.email)}
                                 ${mThis._profileLine(LocaleManager.trans("Nationality", "labels"), data.nationality)}
                                 ${mThis._profileLine(LocaleManager.trans("ID Card", "labels"), data.nid)}
+                                ${mThis._profileLine(LocaleManager.trans("Passport Number", "labels"), data.passport_number)}
+                                ${mThis._profileLine(LocaleManager.trans("NSSF ID", "labels"), data.nssf_id)}
                                 <div class="emp-profile-field emp-profile-field-full">
                                     ${mThis._profileLine(LocaleManager.trans("Address", "labels"), data.address)}
                                 </div>
@@ -442,7 +444,9 @@ var EmployeeManagementComponent = (function () {
                                 ${mThis._profileLine(LocaleManager.trans("Type", "labels"), data.type)}
                                 ${mThis._profileLine(LocaleManager.trans("Work Shift", "labels"), data.work_shift)}
                                 ${mThis._profileLine(LocaleManager.trans("Joining Date", "labels"), data.joining_date)}
-                                ${mThis._profileLine(LocaleManager.trans("Apply Tax", "labels"), data.apply_payroll_tax)}
+                                ${mThis._profileLine(LocaleManager.trans("Apply Tax", "labels"), taxLabel)}
+                                ${mThis._profileLine(LocaleManager.trans("Marital Status", "labels"), data.marital_status)}
+                                ${mThis._profileLine(LocaleManager.trans("Spouse Name", "labels"), data.spouse_name)}
                                 <div class="emp-profile-field emp-profile-field-full">
                                     ${mThis._profileLine(LocaleManager.trans("Place of Birth", "labels"), data.city_name)}
                                 </div>

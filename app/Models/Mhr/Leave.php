@@ -267,7 +267,7 @@ class Leave extends VSModel
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    function getLeaveUninformedList($arr, $ss)
+    function getLeaveUninformedList2($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
@@ -401,6 +401,149 @@ class Leave extends VSModel
         }
         return new LengthAwarePaginator($emp_leav_uninform, $count, $per_page, $current_page);
     }
+    public function getLeaveUninformedList($arr, $ss)
+    {
+        $subs_id = $ss->subs_id;
+        $d = (object) $arr;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value  = $d->search_value ?? null;
+        $status_id     = $d->status_id ?? null;
+        $leave_type_id = $d->leave_type_id ?? null;
+        $work_shift_id = $d->work_shift_id ?? null;
+        $start_date = $d->start_date ?? date('d-M-Y');
+        $end_date   = $d->end_date ?? date('d-M-Y');
+
+        $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = '1=1';
+        $str_work_shift = '1=1';
+        if ($search_value) {
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
+        }
+
+        if ($work_shift_id) {
+            $str_work_shift = 'ws.id = ' . (int) $work_shift_id;
+        }
+        $startDate = convertDate($start_date);
+        $endDate   = convertDate($end_date);
+
+        if (!$startDate || !$endDate) {
+            return DV::error('Invalid date range.');
+        }
+
+        if ($startDate > $endDate) {
+            return DV::error(
+                'Start date cannot be later than end date.'
+            );
+        }
+        $rows = DB::table('shift_details as sd')
+            ->join('work_shifts as ws','ws.id','=','sd.work_shift_id')
+            ->whereRaw($str_work_shift)
+            ->select([
+                'sd.id',
+                'sd.work_shift_id',
+                'sd.day',
+                'sd.time',
+                'sd.action',
+                'sd.session',
+                'sd.start_time',
+                'sd.end_time',
+                'sd.shift_order_number',
+            ])
+            ->get();
+
+
+        $employeesQuery = DB::table('employees as emp')
+            ->join('work_shifts as ws','ws.id','=','emp.work_shift_id')
+            ->where('emp.status_id', 10)
+            ->whereRaw($str_search)
+            ->whereRaw($str_work_shift);
+
+        $employees = $employeesQuery
+            ->select([
+                'emp.id',
+                'emp.name as employee',
+                'emp.code as emp_code',
+                'emp.work_shift_id',
+            ])
+            ->get();
+        $result = [];
+
+       $filterDays = self::getDatesWithDays($start_date,$end_date);
+
+        foreach ($filterDays as $filterDay) {
+
+            $date = convertDate($filterDay['date']);
+            $day  = $filterDay['day'];
+            $dayShifts = ShiftDetails::getScanTimes($rows,$day);
+
+            $uninformedEmployees = [];
+
+            foreach ($employees as $employee) {
+                $hasCheckedIn = DB::table('emp_attendances')
+                    ->where('emp_id', $employee->id)
+                    ->where('session', 'm')
+                    ->whereDate('attendance_date', $date)
+                    ->exists();
+                if ($hasCheckedIn) {
+                    continue;
+                }
+                $hasLeaveQuery = DB::table('leaves as l')
+                    ->where('l.emp_id', $employee->id)
+                    ->whereIn('l.status_id', [1, 2])
+                    ->whereDate('l.start_date', '<=', $date)
+                    ->whereDate('l.end_date', '>=', $date);
+
+                if ($status_id) {
+                    $hasLeaveQuery->where(
+                        'l.status_id',
+                        (int) $status_id
+                    );
+                }
+                if ($leave_type_id) {
+                    $hasLeaveQuery->where(
+                        'l.leave_type_id',
+                        (int) $leave_type_id
+                    );
+                }
+
+                $hasLeave = $hasLeaveQuery->exists();
+                if ($hasLeave) {
+                    continue;
+                }
+                $employee->leave_date = $date;
+                $employee->leave_type = 'Uninformed';
+                $employee->image_url = Employee::profilePicture(
+                    $employee->id
+                );
+
+                $uninformedEmployees[] = $employee;
+            }
+            if (!empty($uninformedEmployees)) {
+
+                $result[] = [
+                    'day' => $filterDay['date']
+                        . ' ('
+                        . $day
+                        . ')',
+
+                    'shifts' => $dayShifts,
+
+                    'employees' => $uninformedEmployees,
+                ];
+            }
+        }
+        $total = count($result);
+        $pagedData = array_slice($result,$skip_rows,$per_page);
+        return new LengthAwarePaginator($pagedData,$total,$per_page,$current_page);
+    }
 
     private static function formatDatePeriod($start, $end, $count)
     {
@@ -476,7 +619,6 @@ class Leave extends VSModel
             return DV::error('Invalid request id');
         }
 
-        // 1. Added emp_id to selection to scope the conflict check to the specific employee
         $req = DB::table('leaves as l')
             ->select(
                 'id',
@@ -494,7 +636,7 @@ class Leave extends VSModel
         }
 
         if ($req->status_id == 2) {
-            return DV::error('You already accepted this leave.');
+            return DV::error('You already approved this leave.');
         }
 
         if (in_array($req->status_id, [3, 4, 5])) {
@@ -503,21 +645,17 @@ class Leave extends VSModel
 
         $start_date_col = DBX::convertToDate('start_date');
         $end_date_col = DBX::convertToDate('end_date');
-
-        // 2. Fixed slot checking logic to catch any overlapping dates for this employee
         $exists = DB::table('leaves')
             ->where('id', '!=', $id)
-            ->where('emp_id', $req->emp_id) // Scoped to the individual employee
-            ->where('status_id', 2)         // Only look at already accepted leaves
+            ->where('emp_id', $req->emp_id) 
+            ->where('status_id', 2)         
             ->whereRaw("
                 $start_date_col <= ? AND $end_date_col >= ?
             ", [$req->end_date, $req->start_date])
             ->exists();
 
         if ($exists) {
-            return DV::error(
-                'This employee already has an accepted leave request that overlaps with this date range.'
-            );
+            return DV::error('This employee already has an approved leave request that overlaps with this date range.');
         }
 
         $updated = DB::table('leaves')
@@ -529,13 +667,9 @@ class Leave extends VSModel
                 'updated_at'  => getNowTime(),
             ]);
 
-        if (!$updated) {
-            return DV::error('Update failed.');
-        }
+        if (!$updated) {return DV::error('Update failed.');}
 
-        return DV::success([
-            'message' => 'Leave accepted successfully'
-        ]);
+        return DV::success(['message' => 'Leave accepted successfully']);
     }
 
     function rejectLeave($arr = [], $ss = null)
