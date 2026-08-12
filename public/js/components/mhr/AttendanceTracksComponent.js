@@ -89,7 +89,7 @@ var AttendanceTracksComponent = (function () {
     };
     mThis.beginRenderWorkShift = (div, data) => {
         let html = `
-        <div class="_work_shift_body col-12">
+        <div class="_work_shift_body">
             <div class="row g-2">
     `;
 
@@ -251,15 +251,7 @@ var AttendanceTracksComponent = (function () {
             .then((res) => {
                 if (res.status_code === 200) {
                     const d = res.data;
-                    VSUtil.setComboItems(
-                        mThis.elFilter_status,
-                        d.shifts,
-                        "id",
-                        "name",
-                        "",
-                        "All Shifts",
-                        1,
-                    );
+                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name","","All Shifts",1);
                 }
             });
     };

@@ -347,7 +347,7 @@
         </div>
     </div>
 
-    <div id="_work_shift_header" class="mt-3 px-3"> 
+    <div id="_work_shift_header" class="mt-3"> 
     </div>
 
     <div id="_work_shift_body" class="px-2">

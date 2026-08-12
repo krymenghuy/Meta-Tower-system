@@ -80,7 +80,7 @@ class LeaveController extends Controller
     }
     public function updateStatus(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 321);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id;
@@ -91,7 +91,7 @@ class LeaveController extends Controller
 
     function acceptLeave(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 321);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
