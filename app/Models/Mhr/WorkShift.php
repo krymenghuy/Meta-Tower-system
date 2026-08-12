@@ -36,18 +36,10 @@ class WorkShift extends VSModel
         if ($err) {
             return DV::error($err);
         }
-        $id = DBX::saveData(
-            $ss,
-            'work_shifts',
-            ['id' => $id],
-            $inputs,
-            [],
-            1, false
-        );
+        $id = DBX::saveData($ss,'work_shifts',['id' => $id],$inputs,[],1, false);
         if ($id > 0) {
             return DV::depends($id, ['work_shifts' => $inputs, 'id' => $id]);
         }
-
         return DV::error('Error saving work shifts');
     }
     static function checkDuplicateName($name, $id, $branch_id)
@@ -91,12 +83,12 @@ class WorkShift extends VSModel
         $query = DB::table('work_shifts as ws')
             ->whereRaw($str_search)
             ->selectRaw('ws.id, ws.name,ws.updated_at,ws.update_user')
-            ->orderBy('ws.id','DESC');
+            ->orderBy('ws.id','ASC');
         $clone_query = clone $query;
         $count = $clone_query->count('ws.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,[''],['updated_at'],['']);
+            setOfficialDates($row,[''],['updated_at'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

@@ -40,11 +40,6 @@ var UninformedLeaveComponent = (function () {
             const employees = Array.isArray(data.employees)
                 ? data.employees
                 : [];
-
-            if (!employees.length) {
-                return `<span class="text-muted">No employee</span>`;
-            }
-
             return `
                 <div style="min-width: 250px;">
                     ${employees.map((employee) => `
