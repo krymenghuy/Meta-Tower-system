@@ -516,7 +516,7 @@ class PayrollList //extends Model
         return $row;
     }
 
-    static function getResigInfo($emp_id, $payroll_start_date, $payroll_end_date)
+    static function getResignInfo($emp_id, $payroll_start_date, $payroll_end_date)
     {
         $q_date = DBX::convertToDate('r.effective_date');
         $str_date = "$q_date BETWEEN '$payroll_start_date' AND '$payroll_end_date'";
@@ -528,7 +528,7 @@ class PayrollList //extends Model
 
         $resigned_or_new_start = false;
         $count_days = -1;
-        $resignInfo = self::getResigInfo($emp_id, $payroll_start_date, $payroll_end_date);
+        $resignInfo = self::getResignInfo($emp_id, $payroll_start_date, $payroll_end_date);
         if (!$resignInfo) {
             return (object)['error' => null, 'count_days' => $count_days, 'resigned_or_new_start' => false];
         }

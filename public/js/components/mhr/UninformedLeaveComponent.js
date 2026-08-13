@@ -192,6 +192,50 @@ var UninformedLeaveComponent = (function () {
             .join("");
     },
 },
+ {
+            title: "Attendance Scan Information",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                const shifts = data.shifts,
+                employees = data.employees ?? [];
+                let shift_rows = '';
+                let rows = '';
+                rows = [rows,`<div class="d-flex gap-2 w-100" style="height: 72px;">`].join('');
+                if (Array.isArray(shifts) && shifts.length > 0) {
+                    shifts.forEach((shift,i) => {
+                        const actionClass = shift.action === "Check In" || shift.action === "CheckIn" ? "bg-green" : shift.action === "Check Out" || shift.action === "CheckOut" ? "bg-gold" : "";
+                        rows = [rows,`
+                        <div class="shift_card ${actionClass} " style="width:150px !important;">
+                            <div class="shift_element">
+                                <div class="shift_time">${shift.time}</div>
+                                <div class="shift_action">${shift.action}</div>
+                            </div>
+                            <div class="d-flex justify-content-start align-items-start">
+                                <div class="text-end gap-2 d-flex flex-wrap">
+                                </div>
+                            </div>
+                        </div>
+                        `].join('');
+                    });
+                }
+                else  {
+                    let rows = '';
+                    rows = [rows,`<div class="card p-4 bg-secondary no_shifts">No Shift</div>`].join('');
+                    shift_rows = [shift_rows,rows].join('');
+                }
+                rows = [rows,`</div>`].join('');
+                employees.forEach((d,i) => {
+                    shift_rows = [shift_rows,rows].join('');
+                });
+                // rows = [rows,`</div>`].join('');
+
+                return shift_rows;
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                // return `<div class="d-flex flex-column">
+                //             <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
+                //         </div>`;
+            }
+        },
 ];
 
     mThis.init = () => {
@@ -264,8 +308,6 @@ var UninformedLeaveComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(8888,p);
-        
         return p;
     };
 
@@ -513,15 +555,7 @@ var UninformedLeaveComponent = (function () {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(
-                    mThis.elFilter_work_shift,
-                    d.work_shifts,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Work Shifts", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elFilter_work_shift,d.work_shifts,"id","name","",LocaleManager.trans("All Work Shifts", "titles"),1);
                 // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
                 onFinish(null);
             });

@@ -69,32 +69,80 @@ class Leave extends VSModel
             }
         }
 
-        // Uninformed leaves (status_id = 4) are allowed to be in the past
-        if ($status_id != 4) {
-            if ($start_date < $today || $end_date < $today) {
-                return DV::error('It seems your date request leave in the past. Please check start date and end date!');
+        if ($status_id !== 4) {
+
+        if ($start_date < $today || $end_date < $today) {
+                return DV::error(
+                    'Leave dates cannot be in the past. Please check the start date and end date.'
+                );
             }
         }
-        if (strtotime($start_date) > strtotime($end_date)) {
-            return DV::error('It seems your request start date later end date. Please check start date and end date!');
+        if ($start_date > $end_date) {
+            return DV::error(
+                'Start date cannot be later than end date.'
+            );
         }
-        if (!$id) {
-            $existingLeave = DB::table('leaves')
-                ->where('emp_id', $d->emp_id)
-                ->where('start_date', $start_date)
-                ->where('end_date', $end_date)
-                ->exists();
-            if ($existingLeave) {
-                return DV::error('emp_already_leave');
-            }
-        }
-        $active_leave_id = Employee::isOnLeave($d->emp_id);
-        if ($active_leave_id && $active_leave_id != $id) {
-            return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
+         $duplicateQuery = DB::table('leaves')
+            ->where('emp_id', $emp_id)
+            ->where('start_date', $start_date)
+            ->where('end_date', $end_date);
+
+        if ($id) {
+            $duplicateQuery->where('id', '<>', $id);
         }
 
-        $id = DBX::saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
+        if ($duplicateQuery->exists()) {
+            return DV::error(
+                'emp_already_leave'
+            );
+        }
+        $overlapQuery = DB::table('leaves')
+            ->where('emp_id', $emp_id)
+            ->whereIn('status_id', [1, 2, 4])
+            ->whereDate('start_date', '<=', $end_date)
+            ->whereDate('end_date', '>=', $start_date);
+
+        if ($id) {
+            $overlapQuery->where('id', '<>', $id);
+        }
+
+        if ($overlapQuery->exists()) {
+            return DV::error(
+                'The employee already has a leave during the selected date range.'
+            );
+        }
+        $attendanceDates = DB::table('emp_attendances')
+            ->where('emp_id', $emp_id)
+            ->whereDate('attendance_date', '>=', $start_date)
+            ->whereDate('attendance_date', '<=', $end_date)
+            ->select('attendance_date')
+            ->distinct()
+            ->pluck('attendance_date');
+
+        if ($attendanceDates->isNotEmpty()) {
+
+            $dates = $attendanceDates
+                ->map(function ($date) {
+                    return date('d-M-Y', strtotime($date));
+                })
+                ->implode(', ');
+
+            return DV::error('Cannot create leave because the employee has attendance scan(s) on: ' . $dates . '.');
+        }
+        try {
+        DB::beginTransaction();
+        $leaveId = DBX::saveData($ss,'leaves',['id' => $id],$inputs,[],1,false);
+        if (!$leaveId) {
+            DB::rollBack();
+            return DV::error('Failed to save Leave Information.');
+        }
+        DB::commit();
         return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
+
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return DV::error('Failed to save Leave Information: ' . $e->getMessage());
+    }
     }
 
 
