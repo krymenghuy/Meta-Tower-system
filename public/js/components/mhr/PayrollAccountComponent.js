@@ -573,29 +573,20 @@ var PayrollAccountComponent = (function () {
         );
     };
 
-    mThis.setDefaultFilter = ()=>{
-        if(!mThis.rem_filter) return;
-        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
-             const f = el.dataset.field;
-             el.value = mThis.rem_filter[f] ?? '';
-        });
-    };
+ 
 
     mThis.getFilterData = () => {
-        const p = {};
-        p.search_value = mThis.elSearch.value;
-       // p.sort_by_department = mThis.elSortByDepartment.value;
-        // p.sort_by_branch = mThis.elSortByBranch.value;
-        //p.sort_by_account = mThis.elSortByAccount.value;
-        p.account_type = mThis.elAccount.value;
-
-        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+        let p = {
+            search_value : mThis.elSearch.value,
+            // p.sort_by_department = mThis.elSortByDepartment.value;
+            // p.sort_by_branch = mThis.elSortByBranch.value;
+            //p.sort_by_account = mThis.elSortByAccount.value;
+            account_type : mThis.elAccount.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        mThis.rem_filter = main_filters;
         return p;
     };
 
@@ -603,8 +594,11 @@ var PayrollAccountComponent = (function () {
         vsapi.call(`${main_view.base_url}/mhr/account/form-options`,null,{loader:false}).then((res) => {
             if(res.status_code === 200){
                 const d = res.data;
+                VSUtil.setComboItems(mThis.elAccount,d.accounts,"id","name",null,null,1);
                 VSUtil.setComboItems(mThis.elDepartment,d.departments,"id","name","",LocaleManager.trans("All Department", "titles"),"");
-                VSUtil.setComboItems(mThis.elAccount,d.accounts,"id","name","",LocaleManager.trans("All Account", "titles"),"");
+                // mThis.elAccount.dispatchEvent(
+                //     new Event("change", { bubbles: true }),
+                // );
                 onFinish();
             }
             });
@@ -613,11 +607,13 @@ var PayrollAccountComponent = (function () {
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions(()=>{
-            if (mThis.rem_filter){
-                mThis.setDefaultFilter();
-            }
-            mThis.AccountListView.showPage();
-            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.AccountListView.showPage(
+                mThis.getFilterData(),
+                null,
+                () => {
+                    main_view.setContentView(mThis.self, mThis.title_prop);
+                },
+            );
         });
 
     };

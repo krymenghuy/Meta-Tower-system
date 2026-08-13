@@ -251,7 +251,7 @@ var AttendanceTracksComponent = (function () {
             .then((res) => {
                 if (res.status_code === 200) {
                     const d = res.data;
-                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name","","All Shifts",1);
+                    VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",null,null,1);
                 }
             });
     };

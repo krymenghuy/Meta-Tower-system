@@ -21,21 +21,21 @@ var HolidayComponent = (function () {
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom text-capitalize">${data.name ?? '_'}</span>`;
             },
         },
         {
             transTitle: "titles.Name KH",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-capitalize">${data.name_kh ?? '_'}</span>`;
+                return `<span class="text-prm-custom">${data.name_kh ?? '_'}</span>`;
             },
         },
         {
             transTitle: "titles.Type",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 const type = (data.holiday_type ?? "").toLowerCase();
                 let cls = "text-info";
@@ -54,7 +54,7 @@ var HolidayComponent = (function () {
         },
         {
             transTitle: "titles.Holiday Date",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return ` <div class="d-flex flex-column">
                             <div class="d-flex justify-content-start align-items-center">
