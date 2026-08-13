@@ -16,7 +16,7 @@ var PositionComponent = (function () {
         
         {
             transTitle: "titles.No",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data, index) =>
                 `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
                     <span>${index + 1}</span>
@@ -25,7 +25,7 @@ var PositionComponent = (function () {
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:150px; ">
                 <span class="text-prm-custom text-capitalize" >${data.name ?? "_"}</span></div>`,

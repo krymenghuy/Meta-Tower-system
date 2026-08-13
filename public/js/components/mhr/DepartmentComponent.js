@@ -15,23 +15,23 @@ var DepartmentComponent = new (function () {
     
         {
             transTitle: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => `
                 <span class="text-primary-custom">${data.name ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Shortcut",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-prm-custom">${data.shortcut ?? '_'}</span>`,
         },
         {
             transTitle: "titles.Description",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-primary-custom" style="width:350px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</span>

@@ -21,7 +21,7 @@ var SkillsComponent = (function () {
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-pr-custom">${data.name ?? data.title ?? "-"}</span>`;
             },

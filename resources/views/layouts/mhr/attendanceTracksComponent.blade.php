@@ -335,7 +335,7 @@
     <div class="bg-white shadow p-3 rounded-2" id="_divFilter">
         <div class="d-flex align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <select id="el_work_shift" name="shifts" class="filter-field data-input" data-field="shifts"></select>
+                <select id="el_work_shift" name="shifts" class="filter-field data-input" data-field="shifts1"></select>
             </div>
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddShiftDetail" title="Create new shift">

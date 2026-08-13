@@ -297,8 +297,8 @@ class Account extends VSModel
             'currency_codes' => VSMoney::options_currency($ss),
             'employees' => GeneralSettings::options_employee_with_account($ss),
             'accounts' => [
-                ['id' => '1', 'name' => 'Master Account'],
-                ['id' => '0', 'name' => 'Staff Account'],
+                ['id' => 1, 'name' => 'Master Account'],
+                ['id' => 0, 'name' => 'Staff Account'],
             ],
         ];
     }
