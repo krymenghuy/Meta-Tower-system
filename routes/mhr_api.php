@@ -44,6 +44,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->g
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
 
+
 Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
 Route::post('/employee/attendance/last-scan',[AttendanceController::class,'getLastEmployeesScan']);
 
@@ -344,3 +345,30 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details
     Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
     Route::post('/list', [ShiftDetailsController::class, 'getShiftDetail']);
 });
+
+
+// Route::middleware('auth.api')->get('/signal-ticket', function (Request $request) {
+//     $appId = getAppIdByUserClass($request->user->user_class);
+//     $secret = config('signal.signal_secret');
+//     $timestamp = (string) time();
+//     $projectId = config('signal.signal_project_id');
+//     $userId = (string) $request->user->id;
+
+//     $signature = hash_hmac('sha256', "{$appId}.{$timestamp}.{$projectId}.{$userId}", $secret);
+
+//     return response()->json(compact('appId', 'timestamp', 'projectId', 'userId', 'signature'));
+// });
+
+Route::get('/scan-attendance-signal-ticket', function (Request $request) {
+    // \Log::info('Signal Ticket Request: ' . json_encode($request->all()));
+    $appId = '202020C88E2077212020022020204600';// getAppIdByUserClass($request->user->user_class);
+    $secret = config('signal.signal_secret');
+    $timestamp = (string) time();
+    $projectId = config('signal.signal_project_id');
+    $userId = '1';
+
+    $signature = hash_hmac('sha256', "{$appId}.{$timestamp}.{$projectId}.{$userId}", $secret);
+
+    return response()->json(compact('appId', 'timestamp', 'projectId', 'userId', 'signature'));
+});
+

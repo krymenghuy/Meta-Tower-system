@@ -23,6 +23,12 @@
         <?php
             ScriptManager::render('attendance-script', 1,10);
         ?>
+        <script>
+            window.APP_CONFIG = {
+                socketUrl: "{{ config('app.signal_url') }}",
+            };
+        </script>
+
     </head>
     <body>
         <div id="_main_hidden_fields">

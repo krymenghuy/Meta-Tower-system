@@ -196,7 +196,7 @@ class Account extends VSModel
                 if (!empty($branch_id)) {
                     $query->where('e.branch_id', $branch_id);
                 }
-
+                
                 if (!empty($department_id)) {
                     $query->where('p.department_id', $department_id);
                 }

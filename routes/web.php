@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bhr\ExcelReportController;
 use App\Http\Controllers\Prm\ContractController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Mhr\AttendanceController;
+
 use App\Http\Controllers\Register\RegisterController; 
 
 //use App\Http\Controllers\DbExportController;

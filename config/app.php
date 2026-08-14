@@ -204,6 +204,11 @@ return [
         Milon\Barcode\BarcodeServiceProvider::class,
     ],
 
+
+    'signal_url'=>env('SIGNAL_URL',null),
+    'signal_project_id'=>env('SIGNAL_PROJECT_ID',null),
+    'signal_secret'=>env('SIGNAL_SECRET',null),
+
     /*
     |--------------------------------------------------------------------------
     | Class Aliases
@@ -261,4 +266,6 @@ return [
         'PHPCrypto'=>App\Security\PHPCrypto::class,
         'StyleManager'=>App\StyleManagement\StyleManager::class
     ]
+
+    
 ];
