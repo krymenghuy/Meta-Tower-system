@@ -211,221 +211,230 @@ class Attendance
         ];
     }
 
-    function scanAttendance($arr = [], $ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id ?? $branch_id = 1;
-        $subs_id = isset($ss->subs_id) ? $ss->subs_id : getCurrentSubsId(true);
-        $mins = $this->mins; // for find class start and end time which > between < mins
+    // function scanAttendance($arr = [], $ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $branch_id = $ss->branch_id ?? $branch_id = 1;
+    //     $subs_id = isset($ss->subs_id) ? $ss->subs_id : getCurrentSubsId(true);
+    //     $mins = $this->mins; // for find class start and end time which > between < mins
 
-        $v_rule = [
-            'employee_id' => '0|number',
-            'employee_code' => '0|string|exists.employees.code',
-            'employee_card_number' => '0|string|exists.employees.card_number',
-            'remarks' => '0|string|1,150'
-        ];
+    //     $v_rule = [
+    //         'employee_id' => '0|number',
+    //         'user_id' => '0|number',
+    //         'scan_id' => '0|number',
+    //         'employee_code' => '0|string|exists.employees.code',
+    //         'employee_card_number' => '0|string|exists.employees.card_number',
+    //         'remarks' => '0|string|1,150'
+    //     ];
 
-        $res = DBX::validateObject($arr, $v_rule, 0, [], $ss->lang, 0, null);
-        if ($res->error) return DV::error($res->error);
-        $inputs = $res->values;
+    //     $res = DBX::validateObject($arr, $v_rule, 0, [], $ss->lang, 0, null);
+    //     if ($res->error) return DV::error($res->error);
+    //     $inputs = $res->values;
 
-        $employee_id =  $inputs['employee_id'] ?? null;
-        $employee_code = $inputs['employee_code'] ??  null;
-        $employee_card_number = $inputs['employee_card_number'] ??  null;
-        $current_date = convertDate($arr['attendance_date'] ?? date('Y-m-d'));
-        $present_time =  $arr['scan_time'] ??  date('H:i');
-        $success = 0;
+    //     $employee_id =  $inputs['employee_id'] ?? null;
+    //     $user_id =  $inputs['user_id'] ?? null;
+    //     $scan_id =  $inputs['scan_id'] ?? null;
+    //     $employee_code = $inputs['employee_code'] ??  null;
+    //     $employee_card_number = $inputs['employee_card_number'] ??  null;
+    //     $current_date = convertDate($arr['attendance_date'] ?? date('Y-m-d'));
+    //     $present_time =  $arr['scan_time'] ??  date('H:i');
+    //     $success = 0;
 
-        // Check if a record with the specified date exists
-        $employee = null;
-        $col_subs_id = DBX::getHEX('subs_id', 'subs_id');
-        if ($employee_code) {
-            $employee = DB::table('employees')->where('code', $employee_code)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
-        } else if ($employee_card_number) {
-            $employee = DB::table('employees')->where('card_number', $employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
-        } else {
-            $employee = DB::table('employees')->where('id', $employee_id)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
-        }
-        if (!$employee) return DV::error('Employee not found');
-        if ($employee->status_id != 10) return DV::error('Employee ' . $employee->name . ' are Resigned or Terminated ');
-        $employee_id = $employee->id;
-        $subs_id = $employee->subs_id ?? null;
-        if (!$subs_id) {
-            DV::error('One issue occured during attendance scan. We are reviewing it for you!');
-            //The issue is that employees table record does not contains correct or it contains empty subs_id
-        }
-        $bin_subs_id = hex2bin($subs_id);
-        $str_where = 'emp_id = ' . $employee_id;
-        $q_session_date = DBX::convertToDate('attendance_date');
-        $strsearch_date = "$q_session_date = '$current_date'";
-        $work_shift_detail = null;
-        $work_shift_id = $employee->work_shift_id;
-        $str_work_shift = 'sd.work_shift_id=\'' . $work_shift_id . '\'';
-
-
-
-        /** If has_checked_in then process check_out action */
-
-        $work_shifts = null;
-        $rows = DB::table('shift_details as sd')
-            ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->whereRaw($str_work_shift)
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
-            // ->where('ws.id', $work_shift_id)
-            ->get();
-        $date = new DateTime($current_date);
-        $day = $date->format('D');
-        $ds = ShiftDetails::getScanTimes($rows, $day);
-        $work_shifts = $ds;
-
-        $present_time = new DateTime($present_time);
-        $present_time = $present_time->format('H:i');
-        $action = null;
-        foreach ($work_shifts as $work_shift) {
-            $time = new DateTime($work_shift->start_time);
-            $start_time = $time->format('H:i');
-            $time = new DateTime($work_shift->end_time);
-            $end_time = $time->format('H:i');
-
-            if ($present_time >= $start_time && $present_time <= $end_time) {
-                $work_shift_detail = $work_shift;
-                $action = $work_shift->action;
-                break;
-            }
-        }
-        // return $work_shifts;
+    //     // Check if a record with the specified date exists
+    //     $employee = null;
+    //     $col_subs_id = DBX::getHEX('subs_id', 'subs_id');
+    //     if ($employee_code) {
+    //         $employee = DB::table('employees')->where('code', $employee_code)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
+    //     } else if ($employee_card_number) {
+    //         $employee = DB::table('employees')->where('card_number', $employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
+    //     }else if ($user_id) {
+    //         $employee = DB::table('employees')->where('user_id', $employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
+    //     }else if ($scan_id) {
+    //         $employee = DB::table('employees')->where('scan_id', $employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
+    //     }
+    //     else {
+    //         $employee = DB::table('employees')->where('id', $employee_id)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
+    //     }
+    //     if (!$employee) return DV::error('Employee not found');
+    //     if ($employee->status_id != 10) return DV::error('Employee ' . $employee->name . ' are Resigned or Terminated ');
+    //     $employee_id = $employee->id;
+    //     $subs_id = $employee->subs_id ?? null;
+    //     if (!$subs_id) {
+    //         DV::error('One issue occured during attendance scan. We are reviewing it for you!');
+    //         //The issue is that employees table record does not contains correct or it contains empty subs_id
+    //     }
+    //     $bin_subs_id = hex2bin($subs_id);
+    //     $str_where = 'emp_id = ' . $employee_id;
+    //     $q_session_date = DBX::convertToDate('attendance_date');
+    //     $strsearch_date = "$q_session_date = '$current_date'";
+    //     $work_shift_detail = null;
+    //     $work_shift_id = $employee->work_shift_id;
+    //     $str_work_shift = 'sd.work_shift_id=\'' . $work_shift_id . '\'';
 
 
-        if (!$work_shift_detail) {
-            return DV::error("No work shift found at this time ($present_time)!");
-        }
-        // return (strtolower($action));
-        if (strtolower($action) == 'check in') {
-            // $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
-            $has_checked_in = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
-            if ($has_checked_in) return DV::error('You already checked in this session!');
-            else {
-                $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
-                $message = null;
-                if ($shift_order_number >= 1) {
-                    foreach ($work_shifts as $work_shift) {
-                        if ($shift_order_number == $work_shift->shift_order_number) {
-                            $session = self::getTranslateSession($work_shift->session);
-                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
-                            if (!$check_action) {
-                                $message = "$work_shift->action $session not yet scan!";
-                                break;
-                            }
-                        }
-                    }
-                }
 
-                if ($message) return DV::error($message);
-            }
-        } else if (strtolower($action) == 'check out') {
-            // $has_checked_out = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
-            $has_checked_out = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
-            if ($has_checked_out) return DV::error('You already checked out this session!');
-            else {
-                $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
-                // \Log::info($shift_order_number);
-                $message = null;
-                if ($shift_order_number >= 1) {
-                    foreach ($work_shifts as $work_shift) {
-                        if ($shift_order_number == $work_shift->shift_order_number) {
-                            $session = self::getTranslateSession($work_shift->session);
-                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
-                            if (!$check_action) {
-                                $message = "$work_shift->action $session not yet scan!";
-                                break;
-                            }
-                        }
-                    }
-                }
-                if ($message) return DV::error($message);
-            }
-        } else
-            return DV::error('action incorrect!');
-        //remember employee's name for notification
-        $employee_name = $employee->name;
-        $employee_code = $employee->code;
-        $file_name = $employee->photo_file_name;
-        $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
-        $image = XPublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
+    //     /** If has_checked_in then process check_out action */
 
-        $image_url = validateUrl($image, $defaultPhoto);
-        //In case => need to alert to Finance Officer about overdue Scan, Premature scan
-        $scan_status = null;
+    //     $work_shifts = null;
+    //     $rows = DB::table('shift_details as sd')
+    //         ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+    //         ->whereRaw($str_work_shift)
+    //         ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
+    //         // ->where('ws.id', $work_shift_id)
+    //         ->get();
+    //     $date = new DateTime($current_date);
+    //     $day = $date->format('D');
+    //     $ds = ShiftDetails::getScanTimes($rows, $day);
+    //     $work_shifts = $ds;
 
-        // $check_in_out = DB::table('emp_attendances as att')->where('att.employee_id',$employee_id)->whereDate('att.session_date', '=', $current_date)->selectRaw('att.id,att.is_finished,id,session_date,att.pickup_status, att.pickup_id')->first();//->whereDate('session_date', '=', $current_date)
-        // return $check_in_out;
+    //     $present_time = new DateTime($present_time);
+    //     $present_time = $present_time->format('H:i');
+    //     $action = null;
+    //     foreach ($work_shifts as $work_shift) {
+    //         $time = new DateTime($work_shift->start_time);
+    //         $start_time = $time->format('H:i');
+    //         $time = new DateTime($work_shift->end_time);
+    //         $end_time = $time->format('H:i');
 
-        $status =  null; // status % Present, Absent,Permission %
-
-        $in_diff_time = 0;
-        $out_diff_time = 0;
-        $remarks = "";
-        $id = null;
-        $today = date('Y-m-d');
-        $day_name = date('D', strtotime($current_date));
-
-        if ($current_date > $today) {
-            return DV::error('It seems you are trying to scan ahead of time');
-        }
-        $work_shift_id = DB::table('employees')->where('id', $employee_id)->value('work_shift_id');
-
-        $nowTime = getNowTime();
-        $arr_attenance = [
-            "subs_id" => $bin_subs_id,
-            "attendance_date" => $current_date,
-            "emp_id" => $employee_id,
-            "scan_action" => $work_shift_detail->action,
-            "action_type" => $work_shift_detail->action,
-            "created_at" => $nowTime,
-            "scan_time" => $present_time,
-            "remarks" => $remarks,
-            // "is_finished" => $is_finished,
-            'session' => $work_shift_detail->session,
-            'work_shift_id' => $work_shift_id
-        ];
-        // $update = [];
-        //$str_msg = $in_remarks;
-        // if($id){
-        //     $update = [
-        //         'subs_id'=>$bin_subs_id,
-        //         "is_finished" => $is_finished,
-        //         "checkout_time" =>$present_time,
-        //         'pickup_status'=> $pickup_id? 'success':null,
-        //         'pickup_id'=>$pickup_id,
-        //         "out_remarks" => $out_remarks,
-        //         "checkout_status_id" => $status->status_id,
-        //         "out_diff_time" => $out_diff_time,
-        //         "updated_at" => $nowTime,
-        //     ];
-        //     DB::table('employee_attendances')->where('id',$id)->update($update);
-        //     $success +=1;
-        //     //$str_msg =$employee_name.' now checked out!';
-        // }else{
-        DB::table('emp_attendances')->insert($arr_attenance);
-
-        //     $success +=1;
-        // }
+    //         if ($present_time >= $start_time && $present_time <= $end_time) {
+    //             $work_shift_detail = $work_shift;
+    //             $action = $work_shift->action;
+    //             break;
+    //         }
+    //     }
+    //     // return $work_shifts;
 
 
-        $employee = (object)['employee_id' => $employee_id, 'id' => $employee_id, 'name' => $employee_name, 'code' => $employee_code];
-        $d = (object)['subs_id' => $subs_id, 'branch_id' => $branch_id, 'sender_id' => $employee_id, 'scan_status' => $scan_status, 'check_time' => date('H:i'), 'diff_time' => $scan_status == 'out' ? $out_diff_time : $in_diff_time, 'employee' => $employee, 'persist' => 0];
-        // Notifier::notify_admin('attendance_scanned', $d);
+    //     if (!$work_shift_detail) {
+    //         return DV::error("No work shift found at this time ($present_time)!");
+    //     }
+    //     // return (strtolower($action));
+    //     if (strtolower($action) == 'check in') {
+    //         // $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+    //         $has_checked_in = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
+    //         if ($has_checked_in) return DV::error('You already checked in this session!');
+    //         else {
+    //             $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
+    //             $message = null;
+    //             if ($shift_order_number >= 1) {
+    //                 foreach ($work_shifts as $work_shift) {
+    //                     if ($shift_order_number == $work_shift->shift_order_number) {
+    //                         $session = self::getTranslateSession($work_shift->session);
+    //                         $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
+    //                         if (!$check_action) {
+    //                             $message = "$work_shift->action $session not yet scan!";
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             }
 
-        $res = (object)[
-            'scan_status' => $work_shift_detail->action,
-            'employee_id' => $employee_id,
-            'employee_name' => $employee_name,
-            'image_url' => $image_url,
-            'employee_code' => $employee_code,
-            'remarks' => $scan_status === 'out' ? 'N/A' : $remarks
-        ];
-        return DV::depends(1, $res);
-    }
+    //             if ($message) return DV::error($message);
+    //         }
+    //     } else if (strtolower($action) == 'check out') {
+    //         // $has_checked_out = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+    //         $has_checked_out = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
+    //         if ($has_checked_out) return DV::error('You already checked out this session!');
+    //         else {
+    //             $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
+    //             // \Log::info($shift_order_number);
+    //             $message = null;
+    //             if ($shift_order_number >= 1) {
+    //                 foreach ($work_shifts as $work_shift) {
+    //                     if ($shift_order_number == $work_shift->shift_order_number) {
+    //                         $session = self::getTranslateSession($work_shift->session);
+    //                         $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
+    //                         if (!$check_action) {
+    //                             $message = "$work_shift->action $session not yet scan!";
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if ($message) return DV::error($message);
+    //         }
+    //     } else
+    //         return DV::error('action incorrect!');
+    //     //remember employee's name for notification
+    //     $employee_name = $employee->name;
+    //     $employee_code = $employee->code;
+    //     $file_name = $employee->photo_file_name;
+    //     $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
+    //     $image = XPublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
+
+    //     $image_url = validateUrl($image, $defaultPhoto);
+    //     //In case => need to alert to Finance Officer about overdue Scan, Premature scan
+    //     $scan_status = null;
+
+    //     // $check_in_out = DB::table('emp_attendances as att')->where('att.employee_id',$employee_id)->whereDate('att.session_date', '=', $current_date)->selectRaw('att.id,att.is_finished,id,session_date,att.pickup_status, att.pickup_id')->first();//->whereDate('session_date', '=', $current_date)
+    //     // return $check_in_out;
+
+    //     $status =  null; // status % Present, Absent,Permission %
+
+    //     $in_diff_time = 0;
+    //     $out_diff_time = 0;
+    //     $remarks = "";
+    //     $id = null;
+    //     $today = date('Y-m-d');
+    //     $day_name = date('D', strtotime($current_date));
+
+    //     if ($current_date > $today) {
+    //         return DV::error('It seems you are trying to scan ahead of time');
+    //     }
+    //     $work_shift_id = DB::table('employees')->where('id', $employee_id)->value('work_shift_id');
+
+    //     $nowTime = getNowTime();
+    //     $arr_attenance = [
+    //         "subs_id" => $bin_subs_id,
+    //         "attendance_date" => $current_date,
+    //         "emp_id" => $employee_id,
+    //         "scan_action" => $work_shift_detail->action,
+    //         "action_type" => $work_shift_detail->action,
+    //         "created_at" => $nowTime,
+    //         "scan_time" => $present_time,
+    //         "remarks" => $remarks,
+    //         // "is_finished" => $is_finished,
+    //         'session' => $work_shift_detail->session,
+    //         'work_shift_id' => $work_shift_id
+    //     ];
+    //     // $update = [];
+    //     //$str_msg = $in_remarks;
+    //     // if($id){
+    //     //     $update = [
+    //     //         'subs_id'=>$bin_subs_id,
+    //     //         "is_finished" => $is_finished,
+    //     //         "checkout_time" =>$present_time,
+    //     //         'pickup_status'=> $pickup_id? 'success':null,
+    //     //         'pickup_id'=>$pickup_id,
+    //     //         "out_remarks" => $out_remarks,
+    //     //         "checkout_status_id" => $status->status_id,
+    //     //         "out_diff_time" => $out_diff_time,
+    //     //         "updated_at" => $nowTime,
+    //     //     ];
+    //     //     DB::table('employee_attendances')->where('id',$id)->update($update);
+    //     //     $success +=1;
+    //     //     //$str_msg =$employee_name.' now checked out!';
+    //     // }else{
+    //     DB::table('emp_attendances')->insert($arr_attenance);
+
+    //     //     $success +=1;
+    //     // }
+
+
+    //     $employee = (object)['employee_id' => $employee_id, 'id' => $employee_id, 'name' => $employee_name, 'code' => $employee_code];
+    //     $d = (object)['subs_id' => $subs_id, 'branch_id' => $branch_id, 'sender_id' => $employee_id, 'scan_status' => $scan_status, 'check_time' => date('H:i'), 'diff_time' => $scan_status == 'out' ? $out_diff_time : $in_diff_time, 'employee' => $employee, 'persist' => 0];
+    //     // Notifier::notify_admin('attendance_scanned', $d);
+
+    //     $res = (object)[
+    //         'scan_status' => $work_shift_detail->action,
+    //         'employee_id' => $employee_id,
+    //         'employee_name' => $employee_name,
+    //         'image_url' => $image_url,
+    //         'employee_code' => $employee_code,
+    //         'remarks' => $scan_status === 'out' ? 'N/A' : $remarks
+    //     ];
+    //     return DV::depends(1, $res);
+    // }
 
     function getLastEmployeesScan($arr = [], $ss = null)
     {
@@ -516,5 +525,234 @@ class Attendance
         //         break;
         // }
         return DB::table('emp_attendances')->where('session', $session)->whereRaw($str_where)->where('action_type', $action)->whereRaw($strsearch_date)->value('id');
+    }
+    private function validateAndGetScanContext($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+
+        $branch_id = $ss->branch_id ?? 1;
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        $v_rule = [
+            'employee_id'          => '0|number',
+            'user_id'              => '0|number',
+            'scan_id'              => '0|number',
+            'employee_code'        => '0|string|exists.employees.code',
+            'employee_card_number' => '0|string|exists.employees.card_number',
+            'remarks'              => '0|string|1,150',
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, 0, [], $ss->lang ?? 'en', 0, null);
+
+        if ($res->error) {
+            return (object)['status' => false, 'error' => $res->error];
+        }
+
+        $inputs = $res->values;
+        $employee_id          = $inputs['employee_id'] ?? null;
+        $user_id              = $inputs['user_id'] ?? null;
+        $scan_id              = $inputs['scan_id'] ?? null;
+        $employee_code        = $inputs['employee_code'] ?? null;
+        $employee_card_number = $inputs['employee_card_number'] ?? null;
+
+        $rawDate = $arr['attendance_date'] ?? $arr['current_date'] ?? date('Y-m-d');
+        $rawTime = $arr['scan_time'] ?? $arr['present_time'] ?? date('H:i');
+
+        $current_date = convertDate($rawDate);
+        $present_time = date('H:i', strtotime($rawTime));
+
+    
+        $col_subs_id = DBX::getHEX('subs_id', 'subs_id');
+        $query = DB::table('employees')->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id);
+
+        if ($employee_code) {
+            $employee = $query->where('code', $employee_code)->first();
+        } elseif ($employee_card_number) {
+            $employee = $query->where('card_number', $employee_card_number)->first();
+        } elseif ($user_id) {
+            $employee = $query->where('user_id', $user_id)->first();
+        } elseif ($scan_id) {
+            $employee = $query->where('scan_id', $scan_id)->first();
+        } else {
+            $employee = $query->where('id', $employee_id)->first();
+        }
+
+        if (!$employee) {
+            return (object)['status' => false, 'error' => 'Employee not found'];
+        }
+        if ($employee->status_id != 10) {
+            return (object)['status' => false, 'error' => 'Employee ' . $employee->name . ' is resigned or terminated.'];
+        }
+
+        $employee_subs_id = $employee->subs_id ?? null;
+        if (!$employee_subs_id) {
+            return (object)['status' => false, 'error' => 'One issue occurred during attendance scan. We are reviewing it for you!'];
+        }
+
+        $today = date('Y-m-d');
+        if ($current_date > $today) {
+            return (object)['status' => false, 'error' => 'It seems you are trying to scan ahead of time'];
+        }
+
+        $work_shift_id = $employee->work_shift_id;
+        if (!$work_shift_id) {
+            return (object)['status' => false, 'error' => 'Employee has no work shift assigned.'];
+        }
+
+        $rows = DB::table('shift_details as sd')
+            ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+            ->where('sd.work_shift_id', $work_shift_id)
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action, sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return (object)['status' => false, 'error' => 'No work shift details found.'];
+        }
+   
+        $day = (new DateTime($current_date))->format('D');
+        $work_shifts = ShiftDetails::getScanTimes($rows, $day);
+
+        if (!$work_shifts || count($work_shifts) === 0) {
+            return (object)['status' => false, 'error' => 'No work shift found for today.'];
+        }
+
+        $work_shift_detail = null;
+        $action = null;
+
+        foreach ($work_shifts as $work_shift) {
+            $start_time = (new DateTime($work_shift->start_time))->format('H:i');
+            $end_time   = (new DateTime($work_shift->end_time))->format('H:i');
+
+            if ($present_time >= $start_time && $present_time <= $end_time) {
+                $work_shift_detail = $work_shift;
+                $action = $work_shift->action;
+                break;
+            }
+        }
+
+        if (!$work_shift_detail) {
+            return (object)['status' => false, 'error' => "No work shift found at this time ($present_time)!"];
+        }
+
+        $action = strtolower(trim($action));
+        if ($action !== 'check in' && $action !== 'check out') {
+            return (object)['status' => false, 'error' => 'Action incorrect!'];
+        }
+
+    
+        $str_where = 'emp_id = ' . (int) $employee->id;
+        $q_session_date = DBX::convertToDate('attendance_date');
+        $strsearch_date = "$q_session_date = '$current_date'";
+
+        // Duplicate Check
+        $has_scanned = self::getActionBySession(
+            $work_shift_detail->session,
+            $work_shift_detail->action,
+            $str_where,
+            $strsearch_date
+        );
+
+        if ($has_scanned) {
+            $reason = ($action === 'check in')
+                ? 'You already checked in this session!'
+                : 'You already checked out this session!';
+            return (object)['status' => false, 'error' => $reason];
+        }
+
+        $shift_order_number = (int) $work_shift_detail->shift_order_number - 1;
+        if ($shift_order_number >= 1) {
+            foreach ($work_shifts as $work_shift) {
+                if ($shift_order_number == $work_shift->shift_order_number) {
+                    $previous_action = self::getActionBySession(
+                        $work_shift->session,
+                        $work_shift->action,
+                        $str_where,
+                        $strsearch_date
+                    );
+
+                    if (!$previous_action) {
+                        $session = self::getTranslateSession($work_shift->session);
+                        return (object)[
+                            'status' => false,
+                            'error'  => $work_shift->action . ' ' . $session . ' not yet scan!'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+        return (object)[
+            'status' => true,
+            'data'   => (object)[
+                'employee'          => $employee,
+                'work_shift_detail' => $work_shift_detail,
+                'current_date'      => $current_date,
+                'present_time'      => $present_time,
+                'subs_id'           => $employee_subs_id,
+                'bin_subs_id'       => hex2bin($employee_subs_id),
+                'branch_id'         => $branch_id,
+                'remarks'           => $inputs['remarks'] ?? '',
+            ]
+        ];
+    }
+
+    function checkAccessScan($arr = [], $ss = null)
+    {
+        $context = $this->validateAndGetScanContext($arr, $ss);
+
+        if (!$context->status) {
+            return DV::depends(1, [
+                'access' => 0,
+                'reason' => $context->error,
+            ]);
+        }
+
+        return DV::depends(1, [
+            'access' => 1,
+        ]);
+    }
+
+
+    function scanAttendance($arr = [], $ss = null)
+    {
+        $context = $this->validateAndGetScanContext($arr, $ss);
+
+        if (!$context->status) {
+            return DV::error($context->error);
+        }
+
+        $data = $context->data;
+        $employee = $data->employee;
+        $work_shift_detail = $data->work_shift_detail;
+
+        $arr_attendance = [
+            "subs_id"         => $data->bin_subs_id,
+            "attendance_date" => $data->current_date,
+            "emp_id"          => $employee->id,
+            "scan_action"     => $work_shift_detail->action,
+            "action_type"     => $work_shift_detail->action,
+            "created_at"      => getNowTime(),
+            "scan_time"       => $data->present_time,
+            "remarks"         => $data->remarks,
+            "session"         => $work_shift_detail->session,
+            "work_shift_id"   => $employee->work_shift_id
+        ];
+
+        DB::table('emp_attendances')->insert($arr_attendance);
+
+        $defaultPhoto = base_url('assets/images/default/default-staff.png');
+        $image = XPublicStorage::getUrl(['subs_id' => $data->subs_id, 'dir' => 'employees'], 'image') . $employee->photo_file_name;
+        $image_url = validateUrl($image, $defaultPhoto);
+
+        $res = (object)[
+            'scan_status'   => $work_shift_detail->action,
+            'employee_id'   => $employee->id,
+            'employee_name' => $employee->name,
+            'image_url'     => $image_url,
+            'employee_code' => $employee->code,
+            'remarks'       => strtolower($work_shift_detail->action) === 'check out' ? 'N/A' : $data->remarks
+        ];
+
+        return DV::depends(1, $res);
     }
 }

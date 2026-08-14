@@ -88,6 +88,14 @@ class AttendanceController extends Controller
         $save = $instance->scanAttendance($req->all(),$ss);
         return JDV::raw($save);
     }
+    function checkAccessScan(Request $req){
+        $branch_id =null;
+        $subs_id = getCurrentSubsId(true);
+        $ss = (object)['subs_id'=>$subs_id,'branch_id'=>1,'lang'=>'en','create_uid'=>1,'update_uid'=>1,'create_user'=>'admin','update_user'=>'admin', "subscriber_id"=>"37e7394156e74ca88e0b94854d0d48ce","user_id"=>1,"full_name"=>"admin"];
+        $instance = new Attendance(null,$ss);
+        $check = $instance->checkAccessScan($req->all(),$ss);
+        return JDV::raw($check);
+    }
 
     function getLastEmployeesScan(Request $req){
         $branch_id =null;
@@ -97,6 +105,7 @@ class AttendanceController extends Controller
         $save = $instance->getLastEmployeesScan($req->all(),$ss);
         return JDV::raw($save);
     }
+
 
 
 

@@ -98,6 +98,7 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                "https://cdn.socket.io/4.8.1/socket.io.min.js",
                 '/js/components/umt/ChangePasswordDialog.js',
 
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
@@ -157,6 +158,7 @@ return [
                 'js/components/prm/DepositComponent.js',
                 'js/components/prm/AnnouncementComponent.js',
                 'js/components/prm/AccessControlComponent.js',
+                '/js/signal.js',
             ]
         ],
 
@@ -165,6 +167,7 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                "https://cdn.socket.io/4.8.1/socket.io.min.js",
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
 
@@ -198,7 +201,7 @@ return [
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',
                 '/js/components/tenant/ServicesComponent.js',
-
+                '/js/signal.js',
 
 
             ]
@@ -208,6 +211,7 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/mhr.components.js',
             'files' => [
+                "https://cdn.socket.io/4.8.1/socket.io.min.js",
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
 
@@ -263,7 +267,7 @@ return [
                 '/js/components/mhr/AttendanceTracksComponent.js',
                 '/js/components/mhr/ExitFormComponent.js',
                 '/js/components/mhr/DeductionComponent.js',
-
+                '/js/signal.js',
 
 
             ]
@@ -383,13 +387,16 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/attendance.js',
             'files' => [
+                "https://cdn.socket.io/4.8.1/socket.io.min.js",
+                '/assets/js/signal.js',
                 '/assets/material-js/jquery.min.js',
                 '/assets/js/sweetalert2.all.min.js',
-               '/assets/js/datehelper.js',
+                '/assets/js/datehelper.js',
                 '/assets/js/date.js',
                 '/assets/js/jquery.datepicker2.js',
                 'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
-                '/js/components/mhr/ScanAttendanceComponent.js'
+                '/js/components/mhr/ScanAttendanceComponent.js',
+
             ]
         ]
     ];

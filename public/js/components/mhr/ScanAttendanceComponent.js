@@ -301,6 +301,87 @@ var ScanAttendanceComponent = (() => {
     return mThis;
 })();
 
-window.addEventListener('DOMContentLoaded',() => {
+// window.addEventListener('DOMContentLoaded',() => {
+//     ScanAttendanceComponent.init();
+    
+// });
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Initialize Signal and await completion before proceeding
+    if (window.Signal) {
+        await window.Signal.init(null, null, true);
+    }
+
+    // Optional delay after socket connection is ready
+    await delay(1000);
+
+    // 2. Join room and register event listeners
+    await window.Signal.joinRoomWithListeners("attendance_scan", [
+        {
+            name: "attendance_scan",
+            callback: async payload => {
+                // Check if status is ACCESS_DENIED
+                if (payload?.status === "ACCESS_DENIED") {
+                    Swal.fire({
+                        icon: "error",
+                        text: payload.reason,
+                        timer: 6000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        width: 600
+                    });
+
+                    return; // Stop execution if access is denied
+                }
+
+                // Optional delay before processing payload
+                await delay(500);
+
+                // payload.scan_id = payload?.user_id ?? null;
+                // payload.force_checkout = 1;
+                console.log(5555,payload);
+                
+                 let p  = {
+                    employee_id: payload.user_id,
+                    current_date: payload.current_date,
+                    present_time: payload.present_time,
+                }
+
+                vsapi
+                    .fetch(
+                        `${window.location.origin}/mhr/employee/attendance/scan`,
+                        p,
+                        { method: "POST", authType: vsapi.authTypes.NONE }
+                    )
+                    .then(res => {
+                        console.log("Scan Result:", res);
+                        if (res.status_code === 200) {
+                            const d = res.data;
+                            ScanAttendanceComponent.renderTableEmployee();
+                            // console.log(123,d);
+                            ScanAttendanceComponent.renderEmployeeImage(d);
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                text: res.error_message,
+                                timer: 6000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                width: 600
+                            });
+                        }
+                    });
+            }
+        }
+    ]);
+
+    // 3. Initialize Component
     ScanAttendanceComponent.init();
 });
+
+

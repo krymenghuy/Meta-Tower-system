@@ -578,7 +578,7 @@ var PayrollAccountComponent = (function () {
     mThis.getFilterData = () => {
         let p = {
             search_value : mThis.elSearch.value,
-            // p.sort_by_department = mThis.elSortByDepartment.value;
+            department_id : mThis.elDepartment.value,
             // p.sort_by_branch = mThis.elSortByBranch.value;
             //p.sort_by_account = mThis.elSortByAccount.value;
             account_type : mThis.elAccount.value,
@@ -587,6 +587,8 @@ var PayrollAccountComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
+        console.log(23,p);
+        
         return p;
     };
 
