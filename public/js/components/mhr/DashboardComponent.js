@@ -30,13 +30,13 @@ var DashboardComponent =  (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        if(AuthManager.allowed(254,true)){
+        // if(AuthManager.allowed(254,true)){
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
             mThis.dashboard_Bottom_left = mThis.self.querySelector("#_dashboard_bottom_left");
             mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
-        }
+        // }
         mThis.initAlready = true;
     };
 
@@ -92,528 +92,912 @@ var DashboardComponent =  (function () {
     };
 
     mThis.renderDBChartAllTop = (data) => {
-        data = data ? data : {};
-        let html = [
-            `<div class="chart-row py-3">`,
-            `<div class="col-md-3">`,
-                    '<div class="chart-container dashboard_chart ">',
-                        '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
-                            data.doughnutChart.title,
-                        '</span>',
-                        '<canvas id="doughnutChart"></canvas>',
-                    '</div>',
-                `</div>`,
-            `<div class="col-md-6">
-                    <div class="chart-container dashboard_chart">
-                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
-                            Monthly Payroll Expenses (last 12 months)
-                        </span>
+
+    data = data || {};
+
+    const doughnut = data.doughnutChart || {};
+    const cards = data.cards || {};
+
+    const newStaff = cards.new_staff_count || {};
+    const resigningStaff = cards.resigning_staff_count || {};
+    const resignedStaff = cards.resigned_staff_count || {};
+
+    let html = `
+        <div class="row py-3">
+
+            <!-- Employee Status -->
+            <div class="col-12 col-lg-3">
+                <div class="dashboard_chart">
+
+                    <div class="chart-title">
+                        ${doughnut.title || 'Employee Overview'}
+                    </div>
+
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <canvas id="doughnutChart"></canvas>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Monthly Payroll -->
+            <div class="col-12 col-lg-6">
+                <div class="dashboard_chart">
+
+                    <div class="chart-title">
+                        Monthly Payroll Expenses
+                        <small class="text-muted fw-normal">
+                            (Last 12 Months)
+                        </small>
+                    </div>
+
+                    <div class="flex-grow-1">
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
-                </div>`,
-            `<div class="col-md-3">`,
-            `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
-            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
-            `<div class="d-flex align-items-center p-2 mb-1">`,
 
-            `<div class="bg--icon">`,
-            `<img class="img--size" src="`,main_view.base_url,`/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
-            `</div>`,
-            `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1" style="">`,data.cards.new_staff_count.title,`</div>`,
-            `</div>`,
-            `</div>`,
-            `<hr style="border:1px solid #fff; margin:0;">`,
-            `<div class="text-center">`,
-            `<small class="text-muted">Last 90 days</small>`,
-            `</div>`,
-            `</div>`,
+                </div>
+            </div>
 
-            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
-            `<div class="d-flex align-items-center p-2 mb-1">`,
-            `<div class="bg--icon">`,
-            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/letter.svg" alt="Icon">`,
-            `</div>`,
-            `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5  text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.resigning_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1">${data.cards.resigning_staff_count.title}</div>`,
-            `</div>`,
-            `</div>`,
-            `<hr style="border:1px solid #fff; margin:0;">`,
-            `<div class="text-center">`,
-            `<small class="text-muted">Last 90 days</small>`,
-            `</div>`,
-            `</div>`,
 
-            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">`,
-            `<div class="d-flex align-items-center p-2 mb-1">`,
-            `<div class="bg--icon">`,
-            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop-work.svg" alt="Icon">`,
-            `</div>`,
-            `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.resigned_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1">${data.cards.resigned_staff_count.title}</div>`,
-            `</div>`,
-            `</div>`,
-            `<hr style="border:1px solid #fff; margin:0;">`,
-            `<div class="text-center">`,
-            `<small class="text-muted">Last 90 days</small>`,
-            `</div>`,
-            `</div>`,
+            <!-- Employee Movement -->
+            <div class="col-12 col-lg-3">
 
-            `</div>`,
-            `</div>`,
+                <div class="dashboard_chart">
 
-            `</div>`
-        ].join("");
-        mThis.dbChartAll.innerHTML = html;
-        mThis.renderChartEmployee(data.doughnutChart);
-        mThis.employeeSalaryChart(data.barCharts);
-        // mThis.renderCompareChart(data.pieCharts);
-    };
+                    <div class="chart-title">
+                        Employee Movement
+                    </div>
+                    <div class="dashboard-movement-card mb-2">
+                        <div class="bg--icon">
+                            <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="New Staff">
+                        </div>
+                        <div class="ms-3 flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="fw-bold text-primary fs-4">${newStaff.count ?? 0}</span>
+                                <span class="badge bg-info text-white">New Staff</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-movement-card mb-2">
+                        <div class="bg--icon">
+                            <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/letter.svg" alt="Resigning Staff">
+                        </div>
+                        <div class="ms-3 flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="fw-bold text-warning fs-5">${resigningStaff.count ?? 0}</span>
+                                <span class="badge bg-warning text-white">Resigning</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-movement-card">
+                        <div class="bg--icon">
+                            <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop-work.svg" alt="Resigned Staff">
+                        </div>
+                        <div class="ms-3 flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="fw-bold text-danger fs-5">
+                                    ${resignedStaff.count ?? 0}
+                                </span>
+                                <span class="badge bg-danger text-white">Resigned</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    mThis.dbChartAll.innerHTML = html;
+
+    // Render charts AFTER HTML exists
+    mThis.renderChartEmployee(doughnut);
+    mThis.employeeSalaryChart(data.barCharts || {});
+};
 
     mThis.renderChartEmployee = (data) => {
-        data = data ? data : {};
 
-        const ctx = document.getElementById("doughnutChart").getContext("2d");
+    data = data || {};
 
-        new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        data: data.values,
-                        backgroundColor: data.colors,
-                        borderColor: ["#fff", "#fff", "#fff"],
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
+    const canvas = document.getElementById("doughnutChart");
 
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                const label = tooltipItem.label || "";
-                                const value = tooltipItem.raw;
-                                return `${label} : ${value} នាក់`;
-                            },
-                        },
-                    },
-                    datalabels: {
-                        color: "#000",
-                        font: {
-                            size: 12,
-                            weight: "bold",
-                        },
-                        formatter: function (value, context) {
-                            return `${
-                                context.chart.data.labels[context.dataIndex]
-                            }\n${value} នាក់`;
-                        },
-                    },
-                },
-            },
-        });
-    };
-    mThis.employeeSalaryChart = (data) => {
-        const ctx = document
-            .getElementById("employeeSalaryChart")
-            .getContext("2d");
+    if (!canvas) return;
 
-        if (!data.labels || data.labels.length < 12) {
-            const defaultCount = 12 - (data.labels ? data.labels.length : 0);
-            const placeholders = Array(defaultCount).fill("N/A");
-            const placeholderEmployeeCounts = Array(defaultCount).fill(0);
-            const placeholderSalaries = Array(defaultCount).fill(0);
+    const oldChart = Chart.getChart(canvas);
 
-            data.labels = data.labels
-                ? [...data.labels, ...placeholders]
-                : placeholders;
-            data.employee_counts = data.employee_counts
-                ? [...data.employee_counts, ...placeholderEmployeeCounts]
-                : placeholderEmployeeCounts;
-            data.total_salaries = data.total_salaries
-                ? [...data.total_salaries, ...placeholderSalaries]
-                : placeholderSalaries;
-        }
+    if (oldChart) {
+        oldChart.destroy();
+    }
 
-        const employeeSalaryData = {
-            labels: data.labels,
+    const ctx = canvas.getContext("2d");
+
+    const labels = data.labels || [];
+    const values = data.values || [];
+
+    const colors = data.colors && data.colors.length
+        ? data.colors
+        : [
+            "#2b3991",
+            "#27b7ff",
+            "#cab54a",
+            "#f44336",
+            "#32bcd3",
+            "#9219ff"
+        ];
+
+    new Chart(ctx, {
+
+        type: "doughnut",
+
+        data: {
+            labels: labels,
+
             datasets: [
                 {
-                    label: "Total Employees",
-                    data: data.employee_counts,
-                    backgroundColor: "#2b3991",
-                    borderColor: "#fff",
-                    borderWidth: 1,
-                    yAxisID: "y",
+                    data: values,
+
+                    backgroundColor: colors,
+
+                    borderColor: "#ffffff",
+
+                    borderWidth: 3,
+
+                    hoverOffset: 5
+                }
+            ]
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: "68%",
+
+            plugins: {
+
+                legend: {
+                    position: "bottom",
+
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        padding: 12,
+                        boxWidth: 8,
+
+                        font: {
+                            size: 11
+                        }
+                    }
                 },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function (tooltipItem) {
+
+                            const label = tooltipItem.label || "";
+                            const value = tooltipItem.raw || 0;
+
+                            return `${label}: ${value} នាក់`;
+                        }
+                    }
+                },
+
+                datalabels: {
+
+                    color: "#ffffff",
+
+                    font: {
+                        size: 11,
+                        weight: "600"
+                    },
+
+                    formatter: function (value) {
+
+                        return value > 0
+                            ? `${value}`
+                            : "";
+                    }
+                }
+            }
+        }
+    });
+};
+    mThis.employeeSalaryChart = (data) => {
+
+    data = data || {};
+
+    const canvas = document.getElementById("employeeSalaryChart");
+
+    if (!canvas) return;
+
+    const oldChart = Chart.getChart(canvas);
+
+    if (oldChart) {
+        oldChart.destroy();
+    }
+
+    let labels = [...(data.labels || [])];
+    let employees = [...(data.employee_counts || [])];
+    let salaries = [...(data.total_salaries || [])];
+
+    while (labels.length < 12) {
+        labels.push("_");
+        employees.push(0);
+        salaries.push(0);
+    }
+
+    labels = labels.slice(0, 12);
+    employees = employees.slice(0, 12);
+    salaries = salaries.slice(0, 12);
+
+
+    const ctx = canvas.getContext("2d");
+
+    new Chart(ctx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [
+
                 {
-                    label: "Total Salary Paid (រៀល)",
-                    data: data.total_salaries,
+                    type: "bar",
+
+                    label: "Salary Paid",
+
+                    data: salaries,
+
                     backgroundColor: "#cab54a",
-                    borderColor: "#fff",
-                    borderWidth: 1,
-                    yAxisID: "y1",
-                },
-            ],
-        };
 
-        const config = {
-            type: "bar",
-            data: employeeSalaryData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
-                    // title: {
-                    //     display: true,
-                    //     text: 'Employee Count and Total Salary Paid in the Last 12 Months',
-                    // },
+                    borderRadius: 5,
+
+                    borderSkipped: false,
+
+                    yAxisID: "salary"
                 },
-                scales: {
-                    y: {
-                        type: "linear",
-                        position: "left",
-                        title: {
-                            display: true,
-                            text: "Number of Employees",
-                        },
-                    },
-                    y1: {
-                        type: "linear",
-                        position: "right",
-                        title: {
-                            display: true,
-                            text: "Salary in KHR (រៀល)",
-                            color: "#cab54a",
-                        },
-                        ticks: {
-                            color: "#2b3991",
-                        },
-                        grid: {
-                            drawOnChartArea: false,
-                        },
-                    },
-                },
+
+                {
+                    type: "line",
+
+                    label: "Employees",
+
+                    data: employees,
+
+                    borderColor: "#2b3991",
+
+                    backgroundColor: "#2b3991",
+
+                    borderWidth: 2,
+
+                    pointRadius: 3,
+
+                    pointHoverRadius: 5,
+
+                    tension: 0.35,
+
+                    fill: false,
+
+                    yAxisID: "employees"
+                }
+
+            ]
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
             },
-        };
 
-        new Chart(ctx, config);
-    };
+            plugins: {
+
+                legend: {
+
+                    position: "bottom",
+
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        boxWidth: 8
+                    }
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function (context) {
+
+                            const value = context.raw || 0;
+
+                            if (context.dataset.yAxisID === "salary") {
+
+                                return ` Salary: ${
+                                    VSMoney.symbol("USD") +
+                                    VSMoney.formatAmount(value)
+                                }`;
+
+                            }
+
+                            return ` Employees: ${value}`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+
+                x: {
+
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+
+                employees: {
+
+                    type: "linear",
+
+                    position: "left",
+
+                    beginAtZero: true,
+
+                    title: {
+                        display: true,
+                        text: "Employees"
+                    },
+
+                    grid: {
+                        color: "rgba(0,0,0,.05)"
+                    }
+                },
+
+                salary: {
+
+                    type: "linear",
+
+                    position: "right",
+
+                    beginAtZero: true,
+
+                    title: {
+                        display: true,
+                        text: "Salary (USD)"
+                    },
+
+                    grid: {
+                        drawOnChartArea: false
+                    },
+
+                    ticks: {
+
+                        callback: function (value) {
+
+                            if (value >= 1000000) {
+                                return (value / 1000000) + "M";
+                            }
+
+                            if (value >= 1000) {
+                                return (value / 1000) + "K";
+                            }
+
+                            return value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+};
 
     mThis.renderDBCards = (data) => {
-        let html = [
-            `<div class="col-md-3">
-                 <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
-                        <div class="position-relative m-3" style="width: 60px; height: 60px;">
-                            <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                <path class="circle-bg" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none" stroke="#eee" stroke-width="4" />
-                                <path class="circle" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none" stroke="orange" stroke-width="4"
-                                    stroke-dasharray="75, 100" stroke-linecap="round" />
-                            </svg>
-                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                                style="color:orange; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.exit_form_count.count}</span>
-                            </div>
+
+    data = data || {};
+
+    const cards = data.cards || {};
+
+    const items = [
+
+        {
+            key: "exit_form_count",
+            title: "Exit Forms",
+            color: "#f59e0b",
+            status: "Pending"
+        },
+
+        {
+            key: "intern_staff_count",
+            title: cards.intern_staff_count?.title || "Intern Staff",
+            color: "#cab54a"
+        },
+
+        {
+            key: "warning_staff_count",
+            title: cards.warning_staff_count?.title || "Warning Staff",
+            color: "#f44336"
+        },
+
+        {
+            key: "probation_staff_count",
+            title: cards.probation_staff_count?.title || "Probation Staff",
+            color: "#32bcd3"
+        }
+
+    ];
+
+    const html = items.map(item => {
+
+        const card = cards[item.key] || {};
+        const count = card.count ?? 0;
+
+        return `
+            <div class="col-12 col-sm-6 col-lg-3">
+
+                <div class="card-db">
+
+                    <div
+                        class="position-relative flex-shrink-0"
+                        style="width:60px;height:60px;"
+                    >
+
+                        <svg
+                            viewBox="0 0 36 36"
+                            class="circular-chart"
+                        >
+
+                            <path
+                                d="M18 2.0845
+                                   a 15.9155 15.9155 0 0 1 0 31.831
+                                   a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#edf0f3"
+                                stroke-width="4"
+                            />
+
+                            <path
+                                d="M18 2.0845
+                                   a 15.9155 15.9155 0 0 1 0 31.831
+                                   a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="${item.color}"
+                                stroke-width="4"
+                                stroke-dasharray="75, 100"
+                                stroke-linecap="round"
+                            />
+
+                        </svg>
+
+                        <div
+                            class="position-absolute top-50 start-50 translate-middle fw-bold"
+                            style="color:${item.color};"
+                        >
+                            ${count}
                         </div>
-                        <span class="fw-semibold fs-6 text-primary-custom text-start"
-                            style="color: #2b3991; font-size: 1.2rem;">Exit Forms <small class="text-danger">(Pending)</small></span>
+
                     </div>
 
-            </div>`,
-            `<div class="col-md-3">
-                      <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
-                        <div class="position-relative m-3" style="width: 60px; height: 60px;">
-                            <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                <path class="circle-bg" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none" stroke="#eee" stroke-width="4" />
-                                <path class="circle" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none" stroke="#cab54a" stroke-width="4"
-                                    stroke-dasharray="50, 100" stroke-linecap="round" />
-                            </svg>
-                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                                style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.intern_staff_count.count}</span>
-                                <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
-                            </div>
+
+                    <div class="ms-3">
+
+                        <div class="fw-semibold text-primary">
+                            ${item.title}
                         </div>
-                        <span class="fw-semibold fs-6 text-primary-custom text-start"
-                            style="color: #2b3991; font-size: 1.2rem;">${data.cards.intern_staff_count.title}</span>
+
+                        ${
+                            item.status
+                                ? `
+                                <small class="text-warning">
+                                    ${item.status}
+                                </small>
+                                `
+                                : `
+                                <small class="text-muted">
+                                    Staff
+                                </small>
+                                `
+                        }
+
                     </div>
 
-            </div>`,
-            `<div class="col-md-3">
-            <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
-              <div class="position-relative m-3" style="width: 60px; height: 60px;">
-                  <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                      <path class="circle-bg" d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none" stroke="#eee" stroke-width="4" />
-                      <path class="circle" d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none" stroke="#f44336" stroke-width="4"
-                          stroke-dasharray="50, 100" stroke-linecap="round" />
-                  </svg>
-                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                      style="color: #f44336; font-size: 1rem; font-weight: bold;">
-                     <span class="p-1">${data.cards.warning_staff_count.count}</span>
-                      <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
-                  </div>
-              </div>
-              <span class="fw-semibold fs-6 text-primary-custom text-start"
-                  style="color: #2b3991; font-size: 1.2rem;">${data.cards.warning_staff_count.title}</span>
-          </div>
+                </div>
 
-            </div>`,
-            `<div class="col-md-3">
-            <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
-              <div class="position-relative m-3" style="width: 60px; height: 60px;">
-                  <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                      <path class="circle-bg" d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none" stroke="#eee" stroke-width="4" />
-                      <path class="circle" d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none" stroke="#32bcd3" stroke-width="4"
-                          stroke-dasharray="50, 100" stroke-linecap="round" />
-                  </svg>
-                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                      style="color: #32bcd3; font-size: 1rem; font-weight: bold;">
-                     <span class="p-1">${data.cards.probation_staff_count.count}</span>
-                      <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
-                  </div>
-              </div>
-              <span class="fw-semibold fs-6 text-primary-custom text-start"
-                  style="color: #2b3991; font-size: 1.2rem;">${data.cards.probation_staff_count.title}</span>
-          </div>
+            </div>
+        `;
 
-            </div>`,
-        ].join("");
-        mThis.dbCards.innerHTML = html;
-    };
+    }).join("");
+
+    mThis.dbCards.innerHTML = `
+        <div class="row g-3">
+            ${html}
+        </div>
+    `;
+};
 
     mThis.renderDBCardBottom = (data) => {
-        data = data ? data : {};
 
-        const tableLeave = mThis.renderDBCardOnLeave(data.onLeave);
-        const tableBenefit = mThis.renderDBCardBenefit(data.benefits);
-        let html = [
-            `<div class="card-row  py-2 p-1">`,
-            `<div class="col-md-3">
-                    <div class="card-container dashboard_chart">
-                        <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                            Absences over last 10 days
-                        </span>
-                        ${tableLeave}
+    data = data || {};
+
+    const tableLeave = mThis.renderDBCardOnLeave(data.onLeave || []);
+    const tableBenefit = mThis.renderDBCardBenefit(data.benefits || []);
+    const payroll = data.accounts?.payrolls || {};
+    const wallets = data.accounts?.wallets || {};
+    const master = data.accounts?.master_balance || {};
+
+    mThis.db_card_bottom.innerHTML = `
+
+        <div class="row g-3 py-3">
+
+            <!-- Absence -->
+            <div class="col-12 col-lg-3">
+
+                <div class="card-container dashboard_chart">
+
+                    <div class="chart-title">
+                        Absences
+                        <small class="text-muted fw-normal">
+                            Last 10 Days
+                        </small>
                     </div>
-            </div>`,
 
-            `<div class="col-md-3">
-                    <div class="card-container dashboard_chart">
-                      <div class="w-100 d-flex flex-row justify-content-center align-items-center p-1 mb-2 shadow rounded-3" style="background-color: #ffffff;">
-                            <div class="position-relative ms-3" style="width: 120px; height: 100px;">
-                                <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                    <path class="circle-bg" d="M18 2.0845
-                                        a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="#08b9d5" stroke-width="4" />
-                                    <path class="circle" d="M18 2.0845
-                                        a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="#9219ff" stroke-width="4"
-                                        stroke-dasharray="75, 100" stroke-linecap="round" />
-                                </svg>
-                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                                    style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">
-                                    ${data.accounts.payrolls.total_count || 0}
-                                    </p>
-                                    <small>Payrolls</small>
-                                </div>
-                            </div>
-                            <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
-                                <div class="w-100">
-                                    <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
-                                    <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">
-                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.payrolls.total_balance || 0)}
-
-                                    </p>
-                                </div>
-                            </div>
+                    ${tableLeave}
 
                 </div>
-                <div class="w-100 d-flex flex-row align-items-center justify-content-center align-items-center p-1 shadow rounded-3" style="background-color: #ffffff;">
-                            <div class="position-relative ms-3" style="width: 120px; height: 100px;">
-                                <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                    <path class="circle-bg" d="M18 2.0845
-                                        a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="#eee" stroke-width="4" />
-                                    <path class="circle" d="M18 2.0845
-                                        a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="#00e5ff" stroke-width="4"
-                                        stroke-dasharray="75, 100" stroke-linecap="round" />
+
+            </div>
+
+
+            <!-- Payroll & Wallet -->
+            <div class="col-12 col-lg-3">
+
+                <div class="card-container dashboard_chart">
+
+                    <div class="chart-title">
+                        Financial Overview
+                    </div>
+
+
+                    <!-- Payroll -->
+                    <div class="dashboard-summary">
+
+                        <div class="dashboard-summary-chart">
+
+                            <div
+                                class="position-relative"
+                                style="width:90px;height:90px;"
+                            >
+
+                                <svg
+                                    viewBox="0 0 36 36"
+                                    width="90"
+                                    height="90"
+                                >
+
+                                    <path
+                                        d="M18 2.0845
+                                           a 15.9155 15.9155 0 0 1 0 31.831
+                                           a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#edf0f3"
+                                        stroke-width="4"
+                                    />
+
+                                    <path
+                                        d="M18 2.0845
+                                           a 15.9155 15.9155 0 0 1 0 31.831
+                                           a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#9219ff"
+                                        stroke-width="4"
+                                        stroke-dasharray="85,100"
+                                        stroke-linecap="round"
+                                    />
+
                                 </svg>
-                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
-                                    style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${
-                                        data.accounts.wallets.total_count || 0
-                                    }</p>
-                                    <small>Wallets</small>
+
+                                <div
+                                    class="position-absolute top-50 start-50 translate-middle text-center"
+                                >
+
+                                    <strong class="text-primary">
+                                        ${payroll.total_count || 0}
+                                    </strong>
+
+                                    <small class="d-block text-muted">
+                                        Payrolls
+                                    </small>
+
                                 </div>
+
                             </div>
-                            <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
-                                <div class="w-100">
-                                    <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
-                                    <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">
-                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.wallets.total_balance || 0)}
-                                    </p>
-                                </div>
-                            </div>
+
                         </div>
 
-                    <div class="text-center mt-auto">
-                        <small class="text-muted">Data from the last 90 days</small>
+
+                        <div class="dashboard-summary-content">
+
+                            <small class="text-muted">
+                                Total
+                            </small>
+
+                            <div class="fw-bold text-primary">
+                                ${
+                                    VSMoney.symbol("USD") +
+                                    VSMoney.formatAmount(
+                                        payroll.total_balance || 0
+                                    )
+                                }
+                            </div>
+
+                        </div>
+
                     </div>
-                </div>
-            </div>`,
 
-            `<div class="col-md-6 p-0">
-                <div class="card-container dashboard_chart mr-4">
-                    <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                        Benefit Overview As of Now
-                    </span>
+
+                    <!-- Wallet -->
+                    <div class="dashboard-summary">
+
+                        <div class="dashboard-summary-chart">
+
+                            <div
+                                class="position-relative"
+                                style="width:90px;height:90px;"
+                            >
+
+                                <svg
+                                    viewBox="0 0 36 36"
+                                    width="90"
+                                    height="90"
+                                >
+
+                                    <path
+                                        d="M18 2.0845
+                                           a 15.9155 15.9155 0 0 1 0 31.831
+                                           a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#edf0f3"
+                                        stroke-width="4"
+                                    />
+
+                                    <path
+                                        d="M18 2.0845
+                                           a 15.9155 15.9155 0 0 1 0 31.831
+                                           a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#32bcd3"
+                                        stroke-width="4"
+                                        stroke-dasharray="85,100"
+                                        stroke-linecap="round"
+                                    />
+
+                                </svg>
+
+                                <div
+                                    class="position-absolute top-50 start-50 translate-middle text-center"
+                                >
+
+                                    <strong class="text-primary">
+                                        ${master.total_count || 0}
+                                    </strong>
+
+                                    <small class="d-block text-muted">
+                                        Master
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="dashboard-summary-content">
+
+                            <small class="text-muted">
+                                Total
+                            </small>
+
+                            <div class="fw-bold text-primary">
+                                ${
+                                    VSMoney.symbol("USD") +
+                                    VSMoney.formatAmount(
+                                        master.total_balance || 0
+                                    )
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-auto text-center">
+
+                        <small class="text-muted">
+                            Data from the last 90 days
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Benefits -->
+            <div class="col-12 col-lg-6">
+
+                <div class="card-container dashboard_chart">
+
+                    <div class="chart-title">
+                        Benefit Overview
+                        <small class="text-muted fw-normal">
+                            As of Now
+                        </small>
+                    </div>
+
                     ${tableBenefit}
+
                 </div>
-            </div>`,
 
-            `</div>`,
-        ].join("");
+            </div>
 
-        mThis.db_card_bottom.innerHTML = html;
-    };
+        </div>
+    `;
+};
 
     mThis.renderDBCardOnLeave = (data) => {
-        const rowsHtml = (data || [])
-            .map(
-                (item) => `
-                <tr>
-                    <td class="align-middle">
-                        <div class="text-primary-custom text-center border rounded-5 d-block p-1" style="width: 100px; background: #d1b54a;font-size: 0.75rem; font-weight: bold;">
-                            ${item.formatted_date || ""}
-                        </div>
-                    </td>
-                    <td class="align-middle" style="font-size: 0.75rem;">
-                        <span class="p-1 text-white text-center border d-block rounded-5 p-1" style="width: 100px; background: #2b3991cc; font-size: 0.75rem; font-weight: bold;">
-                            ${item.staff_count || 0}
-                        </span>
-                    </td>
-                </tr>
-            `
-            )
-            .join("");
 
-        return `
-        <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
-            <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
-                <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
+    const rowsHtml = (data || []).map(item => `
+        <tr>
+
+            <td>
+                <span class="badge bg-light text-warning border">
+                    ${item.formatted_date || "-"}
+                </span>
+            </td>
+
+            <td>
+                <span class="badge bg-primary">
+                    ${item.staff_count || 0}
+                </span>
+            </td>
+
+        </tr>
+    `).join("");
+
+    return `
+        <div class="dashboard-table mt-2">
+
+            <table class="table table-hover">
+
+                <thead>
                     <tr>
-                        <th class="text-start" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Date</th>
-                        <th class="text-start" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Absence Count</th>
+                        <th>Date</th>
+                        <th>Absence Count</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    ${rowsHtml}
+                    ${
+                        rowsHtml ||
+                        `
+                        <tr>
+                            <td colspan="2"
+                                class="text-center text-muted py-4">
+                                No absence data
+                            </td>
+                        </tr>
+                        `
+                    }
                 </tbody>
+
             </table>
+
         </div>
     `;
-    };
+};
 
-    mThis.renderDBCardBenefit = (data) => {
-        const rowsHtml = (data || [])
-            .map(
-                (item) => `
-                <tr>
-                   <td class="align-middle">
-                        <div class="text-primary-custom " style="width: 20px;font-size: 0.75rem; font-weight: bold;">
-                        </div>
-                    </td>
-                    <td class="align-middle">
-                        <div class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.benefit_name}
-                        </div>
-                    </td>
-                    <td class="align-middle">
-                        <span class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.benefit_type == 1 ? "Remuneration" : ""} ${item.benefit_type == 2 ? "Fringe" : ""}
-                        </span>
-                    </td>
-                    <td class="align-middle">
-                        <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                             ${VSMoney.symbol('KHR') + VSMoney.formatAmount(item.total_amount || 0.0)}
-                        </span>
-                    </td>
-                    <td class="align-middle">
-                        <span class="text-primary " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.updated_by || ""}
-                        </span>
-                    </td>
-                </tr>
-            `
-            )
-            .join("");
+   mThis.renderDBCardBenefit = (data) => {
+
+    const rowsHtml = (data || []).map(item => {
+
+        let type = "";
+
+        if (item.benefit_type == 1) {
+            type = "Remuneration";
+        } else if (item.benefit_type == 2) {
+            type = "Fringe";
+        }
 
         return `
-        <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
-            <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
-                <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
-                    <tr>
-                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;"></th>
+            <tr>
 
-                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Benefit </th>
-                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Category</th>
-                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Total</th>
-                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Last Updated</th>
+                <td>
+                    <strong class="text-primary">
+                        ${item.benefit_name || "-"}
+                    </strong>
+                </td>
+
+                <td>
+                    <span class="badge bg-light text-primary border">
+                        ${type || "-"}
+                    </span>
+                </td>
+
+                <td class="fw-semibold">
+                    ${
+                        VSMoney.symbol("KHR") +
+                        VSMoney.formatAmount(
+                            item.total_amount || 0
+                        )
+                    }
+                </td>
+
+                <td class="text-muted">
+                    ${item.updated_by || "-"}
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+
+    return `
+        <div class="dashboard-table mt-2">
+
+            <table class="table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Benefit</th>
+                        <th>Category</th>
+                        <th>Total</th>
+                        <th>Last Updated</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    ${rowsHtml}
+
+                    ${
+                        rowsHtml ||
+                        `
+                        <tr>
+                            <td colspan="4"
+                                class="text-center text-muted py-4">
+                                No benefit data
+                            </td>
+                        </tr>
+                        `
+                    }
+
                 </tbody>
+
             </table>
+
         </div>
     `;
-    };
+};
 
     mThis.loadCards = (onFinish) => {
         const p = {};
@@ -642,20 +1026,20 @@ var DashboardComponent =  (function () {
 
     mThis.setDashboardScroll = () => {
         const parent = mThis.self;
-        parent.style.height = window.innerHeight - 190 + "px";
+        parent.style.height = window.innerHeight - 90 + "px";
         parent.classList.add("overflow-y-auto");
         parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            parent.style.height = window.innerHeight - 190 + "px";
+            parent.style.height = window.innerHeight - 90 + "px";
         };
     };
 
     mThis.show = (options) => {
-        if (!AuthManager.allowed(254,true)){
-            mThis.self.innerHTML = renderUserHome();
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            return;
-        }
+        // if (!AuthManager.allowed(254,true)){
+        //     mThis.self.innerHTML = renderUserHome();
+        //     main_view.setContentView(mThis.self, mThis.title_prop);
+        //     return;
+        // }
 
         mThis.setDashboardScroll();
         mThis.init();

@@ -259,6 +259,8 @@ var EmployeeAttendanceComponent = (function () {
                 const f = el.dataset.field;
                 p[f] = el.value;
             });
+        console.log(22122,p);
+        
         return p;
     };
 

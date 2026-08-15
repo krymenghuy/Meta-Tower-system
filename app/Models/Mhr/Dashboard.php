@@ -95,7 +95,11 @@ class Dashboard
         // ->join('employees as emp', 'ef.emp_id', '=', 'emp.id')
         // ->where('emp.status_id', 20)
         // ->count();
-
+        $master_balance = DB::table('accounts')
+            ->where('account_type', 'payroll')
+            ->where('account_number', '1')
+            ->selectRaw('COUNT(*) as total_count, COALESCE(SUM(balance), 0) as total_balance')
+            ->first();
 
         return (object) [
             'new_staff_count' => (object) [
@@ -129,8 +133,10 @@ class Dashboard
                 'title' => 'Warnings',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
-            'exit_form_count' => (object) [
-                'count' => 1,//$exit_form_count,
+            'master_account_balance' => (object) [
+                'count' => $master_balance,
+                'title' => 'Master Balance',
+
             ]
         ];
     }
@@ -309,35 +315,41 @@ static function countEmployee($arr, $ss)
     }
     public static function getTotalWalletAndPayrollData($arr, $ss)
     {
-        $d = (object) $arr;
-
-        $totalWallets = DB::table('accounts')
+        $wallet = DB::table('accounts')
             ->where('account_type', 'wallet')
-            ->count();
+            ->selectRaw('COUNT(*) as total_count, COALESCE(SUM(balance), 0) as total_balance')
+            ->first();
 
-        $totalWalletBalance = DB::table('accounts')
-            ->where('account_type', 'wallet')
-            ->sum('balance');
-
-        $totalPayrolls = DB::table('accounts')
+        $payroll = DB::table('accounts')
             ->where('account_type', 'payroll')
-            ->count();
+            ->where('account_number', '!=', '1')
+            ->selectRaw('COUNT(*) as total_count, COALESCE(SUM(balance), 0) as total_balance')
+            ->first();
 
-        $totalPayrollBalance = DB::table('accounts')
+        $master = DB::table('accounts')
             ->where('account_type', 'payroll')
-            ->sum('balance');
+            ->where('account_number', '1')
+            ->selectRaw('COUNT(*) as total_count, COALESCE(SUM(balance), 0) as total_balance')
+            ->first();
 
         return (object) [
             'wallets' => (object) [
-                'total_count' => $totalWallets,
-                'total_balance' => $totalWalletBalance,
-                'currency' => 'KHR'
+                'total_count'   => (int) $wallet->total_count,
+                'total_balance' => (float) $wallet->total_balance,
+                'currency'      => 'USD',
             ],
+
             'payrolls' => (object) [
-                'total_count' => $totalPayrolls,
-                'total_balance' => $totalPayrollBalance,
-                'currency' => 'KHR'
-            ]
+                'total_count'   => (int) $payroll->total_count,
+                'total_balance' => (float) $payroll->total_balance,
+                'currency'      => 'USD',
+            ],
+
+            'master_balance' => (object) [
+                'total_count'   => (int) $master->total_count,
+                'total_balance' => (float) $master->total_balance,
+                'currency'      => 'USD',
+            ],
         ];
     }
 
