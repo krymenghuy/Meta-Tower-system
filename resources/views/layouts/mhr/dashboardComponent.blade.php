@@ -1,18 +1,295 @@
-<div id="_main_dashboardComponent" class="px-2 mobile-padding" style="display:none;">
-    <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
+<div id="_main_dashboardComponent" class="px-3 mobile-padding" style="display:none;">
+    <div class="dbChart_all_top" id="dbChart_all_top">
     </div>
-    <div class="db_cards">
-        <div class="row px-3" style="" id="db_cards">
-
-        </div>
+    <div class="db_cards" id="db_cards">
+ 
     </div>
     <div class="db_card_bottom" id="_db_card_bottom">
 
 
     </div>
 </div>
+<style>/* ================================
+   Dashboard Layout
+================================ */
 
-<style>
+.dbChart_all_top,
+.db_cards,
+.db_card_bottom {
+    width: 100%;
+}
+
+.dashboard_chart {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+
+    background: #fff;
+    border: 1px solid #e9edf2;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(66, 66, 66, 0.08);
+
+    padding: 16px;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: all .2s ease;
+}
+
+.dashboard_chart:hover {
+    box-shadow: 0 5px 16px rgba(66, 66, 66, 0.12);
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   Chart Header
+================================ */
+
+.dashboard_chart > .chart-title,
+.dashboard_chart > span {
+    width: 100%;
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #2b3991;
+    font-size: 15px;
+    font-weight: 600;
+
+    text-align: left;
+}
+
+
+/* ================================
+   Chart Canvas
+================================ */
+
+.dashboard_chart canvas {
+    width: 100% !important;
+    max-width: 100%;
+
+    flex: 1;
+    min-height: 0;
+}
+
+
+/* ================================
+   Small Dashboard Cards
+================================ */
+
+.card-db {
+    width: 100%;
+    min-height: 100px;
+
+    background: #fff;
+
+    border: 1px solid #edf0f4;
+    border-radius: 12px;
+
+    padding: 14px;
+
+    display: flex;
+    align-items: center;
+
+    box-shadow: 0 2px 8px rgba(66, 66, 66, .07);
+
+    transition: all .2s ease;
+}
+
+.card-db:hover {
+    box-shadow: 0 5px 15px rgba(66, 66, 66, .12);
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   Circular Indicator
+================================ */
+
+.circular-chart {
+    width: 60px;
+    height: 60px;
+}
+
+.card-db .position-relative {
+    flex-shrink: 0;
+}
+
+
+/* ================================
+   Bottom Cards
+================================ */
+
+.card-container {
+    width: 100%;
+    height: 100%;
+
+    background: #fff;
+
+    border: 1px solid #e9edf2;
+    border-radius: 12px;
+
+    padding: 16px;
+
+    box-shadow: 0 2px 8px rgba(66, 66, 66, .08);
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ================================
+   Tables
+================================ */
+
+.dashboard-table {
+    width: 100%;
+    overflow: auto;
+
+    border: 1px solid #edf0f3;
+    border-radius: 8px;
+}
+
+.dashboard-table table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.dashboard-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    background: #fff;
+}
+
+.dashboard-table th {
+    color: #2b3991;
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.dashboard-table td {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+
+/* ================================
+   Payroll / Wallet Summary
+================================ */
+
+.dashboard-summary {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px;
+
+    margin-bottom: 10px;
+
+    background: #fff;
+
+    border: 1px solid #edf0f3;
+    border-radius: 10px;
+
+    box-shadow: 0 1px 5px rgba(0,0,0,.05);
+}
+
+.dashboard-summary-chart {
+    width: 90px;
+    height: 90px;
+
+    flex-shrink: 0;
+}
+
+.dashboard-summary-content {
+    flex: 1;
+    padding-left: 12px;
+}
+
+
+/* ================================
+   Icon
+================================ */
+
+.bg--icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f3f6fa;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+.img--size {
+    width: 38px;
+    height: 38px;
+
+    object-fit: contain;
+}
+.dashboard-movement-card {
+    display: flex;
+    align-items: center;
+
+    padding: 10px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf0f3;
+    border-radius: 10px;
+
+    transition: all .2s ease;
+}
+
+.dashboard-movement-card:hover {
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,.06);
+}
+
+
+/* ================================
+   Responsive
+================================ */
+
+@media (max-width: 991.98px) {
+
+    .dashboard_chart {
+        min-height: 320px;
+    }
+
+ 
+
+}
+
+@media (max-width: 767.98px) {
+
+    .dashboard_chart {
+        min-height: 280px;
+        padding: 12px;
+    }
+
+
+
+    .card-db {
+        min-height: 90px;
+    }
+
+}</style>
+
+<!-- <style>
     pre {
         margin: 0;
         padding: 0;
@@ -91,7 +368,6 @@
         gap: 5px;
         min-height: 340px;
         align-items: stretch;
-        /* Ensures all children are the same height */
     }
 
     .card-row {
@@ -100,23 +376,18 @@
         gap: 5px;
         min-height: 200px;
         align-items: stretch;
-        /* Ensures all children are the same height */
     }
 
     .chart-container {
         flex: 1;
-        /* All DIVs get equal width */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 10px;
         border: 1px solid #ddd;
-        /* Optional styling */
         background: #f9f9f9;
-        /* Optional styling */
         height: 100%;
-        /* Prevents overflow */
     }
 
     .card-container {
@@ -128,64 +399,24 @@
         padding: 10px;
         border-radius: 8px;
         height: 100%;
-        /* Prevents overflow */
 
     }
 
-    .dashboard_chart {
 
-        box-shadow: 0px 0px 5px rgba(66, 66, 66, 0.255);
+    .dashboard_chart {
+        box-shadow: 0 2px 8px rgba(66, 66, 66, 0.12);
         align-items: center;
-        background-color: #c6c6c62e;
+        background-color: #ffffff;
+        border: 1px solid #eef0f2;
+        border-radius: 12px;
+        overflow: hidden;
     }
 
     canvas {
         max-width: 100%;
         height: auto;
-        /* Maintains aspect ratio */
     }
 
-    #_main_dashboardComponent {
-        display: flex;
-        flex-direction: column;
-        height: 680px;
-        /* background-color: #fff; */
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
-    /* #_main_dashboardComponent tr:hover {
-        background-color: skyblue;
-        cursor: pointer;
-    } */
-    /* .dashboard_top {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        grid-gap: 20px;
-        padding: 20px;
-        background-color: #f4f4f4;
-    } */
-
-
-
-    .dashboard_center {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        padding: 20px 0px;
-        gap: 1rem;
-    }
-
-
-
-
-
-
-
-
-
-    /* Icon size control */
     .img--size {
         width: 60px;
         height: 50px;
@@ -195,4 +426,4 @@
     .card-body {
         padding: 1rem;
     }
-</style>
+</style> -->

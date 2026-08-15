@@ -88,7 +88,9 @@ class StaffAttendance extends VSModel
         $department_id = $filter->department_id ?? null;
         $emp_type_id = $filter->emp_type_id ?? null;
         $work_shift_id = $filter->work_shift_id ?? null;
-        $attendance_date = $filter->attendance_date ?? null;
+        $attendance_date = $filter->attendance_date ?? date('Y-m-d');
+
+
         $search_value = $filter->search_value ?? null;
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
@@ -119,10 +121,13 @@ class StaffAttendance extends VSModel
         if ($work_shift_id) {
             $query->where('a.work_shift_id', $work_shift_id);
         }
+
         if ($attendance_date) {
             $timestamp = strtotime($attendance_date);
+
             if ($timestamp !== false) {
                 $formatted_date = date('Y-m-d', $timestamp);
+
                 $query->whereDate('a.attendance_date', $formatted_date);
             }
         }

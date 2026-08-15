@@ -537,7 +537,7 @@ class Attendance
             'user_id'              => '0|number',
             'scan_id'              => '0|number',
             'employee_code'        => '0|string|exists.employees.code',
-            'employee_card_number' => '0|string|exists.employees.card_number',
+            'employee_card_number' => '0|string|exists.employee.card_number',
             'remarks'              => '0|string|1,150',
         ];
 
