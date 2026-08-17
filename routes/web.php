@@ -40,7 +40,7 @@ use function Ramsey\Uuid\v1;
 //     }
 // });
 Route::get('/download-template', function () {
-    $path = public_path('\uploads\public\1F7020202049483420D8830538207720\employees\documents\ImportEmployee.xlsx');
+    $path = public_path('/uploads/public/1F7020202049483420D8830538207720/employees/documents/ImportEmployee.xlsx');
     return response()->download($path, 'Import_Employee.xlsx', [ 
         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ]);
