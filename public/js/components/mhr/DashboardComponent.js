@@ -947,7 +947,7 @@ var DashboardComponent =  (function () {
 
                 <td class="fw-semibold">
                     ${
-                        VSMoney.symbol("KHR") +
+                        VSMoney.symbol("USD") +
                         VSMoney.formatAmount(
                             item.total_amount || 0
                         )

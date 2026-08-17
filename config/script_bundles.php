@@ -267,6 +267,7 @@ return [
                 '/js/components/mhr/AttendanceTracksComponent.js',
                 '/js/components/mhr/ExitFormComponent.js',
                 '/js/components/mhr/DeductionComponent.js',
+                '/js/components/mhr/ImportDataComponent.js',
                 '/js/signal.js',
 
 

@@ -19,8 +19,8 @@
             
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddStaffAttendance">
-                    <i class="fa-brands fa-nfc-symbol" style="color: rgb(249, 251, 255);"></i>
-                    <span vslang="buttons.Set Attendance"></span>
+                    <i class="fa-regular fa-plus me-2"></i>
+                    <span vslang="buttons.New Scan"></span>
                 </button>
             </div>
         </div>

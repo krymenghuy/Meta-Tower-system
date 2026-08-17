@@ -11,12 +11,27 @@
                 <div class="col-12 col-md-6 col-lg-2">
                     <select type="id" id="_emp_type_id" class="filter-field data-input" data-field="emp_type_id"></select>
                 </div>
+                <!-- Action Buttons -->
+                <div class="col-12 col-lg-auto ms-lg-auto">
+                    <div class="d-flex flex-column flex-md-row justify-content-lg-end gap-2">
 
-                <div class="ms-md-auto text-md-end col-12 col-md-auto">
-                    <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddEmployee">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span vslang="buttons.Create Employee"></span>
-                    </button>
+                        <button
+                            type="button"
+                            class="btnAddNewPrm"
+                            id="_btnImportEmployee">
+                            <i class="fa-solid fa-file-import me-1"></i>
+                            <span vslang="buttons.Import"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btnAddNewPrm"
+                            id="_btnAddEmployee">
+                            <i class="fa-solid fa-user-plus me-1"></i>
+                            <span vslang="buttons.Create Employee"></span>
+                        </button>
+
+                    </div>
                 </div>
             </div>
         </div>

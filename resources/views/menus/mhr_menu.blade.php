@@ -273,6 +273,16 @@ function v_display($mod_id, $module_ids = null)
                     <h4 class="kt-menu__section-text" vslang="menus.Settings">Settings</h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
+             
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(419); ?>>
+                    <a href="ImportDataComponent" modid="419" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <i class="opacity-icons fas fa-truck-plane icons"></i>
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Import Data"></span>
+                    </a>
+                </li>
+                
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(419); ?>>
                     <a href="HolidayComponent" modid="419" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">

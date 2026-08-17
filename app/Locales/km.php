@@ -947,6 +947,7 @@ return [
         'Decision' => 'ការសម្រេចចិត្ត',
         'Disbursed' => 'បានបើកប្រាក់',
         'Import Staff List' => 'នាំចូលបញ្ជីបុគ្គលិក',
+        'import_data'=> 'ការបញ្ចូលទិន្នន័យ',
 
 
 
@@ -1118,6 +1119,7 @@ return [
 
         'Deductions' => 'ការកាត់ប្រាក់',
         'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
+        'import_data'=> 'ការបញ្ចូលទិន្នន័យ',
 
 
 

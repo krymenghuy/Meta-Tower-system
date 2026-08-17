@@ -251,6 +251,8 @@ return [
         'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
+        'import_data'=> 'Import Data',
+
 
        
 
@@ -282,6 +284,7 @@ return [
         'tenant_management' => 'Tenant & Management',
         'payments' => 'Payments & Billings',
         'services' => 'Services & Access',
+        'import_data'=> 'Import Data',
 
 
         'settings' => 'Settings',
