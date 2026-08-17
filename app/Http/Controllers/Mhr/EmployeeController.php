@@ -93,4 +93,20 @@ class EmployeeController extends Controller
         $res = $employee->promoteStaff($req->all(), $id, $ss);
         return JDV::raw($res);
     }
+    public function importEmployee(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $emp = new Employee();
+        return JDV::raw($emp->importEmployee($req->all(),$ss));
+
+    }
+    public function importedFileHistory(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $emp = new Employee();
+        $import = $emp->importedFileHistory($req->all(),$ss);
+        return JDV::result($import);
+    }
 }

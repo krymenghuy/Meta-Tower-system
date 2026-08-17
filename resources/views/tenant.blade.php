@@ -29,8 +29,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 93);
+    StyleManager::render('tenant-style', 1, 94);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -104,7 +105,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('tenant-components', 1, 293);
+    ScriptManager::render('tenant-components', 1, 294);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

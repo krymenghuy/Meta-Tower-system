@@ -29,8 +29,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 111);
+    StyleManager::render('prm-style', 1, 112);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -104,7 +105,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 39);
 
-    ScriptManager::render('mhr-components', 1, 321);
+    ScriptManager::render('mhr-components', 1, 322);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -346,6 +347,7 @@
                             @include('layouts.mhr.attendanceTracksComponent')
                             @include('layouts.mhr.exitFormComponent')
                             @include('layouts.mhr.deductionComponent')
+                            @include('layouts.mhr.importDataComponent')
 
 
 

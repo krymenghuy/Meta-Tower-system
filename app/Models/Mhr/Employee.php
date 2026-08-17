@@ -14,6 +14,8 @@ use Vsd\Money\Models\VSMoney;
 use App\Models\Location\Country;
 use App\Models\Umt\Branch;
 use App\Models\Mhr\Event;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Exception;
 
 
 
@@ -24,6 +26,10 @@ class Employee extends VSModel
     protected static $img_dir = 'employees';
 
     protected $userInfo = null;
+    protected static $xlsx_keys = [
+        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','passport_expiry_date','date_of_birth','phone_number',
+        'email','birth_city_id','nssf_id','marital_status','joining_date','position_id','emp_type_id','work_shift_id','salary','address',
+    ];
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -124,7 +130,7 @@ class Employee extends VSModel
             else $inputs['nid_expiry_date'] = convertDate($expire_date);
         } else $inputs['nid_expiry_date'] = null;
 
-        $passport_number = $d->passport_number;
+        $passport_number = $d->passport_number ?? '';
         if($passport_number){
             $expire_date = $d->passport_expiry_date ?? null;
             if (!$expire_date) return DV::error('Please enter Passport Expiry.');
@@ -1114,6 +1120,200 @@ class Employee extends VSModel
             DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
         }
         return DV::depends($id, null,'Failed to change employee work shift');
+    }
+    public function importEmployee($arr,$ss,$id=null){
+        $emp_id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+
+        $v_rule = [
+            'file' => '1|string',
+        ];
+        $res = DBX::validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error_message);
+        $inputs = $res->values;
+        $base64 = str_replace('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,','',$inputs['file']);
+        $x = XPublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'xlsx',$base64,'document');
+        if($x->status =='OK'){
+            $import_id = DBX::saveData($ss,'imported_files',['id' => null],[
+                'type' =>$x->file_type,
+                'file_name' => 'Imported from Excel by '.$ss->full_name.' on '. date('d M Y H:i', time()), //$file_name,
+                'imported_date' => date('Y-m-d H:i:s'),
+                'title' => 'Import Employee',
+                // 'status_id'=> 1
+            ],[],1);
+            $file_name = $x->file_name;
+            $rows = self::readExcel($ss,$x->file_name,2);
+            $data = self::convertImportedEmployee($rows);
+            $data = self::validateData($data);
+
+            if(isset($data->error)) return DV::error($data->error);
+
+            $success = 0;
+
+            // DBX::beginTransaction();
+            try {
+                 DB::beginTransaction();
+                $employee = new Employee();
+                foreach ((array)$data as $row) {
+                    $arr = (array) $row;
+                    $inputs = $arr;
+                    $emp_res = $employee->upsert($inputs,null,$ss);
+                    if($emp_res->status_code ==200){
+                        $success++;
+                    }else{
+                        DB::rollback();
+                        return $emp_res;
+                    }
+                }
+                    DB::commit();
+                    return DV::depends(1, ['success_count'=>$success]);
+            }
+            catch (Exception $e) {
+                DB::rollback();
+                $file_name = basename($x->file_name);
+                XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
+                \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
+                return DV::error('There were some problem during importing. This is likely due to incorrect data format in Excel.');
+            }
+        }
+    }
+    static function readExcel($ss,$file_name,$start_index=null){
+        $fullPath = XPublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'document').$file_name ;
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load($fullPath);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $_data = $worksheet->toArray();
+        $_data = array_filter($_data, function ($record) {
+            return array_filter($record, function ($value) {
+                return $value !== null && $value !== '' && $value !== false;
+            }) !== [];
+        });
+        $i=$start_index?$start_index:1;
+        $c = null;
+        do {
+            if (!isset($_data[$i])) break;
+            $c = $_data[$i];
+            $data_tracking[] = $c;
+            $i++;
+        } while ($c);
+        return $data_tracking;
+    }
+    static function convertImportedEmployee($rows){
+        $result = [];
+        foreach($rows as $index=>$row){
+            if($index>=0){
+                $keeper=[];
+                $key=0;
+                foreach($row as $index=>$value){
+                    if($key<=count(self::$xlsx_keys)){
+                        if($index>=0){
+                            $keeper[self::$xlsx_keys[$key]] = strNoSpace($value);
+                        }
+                    }
+                    $key++;
+                }
+                $result[] = $keeper;
+            }
+        }
+        return $result;
+    }
+    static function validateData($rows) {
+        $duplicates_phone = [];
+        $duplicates_nid = [];
+        $duplicates_nssf = [];
+        $rows = (object) $rows;
+        $cnt = 0;
+        foreach ($rows as &$row) {
+            $cnt++;
+            $row = (object) $row;
+            $name = trim($row->name);
+            $phone = trim($row->phone_number);
+            if ($phone && in_array($phone,$duplicates_phone)) {
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt លេខទូរស័ព្ទរបស់គាត់មិនត្រឺមត្រូវទេ ។"];
+            }else{
+                $duplicates_phone[]=$phone;
+            }
+            $nid = trim($row->nid);
+            if ($nid && in_array($nid,$duplicates_nid)) {
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត";
+            }else{
+                $duplicates_nid[]=$nid;
+            }
+
+            $nssf = trim($row->nssf_id);
+            if ($nssf && in_array($nssf,$duplicates_nssf)) {
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខ ប.​ប.ស​ ស្ទួន";
+            }else{
+                $duplicates_nssf[]=$nssf;
+            }
+
+            $nationality = trim($row->nationality_id);
+            $nationality_id = DB::table('loc_countries')->where('nationality', $nationality)->value('id');
+            if (!$nationality_id) {
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+            $row->nationality_id = $nationality_id;
+
+            // $branch = trim($row->branch_id);
+            // $row->branch_id = DB::table('um_branches')->where('name', $branch)->value('id');
+            // if (!$row->branch_id) {
+            //     return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សាខា '".($branch ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            // }
+
+            $city =trim($row->birth_city_id);
+            $row->birth_city_id = DB::table('loc_cities')->where('country_id',$row->nationality_id)->where('name_kh', $city)->value('id');
+            if (!$row->birth_city_id) {
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : ទីកន្លែងកំណើត '".($city ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+
+            $position = trim($row->position_id);
+            $row->position_id = DB::table('positions')->where('name', $row->position_id)->value('id');
+            if(!$row->position_id){
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : position '".($position ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+
+            $emp_type = trim($row->emp_type_id);
+            $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
+            if(!$row->emp_type_id){
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Type '".($emp_type ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+
+            $work_shift =trim($row->work_shift_id);
+            $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
+            if(!$row->work_shift_id){
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Work Shift '".($work_shift ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+        }
+        return $rows;
+    }
+
+    public function importedFileHistory($filter, $ss)
+    {
+        $d = (object)$filter;
+        $search_value = $d->search_value ?? null;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 5;
+        if (!is_numeric($current_page)) $current_page = 1;
+        $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = "1=1";
+        $str_moreWhere = "1=1";
+        if ($search_value) {
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(create_user = '$search_value')";
+        }
+        $str_subs_id = DBX::whereBinary('subs_id', $ss->subs_id);
+        $query = DB::table('imported_files')
+            ->whereRaw($str_search)
+            ->selectRaw('id,title,file_name,type,create_user,imported_date,create_uid');
+        $count_query = clone $query;
+        $count = $count_query->count('id');
+        $rows = $query->skip($skip_rows)->take($per_page)->orderBy('id', 'DESC')->get();
+        foreach($rows as $row){
+            setOfficialDates($row,['','imported_date','']);
+        }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 }

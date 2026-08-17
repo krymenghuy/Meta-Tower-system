@@ -12,6 +12,8 @@ var EmployeeManagementComponent = (function () {
     mThis.elEmployeeType = mThis.self.querySelector("#_emp_type_id");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddEmployee");
     mThis.btnBack = mThis.self.querySelector("#_btn_back_employee");
+    mThis.btnImport = mThis.self.querySelector("#_btnImportEmployee");
+    
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
     mThis.elSearch = mThis.self.querySelector("#_search_employee");
     mThis.divEmployeeListContainer = mThis.self.querySelector("#_employee_list_container");
@@ -56,6 +58,29 @@ var EmployeeManagementComponent = (function () {
             };
 
             EmployeeDialog.show(op);
+        };
+         mThis.btnImport.onclick = (e) => {
+            e.preventDefault();
+            FileChooser.chooseFile({
+                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            },(d) => {
+                if(d){
+                    console.log(3333,d);
+                    
+                    vsapi.call(`${main_view.base_url}/mhr/employee/import`,{
+                        file: d.dataUrl
+                    },false).then(res => {
+                        if(res.status_code === 200){
+                            mThis.EmployeeListView.showPage(null);
+                            cv_interact.success('Employee Import Successfully!');
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+
         };
 
         mThis.btnBack.onclick = function (e) {
