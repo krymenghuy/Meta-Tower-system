@@ -2,7 +2,7 @@
 
 var EmployeeManagementComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Employee";
+    mThis.title_prop = "employee_management";
     mThis.defaultPage = 'employee_list';
 
     mThis.base_url = main_view.base_url;
@@ -65,8 +65,6 @@ var EmployeeManagementComponent = (function () {
                 accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             },(d) => {
                 if(d){
-                    console.log(3333,d);
-                    
                     vsapi.call(`${main_view.base_url}/mhr/employee/import`,{
                         file: d.dataUrl
                     },false).then(res => {
@@ -109,12 +107,12 @@ var EmployeeManagementComponent = (function () {
         mThis.initDropdownMenus(mThis.divlistView);
         
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = window.innerHeight - 220 + "px";
+        sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
         window.onresize = () => {
-            sh_parent.style.height = window.innerHeight - 220 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
         };
 
         mThis.setActionsProfileInfo(mThis.profile_info_emp);

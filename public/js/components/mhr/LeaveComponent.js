@@ -2,7 +2,7 @@
 
 var LeaveComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Leave Request";
+    mThis.title_prop = "leave_request";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
 

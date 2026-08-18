@@ -5,7 +5,7 @@ var BenefitComponent =  (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_benefit_component");
  
-    mThis.title_prop = "Benefit List";
+    mThis.title_prop = "benefit_list";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_benefit_search");

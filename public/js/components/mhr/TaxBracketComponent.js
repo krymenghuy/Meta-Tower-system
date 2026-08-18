@@ -6,7 +6,7 @@ var TaxBracketComponent = (function() {
         "#_main_taxBracketComponent"
     );
 
-    mThis.title_prop = "Tax Bracket";
+    mThis.title_prop = "tax_brackets";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTaxBracket");
     mThis.divFilter =
         mThis.self.querySelector("#_divFilter_taxBracketComponent") ||

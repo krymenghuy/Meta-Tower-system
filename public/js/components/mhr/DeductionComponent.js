@@ -6,7 +6,7 @@ var DeductionComponent = (function () {
         "#_main_deductionComponent",
     );
 
-    mThis.title_prop = "Employee Deduction";
+    mThis.title_prop = "employee_deduction";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddDeduction");
     mThis.elSearch = mThis.self.querySelector("#_deduction_search");
     mThis.containerFilter = mThis.self.querySelector("#_divFilter_deduction");

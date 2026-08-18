@@ -86,7 +86,7 @@
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/menu_icons/customer.svg') }}" />
 
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.User Management"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.user_management"></span>
                 </a>
             </li>
 
@@ -95,7 +95,7 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/campus.png') }}"/>
                     </span>
-                    <span class="kt-menu__link-text " vslang="menus.Campus Management"></span>
+                    <span class="kt-menu__link-text " vslang="menus.branch_management"></span>
                 </a>
             </li>
 
@@ -105,7 +105,7 @@
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/menu_icons/customer.svg') }}" />
 
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Role Management"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.role_management"></span>
                 </a>
             </li>
 
@@ -146,7 +146,7 @@
                         <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/log_out.svg') }}" /> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/menu_icons/logout.svg')}}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Log Out">Log Out</span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.logout"></span>
                 </a>
             </li>
 

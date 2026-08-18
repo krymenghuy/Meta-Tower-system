@@ -6,7 +6,7 @@ var EmployeeAttendanceComponent = (function () {
         "#_main_staffAttendanceComponent",
     );
 
-    mThis.title_prop = "Employee Attendance";
+    mThis.title_prop = "employee_attendance";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_attendance_search");
     mThis.elWorkShift = mThis.self.querySelector("#work_shift");

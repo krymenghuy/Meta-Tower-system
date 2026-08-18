@@ -5,7 +5,7 @@ var CheckPointComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_component");
 
-    mThis.title_prop = "Checkpoints";
+    mThis.title_prop = "checkpoints";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPoint");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_check_point_search");

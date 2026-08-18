@@ -237,7 +237,7 @@ return [
         'building_id' => 'Building',
     ],
     'titles' => [
-        'dashboard' => 'Dashboard - Meta Tower',
+        'dashboard' => 'Dashboard',
         'Create Warning' => 'Create Warning',
         'Create Deduction' => 'Create Deduction',
         'Deduct' => 'Deduct',
@@ -252,6 +252,45 @@ return [
         'Category' => 'Category',
         'Published' => 'Published',
         'import_data'=> 'Import Data',
+
+        // title for Mhr management 
+
+        'employee_management' => 'Employee Management',
+        'employee_benefits' => 'Employee Benefits',
+        'employee_movements' => 'Employee Movements',
+        'employee_warning' => 'Employee Warning',
+        'employee_deduction' => 'Employee Deduction',
+        'exit_forms' => 'Exit Forms',
+        'employee_attendance' => 'Employee Attendance',
+        'work_shifts' => 'Work Shifts',
+        'attendance_tracking' => 'Attendance Tracking',
+        'leave_request' => 'Leave Request',
+        'uninformed_leaves' => 'Uninformed Leaves',
+        'payrolls' => 'Payroll',
+        'payroll_list' => 'Payroll List',
+        'payroll_account' => 'Payroll Account',
+        'staff_wallet' => 'Staff Wallet',
+        'benefit_disbursements' => 'Benefit Disbursements',
+        'benefit_list' => 'Benefit List',
+        'disburse_policies' => 'Disbursement Policies',
+        'holidays' => 'Holidays',
+        'tax_brackets' => 'Tax Brackets',
+        'departments' => 'Departments',
+        'positions' => 'Positions',
+        'job_levels' => 'Job Levels',
+        'skills' => 'Skills',
+        'checkpoint_evaluation' => 'Checkpoint Evaluation',
+        'checkpoints' => 'Checkpoints',
+
+
+
+
+
+
+
+
+
+
 
 
        
@@ -281,17 +320,93 @@ return [
     'menus' => [
 
         'dashboard' => 'Dashboard',
-        'tenant_management' => 'Tenant & Management',
-        'payments' => 'Payments & Billings',
-        'services' => 'Services & Access',
-        'import_data'=> 'Import Data',
-
-
+        'main_menu' => 'Main menu',
         'settings' => 'Settings',
-
+        'general_settings' => 'General Settings',
+        'import_data'=> 'Import Data',
+        'invoice_setting' => 'Invoice Settings',
+        'data_and_insights' => 'Data and Insights',
+        'system_and_settings' => 'System & Settings',
+        'system_management' => 'System Management',
+        'branch_management' => 'Branch Management',
+        'role_management' => 'Role Management',
+        'user_management' => 'User Management',
+        'company_profile' => 'Company Profile',
         'logout' => 'Log Out',
-        // 'logout'=> 'Log Out',
-        'Transaction' => 'Transaction',
+
+       //menu for tenant management
+        'tenants' => 'Tenants',
+        'spaces' => 'Spaces',
+        'contracts' => 'Contracts',
+        'invoices' => 'Invoices',
+        'receipts' => 'Receipts',
+        'deposits' => 'Deposits',
+
+        'operational' => 'Operations',
+        'maintenance' => 'Maintenance',
+        'service_requests' => 'Service Requests',
+
+        'finance_vendors' => 'Finance / Vendors',
+        'vendors' => 'Vendors',
+        'purchase_orders' => 'Purchase Orders',
+        'bills' => 'Bills',
+        'payments' => 'Payments',
+
+        'reporting' => 'Reporting',
+        'reports' => 'Reports',
+
+        'buildings' => 'Buildings',
+        'amenities' => 'Amenities',
+        'purchase_items' => 'Purchase Items',
+        'service_prices' => 'Service Prices',
+        'access_control' => 'Access Control',
+
+        // Menu for MHR Management
+
+        'employees' => 'Employees',
+        'employee_actions' => 'Employee Actions',
+        'benefits' => 'Benefits',
+        'movements' => 'Movements',
+        'warnings' => 'Warnings',
+        'deductions' => 'Deductions',
+        'exit_forms' => 'Exit Forms',
+        'daily_attendance' => 'Daily Attendance',
+        'shift_management' => 'Shift Management',
+        'work_shifts' => 'Work Shifts',
+        'attendance_tracking' => 'Attendance Tracking',
+        'leaves_management' => 'Leave Management',
+        'leave_request' => 'Leave Request',
+        'uninformed_leaves' => 'Uninformed Leaves',
+        'payroll_accounts' => 'Payroll & Accounts',
+        'payrolls' => 'Payroll',
+        'payroll_list' => 'Payroll List',
+        'payroll_account' => 'Payroll Account',
+        'staff_wallet' => 'Staff Wallet',
+        'benefit_disbursements' => 'Benefit Disbursements',
+        'benefit_list' => 'Benefit List',
+        'disburse_policies' => 'Disbursement Policies',
+        'holidays' => 'Holidays',
+        'tax_brackets' => 'Tax Brackets',
+        'departments' => 'Departments',
+        'positions' => 'Positions',
+        'job_levels' => 'Job Levels',
+        'skills' => 'Skills',
+        'checkpoint_evaluation' => 'Checkpoint Evaluation',
+        'checkpoints' => 'Checkpoints',
+        
+
+        // menu for client management
+        'my_team' => 'My Team',
+        'my_contract' => 'My Contract',
+        'reservations' => 'Reservations',
+        'finance_request' => 'Finance & Requests',
+        'my_invoice' => 'My Invoices',
+        'transactions' => 'Transactions',
+        'request_service' => 'Service Requests',
+        'my_profile' => 'My Profile',
+        'announcements' => 'Announcements',
+        'book_amenity' => 'Book Amenity',
+
 
     ],
 

@@ -5,7 +5,7 @@ var PayrollListComponent = (()=> {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_payrollListComponent");
     
-    mThis.title_prop = "Payroll List";
+    mThis.title_prop = "payroll_list";
     mThis.elFilter = mThis.self.querySelector('#el_filter_payrollList');
     mThis.elFilterBranch = mThis.self.querySelector('#el_filter_branch');
     mThis.btnImport = mThis.self.querySelector("#_btnImport");

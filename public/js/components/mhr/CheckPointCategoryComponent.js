@@ -5,7 +5,7 @@ var CheckPointCategoryComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_check_point_category_component");
 
-    mThis.title_prop = "Checkpoint Evaluation";
+    mThis.title_prop = "checkpoint_evaluation";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPointCategory");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_check_point_category_search");

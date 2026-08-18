@@ -1,7 +1,7 @@
 "use strict";
 var UninformedLeaveComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Uninformed Leaves";
+    mThis.title_prop = "uninformed_leaves";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_leave_uninformed_component",

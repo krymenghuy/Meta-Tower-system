@@ -6,7 +6,7 @@ var PositionComponent = (function () {
         "#_main_positionComponent",
     );
 
-    mThis.title_prop = "Positions";
+    mThis.title_prop = "positions";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_position");
