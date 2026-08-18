@@ -6,7 +6,7 @@ var HolidayComponent = (function () {
         "#_main_holidayComponent",
     );
 
-    mThis.title_prop = "Holidays";
+    mThis.title_prop = "holidays";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_holiday");
     mThis.elSearch = mThis.self.querySelector("#_search_holiday");

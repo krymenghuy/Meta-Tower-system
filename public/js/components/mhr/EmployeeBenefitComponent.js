@@ -7,7 +7,7 @@ var EmployeeBenefitComponent = new (function () {
         "#_main_employee_benefit_component",
     );
 
-    mThis.title_prop = "Employee Benefits";
+    mThis.title_prop = "employee_benefits";
 
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
     mThis.btnImport = mThis.self.querySelector("#_btn_import_benefit");

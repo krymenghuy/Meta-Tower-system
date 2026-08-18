@@ -37,7 +37,7 @@
         </div>
 
         <div id="_employee_list" class="table-responsive mt-3 rounded-2"></div>
-        <div id="container_pagination" class="px-3 d-flex justify-content-start bg-light"></div>
+        <div id="container_pagination" class="px-3 justify-content-start"></div>
     </div>
 
     <div id="_emp_profile_view" class="" style="display:none;">

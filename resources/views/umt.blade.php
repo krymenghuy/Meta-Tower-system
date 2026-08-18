@@ -25,6 +25,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
+
 
         <?php StyleManager::render('umt-style',1,26); ?>
         <style>
@@ -53,7 +55,7 @@
             /* font-family: Verdana, sans-serif; */
             /* font-size: 15px, important; */
 
-              font-family: Verdana;
+              font-family: 'Inter', sans-serif;
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
         </style>

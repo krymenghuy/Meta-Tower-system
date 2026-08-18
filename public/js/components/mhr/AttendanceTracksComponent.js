@@ -1,7 +1,7 @@
 "use strict";
 var AttendanceTracksComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Attendance Track";
+    mThis.title_prop = "attendance_tracking";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_work_shiftComponent",

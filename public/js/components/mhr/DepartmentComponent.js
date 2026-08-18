@@ -6,7 +6,7 @@ var DepartmentComponent = new (function () {
         "#_main_departmentComponent",
     );
 
-    mThis.title_prop = "Departments";
+    mThis.title_prop = "departments";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddDepartment");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     // mThis.elStatus = mThis.self.querySelector("#el_status");

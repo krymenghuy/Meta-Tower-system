@@ -7,7 +7,7 @@ var PayrollComponent = new (function () {
         "#_main_payrollComponent",
     );
 
-    mThis.title_prop = "Payroll";
+    mThis.title_prop = "payrolls";
     mThis.elAuthorized = mThis.self.querySelector("#el_authorized");
     mThis.elDisbursed = mThis.self.querySelector("#el_disbursed");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddpayroll");

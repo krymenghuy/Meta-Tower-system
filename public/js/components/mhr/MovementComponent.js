@@ -2,7 +2,7 @@
 
 var MovementComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Employee Movements";
+    mThis.title_prop = "employee_movements";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_employeeMovementComponent");
 

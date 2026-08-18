@@ -2,7 +2,7 @@
 
 var ExitFormComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Exit Forms";
+    mThis.title_prop = "exit_forms";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_exit_form_component");
 

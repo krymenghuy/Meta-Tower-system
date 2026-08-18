@@ -5,7 +5,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector( "#_main_benefit_disbursement_policy_component");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_benefit_disbursement_policy_component");
-    mThis.title_prop = "Disbursement Policy";
+    mThis.title_prop = "disburse_policies";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 

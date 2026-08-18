@@ -6,7 +6,7 @@ var WarningComponent = (function () {
         "#_main_warningComponent",
     );
 
-    mThis.title_prop = "Employee Warning";
+    mThis.title_prop = "employee_warning";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWarning");
     mThis.elSearch = mThis.self.querySelector("#_warning_search");
     mThis.containerFilter = mThis.self.querySelector("#_divFilter_warning");

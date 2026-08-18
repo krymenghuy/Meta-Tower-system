@@ -5,7 +5,7 @@ var JobsLevelComponent = (function () {
     mThis.self = main_view.VSAppContent.querySelector("#_main_jobsLevelComponent");
     
     mThis.initAlready = false;
-    mThis.title_prop = "Job Level";
+    mThis.title_prop = "job_levels";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_jobsLevelComponent");
     mThis.elSearch = mThis.self.querySelector("#_job_level_search");

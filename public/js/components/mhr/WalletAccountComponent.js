@@ -3,7 +3,7 @@ var WalletAccountComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_walletAccountComponent");
     
-    mThis.title_prop = "Wallet Accounts";
+    mThis.title_prop = "staff_wallet";
     mThis.btnAdd = mThis.self.querySelector("#_btnWalletAddAccount");
     mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnWalletAddAccountMissing");
     mThis.divFilter = mThis.self.querySelector("#_wla_divFilter");
