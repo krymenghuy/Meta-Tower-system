@@ -395,6 +395,8 @@ var AccessControlComponent = (() => {
             btn: menuLink,
             onClose: () => mThis.AccessControlListView.showPage(mThis.getFilterData())
         };
+        if (!AuthManager.allowed(310,false)) return;
+
         AccessControlDialog.show(op);
     };
 
@@ -404,6 +406,7 @@ var AccessControlComponent = (() => {
             btn: menuLink,
             onClose: () => mThis.AccessControlListView.showPage(mThis.getFilterData())
         };
+        if (!AuthManager.allowed(311,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -437,7 +440,7 @@ var AccessControlComponent = (() => {
     mThis.changeAccessCardStatus = (id, link) => {
         const tr = link.closest("tr");
         const status = tr?.dataset.status || "";
-
+        if (!AuthManager.allowed(312,false)) return;
         const inputOptions = {
             context: "success",
             title: `${LocaleManager.trans("Change Status", "titles")}`,

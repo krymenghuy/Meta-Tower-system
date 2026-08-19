@@ -11,12 +11,12 @@
                 <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
                     <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="booking_date" />
-                        <label vslang="titles.From Date" class="form-label">From Date</label>
+                        <label vslang="titles.Select From Date" class="form-label">Select From Date</label>
                     </div>
 
                     <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="booking_date_to" />
-                        <label vslang="titles.To Date" class="form-label">To Date</label>
+                        <label vslang="titles.Select To Date" class="form-label">Select To Date</label>
                     </div>
                 </div>
             </div>

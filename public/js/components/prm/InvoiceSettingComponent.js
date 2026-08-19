@@ -125,17 +125,12 @@ var InvoiceSettingComponent = (() => {
         // ── Upload QR ──────────────────────────────────────────────────────────
         mThis.btnChooseLogo.addEventListener("click", function(e) {
             e.preventDefault();
-            if (!AuthManager.allowed(259)) return;
-
-            // ✅ Set accept on hidden input before FileChooser opens it
             const fileInput = mThis.self.querySelector("#_logo_file_input");
             if (fileInput) {
                 fileInput.accept = "image/*";
             }
 
             FileChooser.chooseFile(null, d => {
-                console.log(12345, d);
-
                 if (!d) return;
 
                     mThis.imgLogo.src = d.dataUrl;
@@ -157,10 +152,7 @@ var InvoiceSettingComponent = (() => {
                     )
                     .then(res => {
                         if (res.status_code === 200) {
-                            console.log(23456789,res);
-                            
                             cv_interact.success("QR code has been saved");
-
                         } else {
                             mThis.hideLogo();
                             cv_interact.warning(
@@ -174,8 +166,6 @@ var InvoiceSettingComponent = (() => {
         // ── Delete QR ──────────────────────────────────────────────────────────
         mThis.btnDeleteLogo.addEventListener("click", function(e) {
             e.preventDefault();
-            if (!AuthManager.allowed(259)) return;
-
             cv_interact.confirm(
                 "Delete this QR code?",
                 {

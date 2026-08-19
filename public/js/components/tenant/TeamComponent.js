@@ -228,6 +228,7 @@ var TeamComponent = new (function() {
                 btn: e.target,
                 onClose: () => mThis.refreshTeamList()
             };
+            if(!AuthManager.allowed(314,false)) return;
             CreateTeamDialog.show(op);
         };
 
@@ -329,6 +330,7 @@ var TeamComponent = new (function() {
                 });
             }
         };
+        if (!AuthManager.allowed(320, false)) return;
         CreateTeamMemberDialog.show(op);
     };
     mThis.deleteMember = (id, menuLink) => {
@@ -339,6 +341,7 @@ var TeamComponent = new (function() {
                 mThis.renderView();
             }
         };
+        if (!AuthManager.allowed(319, false)) return;
         cv_interact.confirm(
             "confirm_delete",
             { title: "deleted", context: "delete", confirmButtonText: "Delete" },
@@ -446,6 +449,8 @@ var TeamComponent = new (function() {
             btn.addEventListener("click", e => {
                 e.stopPropagation();
                 const teamId = e.currentTarget.dataset.id;
+                if (!AuthManager.allowed(317, false)) return;
+
                 CreateTeamMemberDialog.show({
                     id: 0,
                     team_id: teamId,
@@ -500,6 +505,7 @@ var TeamComponent = new (function() {
             btn.addEventListener("click", e => {
                 e.stopPropagation(); // Prevents card click event
                 const teamId = e.currentTarget.dataset.id; //
+                if (!AuthManager.allowed(316, false)) return;
                 
                 cv_interact.confirm(
                     "confirm_delete",
@@ -545,7 +551,7 @@ var TeamComponent = new (function() {
                     id: teamId,
                     onClose: () => mThis.refreshTeamList()
                 };
-                
+                if (!AuthManager.allowed(315, false)) return;
                 CreateTeamDialog.show(op);
                 console.log("Opening edit dialog for team ID:", teamId);
             });
@@ -560,6 +566,7 @@ var TeamComponent = new (function() {
         if (mThis.self.style.display !== "block") {
             main_view.setContentView(mThis.self, mThis.title_prop);
         }
+
 
         switch (pageName) {
           case "team_list": {
@@ -631,6 +638,7 @@ var TeamComponent = new (function() {
             case "member_profile_view": {
                 mThis.currentPage = "member_profile_view";
                 const member_id = op.id;
+               if (!AuthManager.allowed(318, false)) return;
 
                 const res = await vsapi.call(
                     `${main_view.base_url}/tenant/team/member-details`,

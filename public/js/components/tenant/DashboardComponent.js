@@ -1940,12 +1940,12 @@ var DashboardComponent = new (function () {
     };
 
     mThis.show = function () {
-        mThis.init();
-
-        if (!mThis.self) {
-            console.error("Dashboard root element was not found.");
+        if (!AuthManager.allowed(313,true)){
+            mThis.self.innerHTML = renderUserHome();
+            main_view.setContentView(mThis.self, mThis.title_prop);
             return;
         }
+        mThis.init();
 
         main_view.setContentView(mThis.self, mThis.title_prop);
         if (!mThis.db_filter) {
@@ -1956,6 +1956,25 @@ var DashboardComponent = new (function () {
             });
         }
     };
+    const renderUserHome = ()=>{
+        return [
+            `<div class="user_home_page">
+                <img src="../../../assets/images/default/default-dashboard.jpg" >
+            </div>
+            <style>
+                .user_home_page img{
+                    height: 88.8vh;
+                    width: 99.2%;
+                    margin:5px;
+                    background-size: cover;
+                    display:flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            </style>`,
+        ].join("");
+
+     };
 
     return mThis;
 })();

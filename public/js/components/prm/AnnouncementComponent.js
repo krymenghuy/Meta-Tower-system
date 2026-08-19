@@ -36,7 +36,7 @@ var AnnouncementComponent = (() => {
                     mThis.AnnouncementListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(265, false)) return;
+            if (!AuthManager.allowed(305, false)) return;
             AnnouncementDialog.show(op);
         };
 
@@ -424,7 +424,7 @@ var AnnouncementComponent = (() => {
                 mThis.AnnouncementListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(266, false)) return;
+        if (!AuthManager.allowed(306, false)) return;
         AnnouncementDialog.show(op);
     };
 
@@ -436,7 +436,7 @@ var AnnouncementComponent = (() => {
                 mThis.AnnouncementListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(267, false)) return;
+        if (!AuthManager.allowed(307, false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

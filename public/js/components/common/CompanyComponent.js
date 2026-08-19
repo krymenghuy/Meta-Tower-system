@@ -156,7 +156,7 @@ var CompanyComponent = (function() {
         // Save profile
         mThis.btnSave.addEventListener("click", function(e) {
             e.preventDefault();
-            if (!AuthManager.allowed(209)) return;
+            if (!AuthManager.allowed(308)) return;
             const p = mThis.getData();
             vsapi
                 .call(`${mThis.base_url}/api/company/save-details`, p, null)
@@ -176,7 +176,7 @@ var CompanyComponent = (function() {
         // Upload logo
         mThis.btnChooseLogo.addEventListener("click", function(e) {
             e.preventDefault();
-            if (!AuthManager.allowed(259)) return;
+            if (!AuthManager.allowed(308)) return;
 
             FileChooser.chooseFile(null, d => {
                 if (d) {
@@ -213,7 +213,7 @@ var CompanyComponent = (function() {
         // Delete logo
         mThis.btnDeleteLogo.addEventListener("click", function(e) {
             e.preventDefault();
-            if (!AuthManager.allowed(259)) return;
+            if (!AuthManager.allowed(309)) return;
 
             cv_interact.confirm(
                 "Delete this logo?",
