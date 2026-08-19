@@ -238,6 +238,9 @@ return [
     ],
     'titles' => [
         'dashboard' => 'Dashboard',
+
+        'search_name' => 'Search by Name',
+
         'Create Warning' => 'Create Warning',
         'Create Deduction' => 'Create Deduction',
         'Deduct' => 'Deduct',
@@ -320,6 +323,7 @@ return [
     'menus' => [
 
         'dashboard' => 'Dashboard',
+        'overview' => 'Overview',
         'main_menu' => 'Main menu',
         'settings' => 'Settings',
         'general_settings' => 'General Settings',

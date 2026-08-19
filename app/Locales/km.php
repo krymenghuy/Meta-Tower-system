@@ -289,6 +289,8 @@ return [
     'titles' => [
         'dashboard' => 'ទិដ្ឋភាពទូទៅផ្ទាំងគ្រប់គ្រង',
 
+        'search_name' => 'ស្វែងរកតាមឈ្មោះ',
+
         'Cannot Cancel Receipt' => 'មិនអាចលុបចោលបង្កាន់ដៃបានទេ',
         'Create Building' => 'បង្កើតអគារ',
         'Modify Building' => 'កែប្រែអគារ',

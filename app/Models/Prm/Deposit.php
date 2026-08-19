@@ -170,11 +170,9 @@ class Deposit
     {
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
-        $building_id  = $d->building_id  ?? null;
-        $tenant_id    = $d->tenant_id    ?? null;
         $status_id    = $d->status_id    ?? null;
-        $start_date   = $d->deposit_date_start ?? null;
-        $end_date     = $d->deposit_date_end ?? null;
+        $start_date = isset($d->start_date) ? convertDate($d->start_date) : null;
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
@@ -190,33 +188,11 @@ class Deposit
             $search_value = escape_like_str($search_value);
             $str_search = "(t.name LIKE '%" . $search_value . "%' OR bs.code LIKE '%" . $search_value . "%' OR t.phone_number LIKE '%" . $search_value . "%')";
         } else {
-            if ($start_date) {
-                $start_date = date('Y-m-d', strtotime($start_date));
-                $str_moreWhere .= " AND d.deposit_date >= '$start_date'";
+            if ($start_date && $end_date) {
+                $str_moreWhere .= " AND DATE(d.deposit_date) BETWEEN '$start_date' AND '$end_date'";
             }
-
-            if ($end_date) {
-                $end_date = date('Y-m-d', strtotime($end_date));
-                $str_moreWhere .= " AND d.deposit_date <= '$end_date'";
-            }
-
-            if ($tenant_id) {
-                $str_moreWhere .= ' AND d.tenant_id = ' . $tenant_id;
-            }
-
-            if ($building_id) {
-                $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
-            }
-
             if ($status_id) {
-                if (is_numeric($status_id)) {
-                    $str_moreWhere .= ' AND d.status_id = ' . intval($status_id);
-                } else {
-                    $resolvedId = DB::table('deposit_statuses')->where('status_code', $status_id)->value('id');
-                    if ($resolvedId) {
-                        $str_moreWhere .= ' AND d.status_id = ' . intval($resolvedId);
-                    }
-                }
+                $str_moreWhere .= ' AND d.status_id = ' . $status_id;
             }
         }
 

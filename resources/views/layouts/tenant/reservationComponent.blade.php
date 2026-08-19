@@ -23,7 +23,7 @@
             <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnBookNow">
                     <i class="me-2 fa-solid fa-calendar" style="color: rgb(249, 251, 255);"></i>
-                    <span vslang="buttons.Reservation Now"></span>
+                    <span vslang="buttons.Create Reservation"></span>
                 </button>
             </div>
         </div>

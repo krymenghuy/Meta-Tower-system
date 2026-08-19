@@ -109,7 +109,7 @@ var ReservationComponent = (() => {
                     mThis.ReservationListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(321)) return;
             CreateReservationDialog.show(op);
         };
 
@@ -591,7 +591,7 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Reservation Now",
+                    createTitle: "vslang:titles.Create Reservation",
                     modifyTitle: "vslang:titles.Modify Reservation",
                     targetProp: "reservation_details",
                     api: {

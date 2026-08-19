@@ -9,8 +9,6 @@ var DepositComponent = (() => {
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnDeposit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_deposit");
-    mThis.elFilter_building = mThis.self.querySelector("#_deposit_building_id");
-    mThis.elFilter_vendor = mThis.self.querySelector("#_deposit_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_deposit_status_id");
 
     mThis.elFilter_category = mThis.self.querySelector(
@@ -190,8 +188,6 @@ var DepositComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            building_id: mThis.elFilter_building.value,
-            tenant_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
@@ -283,6 +279,7 @@ var DepositComponent = (() => {
             cv_interact.error("No contract found for this deposit.");
             return;
         }
+        if (!AuthManager.allowed(304, false)) return;
         RefundDetailsDialog.show({
             contract_id: contractId,
             onSuccess: () => {
@@ -300,12 +297,12 @@ var DepositComponent = (() => {
                 mThis.DepositListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(275, false)) return;
+        if (!AuthManager.allowed(302, false)) return;
         DepositDialog.show(op);
     };
 
     mThis.deleteDeposit = (id, menuLink) => {
-        if (!AuthManager.allowed(276, false)) return;
+        if (!AuthManager.allowed(303, false)) return;
         cv_interact.confirm(
             "Delete this Deposit Record?",
             {
@@ -393,24 +390,7 @@ var DepositComponent = (() => {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_building,
-                    d.buildings,
-                    "id",
-                    "building",
-                    "",
-                    LocaleManager.trans("All buildings", "titles"),
-                    "",
-                );
-                VSUtil.setComboItems(
-                    mThis.elFilter_vendor,
-                    d.tenants,
-                    "id",
-                    "tenant",
-                    "",
-                    LocaleManager.trans("All Tenants", "titles"),
-                    "",
-                );
+               
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
                     d.deposit_statuses,

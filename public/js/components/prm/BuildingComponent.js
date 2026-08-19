@@ -9,6 +9,7 @@ var BuildingComponent = (() => {
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
+
     function formatArea(value) {
         return value
             ? parseFloat(value).toLocaleString(undefined, {
@@ -130,7 +131,7 @@ var BuildingComponent = (() => {
 
         mThis.BuildingListView = new ListView("_building_list", {
             fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
-            perPage: 7,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-2 header-uppercase",

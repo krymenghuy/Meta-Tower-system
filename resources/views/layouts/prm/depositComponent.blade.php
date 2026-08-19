@@ -3,27 +3,20 @@
         <div class="align-items-center row g-3">
             <div class="col-12">
                 <div class="align-items-center row g-3">
-                    <div class="col-12 col-md-6 col-lg-2">
-                        <select  type="id" id="_deposit_building_id" class="filter-field data-input form-control"
-                            data-field="building_id" placeholder='vslang="titles.All buildings"'></select>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-2">
-                        <select type="id" id="_deposit_vendor_id" class="filter-field data-input form-control"
-                            data-field="tenant_id" placeholder='vslang="titles.All Tenants"'></select>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <input type="text" class="filter-field rounded-2 input-search" id="_search_deposit"
+                            placeholder="{{ \Vsd\Locales\Localization::trans('Search by Tenant, Unit', 'titles') }}">
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_deposit_status_id" class="filter-field data-input form-control"
                             data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-2">
-                        <div id="_dateFilter_deposit" class="d-flex align-items-center gap-3">
-                            <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
-                                <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
-                                    data-field="deposit_date_start" />
-                                <label vslang="titles.Deposit Date" class="form-label">Deposit Date</label>
-                            </div>
-                        </div>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <input data-select="datepicker" class="form-control data-input filter-field" placeholder="Select from date" data-field="start_date">
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <input data-select="datepicker" class="form-control data-input filter-field" placeholder="Select to date" data-field="end_date">
                     </div>
                     <div class="ms-md-auto text-md-end col-12 col-md-auto d-none">
                         <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnDeposit">
@@ -32,10 +25,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-3">
+            <!-- <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_deposit"
                     placeholder="{{ \Vsd\Locales\Localization::trans('Search tenant, unit', 'titles') }}">
-            </div>
+            </div> -->
 
         </div>
     </div>

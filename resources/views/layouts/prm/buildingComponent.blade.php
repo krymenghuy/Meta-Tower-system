@@ -3,8 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
-                <input  type="text" class="rounded-2 filter-field input-search" id="_search_building" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
-                <!-- <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i> -->
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_building" placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'titles') }}">
             </div>
         </div>
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
