@@ -125,7 +125,7 @@ var TaxBracketComponent = (function() {
                     mThis.TaxBracketListView.showPage();
                 }
             };
-            // if (!AuthManager.allowed(253)) return;
+            if (!AuthManager.allowed(401,false)) return;
             TaxBracketDialog.show(op);
         };
         mThis.pr_tbl = mThis.TaxBracketListView.getListContainer();
@@ -193,7 +193,7 @@ var TaxBracketComponent = (function() {
                 mThis.TaxBracketListView.showPage();
             }
         };
-        // if (!AuthManager.allowed(254)) return;
+        if (!AuthManager.allowed(402,false)) return;
         TaxBracketDialog.show(op);
     };
 
@@ -205,7 +205,7 @@ var TaxBracketComponent = (function() {
                 mThis.TaxBracketListView.showPage();
             }
         };
-        // if (!AuthManager.allowed(255)) return;
+        if (!AuthManager.allowed(403,false)) return;
         cv_interact.confirm(
             "Delete this tax bracket?",
             {

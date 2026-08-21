@@ -127,7 +127,7 @@ var HolidayComponent = (function () {
                     mThis.HolidayListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(260)) return;
+            if (!AuthManager.allowed(374,false)) return;
             HolidayDialog.show(op);
         };
         mThis.listContainer = mThis.HolidayListView.getListContainer();
@@ -215,7 +215,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(262)) return;
+        if (!AuthManager.allowed(375,false)) return;
         HolidayDialog.show(op);
     };
 
@@ -228,7 +228,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(263)) return;
+        if (!AuthManager.allowed(376,false)) return;
         cv_interact.confirm(
             "delete_holiday",
             {

@@ -296,7 +296,7 @@ var ReservationComponent = (() => {
             cssClass: "reservation-row__dropdown shadow-sm",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Edit"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_reservation",
@@ -308,7 +308,7 @@ var ReservationComponent = (() => {
                     name: "cancel_reservation",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Delete Reservation"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_reservation",
@@ -363,11 +363,12 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
         };
+        if(!AuthManager.allowed(322,false)) return;
         CreateReservationDialog.show(op);
     };
 
     mThis.cancelReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(324,false)) return;
         cv_interact.confirm(
             "Cancel this reservation ?",
             {
@@ -402,7 +403,7 @@ var ReservationComponent = (() => {
     };
 
     mThis.deleteReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(323,false)) return;
         cv_interact.confirm(
             "Delete this reservation?",
             {

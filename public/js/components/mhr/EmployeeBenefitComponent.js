@@ -130,7 +130,7 @@ var EmployeeBenefitComponent = new (function () {
         });
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
-            // if (!AuthManager.allowed(273)) return;
+            if (!AuthManager.allowed(389,false)) return;
             EmployeeBenefitDialog.show({
                 id: null,
                 btn: e.target,
@@ -252,7 +252,7 @@ var EmployeeBenefitComponent = new (function () {
     };
 
     mThis.editEmployeeBenefit = (id, btn) => {
-        // if (!AuthManager.allowed(274)) return;
+        if (!AuthManager.allowed(390,false)) return;
         EmployeeBenefitDialog.show({
             id,
             btn,
@@ -269,7 +269,7 @@ var EmployeeBenefitComponent = new (function () {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(275)) return;
+        if (!AuthManager.allowed(391,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

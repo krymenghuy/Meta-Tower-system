@@ -136,7 +136,7 @@ var BenefitDisbursementComponent =  (function () {
                     mThis.BenefitDisburseListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(276)) return;
+            if (!AuthManager.allowed(392,false)) return;
             BenefitDisburseDialog.show(op);
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
@@ -191,7 +191,7 @@ var BenefitDisbursementComponent =  (function () {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                        '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_benefit_disbursement"
@@ -231,7 +231,7 @@ var BenefitDisbursementComponent =  (function () {
                 mThis.BenefitDisburseListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(277)) return;
+        if (!AuthManager.allowed(393,false)) return;
         BenefitDisburseDialog.show(op);
     };
     mThis.deleteBenefitDisburse = (id, menulink) => {
@@ -242,7 +242,7 @@ var BenefitDisbursementComponent =  (function () {
                 mThis.BenefitDisburseListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(278)) return;
+        if (!AuthManager.allowed(394,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

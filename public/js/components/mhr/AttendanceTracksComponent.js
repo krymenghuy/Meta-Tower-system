@@ -60,8 +60,8 @@ var AttendanceTracksComponent = (function () {
                     mThis.WorkshiftListView();
                 },
             };
-            // if (!AuthManager.allowed(487)) return;
-            ShiftDetailDialog.show(op);
+            if (!AuthManager.allowed(346,false)) return;
+            CreateScanTimeDialog.show(op);
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
@@ -201,15 +201,15 @@ var AttendanceTracksComponent = (function () {
                 mThis.WorkshiftListView();
             },
         };
-        // if (!AuthManager.allowed(488)) return;
-        ShiftDetailDialog.show(op);
+        if (!AuthManager.allowed(347,false)) return;
+        CreateScanTimeDialog.show(op);
     };
     mThis.deleteWorkShift = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
         };
-        // if (!AuthManager.allowed(489)) return;
+        if (!AuthManager.allowed(348,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -268,7 +268,7 @@ var AttendanceTracksComponent = (function () {
     };
     return mThis;
 })();
-const ShiftDetailDialog = (() => {
+const CreateScanTimeDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -411,7 +411,7 @@ const ShiftDetailDialog = (() => {
             ],
 
             prepareFormOptions: {
-                createTitle: "vslang:titles.Add Scan",
+                createTitle: "vslang:titles.Create Scan Time",
                 modifyTitle: "vslang:titles.Edit Scan",
                 targetProp: "shift_details",
                 api: {

@@ -236,8 +236,8 @@ var PayrollComponent = new (function () {
                 },
             };
             // content.parentElement.classList.add('d-none');
-            // if (!AuthManager.allowed(473)) return;
-            AddPayRollListDialog.show(op);
+            if (!AuthManager.allowed(354,false)) return;
+            CreatePayrollListDialog.show(op);
         };
 
         mThis.pr_tbl = mThis.PayrollListView.getListContainer();
@@ -251,8 +251,10 @@ var PayrollComponent = new (function () {
 
         mThis.pr_tbl.onclick = (e) => {
             let lnk = VSUtil.closestLimited(e.target, "a.show_payroll_list");
+            
             if (lnk) {
                 const op = { payroll_id: lnk.dataset.id };
+                if (!AuthManager.allowed(360,false)) return;
                 VSRoute.showComponent("PayrollListComponent", op);
                 return;
             }
@@ -321,7 +323,7 @@ var PayrollComponent = new (function () {
                     name: "change_disbursed",
                 },
                 {
-                    html: '<span class="ps-2" vslang=titles.Modify Payroll>Modify Payroll</span>',
+                    html: '<span class="ps-2" vslang=titles.Edit Payroll>Edit Payroll</span>',
                     icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>',
                     name: "edit_payroll",
                 },
@@ -400,7 +402,7 @@ var PayrollComponent = new (function () {
             },
         };
 
-        // if (!AuthManager.allowed(474)) return;
+        if (!AuthManager.allowed(357,false)) return;
         cv_interact.confirm(
             "authorize_payroll",
             {
@@ -432,7 +434,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(475)) return;
+        if (!AuthManager.allowed(359,false)) return;
         cv_interact.confirm(
             'html:<span class="d-block">Are you sure you want to reset this payroll?</span> <small>This action will reverse all payroll transactions from staff payroll accounts back to the master payroll account!</small>',
             {
@@ -470,7 +472,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(476)) return;
+        if (!AuthManager.allowed(358,false)) return;
         cv_interact.confirm(
             "disburse_payroll",
             {
@@ -507,15 +509,15 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(477)) return;
-        AddPayRollListDialog.show(op);
+        if (!AuthManager.allowed(355,false)) return;
+        CreatePayrollListDialog.show(op);
     };
     mThis.deletePayroll = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
         };
-        // if (!AuthManager.allowed(478)) return;
+        if (!AuthManager.allowed(356,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -599,7 +601,7 @@ var PayrollComponent = new (function () {
     return mThis;
 })();
 
-const AddPayRollListDialog = (() => {
+const CreatePayrollListDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -736,7 +738,7 @@ const AddPayRollListDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Add Payroll",
+                    createTitle: "vslang:titles.Create Payroll",
                     modifyTitle: "vslang:titles.Edit Payroll",
                     targetProp: "payrolls",
                     api: {

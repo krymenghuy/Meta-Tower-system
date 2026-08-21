@@ -123,7 +123,7 @@ var PositionComponent = (function () {
                     mThis.PositionListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(219)) return;
+            if (!AuthManager.allowed(380,false)) return;
             PositionDialog.show(op);
         };
         mThis.listContainer = mThis.PositionListView.getListContainer();
@@ -211,7 +211,7 @@ var PositionComponent = (function () {
                 mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(220)) return;
+        if (!AuthManager.allowed(381,false)) return;
         PositionDialog.show(op);
     };
 
@@ -223,7 +223,7 @@ var PositionComponent = (function () {
                 mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(221)) return;
+        if (!AuthManager.allowed(382,false)) return;
         cv_interact.confirm(
             "delete_position",
             {

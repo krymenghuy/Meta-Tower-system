@@ -84,6 +84,7 @@ var SkillsComponent = (function () {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
+            if (!AuthManager.allowed(386,false)) return;
             SkillListDialog.show({
                 id: null,
                 btn: e.target,
@@ -173,6 +174,7 @@ var SkillsComponent = (function () {
     
 
     mThis.editSkill = (id, menulink) => {
+        if (!AuthManager.allowed(387,false)) return;
         SkillListDialog.show({
             id: id,
             btn: menulink,
@@ -187,7 +189,7 @@ var SkillsComponent = (function () {
             id: id,
             btn: menulink,
         };
-
+        if (!AuthManager.allowed(388,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

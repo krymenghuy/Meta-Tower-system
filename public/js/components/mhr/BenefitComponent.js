@@ -100,7 +100,7 @@ var BenefitComponent =  (function () {
                     mThis.BenefitListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(270)) return;
+            if (!AuthManager.allowed(398,false)) return;
             BenefitDialog.show(op);
         };
         mThis.pr_tbl = mThis.BenefitListView.getListContainer();
@@ -170,7 +170,7 @@ var BenefitComponent =  (function () {
     
 
     mThis.editBenefit = (id, btn) => {
-        // if (!AuthManager.allowed(271)) return;
+        if (!AuthManager.allowed(399,false)) return;
         BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getFilterData()),});
     };
 
@@ -182,7 +182,7 @@ var BenefitComponent =  (function () {
                 mThis.BenefitListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(272)) return;
+        if (!AuthManager.allowed(400,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

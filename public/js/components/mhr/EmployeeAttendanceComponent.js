@@ -188,8 +188,8 @@ var EmployeeAttendanceComponent = (function () {
                     );
                 },
             };
-            // if (!AuthManager.allowed(247)) return;
-            StaffAttendanceDialog.show(op);
+            if (!AuthManager.allowed(340,false)) return;
+            CreateAttendanceDialog.show(op);
         };
 
         mThis.pr_tbl = mThis.StaffAttendanceListView.getListContainer();
@@ -318,8 +318,8 @@ var EmployeeAttendanceComponent = (function () {
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
             }
         };
-        // if (!AuthManager.allowed(241)) return;
-        StaffAttendanceDialog.show(op);
+        if (!AuthManager.allowed(341,false)) return;
+        CreateAttendanceDialog.show(op);
     }
 
     mThis.deleteAttendance = (id, menuLink) => {
@@ -330,7 +330,7 @@ var EmployeeAttendanceComponent = (function () {
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
             }
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(342,false)) return;
         cv_interact.confirm('delete_attendance?',{
             title: 'Delete Attendance Record.',
             context: 'delete',
@@ -359,7 +359,7 @@ var EmployeeAttendanceComponent = (function () {
     return mThis;
 })();
 
-const StaffAttendanceDialog = (() => {
+const CreateAttendanceDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -536,7 +536,7 @@ const StaffAttendanceDialog = (() => {
                 };
             },
             prepareFormOptions: {
-                createTitle: "vslang:titles.Set Attendance",
+                createTitle: "vslang:titles.Create Attendance",
                 modifyTitle: "vslang:titles.Modify Attendance",
                 
                 targetProp: "attendance",

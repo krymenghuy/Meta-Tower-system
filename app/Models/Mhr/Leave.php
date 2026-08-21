@@ -130,19 +130,19 @@ class Leave extends VSModel
             return DV::error('Cannot create leave because the employee has attendance scan(s) on: ' . $dates . '.');
         }
         try {
-        DB::beginTransaction();
-        $leaveId = DBX::saveData($ss,'leaves',['id' => $id],$inputs,[],1,false);
-        if (!$leaveId) {
-            DB::rollBack();
-            return DV::error('Failed to save Leave Information.');
-        }
-        DB::commit();
-        return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
+            DB::beginTransaction();
+            $leaveId = DBX::saveData($ss,'leaves',['id' => $id],$inputs,[],1,false);
+            if (!$leaveId) {
+                DB::rollBack();
+                return DV::error('Failed to save Leave Information.');
+            }
+            DB::commit();
+            return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
 
-    } catch (\Throwable $e) {
+        } catch (\Throwable $e) {
         DB::rollBack();
-        return DV::error('Failed to save Leave Information: ' . $e->getMessage());
-    }
+            return DV::error('Failed to save Leave Information: ' . $e->getMessage());
+        }
     }
 
 

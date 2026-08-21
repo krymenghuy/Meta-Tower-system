@@ -81,8 +81,8 @@ var WorkShiftListComponent = (function () {
                     mThis.WorkShiftListsView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(267)) return;
-            WorkShiftListDialog.show(op);
+            if (!AuthManager.allowed(343,false)) return;
+            CreateShiftDialog.show(op);
         };
         mThis.listContainer = mThis.WorkShiftListsView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -166,8 +166,8 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
-        // if (!AuthManager.allowed(268)) return;
-        WorkShiftListDialog.show(op);
+        if (!AuthManager.allowed(344,false)) return;
+        CreateShiftDialog.show(op);
     };
     mThis.deleteWorkShift = (id, menulink) => {
         let op = {
@@ -177,7 +177,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
-        // if (!AuthManager.allowed(269)) return;
+        if (!AuthManager.allowed(345,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -230,7 +230,7 @@ var WorkShiftListComponent = (function () {
     };
     return mThis;
 })();
-const WorkShiftListDialog = (() => {
+const CreateShiftDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {

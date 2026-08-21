@@ -102,7 +102,7 @@ var CheckPointCategoryComponent = (function () {
                     mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(299)) return;
+            if (!AuthManager.allowed(407,false)) return;
             CheckPointCategoryDialog.show(op);
         };
         mThis.pr_tbl = mThis.CheckPointCategoryListView.getListContainer();
@@ -170,7 +170,7 @@ var CheckPointCategoryComponent = (function () {
     };
 
     mThis.editCheckPointCategory = (id, btn) => {
-        // if (!AuthManager.allowed(298)) return;
+        if (!AuthManager.allowed(408,false)) return;
         CheckPointCategoryDialog.show({ id, btn, onClose: () => mThis.CheckPointCategoryListView.showPage(mThis.getFilterData()),});
     };
 
@@ -182,7 +182,7 @@ var CheckPointCategoryComponent = (function () {
                 mThis.CheckPointCategoryListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(300)) return;
+        if (!AuthManager.allowed(409,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

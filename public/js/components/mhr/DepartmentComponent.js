@@ -93,7 +93,7 @@ var DepartmentComponent = new (function () {
                     mThis.DepartmentListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(217)) return;
+            if (!AuthManager.allowed(377,false)) return;
             DepartmentDialog.show(op);
         };
         mThis.listContainer = mThis.DepartmentListView.getListContainer();
@@ -179,7 +179,7 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(216)) return;
+       if (!AuthManager.allowed(378,false)) return;
         DepartmentDialog.show(op);
     };
 
@@ -202,7 +202,7 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(218)) return;
+        if (!AuthManager.allowed(379,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
