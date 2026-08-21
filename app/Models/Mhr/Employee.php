@@ -722,7 +722,7 @@ class Employee extends VSModel
         $v_rule = [
             'effective_date' => '1|date',
             'resign_date'    => '1|date',
-            'remarks'        => '0|string|1-300',
+            'remarks'        => '1|string|1-300',
         ];
         $res = DBX::validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if ($res->error) {
@@ -760,46 +760,24 @@ class Employee extends VSModel
             ->first();
 
         if ($latestResignation) {
-
-            $latestEffectiveDate = date(
-                'Y-m-d',
-                strtotime($latestResignation->effective_date)
-            );
-
+            $latestEffectiveDate = date('Y-m-d',strtotime($latestResignation->effective_date));
             if ($effectiveDate <= $latestEffectiveDate) {
-                return DV::error(
-                    'The effective date must be later than the previous resignation effective date (' .
-                    $latestEffectiveDate .
-                    ').'
-                );
+                return DV::error('The effective date must be later than the previous resignation effective date (' .$latestEffectiveDate .').');
             }
         }
         $events = [
             '10.20' => 'Resignation',
             'active.20' => 'Resignation',
         ];
-
         $eventKey = $emp->status_id . '.' . $status_id;
-
         $eventName = $events[$eventKey] ?? 'Resignation';
-
         $eventId = self::getEventId($eventName);
-
         if (!$eventId) {
-
-            $eventResult = Event::createEvent(
-                ['name' => $eventName],
-                $ss
-            );
-
-            if (
-                $eventResult->status_code == 200 &&
-                !empty($eventResult->data['id'])
-            ) {
+            $eventResult = Event::createEvent(['name' => $eventName],$ss);
+            if ($eventResult->status_code == 200 && !empty($eventResult->data['id'])) {
                 $eventId = $eventResult->data['id'];
             }
         }
-
         if (!$eventId) {
             return DV::error('Failed to create or retrieve resignation event.');
         }
@@ -821,45 +799,22 @@ class Employee extends VSModel
                 DB::rollBack();
                 return DV::error('Failed to log resignation event.');
             }
-            $resignId = DBX::saveData(
-                $ss,
-                'resignations',
-                ['id' => null],
-                $inputs,
-                [],
-                1
-            );
-
+            $resignId = DBX::saveData($ss,'resignations',['id' => null],$inputs,[],1);
             if (!$resignId) {
                 DB::rollBack();
                 return DV::error('Failed to save resignation record.');
             }
             if ($effectiveDate <= $today) {
-
-                $updated = DB::table('employees')
-                    ->where('id', $id)
-                    ->update([
-                        'status_id' => $status_id,
-                    ]);
-
+                $updated = DB::table('employees')->where('id', $id)->update(['status_id' => $status_id]);
                 if (!$updated) {
                     DB::rollBack();
-
-                    return DV::error(
-                        'Failed to update employee status.'
-                    );
+                    return DV::error('Failed to update employee status.');
                 }
             }
-
             DB::commit();
-
         } catch (\Throwable $e) {
-
             DB::rollBack();
-
-            return DV::error(
-                'Failed to process resignation: ' . $e->getMessage()
-            );
+            return DV::error('Failed to process resignation: ' . $e->getMessage());
         }
         return DV::depends(
             1,
@@ -873,10 +828,7 @@ class Employee extends VSModel
                     : $emp->status_id,
                 'status_updated' => $effectiveDate <= $today,
             ],
-            $effectiveDate > $today
-                ? 'Resignation scheduled successfully. Employee status will change on the effective date.'
-                : 'Resignation processed successfully.'
-        );
+            $effectiveDate > $today ? 'Resignation scheduled successfully. Employee status will change on the effective date.' : 'Resignation processed successfully.');
     }
     static function getEventId($name)
    {
