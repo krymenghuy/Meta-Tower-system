@@ -121,9 +121,6 @@ class Account extends VSModel
                 $acc_id = DBX::saveData($ss, 'accounts', ['id' => null], $inputs, [], 1, false);
                 if ($acc_id) $success_count++;
             }
-            // else{
-            //      //account number based on Employee ID already exist
-            // }
             $emp_count++;
         }
         return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');

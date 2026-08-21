@@ -104,7 +104,7 @@ var CheckPointComponent = (function () {
                     mThis.CheckPointListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(302)) return;
+            if (!AuthManager.allowed(404,false)) return;
             CheckPointDialog.show(op);
         };
         mThis.pr_tbl = mThis.CheckPointListView.getListContainer();
@@ -171,12 +171,12 @@ var CheckPointComponent = (function () {
     };
 
     mThis.editCheckPoint = (id, btn) => {
-        // if (!AuthManager.allowed(301)) return;
+        if (!AuthManager.allowed(405,false)) return;
         CheckPointDialog.show({ id, btn, onClose: () => mThis.CheckPointListView.showPage(mThis.getFilterData()), });
     };
 
     mThis.deleteCheckPoint = (id, menuLink) => {
-        // if (!AuthManager.allowed(303)) return;
+        if (!AuthManager.allowed(406,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

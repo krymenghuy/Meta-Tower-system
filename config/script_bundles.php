@@ -201,6 +201,10 @@ return [
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',
                 '/js/components/tenant/ServicesComponent.js',
+                '/js/components/prm/InvoiceTaxDialog(vertical).js',
+                '/js/components/prm/InvoiceNoTaxDialog(vertical).js',
+                '/js/components/prm/InvoiceCommercialDialog(vertical).js',
+                
                 '/js/signal.js',
 
 

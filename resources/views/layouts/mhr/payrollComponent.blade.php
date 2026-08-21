@@ -14,7 +14,7 @@
             <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddpayroll">
                     <i class="fa-solid fa-user-plus"></i>
-                    <span vslang="buttons.Add Payroll"></span>
+                    <span vslang="buttons.Create Payroll"></span>
                 </button>
             </div>
         </div>

@@ -187,7 +187,7 @@ var LeaveComponent = (function () {
                     mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                 }
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(349,false)) return;
             LeaveRequestDialog.show(op);
         };
 
@@ -251,7 +251,7 @@ var LeaveComponent = (function () {
                 //     name:"change_leave_request_status"
                 // },
                 {
-                    html: '<span class="ps-2" vslang="titles.Approve"></span>',
+                    html: '<span class="ps-2" vslang="titles.Accept"></span>',
                     icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
                     name: "accept_request",
                     cssClass: "border-bottom pb-2"
@@ -325,8 +325,7 @@ var LeaveComponent = (function () {
             id: id
         };
 
-        // if (!AuthManager.allowed(259, false)) return;
-
+        if (!AuthManager.allowed(353, false)) return;
         Swal.fire({
             input: "textarea",
             inputLabel: " ",
@@ -353,7 +352,7 @@ var LeaveComponent = (function () {
     };
 
     mThis.acceptRequest = (id, menuLink) => {
-        // if (!AuthManager.allowed(260, false)) return;
+        if (!AuthManager.allowed(252, false)) return;
         cv_interact.confirm(
             'accept_request',
             {
@@ -400,7 +399,7 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-        // if (!AuthManager.allowed(241)) return;
+        if (!AuthManager.allowed(350,false)) return;
         LeaveRequestDialog.show(op);
     }
 
@@ -412,7 +411,7 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(351,false)) return;
         cv_interact.confirm('delete_leave_request',{
             title: 'Delete Leave Request',
             context: 'delete',

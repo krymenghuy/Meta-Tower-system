@@ -85,7 +85,7 @@ var JobsLevelComponent = (function () {
                     mThis.JobLevelListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(204)) return;
+            if (!AuthManager.allowed(383,false)) return;
             JobLevelDialog.show(op);
         };
         mThis.pr_tbl = mThis.JobLevelListView.getListContainer();
@@ -171,7 +171,7 @@ var JobsLevelComponent = (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(205)) return;
+        if (!AuthManager.allowed(384,false)) return;
         JobLevelDialog.show(op);
     };
 
@@ -183,7 +183,7 @@ var JobsLevelComponent = (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(206)) return;
+        if (!AuthManager.allowed(385,false)) return;
         cv_interact.confirm(
             "delete_job_level?",
             {

@@ -118,7 +118,7 @@ var PayrollAccountComponent = (function () {
                     mThis.AccountListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(315)) return;
+            if (!AuthManager.allowed(367,false)) return;
             PayrollAccountDialog.show(op);
         };
         mThis.btnAddAccountMissing.onclick = function (e) {
@@ -126,7 +126,7 @@ var PayrollAccountComponent = (function () {
             const op = {
                 account_type: "Payroll",
             };
-            // if (!AuthManager.allowed(210)) return;
+            if (!AuthManager.allowed(368,false)) return;
             cv_interact.confirm(
                 'html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>',
                 {
@@ -478,7 +478,7 @@ var PayrollAccountComponent = (function () {
                 mThis.AccountListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(327)) return;
+        if (!AuthManager.allowed(371,false)) return;
         TransferDialog.show(op);
     };
     mThis.cash_deposit = (id, menuLink) => {
@@ -489,11 +489,12 @@ var PayrollAccountComponent = (function () {
                 mThis.AccountListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(326)) return;
+        if (!AuthManager.allowed(369,false)) return;
         DepositDialog.show(op);
     };
 
     mThis.viewTransaction = (id, menuLink) => {
+        if (!AuthManager.allowed(370,false)) return;
         const sub_content_account = mThis.self.querySelector(
             "#sub_content_account"
         );
@@ -506,7 +507,7 @@ var PayrollAccountComponent = (function () {
             emp_id: emp_id,
             account_id: id,
         };
-        // if (!AuthManager.allowed(328)) return;
+        
         vsapi
             .call(
                 `${main_view.base_url}/mhr/account/print-transaction`,
@@ -530,7 +531,7 @@ var PayrollAccountComponent = (function () {
                 mThis.AccountListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(211)) return;
+        if (!AuthManager.allowed(372,false)) return;
         PayrollAccountDialog.show(op);
     };
 
@@ -542,7 +543,7 @@ var PayrollAccountComponent = (function () {
                 mThis.AccountListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(212)) return;
+        if (!AuthManager.allowed(373,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

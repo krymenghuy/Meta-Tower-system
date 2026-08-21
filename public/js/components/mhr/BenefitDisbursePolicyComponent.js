@@ -110,7 +110,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                     mThis.BdpListView.showPage(mThis.getDataFormFilter());
                 },
             };
-            // if (!AuthManager.allowed(279)) return;
+            if (!AuthManager.allowed(395,false)) return;
             BdpDialog.show(op);
         };
 
@@ -172,7 +172,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     };
 
     mThis.editBfp = (id, btn) => {
-        // if (!AuthManager.allowed(280)) return;
+        if (!AuthManager.allowed(396,false)) return;
         BdpDialog.show({
             id,
             btn,
@@ -188,7 +188,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                 mThis.BdpListView.showPage(mThis.getDataFormFilter());
             },
         };
-        // if (!AuthManager.allowed(281)) return;
+        if (!AuthManager.allowed(397,false)) return;
         cv_interact.confirm(
             "Delete this benefit disbursement policy?",
             {

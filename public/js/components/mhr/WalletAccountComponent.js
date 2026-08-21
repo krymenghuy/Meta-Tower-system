@@ -116,7 +116,7 @@ var WalletAccountComponent = (function () {
                     mThis.WalletAccountListView.showPage();
                 },
             };
-            // if (!AuthManager.allowed(256)) return;
+            if (!AuthManager.allowed(410,false)) return;
             WalletAccountDialog.show(op);
         };
 
@@ -154,7 +154,7 @@ var WalletAccountComponent = (function () {
                 //account_id: mThis.divFilter.value,
                 account_type:"Wallet"
             };
-            // if (!AuthManager.allowed(471)) return;
+            if (!AuthManager.allowed(411,false)) return;
             cv_interact.confirm(
                 'html:<span class="d-block fw-semibold text-success">Create wallet accounts for all staff? </span><small>This process will create wallet account for staff who do not have a wallet account yet!</small>',
                 {
@@ -424,7 +424,7 @@ var WalletAccountComponent = (function () {
                 mThis.WalletAccountListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(257)) return;
+        if (!AuthManager.allowed(412,false)) return;
         WalletAccountDialog.show(op);
     };
 
@@ -437,7 +437,7 @@ var WalletAccountComponent = (function () {
                 mThis.WalletAccountListView.showPage();
             },
         };
-        // if (!AuthManager.allowed(258)) return;
+        if (!AuthManager.allowed(413,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -469,6 +469,8 @@ var WalletAccountComponent = (function () {
         );
     };
     mThis.viewWalletTransaction = (id, menuLink) => {
+        if (!AuthManager.allowed(412,false)) return;
+
 
         const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
         sub_wallet_content.classList.add("d-none");
@@ -480,7 +482,6 @@ var WalletAccountComponent = (function () {
             emp_id: emp_id,
             account_id: id,
         }
-        // if (!AuthManager.allowed(259)) return;
         vsapi.call(`${main_view.base_url}/mhr/account/print-transaction`,op,false,false,false).then(res => {
 
             if(res.status_code == 200){

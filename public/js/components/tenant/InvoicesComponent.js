@@ -497,7 +497,7 @@ var InvoicesComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
    mThis.printInvoice = (id, menulink) => {
-        // if (!AuthManager.allowed(238, false)) return;
+        if (!AuthManager.allowed(325, false)) return;
 
         vsapi
             .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
@@ -534,11 +534,11 @@ var InvoicesComponent = (() => {
                     }
 
                     if (invType === 1) {
-                        InvoiceTaxDialog.show(params);
+                        InvoiceTaxDialogVertical.show(params);
                     } else if (invType === 2) {
-                        InvoiceNoTaxDialog.show(params);
+                        InvoiceNoTaxDialogVertical.show(params);
                     } else if (invType === 3) {
-                        InvoiceCommercialDialog.show(params);
+                        InvoiceCommercialDialogVertical.show(params);
                     } else {
                         cv_interact.error("Unknown invoice type variant.");
                     }

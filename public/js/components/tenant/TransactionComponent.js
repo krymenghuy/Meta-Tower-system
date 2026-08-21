@@ -221,6 +221,7 @@ var TransactionComponent = new (function () {
     };
 
     mThis.printReceipt = (id, menuLink) => {
+        if(!AuthManager.allowed(326,false)) return;
         PrintReceiptDialog.show({
             receipt_id: id,
             btn: menuLink,

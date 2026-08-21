@@ -128,6 +128,7 @@ var WarningComponent = (function () {
                     mThis.WarningListView.showPage(mThis.getFilterData());
                 },
             };
+            if(!AuthManager.allowed(337,false)) return;
             WarningDialog.show(op);
         };
 
@@ -251,7 +252,7 @@ var WarningComponent = (function () {
                 mThis.WarningListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(241)) return;
+        if (!AuthManager.allowed(338,false)) return;
         WarningDialog.show(op);
     };
 
@@ -263,7 +264,7 @@ var WarningComponent = (function () {
                 mThis.WarningListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(339,false)) return;
         cv_interact.confirm("delete_warning?",
         {
             title: "Delete Warning.",

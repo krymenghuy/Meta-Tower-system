@@ -56,7 +56,7 @@ var EmployeeManagementComponent = (function () {
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
-
+            if (!AuthManager.allowed(331,false)) return;
             EmployeeDialog.show(op);
         };
          mThis.btnImport.onclick = (e) => {
@@ -377,6 +377,7 @@ var EmployeeManagementComponent = (function () {
                 e.preventDefault();
                 const employeeId = e.currentTarget.dataset.id;
                 mThis.employee_id = employeeId;
+                if(!AuthManager.allowed(333,false)) return;
                 mThis.showPage("profile_view", { id: employeeId });
             });
         });
@@ -571,6 +572,7 @@ var EmployeeManagementComponent = (function () {
     };
 
     mThis.editEmployee = (id, menuLink) => {
+        if (!AuthManager.allowed(332,false)) return;
         EmployeeDialog.show({
             id: id,
             btn: menuLink,
@@ -582,6 +584,7 @@ var EmployeeManagementComponent = (function () {
 
     mThis.movement = (id, menuLink) => {
         if (typeof MovementDialog === "undefined") return;
+        if(!AuthManager.allowed(334,false)) return;
         MovementDialog.show({
             id: null,
             emp_id: id,
@@ -594,6 +597,8 @@ var EmployeeManagementComponent = (function () {
     };
     mThis.setResign = (id, menuLink) => {
         if (typeof ProfileResignDialog === "undefined") return;
+        if(!AuthManager.allowed(335,false)) return;
+
         ProfileResignDialog.show({
             emp_id: id,
             employee: mThis.currentEmployeeProfile || null,
@@ -612,7 +617,7 @@ var EmployeeManagementComponent = (function () {
                 mThis.showPage("employee_list", mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(...)) return;
+        if(!AuthManager.allowed(336,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -666,7 +671,7 @@ var EmployeeManagementComponent = (function () {
         if (mThis.self.style.display !== "block") {
             main_view.setContentView(mThis.self, mThis.title_prop);
         }
-
+       
         switch (pageName) {
             case "employee_list": {
                 mThis.currentPage = "employee_list";
@@ -688,6 +693,7 @@ var EmployeeManagementComponent = (function () {
                     mThis.showPage("employee_list", mThis.getFilterData());
                     return;
                 }
+                if(!AuthManager.allowed(333,false)) return;
                 mThis.renderProfile(res.data);
                 break;
             }

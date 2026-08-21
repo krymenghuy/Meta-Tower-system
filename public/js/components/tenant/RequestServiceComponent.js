@@ -289,6 +289,7 @@ var RequestServiceComponent = (function() {
         if (mThis.elBtnCreate) {
             mThis.elBtnCreate.onclick = e => {
                 e.preventDefault();
+                if(!AuthManager.allowed(327,false)) return;
                 CreateServiceRequestDialog.show({
                     id: null,
                     btn: e.target,
@@ -518,6 +519,7 @@ var RequestServiceComponent = (function() {
     };
 
     mThis.editServiceRequest = (id, menuLink) => {
+        if(!AuthManager.allowed(328,false)) return;
         CreateServiceRequestDialog.show({
             id: id,
             btn: menuLink,
@@ -527,6 +529,7 @@ var RequestServiceComponent = (function() {
     };
 
     mThis.cancelRequest = (id, menuLink) => {
+        if(!AuthManager.allowed(329,false)) return;
         cv_interact.confirm(
             "Are you sure you want to cancel this service request?",
             {
