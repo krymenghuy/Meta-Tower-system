@@ -1474,7 +1474,7 @@ return [
         'Bank Transfer' => 'ប្រតិបត្តិការធនាគារ',
         'Entered:' => 'បានបញ្ចូល:',
 
-        'Search by name, code' => 'ស្វែងរកតាមឈ្មោះ  ឬកូដ',
+        'search_name_code' => 'ស្វែងរកតាមឈ្មោះ  ឬកូដ',
 
         'Occupancy by Floor' => 'តារាងបែងចែកជាន់',
         'Monthly Revenue' => 'ប្រាក់ចំណូលប្រចាំខែ',
@@ -1801,6 +1801,7 @@ return [
         'create_success_employee' => 'បានបង្កើតព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'update_success_employee' => 'បានកែប្រែព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
         'delete_success_employee' => 'បានលុបព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
+        'promote_success_employee' => 'បានធ្វើបច្ចុប្បន្នភាពព័ត៌មានបុគ្គលិកដោយជោគជ័យ។',
 
         'create_success_emp_skill' => 'បានបង្កើតជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',
         'update_success_emp_skill' => 'បានកែប្រែជំនាញរបស់បុគ្គលិកដោយជោគជ័យ!',

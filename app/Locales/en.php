@@ -303,6 +303,9 @@ return [
 
     ],
     'labels' => [
+        //Search Data
+        'search_name_code' => 'Search by Name, Code',
+
         'Name' => 'Name',
         'Gender' => 'Gender',
         'Male' => 'Male',
@@ -638,9 +641,12 @@ return [
         'update_success_tax_bracket' => 'Tax bracket has been updated successfully.',
         'delete_success_tax_bracket' => 'Tax bracket has been deleted successfully.',
 
+        //  Mhr Management
+
         'create_success_employee' => 'Employee information has been created successfully.',
         'update_success_employee' => 'Employee information has been updated successfully.',
         'delete_success_employee' => 'Employee information has been deleted successfully.',
+        'promote_success_employee' => 'Employee information has been promoted successfully.',
 
         'create_success_skill' => 'Skill has been created successfully!',
         'update_success_skill' => 'Skill has been updated successfully!',

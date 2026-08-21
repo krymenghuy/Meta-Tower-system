@@ -162,24 +162,8 @@ var MovementComponent = (() => {
             .call(`${main_view.base_url}/mhr/emp-event/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elEmployee,
-                    d.employees,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Employee", "titles"),
-                    "",
-                );
-                VSUtil.setComboItems(
-                    mThis.elEvent,
-                    d.events,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Movements", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elEmployee,d.employees,"id","name","",LocaleManager.trans("All Employee", "titles"),"");
+                VSUtil.setComboItems(mThis.elEvent,d.events,"id","name","",LocaleManager.trans("All Movements", "titles"),"");
             });
     };
 
@@ -205,8 +189,6 @@ const MovementDialog = (() => {
             return;
         }
         op.emp_id = op.emp_id || op.employee.id;
-        console.log(123,op)
-
         dialog =
             dialog ||
             new GeneralDialog({
@@ -371,20 +353,11 @@ const MovementDialog = (() => {
                             d.change_salary = change_salary;
                             d.change_work_shift = change_work_shift;
 
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/mhr/staff-promotion/promote`,
-                                    d,
-                                    btn,
-                                    false
-                                )
+                            vsapi.call(`${main_view.base_url}/mhr/staff-promotion/promote`,d,{loader:false,agent:btn})
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        cv_interact.success(
-                                            "This employee has been promoted successfully!"
-                                        );
-                                        mThis.showPage('profile_view', d.emp_id);
+                                        cv_interact.success("promote_success_employee");
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

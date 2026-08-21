@@ -185,7 +185,7 @@ var EmployeeManagementComponent = (function () {
                 html: '<span class="ps-2" vslang="titles.Set Resign"></span>',
                 icon: '<i class="fa-solid fa-user-xmark fs-5 text-dark"></i>',
                 cssClass: "border-bottom pb-2",
-                name: "resign",
+                name: "set_resign",
             },
             {
                 html: '<span class="ps-2" vslang="titles.Delete"></span>',
@@ -213,7 +213,7 @@ var EmployeeManagementComponent = (function () {
                     mThis.movementDetail(id);
                     break;
 
-                case "resign":
+                case "set_resign":
                     mThis.setResign(id);
                     break;
 
@@ -392,7 +392,7 @@ var EmployeeManagementComponent = (function () {
         const hasPhoto = !!data.image_url;
         const imageUrl = hasPhoto ? data.image_url : defaultPhoto;
         const photoWrapClass = hasPhoto ? "" : " is-empty";
-        const taxLabel = data.apply_payroll_tax == 1 ? 'Tax' : data.apply_payroll_tax == 0 ? 'Non Tax': '';
+        const taxLabel = data.apply_payroll_tax == 1 ? 'Yes' : data.apply_payroll_tax == 0 ? 'No': '';
         const addressText = data.address || "";
         const addressTitle = addressText
             ? ` title="${mThis._escapeHtml(addressText)}"`
@@ -591,15 +591,15 @@ var EmployeeManagementComponent = (function () {
             employee: mThis.currentEmployeeProfile || null,
             btn: menuLink,
             onClose: () => {
-                mThis.showPage("profile_view", { id: id });
+                mThis.showPage("employee_list", mThis.getFilterData());
             },
         });
     };
     mThis.setResign = (id, menuLink) => {
-        if (typeof ProfileResignDialog === "undefined") return;
+        if (typeof SetResignDialog === "undefined") return;
         if(!AuthManager.allowed(335,false)) return;
 
-        ProfileResignDialog.show({
+        SetResignDialog.show({
             emp_id: id,
             employee: mThis.currentEmployeeProfile || null,
             btn: menuLink,
@@ -1021,7 +1021,7 @@ const EmployeeDialog = (() => {
 })();
 //end:: EmployeeDialog
 
-const ProfileResignDialog = (() => {
+const SetResignDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -1145,4 +1145,4 @@ const ProfileResignDialog = (() => {
 
     return self;
 })();
-//end:: ProfileResignDialog
+//end:: SetResignDialog
