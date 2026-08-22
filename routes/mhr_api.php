@@ -61,6 +61,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/resign', [EmployeeController::class, 'setResign']);
+    Route::post('/terminate', [EmployeeController::class, 'setTerminate']);
+
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/import',[EmployeeController::class,'importEmployee']);
     Route::post('/imported-file-history', [EmployeeController::class, 'importedFileHistory']);

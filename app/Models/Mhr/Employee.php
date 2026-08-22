@@ -245,53 +245,76 @@ class Employee extends VSModel
         }
         $countries = Country::listAll($ss);
 
-     $query = DB::table('employees as emp')
+        $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->join('loc_countries as c', 'c.id', '=', 'emp.nationality_id')
+
+            ->leftJoin('resignations as r', function ($join) {
+                $join->on('r.emp_id', '=', 'emp.id')
+                    ->whereRaw('r.id = (
+                        SELECT r2.id
+                        FROM resignations r2
+                        WHERE r2.emp_id = emp.id
+                        ORDER BY r2.effective_date DESC, r2.id DESC
+                        LIMIT 1
+                    )');
+            })
+
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw('
-            emp.code,
-            emp.id,
-            emp.branch_id,
-            emp.name,
-            emp.name_kh,
-            emp.email,
-            emp.phone_number,
-            emp.nationality_id,
-            c.name as nationality,
-            emp.spouse_name,
-            emp.spouse_occ_code,
-            emp.passport_number,
-            emp.passport_expiry_date,
-            emp.spouse_emp_id,
-            emp.sex,
-            emp.date_of_birth,
-            emp.address,
-            emp.photo_file_name,
-            emp.joining_date,
-            emp.nssf_id,
-            emp.nid,
-            emp.nid_expiry_date,
-            emp.position_id,
-            p.name as position,
-            emp.salary,
-            emp.currency_code,
-            emp.emp_type_id,
-            el.name as type,
-            emp.work_shift_id,
-            ws.name as work_shift,
-            emp.apply_payroll_tax,
-            emp.marital_status,
-            emp.status_id,
-            es.name as status,
-            emp.birth_city_id,
-            emp.update_user
-        ')
-        ->orderBy('emp.id', 'DESC');
+                emp.code,
+                emp.id,
+                emp.branch_id,
+                emp.name,
+                emp.name_kh,
+                emp.email,
+                emp.phone_number,
+                emp.nationality_id,
+                c.name as nationality,
+                emp.spouse_name,
+                emp.spouse_occ_code,
+                emp.passport_number,
+                emp.passport_expiry_date,
+                emp.spouse_emp_id,
+                emp.sex,
+                emp.date_of_birth,
+                emp.address,
+                emp.photo_file_name,
+                emp.joining_date,
+                emp.nssf_id,
+                emp.nid,
+                emp.nid_expiry_date,
+                emp.position_id,
+                p.name as position,
+                emp.salary,
+                emp.currency_code,
+                emp.emp_type_id,
+                el.name as type,
+                emp.work_shift_id,
+                ws.name as work_shift,
+                emp.apply_payroll_tax,
+                emp.marital_status,
+                emp.status_id,
+                es.name as status,
+                emp.birth_city_id,
+                emp.update_user,
+
+                r.id as resignation_id,
+                r.resign_date,
+                r.effective_date as resignation_effective_date,
+
+                CASE
+                    WHEN emp.status_id = 10
+                        AND r.effective_date > CURDATE()
+                    THEN 1
+                    ELSE 0
+                END as is_resigning
+            ')
+            ->orderBy('emp.id', 'DESC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
@@ -299,10 +322,18 @@ class Employee extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
+            if ((int) $row->is_resigning === 1) {
+                $row->display_status = 'Resigning';
+            } else {
+                $row->display_status = $row->status;
+            }
+
             $row->image_url = '';
+
             if ($row->photo_file_name) {
                 $row->image_url = self::profilePicture($row->id);
             }
+
             unset($row->photo_file_name);
         }
         foreach ($rows as &$row) {
@@ -805,7 +836,7 @@ class Employee extends VSModel
                 return DV::error('Failed to save resignation record.');
             }
             if ($effectiveDate <= $today) {
-                $updated = DB::table('employees')->where('id', $id)->update(['status_id' => $status_id]);
+                $updated = DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
                 if (!$updated) {
                     DB::rollBack();
                     return DV::error('Failed to update employee status.');
@@ -829,6 +860,52 @@ class Employee extends VSModel
                 'status_updated' => $effectiveDate <= $today,
             ],
             $effectiveDate > $today ? 'Resignation scheduled successfully. Employee status will change on the effective date.' : 'Resignation processed successfully.');
+    }
+
+    public function setTerminate($status_id, $id = null, $ss = null)
+    {
+        $ss = $ss ? $ss : $this->userInfo;
+        $id = $id ?? $this->id;
+
+        $emp = self::getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
+        }
+
+
+        $events = [
+            'active.30' => 'Terminated'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Terminated';
+
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+
+
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve terminated event.');
+        }
+        $event_date = date('Y-m-d');
+        $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => $impact,
+            'remarks' => 'terminated',
+            'event_date' => $event_date
+        ];
+
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log resignation event.');
+        }
+        $x = DB::table('employees')->where('id', $id)->update(['status_id' => $status_id]);
+        return DV::depends($x, ['Employee status', 'updated']);
     }
     static function getEventId($name)
    {

@@ -336,55 +336,7 @@ var ServiceComponent = (() => {
         };
         new VSDropdownMenu(menuOptions);
     };
-    mThis.changeServiceStatus = (id, link) => {
-        const tr = link.closest("tr");
-        const status_id = tr?.dataset.statusid || "";
-        if (!AuthManager.allowed(254, false)) return;
-        const inputOptions = {
-            context: "success",
-            title: `${LocaleManager.trans("Change Status", "titles")}`,
-            label: "Service Status",
-            valueKey: "status_id",
-            labelKey: "name",
-            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
-            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
-            requiredMessage: "Please select a status",
-            data: [
-                {
-                    status_id: "1",
-                    name: LocaleManager.trans("Active", "titles"),
-                },
-                {
-                    status_id: "2",
-                    name: LocaleManager.trans("Inactive", "titles"),
-                },
-            ],
-            defaultValue: status_id,
-            onConfirm: (status, btn, me) => {
-                const payload = { id, status_id: status.status_id };
-                vsapi
-                    .post(
-                        `${mThis.base_url}/prm/service/update-status`,
-                        payload,
-                        { loader: false, agent: btn },
-                    )
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            me.close();
-                            cv_interact.success("update_success_status");
-                            mThis.ServiceListView.showPage(
-                                mThis.getFilterData(),
-                            );
-                        } else {
-                            me.setError(
-                                res.error_message || "update_failed_status",
-                            );
-                        }
-                    });
-            },
-        };
-        InputBox.show(inputOptions);
-    };
+   
     mThis.editService = (id, menulink) => {
         let op = {
             id: id,

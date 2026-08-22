@@ -165,7 +165,7 @@ var EmployeeManagementComponent = (function () {
         menus: [
             {
                 html: '<span class="ps-2" vslang="titles.View Details"></span>',
-                icon: '<i class="fa-regular fa-eye fs-5 text-primary"></i>',
+                icon: '<i class="fa-regular fa-eye fs-5 text-success"></i>',
                 cssClass: "border-bottom pb-2",
                 name: "view",
             },
@@ -177,20 +177,28 @@ var EmployeeManagementComponent = (function () {
             },
             {
                 html: '<span class="ps-2" vslang="titles.Movement"></span>',
-                icon: '<i class="fa-solid fa-right-left fs-5 text-info"></i>',
+                icon: '<i class="fa-solid fa-right-left fs-5 text-primary"></i>',
                 cssClass: "border-bottom pb-2",
                 name: "movement",
             },
+           
             {
-                html: '<span class="ps-2" vslang="titles.Set Resign"></span>',
-                icon: '<i class="fa-solid fa-user-xmark fs-5 text-dark"></i>',
+                html: '<span class="ps-2" vslang="titles.Resign"></span>',
+                icon: '<i class="fa-solid fa-user-xmark fs-5 text-warning-emphasis"></i>',
                 cssClass: "border-bottom pb-2",
                 name: "set_resign",
             },
+      
             {
                 html: '<span class="ps-2" vslang="titles.Delete"></span>',
                 icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>',
                 name: "delete",
+            },
+            {
+                html: '<span class="ps-2 text-" vslang="titles.Terminated"></span>',
+                icon: `<i class="fa-solid text-danger-emphasis fa-rocket fs-5"></i>`,
+                cssClass: "border-bottom pb-2",
+                name: "set_terminated",
             },
         ],
 
@@ -216,6 +224,11 @@ var EmployeeManagementComponent = (function () {
                 case "set_resign":
                     mThis.setResign(id);
                     break;
+
+                case "set_terminated": {
+                        mThis.setTerminated(id,menuLink);
+                        break;
+                    }
 
                 case "delete":
                     mThis.deleteEmployee(id, menuLink);
@@ -301,19 +314,27 @@ var EmployeeManagementComponent = (function () {
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
                 const photo = d.image_url || defaultPhoto;
-                const statusClass =
-                    d.status_id == 10
-                        ? "badge border-success text-white bg-success"
-                        : d.status_id == 20
-                        ? "badge border-warning text-white bg-warning"
-                        : "badge border-danger text-white bg-danger";
+               const statusClass =
+                d.is_resigning
+                ? "badge border-warning-subtle text-warning bg-warning-subtle"
+                : d.status_id == 10
+                ? "badge border-success text-white bg-success"
+                : d.status_id == 20
+                ? "badge border-warning text-white bg-warning"
+                : d.status_id == 30
+                ? "badge border-danger text-white bg-danger"
+                : "badge border-secondary text-dark bg-secondary";
+                const statusText =
+                    d.is_resigning
+                        ? "Resigning"
+                        : d.status;
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         <article class="emp-list-card">
                                <div class="emp-list-card-header">
                                     <div class="d-flex justify-content-between align-items-start p-3">
                                         <span class="text-capitalize d-inline-block text-center ${statusClass}"  style="min-width:70px;border-width:2px; border: 2px solid #c9a227; border-radius: 6px; padding: 3px 8px; font-size:0.85rem;">
-                                            ${d.status}
+                                            ${statusText}
                                         </span>
 
                                         <div class="align-items-center">
@@ -608,6 +629,51 @@ var EmployeeManagementComponent = (function () {
             },
         });
     };
+     mThis.setTerminated = (id, menuLink) => {
+        const status_id = menuLink?.dataset.statusid || "30";
+        // if (!AuthManager.allowed(254, false)) return;
+        const inputOptions = {
+            context: "success",
+            title: `${LocaleManager.trans("Set Employee Terminate", "titles")}`,
+            label: "Employee Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
+            requiredMessage: "Please select a status",
+            data: [
+                {
+                    status_id: "30",
+                    name: LocaleManager.trans("Terminated", "titles"),
+                },
+            
+            ],
+            defaultValue: status_id,
+            onConfirm: (status, btn, me) => {
+                const payload = { id, status_id: status.status_id };
+                vsapi
+                    .post(
+                        `${mThis.base_url}/mhr/employee/terminate`,
+                        payload,
+                        { loader: false, agent: btn },
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success("The employee has been terminate");
+                            mThis.showPage("employee_list", mThis.getFilterData());
+                        } else {
+                            me.setError(
+                                res.error_message || "update_failed_status",
+                            );
+                        }
+                    });
+            },
+        };
+        InputBox.show(inputOptions);
+    };
+
+ 
 
     mThis.deleteEmployee = (id, menulink) => {
         let op = {
