@@ -70,6 +70,17 @@ class EmployeeController extends Controller
         $res = $emp->setResignStatus($req->all(),$id, $ss,$req->status_id);
         return JDV::raw($res);
     }
+    public function setTerminate(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ? $req->id : $req->id;
+        $employee = new Employee($id, $ss);
+        $res = $employee->setTerminate($req->status_id, $id);
+        return JDV::raw($res);
+    }
 
     public function deleteEmployee(Request $req)
     {
