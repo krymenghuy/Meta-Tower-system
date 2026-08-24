@@ -2,7 +2,7 @@
     <div class="bg-white shadow p-3 rounded-2" id="_divFilter">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_position" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_position" placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
                 <select id="el_department" class="filter-field form-control data-input" data-field="department_id" placeholder=""></select>

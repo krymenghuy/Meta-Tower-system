@@ -787,4 +787,9 @@ class GeneralSettings //extends Model
             )
             ->get();
     }
+    static function options_emp_type($min_level,$ss){
+        $str_min_level = '1=1';
+        if($min_level) $str_min_level = "h_order >$min_level";
+        return DB::table('emp_types')->whereRaw($str_min_level)->selectRaw('id,name AS emp_type')->get();
+    }
 }

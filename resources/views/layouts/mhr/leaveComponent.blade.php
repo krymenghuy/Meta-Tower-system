@@ -3,7 +3,7 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_leave"
-                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by name or code', 'titles') }}">
+                    placeholder="{{ \Vsd\Locales\Localization::trans('search_name_code', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="el_status" class="filter-field data-input" data-field="status_id"></select>

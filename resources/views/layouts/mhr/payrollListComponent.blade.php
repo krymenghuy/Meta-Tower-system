@@ -13,7 +13,7 @@
                     </button>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
-                    <input type="text" class="filter-field rounded-2 input-search" id="_search_payroll_list" placeholder="Search by name">
+                    <input type="text" class="filter-field rounded-2 input-search" id="_search_payroll_list" placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>

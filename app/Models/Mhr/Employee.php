@@ -861,6 +861,79 @@ class Employee extends VSModel
             ],
             $effectiveDate > $today ? 'Resignation scheduled successfully. Employee status will change on the effective date.' : 'Resignation processed successfully.');
     }
+    public function setRejoin($arr = [], $id = null, $ss = null, $status_id)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $v_rule = [
+            'rejoin_date' => '1|date',
+            'remarks' => '1|string|1-300'
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $inputs['emp_id'] = $id;
+        $rejoin_date = $inputs['rejoin_date'];
+        $emp = self::getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
+        }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
+
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
+
+            // Ensure the rejoin date is after the latest resignation's effective date
+            if (strtotime($rejoin_date) <= strtotime($latest_effective_date)) {
+                return DV::error('The rejoin date must be after the latest resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
+
+        $events = [
+            'active.10' => 'Rejoin'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Rejoin';
+
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve rejoin event.');
+        }
+
+        $event_date = date('Y-m-d', strtotime($inputs['rejoin_date']));
+        // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => 'Positive',
+            'remarks' => $inputs['remarks'] ?? '',
+            'event_date' => $event_date
+        ];
+
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log rejoin event.');
+        }
+
+
+        $rejoin_id = DBX::saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
+        if ($rejoin_id) {
+
+            DB::table('employees')->where('id', $id)->update(['status_id' => 10, 'last_rejoin_date' => $rejoin_date]);
+
+            return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
+        }
+
+        return DV::error('Failed to save rejoin record.');
+    }
 
     public function setTerminate($status_id, $id = null, $ss = null)
     {
@@ -1343,6 +1416,103 @@ class Employee extends VSModel
             setOfficialDates($row,['','imported_date','']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+    public function promoteNonStaff($emp_type_id, $id = null, $ss = null, $arr)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+
+        $d = (object) $arr;
+        $remarks = $d->remarks ?? null;
+        $event_date = $d->event_date ?? null;
+
+        $emp_type_info = DB::table('emp_types')
+            ->where('id', $emp_type_id)
+            ->selectRaw('id, name, h_order')
+            ->first();
+
+        if (!$emp_type_info) {
+            return DV::error('The provided employee type does not exist');
+        }
+
+        $h_order = $emp_type_info->h_order;
+
+        $emp = self::getProps($id,'id,code,name,emp_type_id,position_id');
+
+        if (!$emp) {
+            return DV::error('The provided employee ID does not exist');
+        }
+        $org_h_order = DB::table('emp_types')->where('id', $emp->emp_type_id)->value('h_order') ?? 0;
+        if ($org_h_order > $h_order) {
+            return DV::error('Cannot promote status backward');
+        }
+        if ($emp->emp_type_id == $emp_type_id) {
+            return DV::error('The old and new statuses are same');
+        }
+        if ($event_date) {
+            $event_date = date('Y-m-d', strtotime($event_date));
+        }
+        $events = [
+            '1.2' => 'promote intern to probation',
+            '1.3' => 'Promote intern to staff',
+            '2.3' => 'Promote probation to staff',
+        ];
+        $key = $emp->emp_type_id . '.' . $emp_type_id;
+        $event_name = $events[$key] ?? null;
+        if (!$event_name) {
+            return DV::error('Invalid promotion status');
+        }
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_arr = [
+                'name' => $event_name,
+            ];
+
+            $event_res = Event::createEvent($event_arr, $ss);
+
+            $event_id = $event_res->status_code == 200
+                ? ($event_res->data['id'] ?? null)
+                : null;
+        }
+        if (!$event_id) {
+            return DV::error('Failed to create promotion event');
+        }
+        $updateData = ['emp_type_id' => $emp_type_id];
+        if ($emp_type_id == 3) {
+            if (!$emp->position_id) {
+                return DV::error('Employee position does not exist');
+            }
+            $position = DB::table('positions')->where('id', $emp->position_id)->select('id', 'salary', 'currency_code')->first();
+            if (!$position) {
+                return DV::error('Position does not exist');
+            }
+            if (empty($position->salary) || $position->salary <= 0) {
+                return DV::error('Position salary is not configured');
+            }
+            $updateData['salary'] = $position->salary;
+        }
+        $id = DBX::saveData($ss,'employees',['id' => $id],$updateData,[],1,false);
+        if ($id) {
+            $impact = $emp_type_id > $emp->emp_type_id
+                ? 'Positive'
+                : ($emp_type_id < $emp->emp_type_id ? 'Negative' : 'Neutral');
+
+            $inputs = [
+                'emp_id'     => $id,
+                'event_id'   => $event_id,
+                'impact'     => $impact,
+                'remarks'    => $remarks,
+                'event_date' => $event_date,
+            ];
+            DBX::saveData($ss,'emp_events',[],$inputs,[],1,false);
+            return DV::depends($id,['Employee', 'updated']);
+        }
+        return DV::error('Failed to update employee.');
+    }
+     static function getFormOptions_non_staff($emp_id, $ss){
+        $emp = self::getProps($emp_id,'emp_type_id');
+        $min_level = DB::table('emp_types as t')->where('t.id',($emp? $emp->emp_type_id : null))->value('h_order');
+        return (object)['types'=>GeneralSettings::options_emp_type($min_level,$ss)];
     }
 
 }

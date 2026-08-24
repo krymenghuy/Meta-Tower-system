@@ -108,7 +108,7 @@ var MovementComponent = (() => {
 
         mThis.MovementListView = new ListView("_emp_movement_list", {
             fetchApi: `${main_view.base_url}/mhr/emp-event/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white overflow-hidden rounded-3 header-uppercase",
@@ -118,13 +118,12 @@ var MovementComponent = (() => {
         mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.sh_container = mThis.MovementListView.getListContainer();
 
-        const pr_tbl = mThis.MovementListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 215 + "px";
+        const sh_parent = mThis.sh_container.parentElement;
+        sh_parent.style.height = window.innerHeight - 180 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 215 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 180 + "px";
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {

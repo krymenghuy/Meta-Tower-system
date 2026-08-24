@@ -181,12 +181,24 @@ var EmployeeManagementComponent = (function () {
                 cssClass: "border-bottom pb-2",
                 name: "movement",
             },
+            {
+                html: '<span class="ps-2  " vslang="titles.Promote to Staff"></span>',
+                icon: `<i class="fa-solid text-success fa-bolt fs-5"></i>`,
+                cssClass: "border-bottom pb-2",
+                name: "promote_to_staff",
+            },
            
             {
                 html: '<span class="ps-2" vslang="titles.Resign"></span>',
                 icon: '<i class="fa-solid fa-user-xmark fs-5 text-warning-emphasis"></i>',
                 cssClass: "border-bottom pb-2",
                 name: "set_resign",
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.rejoin"></span>',
+                icon: `<i class="fa-solid text-primary fa-rotate-right fs-5"></i>`,
+                cssClass: "border-bottom pb-2",
+                name: "set_rejoin",
             },
       
             {
@@ -201,6 +213,89 @@ var EmployeeManagementComponent = (function () {
                 name: "set_terminated",
             },
         ],
+        onShow: (me, container) => {
+            const menu = me.getActiveMenus(container);
+
+            const statusId = Number(container.dataset.statusid);
+            const empTypeId = Number(container.dataset.typeid);
+            const effectiveDate = container.dataset.effectiveDate || null;
+
+            const today = new Date().toISOString().split("T")[0];
+
+            // Active employee with a future resignation effective date
+            const isResignationPending =
+                statusId === 10 &&
+                effectiveDate &&
+                effectiveDate > today;
+
+            let employeeState = "unknown";
+
+            if (statusId === 10) {
+                employeeState = isResignationPending
+                    ? "resignation_pending"
+                    : "active";
+
+            } else if (statusId === 20) {
+                employeeState = "resigned";
+
+            } else if (statusId === 30) {
+                employeeState = "terminated";
+            }
+
+            const allowedActions = {
+                active: [
+                    "view",
+                    "edit",
+                    "movement",
+                    "set_resign",
+                    "set_terminated",
+                    "delete",
+                    "promote_to_staff",
+                ],
+
+                resignation_pending: [
+                    "view",
+                    "edit",
+                    "movement",
+                    "set_terminated",
+                ],
+
+                resigned: [
+                    "view",
+                    "set_rejoin",
+                ],
+
+                terminated: [
+                    "view",
+                    "set_rejoin",
+                ],
+            };
+
+            Object.keys(menu).forEach((name) => {
+                const item = menu[name];
+
+                if (!item) {
+                    return;
+                }
+
+                let allowed =
+                    allowedActions[employeeState]?.includes(name) ?? false;
+
+                // Promote to Staff:
+                // Only active employees without pending resignation
+                // and not already Staff
+                if (name === "promote_to_staff") {
+                    console.log(556,employeeState);
+                    
+                    allowed =
+                        employeeState === "active" &&
+                        empTypeId !== 3;
+                }
+
+                item.style.display = allowed ? "block" : "none";
+            });
+        },
+        
 
         onClick: (menuLink, id, name) => {
             switch (name) {
@@ -224,6 +319,10 @@ var EmployeeManagementComponent = (function () {
                 case "set_resign":
                     mThis.setResign(id);
                     break;
+                
+                case "set_rejoin":
+                    mThis.setRejoin(id);
+                    break;
 
                 case "set_terminated": {
                         mThis.setTerminated(id,menuLink);
@@ -233,6 +332,11 @@ var EmployeeManagementComponent = (function () {
                 case "delete":
                     mThis.deleteEmployee(id, menuLink);
                     break;
+                
+                case "promote_to_staff": {
+                        mThis.promoteToStaff(id, menuLink);
+                        break;
+                    }
             }
         },
     };
@@ -314,16 +418,16 @@ var EmployeeManagementComponent = (function () {
         if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
                 const photo = d.image_url || defaultPhoto;
-               const statusClass =
+                const statusClass =
                 d.is_resigning
-                ? "badge border-warning-subtle text-warning bg-warning-subtle"
-                : d.status_id == 10
-                ? "badge border-success text-white bg-success"
-                : d.status_id == 20
-                ? "badge border-warning text-white bg-warning"
-                : d.status_id == 30
-                ? "badge border-danger text-white bg-danger"
-                : "badge border-secondary text-dark bg-secondary";
+                    ? "badge border-warning-subtle text-warning bg-warning-subtle"
+                    : d.status_id == 10
+                    ? "badge border-success text-white bg-success"
+                    : d.status_id == 20
+                    ? "badge border-warning text-white bg-warning"
+                    : d.status_id == 30
+                    ? "badge border-danger text-white bg-danger"
+                    : "badge border-secondary text-dark bg-secondary";
                 const statusText =
                     d.is_resigning
                         ? "Resigning"
@@ -333,7 +437,7 @@ var EmployeeManagementComponent = (function () {
                         <article class="emp-list-card">
                                <div class="emp-list-card-header">
                                     <div class="d-flex justify-content-between align-items-start p-3">
-                                        <span class="text-capitalize d-inline-block text-center ${statusClass}"  style="min-width:70px;border-width:2px; border: 2px solid #c9a227; border-radius: 6px; padding: 3px 8px; font-size:0.85rem;">
+                                        <span class="text-capitalize d-inline-block text-center ${statusClass}"  style="min-width:70px;border-width:2px; border: 2px solid #c9a227; border-radius: 4px; padding: 3px 8px; font-size:0.85rem;">
                                             ${statusText}
                                         </span>
 
@@ -343,6 +447,7 @@ var EmployeeManagementComponent = (function () {
                                                 data-id="${d.id}"
                                                 data-statusid="${d.status_id}"
                                                 data-typeid="${d.emp_type_id}"
+                                                data-effectivedate="${d.resignation_effective_date}"
                                                 aria-haspopup="true"
                                                 aria-expanded="false">
                                                 <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
@@ -672,8 +777,192 @@ var EmployeeManagementComponent = (function () {
         };
         InputBox.show(inputOptions);
     };
+    mThis.setRejoin = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.showPage("employee_list", mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(486)) return;
+        mThis.RejoinDialog =
+            mThis.RejoinDialog ||
+            new GeneralDialog({
+                title: LocaleManager.trans("set_rejoin", "titles"),
+                cssClass: "modal-md vs-modal ",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                        <div class="col-md-12">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="rejoin_date" class="form-control data-input" placeholder=" " data-field="rejoin_date"/>
+                                <label vslang="labels.rejoin_date"></label>
+                            </div>
+                        </div>
 
- 
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                <label vslang="labels.Remarks"></label>
+                            </div>
+                        </div>
+                        </div>
+
+                   `,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                },
+
+                configSelect: [],
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn-vs-cancel",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn-vs-save",
+                        click: (me, btn, divModal) => {
+                            let p = me.getData();
+                            //  p.emp_id = op.id;
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/employee/rejoin`,
+                                    p,
+                                    btn,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        cv_interact.success(
+                                            "This employee has been join successfully!"
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                onPrepareForm: (me, data) => {
+                },
+               
+            });
+            
+        mThis.RejoinDialog.show(op);
+    };
+
+   mThis.promoteToStaff = (id, menuLink) => {
+       const op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.showPage("employee_list", mThis.getFilterData());
+            },
+        };
+        // if (!AuthManager.allowed(485)) return;
+        mThis.PromoteDialog =
+            mThis.PromoteDialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                title: LocaleManager.trans("Promote Staff", "titles"),
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="vs-material-field">
+                                    <select data-style="material" name="type" class="form-control data-input" placeholder="${LocaleManager.trans("Employee Type", "labels")}" data-field="emp_type_id"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="vs-material-field">
+                                    <input  data-type="date" name="event_date" class="form-control data-input" placeholder=" " data-field="event_date"/>
+                                    <label vslang="labels.Event Date">Event Date</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label vslang="labels.Remarks"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                   `,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                },
+
+                configSelect: [
+                    {
+                        name: "type",
+                        data: "types",
+                        textField: "emp_type",
+                        valueField: "id",
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Promote",
+                    modifyTitle: "Promote",
+                    targetProp: "Promote",
+                    api: {
+                        endpoint: `${main_view.base_url}/mhr/non-staff/promotion/form-options`,
+                        params: (op) => {
+                            return { id: op.id};
+                        },
+                        onResponse: (me, res) => {
+                           
+                        },
+                    },
+                },
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn-vs-cancel',
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: 'btn-vs-save',
+                        click: (me, btn, divModal) => {
+                            const p = me.getData();
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/mhr/non-staff/promote`,
+                                    p,
+                                    btn,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        cv_interact.success("This employee has been promoted successfully!");
+                                        EmployeeComponent.EmployeeListView.showPage(
+                                            EmployeeComponent.getFilterData()
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                onPrepareForm: (me, data) => {
+                },
+               
+            });
+        mThis.PromoteDialog.show(op);
+    };
 
     mThis.deleteEmployee = (id, menulink) => {
         let op = {
