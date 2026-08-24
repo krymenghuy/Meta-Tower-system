@@ -1,8 +1,8 @@
 "use strict";
-var WorkShiftListComponent = (function () {
+var WorkShiftComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftListComponent");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftComponent");
 
     mThis.title_prop = "work_shifts";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");

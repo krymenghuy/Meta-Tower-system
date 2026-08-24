@@ -20,7 +20,7 @@ var JobsLevelComponent = (function () {
             `,
         },
         {
-            transTitle: "titles.Level",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data)=>
                 `<span class="text-primary-custom">${data.name ?? '_'}</span>`,

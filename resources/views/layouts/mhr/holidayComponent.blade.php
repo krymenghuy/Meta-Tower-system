@@ -3,7 +3,7 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_holiday" 
-                placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
+                placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="holiday_type" class="filter-field data-input" data-field="holiday_type_id" placeholder=""></select>

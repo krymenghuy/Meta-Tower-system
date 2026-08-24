@@ -4,7 +4,7 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_uninformed_leave_search" 
-                placeholder="Search by name or employee code" >
+                placeholder="{{ \Vsd\Locales\Localization::trans('search_name_code', 'labels') }}" >
             </div>
             <div class="col-md-6 col-lg-2">
                 <select id="el_work_shift" name="shifts" class="filter-field data-input" data-field="shifts"></select>

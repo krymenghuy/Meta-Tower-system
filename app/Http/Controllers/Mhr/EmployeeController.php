@@ -70,6 +70,17 @@ class EmployeeController extends Controller
         $res = $emp->setResignStatus($req->all(),$id, $ss,$req->status_id);
         return JDV::raw($res);
     }
+        public function setRejoin(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ? $req->id : $req->id;
+        $employee = new Employee($id, $ss);
+        $res = $employee->setRejoin($req->all(), $id, $ss, $req->status_id);
+        return JDV::raw($res);
+    }
     public function setTerminate(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -120,4 +131,25 @@ class EmployeeController extends Controller
         $import = $emp->importedFileHistory($req->all(),$ss);
         return JDV::result($import);
     }
+
+     public function getFormOptions_non_staff(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $emp_id = $req->id;
+        return JDV::result(Employee::getFormOptions_non_staff($emp_id, $ss));
+    }
+    public function promoteNonStaff(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id ?? $req->id;
+        $employee = new Employee($id, $ss);
+        $res = $employee->promoteNonStaff($req->emp_type_id, $id, $ss, $req->all());
+        return JDV::raw($res);
+    }
+
+
 }

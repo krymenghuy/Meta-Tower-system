@@ -184,9 +184,9 @@ var WarningComponent = (function () {
                     "id",
                     "name",
                     "",
-                    LocaleManager.trans("Warning Type", "titles"),
+                    LocaleManager.trans("All Types", "titles"),
                     "",
-                );
+                222222222222222222222222222);
             });
     };
 

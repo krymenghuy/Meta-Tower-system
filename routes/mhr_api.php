@@ -44,6 +44,11 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->g
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff')->group(function () {
+    Route::post('/promotion/form-options', [EmployeeController::class, 'getFormOptions_non_staff']);
+    Route::post('/promote',[EmployeeController::class,'promoteNonStaff']);
+});
+
 
 Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
 Route::post('/employee/attendance/last-scan',[AttendanceController::class,'getLastEmployeesScan']);
@@ -61,6 +66,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/resign', [EmployeeController::class, 'setResign']);
+    Route::post('/rejoin', [EmployeeController::class, 'setRejoin']);
     Route::post('/terminate', [EmployeeController::class, 'setTerminate']);
 
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);

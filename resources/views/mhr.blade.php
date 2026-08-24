@@ -336,7 +336,7 @@
                             @include('layouts.mhr.employeeAttendanceComponent')
                             @include('layouts.mhr.warningComponent')
                             @include('layouts.mhr.walletAccountComponent')
-                            @include('layouts.mhr.workShiftListComponent')
+                            @include('layouts.mhr.workShiftComponent')
                             @include('layouts.mhr.taxBracketComponent')
                             @include('layouts.mhr.positionComponent')
                             @include('layouts.mhr.departmentComponent')

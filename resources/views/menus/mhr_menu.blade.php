@@ -157,7 +157,7 @@ function v_display($mod_id, $module_ids = null)
                     <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                         <ul class="kt-menu__subnav">
                             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(407); ?>>
-                                <a href="WorkShiftListComponent" modid="407" class="menu-item kt-menu__link">
+                                <a href="WorkShiftComponent" modid="407" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons"
                                             src="{{ asset('assets/images/icons/google-task.svg') }}" />

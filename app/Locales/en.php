@@ -240,7 +240,8 @@ return [
         'dashboard' => 'Dashboard',
 
         'search_name' => 'Search by Name',
-
+        'rejoin' => 'Rejoin',
+        'set_rejoin' => 'Set Rejoin',
         'Create Warning' => 'Create Warning',
         'Create Deduction' => 'Create Deduction',
         'Deduct' => 'Deduct',
@@ -305,6 +306,10 @@ return [
     'labels' => [
         //Search Data
         'search_name_code' => 'Search by Name, Code',
+        'search_name' => 'Search by Name',
+
+        'rejoin_date' => 'Rejoin Date',
+
 
         'Name' => 'Name',
         'Gender' => 'Gender',
