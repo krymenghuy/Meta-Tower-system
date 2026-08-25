@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         // Update contract unit code when current date equals renewal start date (for renewals that changed unit).
         $schedule->command('prm:apply-renewal-unit-changes')->daily();
         $schedule->command('prm:sync-maintenance-statuses')->everyFiveMinutes();
+        $schedule->command('employees:apply-resignations')->daily();
     }
 
     /**

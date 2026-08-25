@@ -31,7 +31,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 115);
+    StyleManager::render('prm-style', 1, 116);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -105,7 +105,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 39);
 
-    ScriptManager::render('mhr-components', 1, 325);
+    ScriptManager::render('mhr-components', 1, 326);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -321,7 +321,7 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.mhr.dashboardComponent')
-                            @include('layouts.mhr.employeeManagementComponent')
+                            @include('layouts.mhr.employeeComponent')
                             @include('layouts.mhr.leaveComponent')
                             @include('layouts.mhr.holidayComponent')
                             @include('layouts.mhr.benefitDisbursementComponent')
@@ -348,6 +348,7 @@
                             @include('layouts.mhr.exitFormComponent')
                             @include('layouts.mhr.deductionComponent')
                             @include('layouts.mhr.importDataComponent')
+                            @include('layouts.mhr.reportComponent')
 
 
 

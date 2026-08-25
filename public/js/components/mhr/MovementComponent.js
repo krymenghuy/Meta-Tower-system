@@ -12,7 +12,7 @@ var MovementComponent = (() => {
     mThis.elEvent = mThis.self.querySelector("#el_event");
     mThis.elEmployee = mThis.self.querySelector("#el_employee");
 
-   mThis.cols = [
+mThis.cols = [
     {
         title: "",
         className: "align-middle text-center",
@@ -21,16 +21,20 @@ var MovementComponent = (() => {
         transTitle: "titles.Employee",
         className: "align-middle text-nowrap",
         data: (row) => {
-
-            const photo = row.image_url ||
+            const defaultPhoto =
                 `${main_view.base_url}/assets/images/default/default-staff.png`;
+
+            const photo = row.image_url || defaultPhoto;
 
             return `
                 <div class="d-flex align-items-center">
-                    <img src="${photo}"
+                    <img
+                        src="${photo}"
                         class="rounded-circle border shadow-sm me-3"
                         style="width:42px;height:42px;object-fit:cover;"
-                        onerror="this.src='${main_view.base_url}/assets/images/default/default-staff.png'">
+                        onerror="this.src='${defaultPhoto}'"
+                    >
+
                     <div>
                         <div class="text-prm-custom text-nowrap">
                             ${row.emp_name ?? "_"}
@@ -42,65 +46,78 @@ var MovementComponent = (() => {
                     </div>
                 </div>
             `;
-        }
+        },
     },
     {
         transTitle: "titles.Event",
-        className: "align-middle",
-        data: (data) =>{
-            return `<span class="text-prm-custom text-nowrap">${data.event ?? "_"}</span>`;
-        } 
+        className: "align-middle text-nowrap",
+        data: (row) => {
+            return `
+                <span class="text-prm-custom">
+                    ${row.event ?? "_"}
+                </span>
+            `;
+        },
     },
     {
-        transTitle: "titles.Date",
+        transTitle: "titles.Event Date",
         className: "align-middle text-nowrap",
-        data: row => `
-            <span class="text-prm-custom">
-                ${row.event_date ?? "-"}
-            </span>
-        `
+        data: (row) => {
+            return `
+                <span class="text-prm-custom">
+                    ${row.event_date ?? "-"}
+                </span>
+            `;
+        },
     },
     {
         transTitle: "titles.Last Updated",
-        className: "align-middle",
-        data: (data) => {
-            return `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
-                <small class="text-muted">${data.updated_at ?? ""}</small>
-            </div>`;
+        className: "align-middle text-nowrap",
+        data: (row) => {
+            return `
+                <div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">
+                        ${row.update_user ?? "_"}
+                    </span>
+
+                    <small class="text-muted">
+                        ${row.updated_at ?? "-"}
+                    </small>
+                </div>
+            `;
         },
     },
     {
         transTitle: "titles.Impact",
         className: "align-middle text-center",
         data: (row) => {
-
             const impact = (row.impact || "").toLowerCase();
 
-            let badge = "badge text-warning bg-warning-subtle border border-warning";
+            const badges = {
+                positive:
+                    "badge text-success bg-success-subtle border border-success",
 
-            switch (impact) {
+                neutral:
+                    "badge text-warning bg-warning-subtle border border-warning",
 
-                case "positive":
-                    badge = "badge text-success bg-success-subtle border border-success";
-                    break;
+                negative:
+                    "badge text-danger bg-danger-subtle border border-danger",
+            };
 
-                case "neutral":
-                    badge = "badge text-warning bg-warning-subtle border border-warning";
-                    break;
-
-                case "negative":
-                    badge = "badge text-danger bg-danger-subtle border border-danger";
-                    break;
-            }
+            const badge =
+                badges[impact] ??
+                "badge text-secondary bg-light border";
 
             return `
-                <span class="text-capitalize d-inline-block text-center ${badge}" style="min-width:70px">
+                <span
+                    class="text-capitalize d-inline-block text-center ${badge}"
+                    style="min-width:70px"
+                >
                     ${row.impact ?? "_"}
                 </span>
             `;
-        }
-    }
+        },
+    },
 ];
 
     mThis.init = () => {

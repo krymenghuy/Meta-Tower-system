@@ -245,7 +245,7 @@ return [
                 '/js/components/mhr/EmployeeExperienceComponent.js',
                 '/js/components/mhr/EmployeeDocumentComponent.js',
                 '/js/components/mhr/TaxAllowanceComponent.js',
-                '/js/components/mhr/EmployeeManagementComponent.js',
+                '/js/components/mhr/EmployeeComponent.js',
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/WorkShiftComponent.js',
                 '/js/components/mhr/skillsComponent.js',
@@ -272,6 +272,8 @@ return [
                 '/js/components/mhr/ExitFormComponent.js',
                 '/js/components/mhr/DeductionComponent.js',
                 '/js/components/mhr/ImportDataComponent.js',
+                '/js/components/mhr/ReportComponent.js',
+                '/js/components/mhr/RenderTableReport.js',
                 '/js/signal.js',
 
 

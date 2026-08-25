@@ -71,7 +71,7 @@ function v_display($mod_id, $module_ids = null)
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(401); ?>>
-                    <a href="EmployeeManagementComponent" modid="401" class="menu-item kt-menu__link">
+                    <a href="EmployeeComponent" modid="401" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/group.svg') }}" />
                         </span>
@@ -262,6 +262,18 @@ function v_display($mod_id, $module_ids = null)
                             <img class="opacity-icons icons" src="{{ asset('assets/images/bhr/journal-check.svg') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.disburse_policies"></span>
+                    </a>
+                </li>
+                <li class="mb-2 kt-menu__section">
+                    <h4 class="kt-menu__section-text" vslang="menus.reporting"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(430); ?>>
+                    <a href="ReportComponent" modid="430" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.reports"></span>
                     </a>
                 </li>
                 
