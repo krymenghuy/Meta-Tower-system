@@ -118,7 +118,7 @@ class Employee extends VSModel
             'photo'           => '0|image',
         ];
         $checkUnique = null;
-        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => GeneralSettings::$remark_chars,'name_kh' => GeneralSettings::$remark_chars,'email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -885,8 +885,6 @@ class Employee extends VSModel
 
         if ($latest_resignation) {
             $latest_effective_date = $latest_resignation->effective_date;
-
-            // Ensure the rejoin date is after the latest resignation's effective date
             if (strtotime($rejoin_date) <= strtotime($latest_effective_date)) {
                 return DV::error('The rejoin date must be after the latest resignation\'s effective date (' . $latest_effective_date . ').');
             }
@@ -1510,9 +1508,16 @@ class Employee extends VSModel
         return DV::error('Failed to update employee.');
     }
      static function getFormOptions_non_staff($emp_id, $ss){
+       $employee = null;
+       if($emp_id){
+            $employee = self::getDetails($emp_id,$ss);
+       }
         $emp = self::getProps($emp_id,'emp_type_id');
         $min_level = DB::table('emp_types as t')->where('t.id',($emp? $emp->emp_type_id : null))->value('h_order');
-        return (object)['types'=>GeneralSettings::options_emp_type($min_level,$ss)];
+        return (object)[
+                'employee' => $employee,
+                'types'=>GeneralSettings::options_emp_type($min_level,$ss)
+            ];
     }
 
 }

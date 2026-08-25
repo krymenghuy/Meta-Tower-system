@@ -1,6 +1,6 @@
 "use strict";
 
-var EmployeeManagementComponent = (function () {
+var EmployeeComponent = (function () {
     const mThis = {};
     mThis.title_prop = "employee_management";
     mThis.defaultPage = 'employee_list';
@@ -285,8 +285,6 @@ var EmployeeManagementComponent = (function () {
                 // Only active employees without pending resignation
                 // and not already Staff
                 if (name === "promote_to_staff") {
-                    console.log(556,employeeState);
-                    
                     allowed =
                         employeeState === "active" &&
                         empTypeId !== 3;
@@ -798,7 +796,7 @@ var EmployeeManagementComponent = (function () {
                         `<div class="row g-3">
                         <div class="col-md-12">
                             <div class="vs-material-field">
-                                <input type="text" data-type="date" name="rejoin_date" class="form-control data-input" placeholder=" " data-field="rejoin_date"/>
+                                <input type="text" data-type="date" name="rejoin_date" class="form-control data-input" disabled placeholder=" " data-field="rejoin_date"/>
                                 <label vslang="labels.rejoin_date"></label>
                             </div>
                         </div>
@@ -851,6 +849,28 @@ var EmployeeManagementComponent = (function () {
                     },
                 ],
                 onPrepareForm: (me, data) => {
+                    const today = new Date();
+
+                    const dd = String(today.getDate()).padStart(2, "0");
+                    const months = [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                    ];
+                    const mm = months[today.getMonth()];
+                    const yyyy = today.getFullYear();
+
+                    const formattedDate = `${dd}-${mm}-${yyyy}`;
+                    me.controls.rejoin_date.value = formattedDate;
                 },
                
             });
@@ -877,14 +897,20 @@ var EmployeeManagementComponent = (function () {
                 createContent: () => {
                     return [
                         `<div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" name="type" class="form-control data-input" placeholder="${LocaleManager.trans("Employee Type", "labels")}" data-field="emp_type_id"></select>
+                                    <input name="emp_type_id_old"  class="form-control data-input" data-field="emp_type_id" disabled placeholder=" " />
+                                    <label vslang="labels.From"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vs-material-field">
+                                    <select data-style="material" name="type" class="form-control data-input" placeholder="${LocaleManager.trans("Promote To", "labels")}" data-field="emp_type_id"></select>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="vs-material-field">
-                                    <input  data-type="date" name="event_date" class="form-control data-input" placeholder=" " data-field="event_date"/>
+                                    <input  data-type="date" name="event_date" class="form-control data-input" placeholder=" " disabled data-field="event_date"/>
                                     <label vslang="labels.Event Date">Event Date</label>
                                 </div>
                             </div>
@@ -901,6 +927,7 @@ var EmployeeManagementComponent = (function () {
                     ].join("");
                 },
                 contentCreated: (me) => {
+                    
                 },
 
                 configSelect: [
@@ -925,6 +952,7 @@ var EmployeeManagementComponent = (function () {
                         },
                     },
                 },
+               
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
@@ -938,6 +966,7 @@ var EmployeeManagementComponent = (function () {
                         cssClass: 'btn-vs-save',
                         click: (me, btn, divModal) => {
                             const p = me.getData();
+                             
                             vsapi
                                 .call(
                                     `${main_view.base_url}/mhr/non-staff/promote`,
@@ -958,6 +987,33 @@ var EmployeeManagementComponent = (function () {
                     },
                 ],
                 onPrepareForm: (me, data) => {
+                    console.log(44,data);
+                    const d = data.employee;
+                    
+                    const today = new Date();
+
+                    const dd = String(today.getDate()).padStart(2, "0");
+                     const months = [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                    ];
+                    const mm = months[today.getMonth()];
+                    const yyyy = today.getFullYear();
+
+                    const formattedDate = `${dd}-${mm}-${yyyy}`;
+
+                    me.controls.event_date.value = formattedDate;
+                    me.controls.emp_type_id_old.value = d.type;
                 },
                
             });

@@ -38,6 +38,7 @@ use App\Http\Controllers\Mhr\AttendanceController;
 use App\Http\Controllers\Mhr\ShiftDetailsController;
 use App\Http\Controllers\Mhr\ExitFormItemController;
 use App\Http\Controllers\Mhr\ExitFormController;
+use App\Http\Controllers\Mhr\ReportController;
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
@@ -357,6 +358,20 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details
     Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
     Route::post('/list', [ShiftDetailsController::class, 'getShiftDetail']);
 });
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->group(function () {
+    Route::post('/list', [ReportController::class, 'getReportList']);
+    Route::post('employee_movement', [ReportController::class, 'getEmployeeMovementReport']);
+    Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
+    Route::post('vendor_payment_list',[ReportController::class,'getVendorPaymentReport']);
+    Route::post('deposit_list',[ReportController::class,'getTenantDepositList']);
+    Route::post('income_by_category',[ReportController::class,'getIncomeByCategories']);
+
+
+});
+
+
+   
 
 
 // Route::middleware('auth.api')->get('/signal-ticket', function (Request $request) {
