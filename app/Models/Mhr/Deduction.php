@@ -64,50 +64,43 @@ class Deduction extends VSModel
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
         $search_value = $d->search_value ?? null;
-
         $str_search = '1=1';
-
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
 
         $query = DB::table('emp_deductions as d')
             ->join('employees as emp', 'emp.id', '=', 'd.emp_id')
             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
             ->whereRaw($str_search)
-            ->selectRaw('d.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex, p.name as position, d.deduct_date, d.deduct_amount, d.issues, d.remarks, d.update_user, d.updated_at')
+            ->selectRaw('d.id, emp.id as emp_id, emp.code as emp_code, emp.name, emp.sex, p.name as position, d.deduct_date, d.deduct_amount, d.issues, d.remarks, d.is_used, d.update_user, d.updated_at')
             ->orderBy('d.id', 'DESC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('d.id');
-
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
         foreach ($rows as $row) {
             setOfficialDates($row, ['deduct_date'], ['updated_at'], ['']);
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     public function getDetails($id, $ss = null) {
-        $deduct_dates = DBX::formatDate('d.deduct_date', 'deduct_date');
-        $col_update_date = DBX::formatDate('d.updated_at', 'update_date');
-
         $row = DB::table('emp_deductions as d')
             ->join('employees as emp', 'emp.id', '=', 'd.emp_id')
             ->leftJoin('positions as p', 'p.id', '=', 'emp.position_id')
             ->where('d.id', $id)
-            ->selectRaw('d.id, d.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position, ' . $deduct_dates . ', d.deduct_amount, d.issues, d.remarks, d.update_user, ' . $col_update_date)
+            ->selectRaw('d.id, d.emp_id, emp.code as emp_code, emp.name as employee, emp.position_id as position_id, p.name as position,d.deduct_date, d.deduct_amount, d.issues, d.remarks, d.update_user,d.updated_at')
             ->first();
+        if($row){
+            setOfficialDates($row, ['deduct_date'], ['updated_at'], ['']);
+        }
         return $row;
     }
 

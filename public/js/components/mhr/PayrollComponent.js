@@ -308,7 +308,7 @@ var PayrollComponent = new (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang=titles.Authorize> Authorize </span>',
+                    html: '<span class="ps-2" vslang=titles.Authorize>Authorize</span>',
                     icon: '<i class="fa-regular fa-circle-check fs-5 text-primary"></i>',
                     name: "change_authorize",
                 },
