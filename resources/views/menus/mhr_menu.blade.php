@@ -115,8 +115,8 @@ function v_display($mod_id, $module_ids = null)
                                     <span class="font-color kt-menu__link-text" vslang="menus.warnings"></span>
                                 </a>
                             </li>
-                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(418); ?>>
-                                <a href="DeductionComponent" modid="418" class="menu-item kt-menu__link">
+                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(431); ?>>
+                                <a href="DeductionComponent" modid="431" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons" src="{{ asset('assets/images/bhr/journal-check.svg') }}" />
                                     </span>

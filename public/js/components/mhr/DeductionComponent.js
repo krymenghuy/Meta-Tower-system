@@ -27,9 +27,9 @@ var DeductionComponent = (function () {
                 return `
                     <div class="d-flex align-items-center">
                         <div>
-                            <span class="fw-bold" style="font-size: 13px;">${data.name ?? ""}</span>
+                            <span class="text-nowrap">${data.name ?? ""}</span>
                             <br/>
-                            <span class="text-muted" style="font-size: 11px;">${data.emp_code ?? ""}</span>
+                            <span class="small text-muted">${data.emp_code ?? ""}</span>
                         </div>
                     </div>
                 `;
@@ -43,25 +43,26 @@ var DeductionComponent = (function () {
             },
         },
         {
-            transTitle: "titles.Deduct Amount",
+            transTitle: "titles.Deduct Date",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `
+                    <span class="badge bg-light text-prm-custom border px-3 py-2">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${data.deduct_date ?? "-"}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Amount",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 let amt = parseFloat(data.deduct_amount) || 0;
                 return `<span class="text-nowrap text-prm-custom">$${amt.toFixed(2)}</span>`;
             }
         },
-        // {
-        //     transTitle: "titles.Date",
-        //     className: "align-middle text-center text-nowrap",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <span class="badge bg-light text-prm-custom border px-3 py-2">
-        //                 <i class="fa-regular fa-calendar me-1"></i>
-        //                 ${data.deduct_date ?? "-"}
-        //             </span>
-        //         `;
-        //     },
-        // },
+        
         {
             transTitle: "titles.Issue",
             className: "align-middle text-nowrap",
@@ -70,6 +71,17 @@ var DeductionComponent = (function () {
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.issues ?? "-"}</span>
                     </div>
+                `;
+            },
+        },
+      {
+            transTitle: "titles.Status",
+            className: "align-middle text-center",
+            data: (data) => {
+                return `
+                    <span class="badge ${data.is_used == "1" ? "bg-success" : "bg-warning"}">
+                        ${data.is_used == "1" ? "Used in Payroll" : "Pending"}
+                    </span>
                 `;
             },
         },
@@ -82,20 +94,6 @@ var DeductionComponent = (function () {
                 <small >${data.updated_at ?? ""}</small>
             </div>`,
         },
-        // {
-        //     className: 'col_action align-middle',
-        //     data: function (data, row, display) {
-        //         return `
-        //             <div class="d-flex justify-content-center align-items-center">
-        //                 <div class="text-center gap-2 d-flex flex-wrap">
-        //                         <a href="javascript:void(0)" class="btn_warning_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
-        //                             <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
-        //                     </a>
-        //                 </div>
-        //             </div>
-        //         `;
-        //     }
-        // },
 
     ];
 

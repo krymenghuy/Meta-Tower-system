@@ -31,7 +31,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 117);
+    StyleManager::render('prm-style', 1, 118);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -105,7 +105,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 39);
 
-    ScriptManager::render('mhr-components', 1, 327);
+    ScriptManager::render('mhr-components', 1, 328);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

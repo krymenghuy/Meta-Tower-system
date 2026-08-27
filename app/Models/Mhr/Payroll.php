@@ -561,6 +561,17 @@ class Payroll extends VSModel
         }
         DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'auth_user' => null, 'auth_date' => null, 'disbursed' => 0, 'last_disburse_id' => null]);
         DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
+        DB::table('emp_deductions')
+            ->whereIn('emp_id', function ($query) use ($id) {
+                $query->select('emp_id')
+                    ->from('payroll_list')
+                    ->where('payroll_id', $id);
+            })
+            ->where('is_used', 1)
+            ->update([
+                'is_used' => 0,
+                'updated_at' => now(),
+            ]);
         if ($failed_count <= 0) {
             DB::commit();
             return DV::depends(1, ['reversed_transaction_count' => $success_count]);
@@ -800,6 +811,7 @@ class Payroll extends VSModel
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
             $deduction = DB::table('emp_deductions')
                 ->where('emp_id', $payroll->emp_id)
+                ->where('is_used', 0)
                 ->whereBetween('deduct_date', [$db_start_date, $db_end_date])
                 ->sum('deduct_amount') ?? 0;
             
@@ -1130,6 +1142,7 @@ class Payroll extends VSModel
             $last_bias = $bias_per_day * $allowance_days;
             $deduction = DB::table('emp_deductions')
                 ->where('emp_id', $employee->emp_id)
+                ->where('is_used', 0)
                 ->whereBetween('deduct_date',[$db_start_date,$db_end_date])
                 ->sum('deduct_amount') ?? 0;
             $deduction =  (float) $deduction;
@@ -1158,6 +1171,14 @@ class Payroll extends VSModel
                     'deduction' => $deduction,
                     'total_salary' => $total_salary
                 ]);
+                DB::table('emp_deductions')
+                    ->where('emp_id', $employee->emp_id)
+                    ->where('is_used', 0)
+                    ->whereBetween('deduct_date', [$db_start_date, $db_end_date])
+                    ->update([
+                        'is_used' => 1,
+                        'updated_at' => now(),
+                    ]);
             $success_count++;
         }
         $payroll_total = DB::table('payroll_list')->where('payroll_id', $payroll_id)->sum('total_salary');
