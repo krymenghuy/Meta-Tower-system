@@ -24,156 +24,279 @@ var PayrollListComponent = (()=> {
     mThis.issues_list = mThis.self.querySelector("#_issues_list");
 
     mThis.cols = [
+    // Row / Selection column
+    {
+        title: "",
+        className: "align-middle text-center text-nowrap",
+    },
 
-        {
-            title: "",
-            className: 'align-middle text-capitalize text-nowrap',
-            // data: (data, index, i) => { return (index + 1) },
+    // Employee
+    {
+        transTitle: "titles.Employee",
+        className: "align-middle text-nowrap",
+        data: (data) => {
+            const defaultImage =
+                `${main_view.asset_url}/images/default/default-staff.png`;
 
-        },
+            const imageUrl = data.image_url || defaultImage;
 
-        {
-            transTitle: "titles.Employee",
-            className: "align-middle text-start w-15",
-            data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span class="text-nowrap">${
-                                    data.emp_name ?? ""
-                                }</span>
-                                <br/>
-                                <small class="text-dark">${
-                                    data.emp_position ?? ""
-                                }</small>
-                            </div>
-                        </div>`;
-            }
-        },
+            return `
+                <div class="d-flex align-items-center">
+                    <img
+                        src="${imageUrl}"
+                        class="rounded-circle border shadow-sm me-3"
+                        alt="${data.emp_name ?? "Employee"}"
+                        style="width:42px;height:42px;object-fit:cover;"
+                        onerror="this.src='${defaultImage}'"
+                    >
 
-        {
-            transTitle: "titles.Salary",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
-                //return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Taxable BFT",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_taxable), data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Nontaxable BFT",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.BFT (Flat Tax)",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                if (!data.used_amount || Object.keys(data.used_amount).length === 0) {
-                    return `<p class="p-0 m-0">${VSMoney.formatAmount(0, data.currency_code)}</p>`;
-                }
+                    <div class="d-flex flex-column">
+                        <span class="text-prm-custom fw-medium text-nowrap">
+                            ${data.emp_name ?? "-"}
+                        </span>
 
-                const flatTaxDetails = Object.entries(data.used_amount)
-                    .map(([taxRate, amount]) => {
-                        const formattedAmount = VSMoney.formatAmount(amount, data.currency_code);
-                        return `${formattedAmount} (${taxRate}%)`;
-                    })
-                    .join('<br>');
+                        <small class="text-muted text-nowrap">
+                            ${data.emp_position ?? "-"}
+                        </small>
+                    </div>
+                </div>
+            `;
+        },
+    },
 
-                return `<p class="p-0 m-0">${flatTaxDetails}</p>`;
-            }
-        },
+    // Base Salary
+    {
+        transTitle: "titles.Base Salary",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="text-prm-custom">
+                ${VSMoney.formatAmount(
+                    data.salary ?? 0,
+                    data.currency_code
+                )}
+            </span>
+        `,
+    },
 
-        {
-            transTitle: "titles.Deduction",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.deduction, data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Allowance",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.allowance, data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Tax Rate",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Bias",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
-            }
-        },
+    // Taxable Benefits
+    {
+        transTitle: "titles.Taxable Benefits",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => {
+            const amount =
+                data.taxable_benefit ??
+                data.benefit_taxable ??
+                0;
 
-        {
-            transTitle: "titles.Tax Base",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</p>`;
-            }
+            return `
+                <span class="text-prm-custom">
+                    ${VSMoney.formatAmount(
+                        amount,
+                        data.currency_code
+                    )}
+                </span>
+            `;
         },
-        // {
-        //     title: "Benefit Tax Flat Rate",
-        //     className: "align-middle text-nowrap",
-        //     data: (data, index, tr) => {
-        //         return `<p class="p-0 m-0">${data.flat_tax_rate ?? ''} %</p>`;
-        //     }
-        // },
-        {
-            transTitle: "titles.Benefit Tax",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_tax), data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle: "titles.Total",
-            className: "align-middle text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0 ${data.disbursed == '1' ? 'text-success' : ''}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
-            }
-        },
-        {
-            transTitle:"titles.Action",
-            className: "col_action align-middle",
-            data: (data,index,tr) => {
-                return [
-                `<div class="d-flex justify-content-center align-items-center">`,
-                    `<div class="text-center gap-2 d-flex flex-wrap">`,
-                        `<a href="javascript:void(0)"`,
-                           `class="btn_payroll_list_action"`,
-                           `data-id="${data.id}"`,
-                           `data-empid="${data.emp_id}"`,
-                           `data-payrollid="${data.payroll_id}"`,
-                           `data-disbursed="${data.disbursed || 0}"`,
-                           `aria-haspopup="true"`,
-                           `aria-expanded="false">`,
-                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
-                            `<i class="fa-solid fa-ellipsis-vertical tool-tip fs-3 " style="color:#2b3991;"><span class="tool-tiptext fs-6 ">Action</span></i>`,
-                        `</a>`,
-                    `</div>`,
-                `</div>`].join('');
-            }
-        },
+    },
 
+    // Non-Taxable Benefits
+    {
+        transTitle: "titles.Non-Taxable Benefits",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => {
+            const amount =
+                data.nontaxable_benefit ??
+                data.benefit_non_tax ??
+                0;
 
-    ];
+            return `
+                <span class="text-prm-custom">
+                    ${VSMoney.formatAmount(
+                        amount,
+                        data.currency_code
+                    )}
+                </span>
+            `;
+        },
+    },
+
+    // Flat-Rate Benefits
+    {
+        transTitle: "titles.Flat-Rate Benefits",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => {
+            const usedAmount = data.used_amount;
+
+            if (
+                !usedAmount ||
+                Object.keys(usedAmount).length === 0
+            ) {
+                return `
+                    <span class="text-muted">
+                        ${VSMoney.formatAmount(
+                            0,
+                            data.currency_code
+                        )}
+                    </span>
+                `;
+            }
+
+            const details = Object.entries(usedAmount)
+                .map(([taxRate, amount]) => {
+                    return `
+                        <div class="text-nowrap">
+                            ${VSMoney.formatAmount(
+                                amount ?? 0,
+                                data.currency_code
+                            )}
+                            <small class="text-muted">
+                                (${taxRate}%)
+                            </small>
+                        </div>
+                    `;
+                })
+                .join("");
+
+            return `
+                <div class="text-prm-custom">
+                    ${details}
+                </div>
+            `;
+        },
+    },
+
+    // Deductions
+    {
+        transTitle: "titles.Deductions",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="text-danger">
+                ${VSMoney.formatAmount(
+                    data.deduction ?? 0,
+                    data.currency_code
+                )}
+            </span>
+        `,
+    },
+
+    // Tax Allowance
+    {
+        transTitle: "titles.Tax Allowance",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="text-prm-custom">
+                ${VSMoney.formatAmount(
+                    data.allowance ?? 0,
+                    data.currency_code
+                )}
+            </span>
+        `,
+    },
+
+    // Tax Rate
+    {
+        transTitle: "titles.Tax Rate",
+        className: "align-middle text-nowrap text-center",
+        data: (data) => `
+            <span class="text-prm-custom">
+                ${data.tax_rate ?? 0}%
+            </span>
+        `,
+    },
+
+    // Tax Offset / Bias
+    {
+        transTitle: "titles.Tax Offset / Bias",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="text-prm-custom">
+                ${VSMoney.formatAmount(
+                    data.bias ?? 0,
+                    data.currency_code
+                )}
+            </span>
+        `,
+    },
+
+    // Income Tax
+    {
+        transTitle: "titles.Tax Base",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => `
+            <span class="text-danger">
+                ${VSMoney.formatAmount(
+                    data.tax_base ?? 0,
+                    data.currency_code
+                )}
+            </span>
+        `,
+    },
+
+    // Benefit Tax
+    {
+        transTitle: "titles.Benefit Tax",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => {
+            const amount =
+                data.benefit_tax ?? 0;
+
+            return `
+                <span class="text-danger">
+                    ${VSMoney.formatAmount(
+                        amount,
+                        data.currency_code
+                    )}
+                </span>
+            `;
+        },
+    },
+
+    // Net Pay
+    {
+        transTitle: "titles.Net Pay",
+        className: "align-middle text-nowrap text-end",
+        data: (data) => {
+            const isDisbursed =
+                String(data.disbursed) === "1";
+
+            return `
+                <span class="fw-semibold ${
+                    isDisbursed
+                        ? "text-success"
+                        : "text-prm-custom"
+                }">
+                    ${VSMoney.formatAmount(
+                        data.total_salary ?? 0,
+                        data.currency_code
+                    )}
+                </span>
+            `;
+        },
+    },
+
+    // Actions
+    {
+        transTitle: "titles.Actions",
+        className: "col_action align-middle text-center",
+        data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <a
+                    href="javascript:void(0)"
+                    class="btn_payroll_list_action"
+                    data-id="${data.id}"
+                    data-empid="${data.emp_id}"
+                    data-payrollid="${data.payroll_id}"
+                    data-disbursed="${data.disbursed ?? 0}"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    title="Actions"
+                >
+                    <i class="fa-solid fa-ellipsis-vertical fs-4 text-prm-custom"></i>
+                </a>
+            </div>
+        `,
+    },
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;

@@ -998,8 +998,6 @@ function studentAttendance(div, data) {
 
 function jsonToTable(div, d) {
     d = d ?? {};
-    console.log(444,d);
-    
     let header = null,
         body = null,
         tr = null;

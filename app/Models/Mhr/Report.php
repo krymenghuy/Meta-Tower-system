@@ -164,8 +164,8 @@ class Report //extends Model
 
     function getEmployeeMovementReport($filter, $ss = null)
     {
-        $header_list = ['Code', 'Name', 'Email', 'Impact', 'Event Type', 'Event Date'];
-        $key_list = ['code', 'name', 'email', 'impact', 'event_name', 'event_date'];
+        $header_list = ['Code', 'Name', 'Position', 'Impact', 'Event', 'Event Date'];
+        $key_list = ['code', 'name', 'position', 'impact', 'event_name', 'event_date'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
@@ -194,20 +194,17 @@ class Report //extends Model
             ev.impact,
             em.id as event_id,
             em.name as event_name,
-            pos.name as position_title,
+            pos.name as position,
             emp.emp_type_id,
             emp.name,
             emp.code,
-            emp.email,
             ' . $col_event_date
             );
 
         if ($start_date && $end_date) {
             $query->whereBetween('ev.event_date', [$start_date, $end_date]);
         }
-
         $rows = $query->get();
-
         $groupedData = ['data' => $rows->map(function ($row) {
             unset($row->id);
             return $row;

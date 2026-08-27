@@ -1,5 +1,5 @@
 <div id="_main_receipt_component" class="mobile-padding p-3" style="display:none;">
-     <div id="_divFilter_receipt" class="rounded-2 p-3 bg-white shadow-lg">
+     <div id="_divFilter_receipt" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">

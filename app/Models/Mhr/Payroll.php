@@ -632,7 +632,7 @@ class Payroll extends VSModel
 
 
     //CalculatePayroll()
-    function calculate($id = null, $ss = null)
+    function calculate1($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $payroll_id = $id ?? $this->id;
@@ -708,8 +708,7 @@ class Payroll extends VSModel
             } else {
                 $count_days_resign = $resign->count_days;
                 $resigned_or_new_start = $resign->resigned_or_new_start;
-            }
-
+            } 
             $rejoin = self::count_days_rejoin($row->status_id, $row->last_rejoin_date, $row->joining_date, $payroll->start_date, $payroll->end_date);
             if ($rejoin->error) {
                 $issues_count++;
@@ -788,7 +787,6 @@ class Payroll extends VSModel
                 ];
                 continue;
             }
-
             $salary = ($payroll->salary / $day_in_month) * $count_days;
             $benefit_taxable = $payroll->benefit_taxable;
             $benefit_non_tax = $payroll->benefit_non_tax;
@@ -805,7 +803,6 @@ class Payroll extends VSModel
                 ->whereBetween('deduct_date', [$db_start_date, $db_end_date])
                 ->sum('deduct_amount') ?? 0;
             
-
             if ($payroll->apply_payroll_tax == 1) {
 
                 $tax_rate = $payroll->tax_rate ?? 0;
@@ -943,6 +940,241 @@ class Payroll extends VSModel
             'payroll_total' => $payroll_total
         ]);
     }
+    public function calculate($id = null, $ss = null)
+{
+    $ss = $ss ?? $this->userInfo;
+    $payroll_id = $id ?? $this->id;
+
+    $payroll = self::getProps($payroll_id,'id,name,authorized,disbursed,month,year,start_date,end_date,currency_code');
+    if (!$payroll) {
+        return DV::error('No Payroll ID provided');
+    }
+    if ($payroll->authorized == 1) {
+        return DV::error('Cannot calculate payroll that has been authorized! The next step is to disburse payments to all staffs.');
+    }
+    if ($payroll->disbursed == 1) {
+        return DV::error('Cannot calculate any amounts because this payroll has already been disbursed!');
+    }
+    $db_start_date = convertDate($payroll->start_date);
+    $db_end_date = convertDate($payroll->end_date);
+
+    $payroll->start_date = $db_start_date;
+    $payroll->end_date = $db_end_date;
+    $start_date = DBX::formatDate('p.start_date', 'start_date');
+    $end_date = DBX::formatDate('p.end_date', 'end_date');
+    $day_in_month = days_in_month($payroll->month,$payroll->year);
+    $payroll_days = dateDiff_days($payroll->start_date,$payroll->end_date) + 1;
+    if ($day_in_month <= 0 || $payroll_days <= 0) {
+        return DV::error('Invalid payroll date range');
+    }
+    $payroll->days = $payroll_days;
+    $payroll->total_days = $day_in_month;
+
+    $emps = DB::table('payroll_list as pl')
+        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+        ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
+        ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+        ->where('p.id', $payroll_id)
+        ->selectRaw('
+            pl.id,
+            p.id as payroll_id,
+            ' . $start_date . ',
+            ' . $end_date . ',
+            p.name as payroll_name,
+            p.month,
+            p.year,
+            e.id as emp_id,
+            e.code as emp_code,
+            e.name as emp_name,
+            el.name as emp_role,
+            pl.salary,
+            pl.tax_rate,
+            pl.bias,
+            p.currency_code as payroll_currency,
+            p.exchange_rate,
+            pl.deduction,
+            e.status_id,
+            e.joining_date,
+            e.last_rejoin_date,
+            e.branch_id
+        ')
+        ->orderBy('e.id')
+        ->get();
+
+    if ($emps->isEmpty()) {
+        return DV::error(
+            'It seems you have not yet imported active staffs into the payroll'
+        );
+    }
+    $issues = [];
+    $issues_count = 0;
+    $success_count = 0;
+    $fail_count = 0;
+    DB::beginTransaction();
+
+    try {
+        foreach ($emps as $row) {
+            $resigned_or_new_start = false;
+            $count_days = $payroll_days;
+
+            $count_days_resign = -1;
+            $count_days_rejoin = -1;
+            $resign = self::count_days_resign($row->emp_id,$payroll->start_date,$payroll->end_date);
+            if ($resign->error) {
+                $issues_count++;
+                $fail_count++;
+                $issues[] = (object) [
+                    'id' => $row->emp_id,
+                    'code' => $row->emp_code,
+                    'name' => $row->emp_name,
+                    'issue' => $resign->error
+                ];
+            } else {
+                $count_days_resign = $resign->count_days;
+                $resigned_or_new_start = $resign->resigned_or_new_start;
+            }
+            $rejoin = self::count_days_rejoin($row->status_id,$row->last_rejoin_date,$row->joining_date,$payroll->start_date,$payroll->end_date);
+            if ($rejoin->error) {
+                $issues_count++;
+                $fail_count++;
+                $issues[] = (object) [
+                    'id' => $row->emp_id,
+                    'code' => $row->emp_code,
+                    'name' => $row->emp_name,
+                    'issue' => $rejoin->error
+                ];
+            } else {
+                if ($rejoin->count_days >= 0) {
+                    $count_days_rejoin = $rejoin->count_days;
+                    $resigned_or_new_start = $rejoin->resigned_or_new_start;
+                }
+            }
+            if (
+                $count_days_resign >= 0 || $count_days_rejoin >= 0) {
+                $count_days =
+                    ($count_days_resign >= 0
+                        ? $count_days_resign
+                        : 0)
+                    +
+                    ($count_days_rejoin >= 0
+                        ? $count_days_rejoin
+                        : 0);
+            }
+            $row->count_days = $count_days;
+
+            $row->resigned_or_new_start = $resigned_or_new_start;
+            $allowances = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->selectRaw('id,allowance,currency_code as allowance_currency')
+                ->get();
+            foreach ($allowances as $allowance) {
+                if ($allowance->allowance_currency != $row->payroll_currency) {
+                    $allowance->allowance = VSMoney::convert($ss,$allowance->allowance,$allowance->allowance_currency,$row->payroll_currency,(1 / $row->exchange_rate));
+                }
+            }
+            $row->allowance =  $allowances->sum('allowance') ?? 0;
+            $row->apply_payroll_tax =  DB::table('employees')->where('id', $row->emp_id)->value('apply_payroll_tax') ?? 0;
+            $benefits = self::getAllBenefits($row->emp_id,$payroll);
+            $row->benefit_taxable = self::getSimpleBenefits($benefits,$row->emp_id,1,$payroll) ?? 0;
+            $row->benefit_non_tax = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll) ?? 0;
+            $row->benefits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll) ?? [];
+        }
+        foreach ($emps as $employee) {
+            $count_days = (float) ($employee->count_days ?? 0);
+            $resigned_or_new_start = (bool) ($employee->resigned_or_new_start ?? false);
+            if ($count_days <= 0) {
+                $issues_count++;
+                $fail_count++;
+                $issues[] = (object) [
+                    'id' => $employee->emp_id,
+                    'code' => $employee->emp_code,
+                    'name' => $employee->emp_name,
+                    'issue' => 'No days to calculate'
+                ];
+                continue;
+            }
+            if ($employee->salary <= 0) {
+                $issues_count++;
+                $fail_count++;
+                $issues[] = (object) [
+                    'id' => $employee->emp_id,
+                    'code' => $employee->emp_code,
+                    'name' => $employee->emp_name,
+                    'issue' => 'No salary to calculate'
+                ];
+                continue;
+            }
+            $monthly_salary = (float) $employee->salary;
+            $salary_per_day = $monthly_salary / $day_in_month;
+            $salary_days = $resigned_or_new_start ? $count_days : $payroll_days;
+            $last_salary = $salary_per_day * $salary_days;
+            $benefit_taxable = (float) ($employee->benefit_taxable ?? 0);
+            $benefit_non_tax = (float) ($employee->benefit_non_tax ?? 0);
+            $benefits_flat_rate = $employee->benefits_flat_rate ?? [];
+            $benefit_flat_rate_sum = 0;
+            $benefit_tax = 0;
+            foreach ($benefits_flat_rate as $bfr) {
+                $benefit_amount = (float) ($bfr['amount'] ?? 0);
+                $flat_tax_rate = (float) ($bfr['flat_tax_rate'] ?? 0);
+                $benefit_flat_rate_sum += $benefit_amount;
+                if ($employee->apply_payroll_tax == 1) {
+                    $benefit_tax += $benefit_amount * ($flat_tax_rate / 100);
+                }
+            }
+            $allowance = (float) ($employee->allowance ?? 0);
+            $allowance_per_day = $allowance / $day_in_month;
+            $allowance_days = $resigned_or_new_start ? $count_days : $payroll_days;
+            $last_allowance = $allowance_per_day * $allowance_days;
+            $bias = (float) ($employee->bias ?? 0);
+            $bias_per_day = $bias / $day_in_month;
+            $last_bias = $bias_per_day * $allowance_days;
+            $deduction = DB::table('emp_deductions')
+                ->where('emp_id', $employee->emp_id)
+                ->whereBetween('deduct_date',[$db_start_date,$db_end_date])
+                ->sum('deduct_amount') ?? 0;
+            $deduction =  (float) $deduction;
+            $gross_salary = $last_salary + $benefit_taxable + $benefit_non_tax + $benefit_flat_rate_sum;
+            $tax_base = 0;
+            if ($employee->apply_payroll_tax == 1) {
+                $taxable_income = $last_salary + $benefit_taxable;
+                $tax_rate = (float) ($employee->tax_rate ?? 0);
+                $tax_base = (($taxable_income - $last_allowance) * ($tax_rate / 100)) - $last_bias;
+                $tax_base = max(0, $tax_base);
+            }
+            $total_salary = $gross_salary - $tax_base - $benefit_tax - $deduction;
+            $flat_rate_details = self::formatFlatRateBenefits($benefits_flat_rate);
+            DB::table('payroll_list')
+                ->where('id', $employee->id)
+                ->update([
+                    'tax_base' => $tax_base,
+                    'benefit_tax' => $benefit_tax,
+                    'count_day' => $count_days,
+                    'p_salary' => $last_salary,
+                    'benefit_taxable' => $benefit_taxable,
+                    'benefit_non_tax' =>  $benefit_non_tax,
+                    'benefit_flat_rate' => $flat_rate_details,
+                    'p_allowance' => $last_allowance,
+                    'p_bias' => $last_bias,
+                    'deduction' => $deduction,
+                    'total_salary' => $total_salary
+                ]);
+            $success_count++;
+        }
+        $payroll_total = DB::table('payroll_list')->where('payroll_id', $payroll_id)->sum('total_salary');
+        DB::table('payrolls')->where('id', $payroll_id)->update(['total' => $payroll_total]);
+        DB::commit();
+        return DV::depends(1, ['success_count' => $success_count,'error_count' => $fail_count,'issues' => $issues,'issues_count' => $issues_count,'payroll_total' => $payroll_total
+        ]);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        return DV::error(
+            $e->getMessage()
+        );
+    }
+}
 
     function importStaffList($id = null, $ss = null)
     {
