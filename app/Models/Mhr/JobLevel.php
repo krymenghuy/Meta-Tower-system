@@ -22,10 +22,8 @@ class JobLevel //extends Model
 
     public function save($arr = [], $id = null, $ss = null)
     {
-         $id = $id ?? $this->id;
+        $id = $id ?? $this->id;
         $ss = $userInfo ?? $this->userInfo;
-        //$subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
-        $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-100|text=name_required::@key;@max;@value',
             'description' => '0|string|0-250',
@@ -45,7 +43,7 @@ class JobLevel //extends Model
         if($id > 0){
             return DV::depends(1,['job_levels' => $inputs, 'id' => $id]);
         }
-        return DV::error('error save job level');
+        return DV::error('Error saving job level');
     }
     public static function getDetails($id, $ss = null)
     {

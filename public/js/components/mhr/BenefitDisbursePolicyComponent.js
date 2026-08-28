@@ -10,7 +10,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
-        "All",
+        "All Months",
         "January",
         "February",
         "March",
@@ -23,65 +23,100 @@ var BenefitDisbursePolicyComponent =  (function () {
         "October",
         "November",
         "December",
-    ];
+        ];
+
     mThis.cols = [
         {
-            transTitle: "titles.No",
-            className: "align-middle text-capitalize",
-            data: (data, index) =>
-                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
-                    <span>${index + 1}</span>
+        transTitle: "titles.No",
+        className: "align-middle text-center",
+        data: (data, index) =>
+            `<div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white fw-semibold"
+                style="width: 32px;height: 32px;background-color: #2b3991;font-size: 13px;">
+                ${index + 1}
+            </div>`,
+        },
+        {
+            transTitle: "titles.Benefit",
+            className: "align-middle text-nowrap",
+            data: (data) => `
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                        style="width: 34px;height: 34px;background-color: rgba(43, 57, 145, 0.1);color: #2b3991;">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <div>
+                        <div class="text-prm-custom">
+                            ${data.benefit_name ?? "-"}
+                        </div>
+                    </div>
                 </div>
             `,
         },
         {
-            transTitle: "titles.Benefit",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "benefit_name",
-        },
-
-        {
             transTitle: "titles.Target Month",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
-                const month = monthNames[data.target_month ] ?? "";
-
-                return `<p class="p-0 m-0">${month} </p>`;
+                const monthIndex = Number(data.target_month ?? 0);
+                const month = monthNames[monthIndex] ?? "-";
+                const badgeClass =
+                    monthIndex === 0
+                        ? "bg-primary-subtle text-primary"
+                        : "bg-light text-dark";
+                return `
+                    <span class="badge ${badgeClass} px-3 py-2 fw-normal">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${month}
+                    </span>
+                `;
             },
         },
-
         {
             transTitle: "titles.Target Year",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "target_year",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const year = Number(data.target_year ?? 0);
+                return `
+                    <span class="badge ${year === 0 ? "bg-primary-subtle text-primary" : "bg-light text-dark"} px-3 py-2 fw-normal">
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        ${year === 0 ? "All Years" : year}
+                    </span>
+                `;
+            },
         },
         {
             transTitle: "titles.Withdraw Rate",
-            className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.withdraw_rate ?? 0} %</p>`;
+            className: "align-middle",
+            data: (data) => {
+                const rate = Math.min(Math.max(Number(data.withdraw_rate ?? 0), 0),100);
+                return `
+                    <div style="min-width: 130px;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Rate</small>
+                            <span class="fw-semibold text-primary-prm">
+                                ${rate}%
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: ${rate}%" aria-valuenow="${rate}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                `;
             },
         },
-
-         {
+        {
             transTitle: "titles.Action",
-            className: "col_action align-middle",
-            data: data => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-end gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${
-                        data.action_id > 1 ? "d-none" : "btn_bdp_action"
-                    }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
-                        <img src="${
-                            main_view.asset_url
-                        }/images/icons/more_vert (3).svg" />
+            className: "col_action align-middle text-center",
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-center">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_bdp_action"} d-flex align-items-center justify-content-center" data-id="${data.id}" data-statusid="${data.status_id ?? ""}">
+                        <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                     </a>
                 </div>
-            </div>`
-        }
+            `,
+        },
+
     ];
+
 
     mThis.init = () => {
         if (mThis.initAlready) return;

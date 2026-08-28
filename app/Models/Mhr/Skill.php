@@ -2,8 +2,8 @@
 
 namespace App\Models\Mhr;
 
-use DBX;
-use DV;
+use Vsd\Database\DBX;
+use Vsd\Response\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Vsd\Vsloquent\VSModel;
@@ -40,7 +40,7 @@ class Skill extends VSModel
             })
             ->exists();
         if ($exists) {
-            return DV::error('Skill name already exists.');
+            return DV::error('skill_name_already_exists');
         }
 
         $id = DBX::saveData($ss, 'skills', ['id' => $id], $inputs, [], 1, false);

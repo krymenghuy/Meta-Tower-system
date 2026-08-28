@@ -227,6 +227,7 @@ return [
         'select_leave_type' => 'Please select a leave type.',
 
         'emp_already_leave' => 'The employee already has leave for the specified date range.',
+        'skill_name_already_exists' => 'Skill name already exists.',
 
 
 

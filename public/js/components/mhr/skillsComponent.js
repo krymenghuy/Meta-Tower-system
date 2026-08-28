@@ -292,9 +292,6 @@ const SkillListDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (typeof me.dataOptions.onClose === "function") {
-                                            me.dataOptions.onClose(p);
-                                        }
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success("update_success_skill");
                                         } else {

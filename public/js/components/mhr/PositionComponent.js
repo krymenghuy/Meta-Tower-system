@@ -292,8 +292,8 @@ const PositionDialog = (() => {
     self.show = (op) => {
         dialog = new GeneralDialog({
             cssClass: "modal-lg vs-modal",
-            backdrop: "static", //User click outside form, do not close form
-            keyboard: true, //prevent user from using ESC key
+            backdrop: "static", 
+            keyboard: true, 
             createContent: () => {
                 return [
                     `<div class="row g-3">
