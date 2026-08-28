@@ -317,9 +317,7 @@ const JobLevelDialog = (() => {
                     },
                 ],
                 contentCreated: (me, divModal) => {
-                    me.saveJobLevel = (jl) => {
-                        alert("Data saved.");
-                    };
+                    
                 },
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Job Level",

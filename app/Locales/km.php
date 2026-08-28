@@ -271,7 +271,7 @@ return [
 
         'emp_already_leave' => 'បុគ្គលិកមានច្បាប់រួចហើយក្នុងចន្លោះកាលបរិច្ឆេទនេះ។',
 
-
+        'skill_name_already_exists' => 'ឈ្មោះជំនាញនេះមានរួចហើយ។',
 
 
 
@@ -1816,6 +1816,7 @@ return [
         'create_success_skill' => 'បានបង្កើតជំនាញដោយជោគជ័យ!',
         'update_success_skill' => 'បានកែប្រែជំនាញដោយជោគជ័យ!',
         'delete_success_skill' => 'បានលុបជំនាញដោយជោគជ័យ!',
+        
 
         'create_education_success' => 'បានបង្កើតព័ត៌មានការអប់រំរបស់បុគ្គលិកដោយជោគជ័យ។',
         'update_education_success' => 'បានកែប្រែព័ត៌មានការអប់រំរបស់បុគ្គលិកដោយជោគជ័យ។',

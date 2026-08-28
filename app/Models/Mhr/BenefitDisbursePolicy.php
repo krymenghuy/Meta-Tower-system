@@ -21,7 +21,6 @@ class BenefitDisbursePolicy
     function save($arr = [],$id = null, $ss =null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        //$branch_id = $ss->branch_id;
         $v_rule = [
             'benefit_id' => '1|number',
             'target_month' => '1|number|default=0',
