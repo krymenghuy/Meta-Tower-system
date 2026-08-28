@@ -282,8 +282,8 @@ function v_display($mod_id, $module_ids = null)
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
              
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(419); ?>>
-                    <a href="ImportDataComponent" modid="419" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(432); ?>>
+                    <a href="ImportDataComponent" modid="432" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/bhr/import_student.png') }}" />
                         </span>

@@ -18,7 +18,7 @@ var UninformedLeaveComponent = (function () {
     mThis.cols = [
         
     {
-        title: "Day",
+        transTitle: "titles.Day",
         className: "align-middle text-nowrap",
         data: (data) => {
             const employees = Array.isArray(data.employees) ? data.employees : [];
@@ -34,7 +34,7 @@ var UninformedLeaveComponent = (function () {
     },
 
     {
-        title: "Staff Information",
+        transTitle: "titles.Staff Information",
         className: "align-middle",
         data: (data) => {
             const employees = Array.isArray(data.employees)
@@ -66,7 +66,7 @@ var UninformedLeaveComponent = (function () {
  
 
    {
-    title: "Scheduled Shift",
+    transTitle: "titles.Scheduled Shift",
     className: "align-middle",
     data: (data) => {
         const shifts = Array.isArray(data.shifts)

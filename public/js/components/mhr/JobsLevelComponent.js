@@ -261,7 +261,7 @@ const JobLevelDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" name="rank" class="form-control data-input" data-field="rank" />
+                                    <input type="text" name="rank" class="form-control data-input" data-field="rank" />
                                     <label vslang="titles.Rank"></label>
                                 </div>  
                             </div>
@@ -273,6 +273,9 @@ const JobLevelDialog = (() => {
                             </div>
                          </div>`,
                     ].join("");
+                },
+                contentCreated:()=>{
+                    applyNumberInput(me.controls.rank);
                 },
                 buttons: [
                     {

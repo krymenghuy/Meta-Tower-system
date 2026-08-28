@@ -25,10 +25,10 @@ class TaxBracket //extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'lower_amount' => '1|number',
-            'upper_amount' => '1|number',
+            'lower_amount' => '1|number|text=invalid_price',
+            'upper_amount' => '1|number|text=invalid_price',
             'rate' => '1|number',
-            'bias' => '1|number',
+            'bias' => '1|number|text=invalid_price',
            'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$national_currency,
         ];
         $checkUnique = null;

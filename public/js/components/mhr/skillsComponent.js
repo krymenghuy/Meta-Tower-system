@@ -160,14 +160,12 @@ var SkillsComponent = (function () {
         let p = {
             search_value: mThis.elSearch.value,
         };
-
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             if (f) {
                 p[f] = el.value;
             }
         });
-
         return p;
     };
 
@@ -315,9 +313,7 @@ const SkillListDialog = (() => {
                         },
                     },
                 },
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
+          
             });
 
         dialog.show(op);

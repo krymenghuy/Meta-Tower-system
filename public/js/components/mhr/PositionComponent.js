@@ -323,7 +323,7 @@ const PositionDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
-                                <input type="number" data-type="text" name="salary" class="data-input form-control form_input" data-field="salary" placeholder=" " />
+                                <input type="text" data-type="text" name="salary" class="data-input form-control form_input" data-field="salary" placeholder=" " />
                                 <label vslang="labels.Salary"></label>
                             </div>
                         </div>
@@ -343,6 +343,9 @@ const PositionDialog = (() => {
                     </div>`,
                 ].join("");
             },
+            contentCreated: (me) => {
+                    applyNumberInput(me.controls.salary);
+                },
 
             configSelect: [
                 {

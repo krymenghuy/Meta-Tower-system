@@ -41,7 +41,7 @@ class Benefit extends VSModel
             ->exists();
 
         if ($exists) {
-            return DV::error('Benefit name already exists.');
+            return DV::error('benefit_name_already_exists');
         }
         $id = DBX::saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {

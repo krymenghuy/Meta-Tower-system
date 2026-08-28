@@ -228,8 +228,10 @@ return [
 
         'emp_already_leave' => 'The employee already has leave for the specified date range.',
         'skill_name_already_exists' => 'Skill name already exists.',
-
-
+        'import_error_invalid_format' => 'There were some problems during the import. This is likely due to an incorrect data format in the Excel file.',
+        'benefit_name_already_exists' => 'Benefit name already exists.',
+        'disbursement_already_exists' => 'Disbursement already exists.',
+        'disburse_policy_already_exists' => 'Disbursement policy already exists.',
 
     ],
     'api_body_keys' => [
@@ -443,7 +445,7 @@ return [
         'upload_failed_photo' => 'Upload failed. Please try again.',
 
         
-
+        'import_success' => 'Data imported successfully.',
         'delete_maintenance' => 'Delete Maintenance',
         'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
         'maintenance_deleted' => 'Maintenance has been deleted successfully.',

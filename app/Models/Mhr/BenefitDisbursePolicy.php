@@ -39,12 +39,12 @@ class BenefitDisbursePolicy
                 ->exists();
 
             if ($exists) {
-                return DV::error('Policy already exists');
+                return DV::error('disburse_policy_already_exists');
             }
         }
 
         $id = DBX::saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
-        return DV::depends($id, ['sender' => $inputs, 'id' => $id]);
+        return DV::depends($id, ['benefit_disburse_policies' => $inputs, 'id' => $id]);
     }
 
     function getList($arr, $ss)

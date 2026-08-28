@@ -56,10 +56,10 @@ class BenefitDisbursement //extends VSModel
                 ->exists();
 
             if ($exists) {
-                return DV::error('Disbursement already exists');
+                return DV::error('disbursement_already_exists');
             }
         }
-        $id = DBX::saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1);
 
         return DV::depends($id, ['id' => $id], 'Save failed');
     }

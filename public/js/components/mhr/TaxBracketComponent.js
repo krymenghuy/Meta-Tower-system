@@ -12,16 +12,7 @@ var TaxBracketComponent = (function() {
         mThis.self.querySelector("#_divFilter_taxBracketComponent") ||
         mThis.self.querySelector("#_divFilter");
 
-    const formattedNumber = number => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString("en-US", {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })
-            .replace(/,/g, " ");
-    };
+    
 
     mThis.cols = [
         {
@@ -305,6 +296,12 @@ const TaxBracketDialog = (() => {
 
                         </div>`
                     ].join("");
+                },
+                contentCreated: (me) => {
+                    applyNumberInput(me.controls.lower_amount);
+                    applyNumberInput(me.controls.upper_amount);
+                    applyPercentageInput(me.controls.rate);
+                    applyNumberInput(me.controls.bias);
                 },
 
                 buttons: [

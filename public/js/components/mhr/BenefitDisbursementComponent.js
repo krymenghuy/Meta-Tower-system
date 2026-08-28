@@ -133,7 +133,7 @@ var BenefitDisbursementComponent =  (function () {
             className: "col_action align-middle text-center",
             data: (data) => `
                 <div class="d-flex justify-content-center">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_benefit_disbursement_action"} d-inline-flex align-items-center justify-content-center data-id="${data.id}" data-statusid="${data.status_id ?? ""}">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_benefit_disbursement_action"} d-inline-flex align-items-center justify-content-center" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical text-danger-emphasis fs-5"></i>
                     </a>
                 </div>
@@ -174,8 +174,8 @@ var BenefitDisbursementComponent =  (function () {
             if (!AuthManager.allowed(392,false)) return;
             BenefitDisburseDialog.show(op);
         };
-        const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
-        const sh_parent = pr_tbl;
+        mThis.pr_tbl = mThis.BenefitDisburseListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement || mThis.pr_tbl;
         sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
@@ -183,7 +183,7 @@ var BenefitDisbursementComponent =  (function () {
             sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
 
-        mThis.initDropdownMenus(pr_tbl);
+        mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis._searchBenefitDisburse.addEventListener("change", (e) => {
             e.preventDefault();
@@ -219,7 +219,7 @@ var BenefitDisbursementComponent =  (function () {
     };
   
     mThis.initDropdownMenus = table => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_benefit_disbursement_action",
             cssClass: "bg-white shadow",
@@ -256,9 +256,10 @@ var BenefitDisbursementComponent =  (function () {
                 }
             }
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
     mThis.editBenefitDisburse = (id, menulink) => {
+
         let op = {
             id: id,
             btn: menulink,
@@ -266,6 +267,7 @@ var BenefitDisbursementComponent =  (function () {
                 mThis.BenefitDisburseListView.showPage();
             },
         };
+        
         if (!AuthManager.allowed(393,false)) return;
         BenefitDisburseDialog.show(op);
     };
@@ -477,6 +479,8 @@ const BenefitDisburseDialog = (() => {
                             "/mhr/emp/benefit-disbursement/form-options",
                         ].join(""),
                         params: (op) => {
+                            
+                            
                             return { id: op.id };
                         },
                     },
