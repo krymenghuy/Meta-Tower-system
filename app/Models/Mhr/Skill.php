@@ -43,8 +43,11 @@ class Skill extends VSModel
             return DV::error('skill_name_already_exists');
         }
 
-        $id = DBX::saveData($ss, 'skills', ['id' => $id], $inputs, [], 1, false);
-        return DV::depends($id, ['action', 'skill saved'], 'Failed to save Skill Information');
+        $id = DBX::saveData($ss, 'skills', ['id' => $id], $inputs, [], 1);
+        return DV::depends(1, [
+                'skills' => $inputs,
+                'id' => $id
+            ]);
     }
 
     public function getSkillListPaginate($arr, $ss)

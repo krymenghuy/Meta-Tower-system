@@ -550,3 +550,48 @@ const applyNumberInput = (inputEl) => {
         e.target.value = v.toFixed(2);
     });
 };
+const applyPercentageInput = (inputEl) => {
+    inputEl.addEventListener("input", (e) => {
+        let value = e.target.value;
+
+        // Allow numbers and decimal point only
+        value = value.replace(/[^0-9.]/g, "");
+
+        // Allow only one decimal point
+        const firstDot = value.indexOf(".");
+
+        if (firstDot !== -1) {
+            value =
+                value.slice(0, firstDot + 1) +
+                value.slice(firstDot + 1).replace(/\./g, "");
+
+            // Maximum 2 decimal places
+            const [integer, decimal = ""] = value.split(".");
+
+            value = `${integer}.${decimal.slice(0, 2)}`;
+        }
+
+        // Limit percentage to 100
+        const number = parseFloat(value);
+
+        if (!isNaN(number) && number > 100) {
+            value = "100";
+        }
+
+        e.target.value = value;
+    });
+
+    inputEl.addEventListener("blur", (e) => {
+        const value = parseFloat(e.target.value);
+
+        if (isNaN(value) || value < 0) {
+            e.target.value = "";
+            return;
+        }
+
+        // Ensure maximum is 100
+        const percentage = Math.min(value, 100);
+
+        e.target.value = percentage.toFixed(2);
+    });
+};

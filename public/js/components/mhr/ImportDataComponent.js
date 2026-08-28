@@ -61,7 +61,7 @@ var ImportDataComponent = new function(){
                     },false).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
-                            cv_interact.success('Imported Successfully!');
+                            cv_interact.success('import_success');
                         }
                         else{
                             cv_interact.error(res.error_message );

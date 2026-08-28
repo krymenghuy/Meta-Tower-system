@@ -45,7 +45,6 @@ class EmployeeBenefit extends VSModel
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
             'effective_date' => '0|date',
-            'issue_date' => '1|date',
             // 'balance' => '0|number|default=0',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'remarks' => '0|string|1-250',

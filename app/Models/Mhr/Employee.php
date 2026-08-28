@@ -1274,7 +1274,7 @@ class Employee extends VSModel
                 $file_name = basename($x->file_name);
                 XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
                 \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
-                return DV::error('There were some problem during importing. This is likely due to incorrect data format in Excel.');
+                return DV::error('import_error_invalid_format');
             }
         }
     }
