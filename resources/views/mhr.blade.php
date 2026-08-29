@@ -73,7 +73,7 @@
             color: #fff;
             border-bottom: 1px solid #EDF3F7;
         }
-      .font-kh {
+        .font-kh {
             /* font-family: Arial, Helvetica, serif; */
             /* font-family: Verdana, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
@@ -96,8 +96,8 @@
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
         .svg-white {
-    filter: brightness(0) invert(1);
-}
+            filter: brightness(0) invert(1);
+        }
 
     </style>
     <?php
