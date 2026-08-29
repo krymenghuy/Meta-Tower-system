@@ -113,7 +113,7 @@ class Account extends VSModel
                 'emp_id' => $emp->id,
                 'account_number' => $emp->code . ($lowerAccountType === 'payroll' ? '-P' : '-W'),
                 'balance' => 0.00,
-                'currency_code' => VSMoney::$national_currency,
+                'currency_code' => VSMoney::$base_currency,
                 'account_type' => $account_type
             ];
 

@@ -13,7 +13,13 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="me-2" style="width: 1.25rem; height: 1.25rem;" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L6.904 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                 </svg>
-                <span>Import Employee</span>
+                <span vslang="buttons.import_employees"></span>
+            </button>
+            <button id="_iht_btn_new_benefit" class="btnAddNewPrm d-none align-items-center justify-content-center shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="me-2" style="width: 1.25rem; height: 1.25rem;" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L6.904 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                Import Employee Benefits
             </button>
             <!-- NEW Download Sample Button --> 
             <a href="{{ route('download.template') }}" 
@@ -23,12 +29,12 @@
                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z" clip-rule="evenodd" />
                     <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v7a1 1 0 11-2 0V3a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
-                Download Sample Excel Template (CSV)
+               <span vslang="buttons.download_sample_template_excel_csv"></span>
             </a>
         </div>
 
-        <p class="w-100 small mb-0 p-3 bg-warning-subtle rounded border border-warning">
-            Note: Please download the sample template before importing employees. Make sure your data columns match the template exactly.
+        <p class="w-100 small mb-0 p-3 bg-warning-subtle rounded border border-warning" vslang="titles.import_employee_note">
+            
         </p>
       </div>
       <div class="col-12 col-md-6 col-lg-3">

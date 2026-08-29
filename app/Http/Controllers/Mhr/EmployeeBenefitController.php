@@ -65,7 +65,7 @@ class EmployeeBenefitController extends Controller
     }
     public function import(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 325);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

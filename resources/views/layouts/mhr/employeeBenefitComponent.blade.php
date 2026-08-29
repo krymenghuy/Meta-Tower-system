@@ -13,7 +13,7 @@
             </div>
             <div class="ms-md-auto col-12 col-md-6 col-lg-5">
                 <div class="justify-content-end row g-2">
-                    <div class="col-12 col-md-auto d-none">
+                    <div class="col-12 col-md-auto">
                         <button type="button" class="w-100 btnAddNewPrm" id="_btn_import_benefit">
                             <i class="fa-solid fa-download"></i>
                             <span class="text-white" vslang="buttons.Import Benefit"></span>

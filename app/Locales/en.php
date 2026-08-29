@@ -288,6 +288,7 @@ return [
         'skills' => 'Skills',
         'checkpoint_evaluation' => 'Checkpoint Evaluation',
         'checkpoints' => 'Checkpoints',
+        'import_employee_note' => 'Please download the sample template before importing employees. Make sure your data columns match the template exactly.',
 
 
 
@@ -754,6 +755,8 @@ return [
         'Generate New Bill' => 'Generate New Bill',
         'Create Contract' => 'Create Contract',
         'Create Tenant' => 'Create Tenant',
+        'import_employees' => 'Import Employees',
+        'download_sample_template_excel_csv' => 'Download Sample Template (Excel/CSV)',
     ],
 ];
 

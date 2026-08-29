@@ -7,26 +7,26 @@ var ImportDataComponent = new function(){
     this.title_prop = "import_data";
     mThis.self = main_view.VSAppContent.querySelector('#_main_importDataComponent');
     mThis.btnNew = mThis.self.querySelector('#_iht_btn_new');
-    mThis.btnNewUnpaid = mThis.self.querySelector('#_iht_btn_new_unpaid');
+    mThis.btnNewBenefit = mThis.self.querySelector('#_iht_btn_new_benefit');
     mThis.btnOld = mThis.self.querySelector('#_iht_btn_old');
 
     mThis.cols = [{
-        title: "Name",
-        className: "align-middle text-capitalize",
+        transTitle: "titles.Name",
+        className: "align-middle",
         data: "title"
     },
     {
-        title: "File Name",
+        transTitle: "titles.File Name",
         className: "align-middle",
         data: "file_name"
     },
     {
-        title: "File Type",
+        transTitle: "titles.File Type",
         className: "align-middle text-uppercase",
         data: "type"
     },
     {
-        title: "Imported By",
+        transTitle: "titles.Imported By",
         className: "align-middle",
         data: (data, index, tr) => {
             return `<p class="pb-0 mb-1 text-capitalize">${data.create_user ?? ''}</p>
@@ -57,6 +57,28 @@ var ImportDataComponent = new function(){
             },(d) => {
                 if(d){
                     vsapi.call(`${main_view.base_url}/mhr/employee/import`,{
+                        file: d.dataUrl
+                    },false).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                            cv_interact.success('import_success');
+                        }
+                        else{
+                            cv_interact.error(res.error_message );
+                        }
+                    });
+                }
+            });
+        };
+         mThis.btnNewBenefit.onclick = (e) =>{
+            e.preventDefault();
+            
+            // if(!AuthManager.allowed(407)) return;
+            FileChooser.chooseFile({
+                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            },(d) => {
+                if(d){
+                    vsapi.call(`${main_view.base_url}/mhr/emp-benefit/import-emp-benefits`,{
                         file: d.dataUrl
                     },false).then(res => {
                         if(res.status_code === 200){

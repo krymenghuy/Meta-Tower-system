@@ -716,9 +716,10 @@ return [
         'skills' => 'ជំនាញ',
         'checkpoint_evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
         'checkpoints' => 'បញ្ជីត្រួតពិនិត្យ',
-
-
-        
+        'File Name' => 'ឈ្មោះឯកសារ',
+        'File Type' => 'ទម្រង់ឯកសារ',
+        'Imported By' => 'នាំចូលដោយ',
+        'import_employee_note' => 'សូមទាញយកឯកសារគំរូជាមុនសិន មុនពេលនាំចូលបុគ្គលិក។ សូមប្រាកដថាជួរឈរទិន្នន័យរបស់អ្នកត្រូវគ្នាយ៉ាងពិតប្រាកដជាមួយឯកសារគំរូ។',
 
 
 
@@ -963,7 +964,7 @@ return [
         'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់',
 
         'Holidays' => 'ថ្ងៃឈប់សម្រាក',
-        'Name KH' => 'ឈ្មោះ',
+        'Name KH' => 'ឈ្មោះជាភាសាខ្មែរ',
         'Movement' => 'ការផ្លាស់ប្តូរ',
 
         'Checkpoint Evaluation' => 'ការវាយតម្លៃត្រួតពិនិត្យ',
@@ -1242,6 +1243,9 @@ return [
         'Create Employee' => 'បង្កើតបុគ្គលិក',
 
         'Add Uninformed Leave' => 'បង្កើតការស្នើសុំថ្ងៃឈប់សម្រាក',
+
+        'import_employees' => 'នាំចូលបុគ្គលិក',
+        'download_sample_template_excel_csv' => 'ទាញយកគំរូឯកសារ (Excel/CSV)',
 
     ],
     'filters' => [

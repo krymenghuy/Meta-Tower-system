@@ -2,8 +2,8 @@
 
 namespace App\Models\Mhr;
 
-use DBX;
-use DV;
+use Vsd\Database\DBX;
+use Vsd\Response\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\MhrEmployee;
@@ -22,9 +22,10 @@ class EmployeeBenefit extends VSModel
         'emp_id',
         'name',
         'benefit_id',
+        'issue_date',
         'effective_date',
         'amount',
-        'currency',
+        'currency_code',
         'tax_option_id',
         'remarks',
     ];
@@ -40,13 +41,13 @@ class EmployeeBenefit extends VSModel
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id|text=select_employee',
             'benefit_id' => '1|number|exists=benefits.id|text=select_benefit',
-            'amount' => '1|positive',
+            'amount' => '1|number',
+            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'issue_date' => '1|date',
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
             'effective_date' => '0|date',
             // 'balance' => '0|number|default=0',
-            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'remarks' => '0|string|1-250',
         ];
 
@@ -73,7 +74,6 @@ class EmployeeBenefit extends VSModel
                 return DV::error('Amount cannot be less than previous balance ' . VSMoney::formatAmount($row->balance, $row->currency_code, false) . ' ' );
             }
         }
-
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
             return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
@@ -186,62 +186,32 @@ class EmployeeBenefit extends VSModel
             if(isset($data->error)) return DV::error($data->error);
 
             $success = 0;
-            DB::beginTransaction();
+            
+            // DBX::beginTransaction();
             try {
-                foreach ($data as $row) {
+                 DB::beginTransaction();
+                $benefit = new EmployeeBenefit();
+                foreach ((array)$data as $row) {
                     $arr = (array) $row;
-                    $name = $arr['name'];
-
-                    $v_rule = [
-                        'emp_id' => '1|number|exists=employees.id|text=select_employee',
-                        'benefit_id' => '1|number|exists=benefits.id|text=select_benefit',
-                        'tax_option_id' => '1|choice|1,2,3|default=1',
-                        'flat_tax_rate' => '0|number',
-                        'balance' => '0|number|default=0',
-                        'effective_date' => '1|date',
-                        'amount' => '1|number',
-                        'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
-                        'remarks' => '0|string|1-250',
-                    ];
-                    $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-
-
-
-                    $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
-
-                    $inputs = $res->values;
-                    $duplicate = DB::table('emp_benefits')
-                        ->where('emp_id', $inputs['emp_id'])
-                        ->where('benefit_id', $inputs['benefit_id'])
-                        ->where('effective_date', $inputs['effective_date'])
-                        ->exists();
-
-                    if ($duplicate) {
-                        DB::rollback();
-                        return DV::error("បុគ្គលិកឈ្មោះ​ $name បានទទួល Benefit រួចម្តង់ហើយនៅក្នុងថ្ងៃទី​ $row->effective_date");
-                    }
-                    $inputs['balance'] = $inputs['amount'];
-                    $id = DBX::saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
-
-                    if ($id > 0) {
+                    $inputs = $arr;
+                    $benefit_res = $benefit->upsert($inputs,null,$ss);
+                    if($benefit_res->status_code ==200){
                         $success++;
+                    }else{
+                        DB::rollback();
+                        return $benefit_res;
                     }
                 }
-
-                if ($success > 0) {
                     DB::commit();
-                    return DV::depends($success, 'Successfully imported.');
-                } else {
-                    DB::rollback();
-                    return DV::error('It seems there are no valid data to import.');
-                }
-            } catch (Exception $e) {
+                    return DV::depends(1, ['success_count'=>$success]);
+            }
+            catch (Exception $e) {
                 DB::rollback();
                 $file_name = basename($x->file_name);
-                XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$emp_benefit], 'documents', $file_name);
-                // \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
-                return DV::error('There were some problems during importing. This is likely due to incorrect data format in Excel.');
-            }
+                XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
+                \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
+                return DV::error('import_error_invalid_format');
+            } 
         }
     }
 

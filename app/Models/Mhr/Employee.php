@@ -1251,7 +1251,7 @@ class Employee extends VSModel
 
             $success = 0;
 
-            // DBX::beginTransaction();
+           // DBX::beginTransaction();
             try {
                  DB::beginTransaction();
                 $employee = new Employee();
@@ -1275,7 +1275,7 @@ class Employee extends VSModel
                 XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
                 \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
                 return DV::error('import_error_invalid_format');
-            }
+            } 
         }
     }
     static function readExcel($ss,$file_name,$start_index=null){

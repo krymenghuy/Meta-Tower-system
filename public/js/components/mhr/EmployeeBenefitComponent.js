@@ -160,12 +160,8 @@ var EmployeeBenefitComponent = new (function () {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    mThis.EmployeeBenefitListView.showPage(
-                                        null,
-                                    );
-                                    cv_interact.success(
-                                        "Employees Benefit Were Import Successfully!",
-                                    );
+                                    mThis.EmployeeBenefitListView.showPage(null);
+                                    cv_interact.success("Employees Benefit Were Import Successfully!");
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
