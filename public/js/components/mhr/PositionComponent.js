@@ -2,10 +2,7 @@
 var PositionComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_positionComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_positionComponent");
     mThis.title_prop = "positions";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -170,13 +167,13 @@ var PositionComponent = (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
+                    html: '<span class="ps-2  " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_position",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_position",
@@ -227,7 +224,7 @@ var PositionComponent = (function () {
         cv_interact.confirm(
             "delete_position",
             {
-                title: "Delete Position",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -263,22 +260,13 @@ var PositionComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elDepartment,
-                    d.departments || [],
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Department", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elDepartment,d.departments || [],"id","name","",LocaleManager.trans("All Department", "titles"),"");
             });
     };
 
     mThis.show = function () {
         mThis.init();
         mThis.prepareFormOptions();
-        
         mThis.PositionListView.showPage(mThis.getFilterData(), null, () => {
             main_view.setContentView(mThis.self, mThis.title_prop);
         });
@@ -309,13 +297,13 @@ const PositionDialog = (() => {
                                 <label vslang="labels.Name (KH)"></label>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="text" name="code" class="data-input form-control form_input" data-field="code" placeholder=" " />
                                 <label vslang="labels.Shortcut"></label>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-6">
                             <select data-style="material" name="job_level" class="form-control data-input" placeholder="${LocaleManager.trans('Job Level', 'labels')}"  data-field="job_level_id"></select>
                         </div>
                         <div class="col-6">
@@ -330,7 +318,7 @@ const PositionDialog = (() => {
                         <div class="col-3">
                             <select data-style="material" name="currency_code" class="form-control data-input" placeholder="${LocaleManager.trans('Currency Code', 'labels')}"  data-field="currency_code"></select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6 d-none">
                             <select data-style="material" name="staff_group" class="form-control data-input" placeholder="${LocaleManager.trans('Staff Group', 'labels')}"  data-field="staff_group_id"></select>
                         </div>
                         <div class="col-12">

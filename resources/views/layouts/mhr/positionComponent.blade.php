@@ -8,7 +8,7 @@
                 <select id="el_department" class="filter-field form-control data-input" data-field="department_id" placeholder=""></select>
             </div>
             
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddPosition">
                     <span vslang="buttons.Create Position"></span>
                 </button>

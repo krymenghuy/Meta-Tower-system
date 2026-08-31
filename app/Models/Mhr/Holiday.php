@@ -63,11 +63,9 @@ class Holiday extends VSModel
         $query = DB::table('holidays as h')
             ->where('h.branch_id', $branch_id)
             ->where('h.name', $name);
-
         if ($id) {
             $query->where('h.id', '<>', $id);
         }
-
         $test = $query->select('id')->first();
         if ($test) {
             return 'holiday_exist::' . $name;
@@ -85,24 +83,26 @@ class Holiday extends VSModel
             $current_page = 1;
         }
         $search_value = $d->search_value ?? null;
+        $holiday_type_id = $d->holiday_type_id ?? null;
         $year = $d->year ?? date('Y');
         $skip_rows = ($current_page - 1) * $per_page;
         $str_search = '1=1';
+        $str_moreWhere = '2=2';
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_search = "(h.name LIKE '%" . $search_value . "%')";
         }
-
-
-        $selectRow = 'h.id,h.name,h.name_kh,h.holiday_type_id,ht.name as holiday_type,h.start_date,h.end_date,h.description,h.update_user,h.updated_at';
-        $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereYear('h.start_date', $year)->whereRaw($str_search)->selectRaw($selectRow);
-
-        $holiday_type_id = $d->holiday_type_id ?? null;
-        if ($holiday_type_id) {
-            $query->where('h.holiday_type_id', $holiday_type_id);
+        if($holiday_type_id){
+            $str_moreWhere .= ' AND h.holiday_type_id = ' .$holiday_type_id;
         }
-
+        $selectRow = 'h.id,h.name,h.name_kh,h.holiday_type_id,ht.name as holiday_type,h.start_date,h.end_date,h.description,h.update_user,h.updated_at';
+        $query = DB::table('holidays as h')
+            ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')
+            ->whereYear('h.start_date', $year)
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw($selectRow);
         $count_query = clone $query;
         $count = $count_query->count('h.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('h.id ASC')->get();

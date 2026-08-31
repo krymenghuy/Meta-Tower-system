@@ -226,14 +226,14 @@ var BenefitDisbursementComponent =  (function () {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
+                        '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_benefit_disbursement"
                 },
                 {
                     html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                        '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_benefit_disbursement"
@@ -258,11 +258,11 @@ var BenefitDisbursementComponent =  (function () {
         };
         new VSDropdownMenu(menuOptions);
     };
-    mThis.editBenefitDisburse = (id, menulink) => {
+    mThis.editBenefitDisburse = (id, menuLink) => {
 
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.BenefitDisburseListView.showPage();
             },
@@ -271,10 +271,10 @@ var BenefitDisbursementComponent =  (function () {
         if (!AuthManager.allowed(393,false)) return;
         BenefitDisburseDialog.show(op);
     };
-    mThis.deleteBenefitDisburse = (id, menulink) => {
+    mThis.deleteBenefitDisburse = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.BenefitDisburseListView.showPage();
             },
@@ -321,15 +321,7 @@ var BenefitDisbursementComponent =  (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elBenefit,
-                    d.benefits,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Benefits", "titles"),
-                    ""
-                );
+                VSUtil.setComboItems(mThis.elBenefit,d.benefits,"id","name","",LocaleManager.trans("All Benefits", "titles"),"");
             });
     };
     mThis.show = function () {

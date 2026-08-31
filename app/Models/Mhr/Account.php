@@ -32,11 +32,11 @@ class Account extends VSModel
         //$branch_id = $ss->branch_id;
         $base_currency =  VSMoney::$base_currency;
         $v_rule = [
-            'emp_id' => '0|number|exists=employees.id',
-            'account_number' => '0|string|0-30',
+            'emp_id' => '1|number|text=employee_required',
+            'account_type' => '1|choice|Payroll,Wallet',
+            'account_number' => '1|string|0-30|account_number_required',
             'balance' => '0|number|default=0',
             'currency_code' => "1|choice|$base_currency|default=" . $base_currency,
-            'account_type' => '1|choice|Payroll,Wallet',
         ];
         $res = DBX::validateObject($arr, $v_rule, true, ['balance' => ['.'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
@@ -61,14 +61,14 @@ class Account extends VSModel
             }
             if (self::employeeHasAccount($emp_id, $account_type)) {
                 $emp = Employee::getProps($emp_id, 'name');
-                return DV::error("Employee ?? already has ?? account!::$emp->name; $account_type");
+                return DV::error("employee_already_has_account");
             }
             $inputs['account_number'] = $account_number;
         } else {
             unset($inputs['balance'], $inputs['emp_id'], $inputs['currency_code'], $inputs['account_number']);
         }
         if (self::accountNumberExists($account_number, $id)) {
-            return DV::error('Account number ?? already exists::' . $account_number);
+            return DV::error('account_number_already_exists');
         }
 
         $id = DBX::saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
@@ -103,7 +103,7 @@ class Account extends VSModel
             ->where('e.subs_id', $bin_subs_id)
             ->select('e.id', 'e.code', 'e.name')
             ->get();
-        if ($emps->isEmpty()) return DV::error('It looks like all employees already have a ?? account!::' . $account_type);
+        if ($emps->isEmpty()) return DV::error('employee_already_has_account');
 
         $success_count = 0;
         $emp_count = 0;
@@ -135,17 +135,25 @@ class Account extends VSModel
         $department_id   = $d->department_id ?? null;
         $account_type    = $d->account_type ?? 'Standard';
         $search_value    = $d->search_value ?? null;
-
+        $str_search = '1=1';
+        $str_moreWhere = "2=2";
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page ?? 10;
         $skip_rows    = ($current_page - 1) * $per_page;
 
-        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+             $str_search = "(e.name LIKE '%" . $search_value . "%' OR a.account_number = '" . $search_value . "')";
+        }
+         if ($branch_id) {
+            $str_moreWhere .= ' AND e.department_id = ' . $branch_id;
+        }
+         if ($department_id) {
+            $str_moreWhere .= ' AND p.department_id = ' . $department_id;
+        }
         if ($is_master_account) {
-
             $query = DB::table('accounts as a')
-                ->selectRaw("
+            ->selectRaw("
                 a.id,
                 a.emp_id,
                 'Master Account' AS emp_name,
@@ -154,16 +162,18 @@ class Account extends VSModel
                 a.account_number,
                 a.balance,
                 a.currency_code,
-                {$balance_date},
+                a.last_balance_date,
                 NULL AS emp_photo
             ")
-                ->where('a.id', 1);
+            ->where('a.id', 1);
 
         } else {
 
             $query = DB::table('accounts as a')
                 ->join('employees as e', 'e.id', '=', 'a.emp_id')
                 ->leftJoin('positions as p', 'p.id', '=', 'e.position_id')
+                ->whereRaw($str_search)
+                ->whereRaw($str_moreWhere)
                 ->selectRaw("
                 a.id,
                 a.emp_id,
@@ -173,31 +183,10 @@ class Account extends VSModel
                 a.account_number,
                 a.balance,
                 a.currency_code,
-                {$balance_date},
+                a.last_balance_date,
                 e.photo_file_name AS emp_photo
             ")
                 ->where('a.account_type', $account_type);
-
-            // Search
-            if ($search_value !== '') {
-
-                $search_value = escape_like_str($search_value);
-
-                $query->where(function ($q) use ($search_value) {
-                    $q->where('e.name', 'LIKE', "%{$search_value}%")
-                        ->orWhere('a.account_number', 'LIKE', "%{$search_value}%");
-                });
-
-            } else {
-
-                if (!empty($branch_id)) {
-                    $query->where('e.branch_id', $branch_id);
-                }
-                
-                if (!empty($department_id)) {
-                    $query->where('p.department_id', $department_id);
-                }
-            }
         }
 
         $count = $query->count('a.id');
@@ -214,6 +203,7 @@ class Account extends VSModel
                 $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
                 unset($row->emp_photo);
             }
+            setOfficialDates($row,[''],['last_balance_date'],['']);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

@@ -15,89 +15,89 @@ var PayrollAccountComponent = (function () {
     mThis.divListView = mThis.self.querySelector('#_account_list');
 
     mThis.cols = [
-    {
-        transTitle: "titles.No",
-        className: "align-middle text-center",
-        data: (data, index) => index + 1,
-    },
-    {
-        transTitle: "titles.Employee",
-        className: "align-middle text-nowrap",
-        data: (data) => `
-            <div class="d-flex flex-column">
-                <span class="text-prm-custom">
-                    ${data.emp_name ?? "_"}
+        {
+            transTitle: "titles.No",
+            className: "align-middle text-center",
+            data: (data, index) => index + 1,
+        },
+        {
+            transTitle: "titles.Employee",
+            className: "align-middle text-nowrap",
+            data: (data) => `
+                <div class="d-flex flex-column">
+                    <span class="text-prm-custom">
+                        ${data.emp_name ?? "_"}
+                    </span>
+                    <small class="text-muted">
+                        ${data.position ?? "_"}
+                    </small>
+                </div>
+            `,
+        },
+        {
+            transTitle: "titles.Account Type",
+            className: "align-middle text-center",
+            data: (data) => `
+            <div class="text-primary-custom">
+                <span class="badge rounded-2 bg-primary text-white border px-3 py-2 text-capitalize" style="width:90px;">
+                    ${data.account_type ?? "_"}
                 </span>
-                <small class="text-muted">
-                    ${data.position ?? "_"}
-                </small>
             </div>
-        `,
-    },
-    {
-        transTitle: "titles.Account Type",
-        className: "align-middle text-center",
-        data: (data) => `
-        <div class="text-primary-custom">
-            <span class="badge rounded-2 bg-primary text-white border px-3 py-2 text-capitalize" style="width:90px;">
-                ${data.account_type ?? "_"}
-            </span>
-        </div>
-        `,
-    },
-    {
-        transTitle: "titles.Account Number",
-        className: "align-middle",
-        data: (data) => `
-            <span class="fw-medium text-dark">
-                ${data.account_number ?? "_"}
-            </span>
-        `,
-    },
-    {
-        transTitle: "titles.Balance",
-        className: "align-middle",
-        data: (data) => `
-            <span class="fw-bold text-success">
-                ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
-            </span>
-        `,
-    },
-    {
-        transTitle: "titles.Last Balance Date",
-        className: "align-middle text-nowrap",
-        data: (data) => `
-            <span class="text-nowrap text-muted">
-                ${data.last_balance_date ?? "_"}
-            </span>
-        `,
-    },
-    {
-        title: "",
-        className: "align-middle text-end",
-        data: (data) => `
-            <div class="d-flex justify-content-end">
-                ${
-                    data.action_id > 1
-                        ? ""
-                        : `
-                        <a href="javascript:void(0)"
-                           class="btn_account_action d-inline-flex align-items-center justify-content-center"
-                           data-id="${data.id}"
-                           data-emp_id="${data.emp_id}"
-                           data-statusid="${data.status_id}"
-                           aria-haspopup="true"
-                           aria-expanded="false"
-                           title="More Actions">
-                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg"
-                                 alt="Actions">
-                        </a>
-                    `
-                }
-            </div>
-        `,
-    },
-];
+            `,
+        },
+        {
+            transTitle: "titles.Account Number",
+            className: "align-middle",
+            data: (data) => `
+                <span class="fw-medium text-dark">
+                    ${data.account_number ?? "_"}
+                </span>
+            `,
+        },
+        {
+            transTitle: "titles.Balance",
+            className: "align-middle",
+            data: (data) => `
+                <span class="fw-bold text-success">
+                    ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
+                </span>
+            `,
+        },
+        {
+            transTitle: "titles.Last Balance Date",
+            className: "align-middle text-nowrap",
+            data: (data) => `
+                <span class="text-nowrap text-muted">
+                    ${data.last_balance_date ?? "_"}
+                </span>
+            `,
+        },
+        {
+            title: "",
+            className: "align-middle text-end",
+            data: (data) => `
+                <div class="d-flex justify-content-end">
+                    ${
+                        data.action_id > 1
+                            ? ""
+                            : `
+                            <a href="javascript:void(0)"
+                            class="btn_account_action d-inline-flex align-items-center justify-content-center"
+                            data-id="${data.id}"
+                            data-emp_id="${data.emp_id}"
+                            data-statusid="${data.status_id}"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            title="More Actions">
+                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg"
+                                    alt="Actions">
+                            </a>
+                        `
+                    }
+                </div>
+            `,
+        },
+    ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -199,181 +199,555 @@ var PayrollAccountComponent = (function () {
         mThis.initAlready = true;
     };
 
-    mThis.renderTransaction = (data) => {
-        if (!data || !data[0] || !data[0].trx) {
-            console.error("Invalid data format");
-            return;
-        }
-
-        const employee = data[0];
-        const transactions = employee.trx;
-
-        let html = `
-            <style>
-                .transaction_card {
-                    border: 1px solid #ccc;
-                    border-radius: 6px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    padding: 10px;
-                    width: 100%;
-                }
-                .transaction_header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                    padding: 10px;
-                    padding-bottom: 20px;
-                }
-                .transaction_logo {
-                    position: absolute;
-                    left: 0;
-                }
-                .transaction_title {
-                    text-align: center;
-                    flex-grow: 1;
-                }
-                .transaction_profile {
-                    gap: 10px;
-                    justify-content: center;
-                    border: 1px solid #ccc;
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-                .transaction_image {
-                    display: flex;
-                    justify-content: center;
-                    width: 80px;
-                    height: 80px;
-                    overflow: hidden;
-                    border-radius: 50%;
-                }
-                .transaction_table {
-                    display: flex;
-                    padding: 10px;
-                }
-            </style>
-            <div class="transaction_card overflow-y-auto overflow-x-hidden">
-                <div class="transaction_header">
-                    <div class="transaction_title">
-                        <h4>Transaction</h4>
-                    </div>
-                </div>
-                <div class="transaction_profile">
-                    <div class="row cols-2 mb-0">
-                        <div class="col-2">
-                            <div class="transaction_image">
-                                <img src="${
-                                    employee.image_url || main_view.asset_url + "/images/default/default-staff.png"
-                                }" alt="image">
-                            </div>
-                        </div>
-                        <div class="col-5 p_profile_left">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Employee Name</p>
-                                <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${
-                                    employee.emp_name
-                                }</p>
-                            </div>
-
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Account Number</p>
-                                <p class="px-3">:</p>
-                                <p class="text-nowrap">${
-                                    employee.account_number
-                                }</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Balance</p>
-                                <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${VSMoney.formatAmount(employee.balance, data.currency_code ?? 'USD')}</p>
-                                
-                            </div>
-                        </div>
-                        <div class="col-5 p_profile_right">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Account Type</p>
-                                <p class="px-4">:</p>
-                                <p class="text-nowrap">${
-                                    employee.account_type
-                                }</p>
-                            </div>
-                             <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Account Currency</p>
-                                <p class="px-4">:</p>
-                                <p class="text-nowrap text-capitalize">${
-                                    employee.currency_code
-                                }</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted width-p">Last Balance Date</p>
-                                <p class="px-4">:</p>
-                                <p class="text-nowrap text-capitalize">${employee.last_balance_date}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="transaction_table row" style="display: flex !important;">
-                    <div class="col-12">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Trx Type</th>
-                                    <th>From Account</th>
-                                    <th>To Account</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${transactions
-                                    .map(
-                                        (trx) => `
-                                    <tr>
-                                        <td>${
-                                            trx.trx_type === 1
-                                                ? "Deposit"
-                                                : trx.trx_type === 2
-                                                ? "Withdrawal"
-                                                : "Transfer"
-                                        }</td>
-                                       <td>${trx.from_account_number ?? 'N/A'}</td>
-                                        <td>${trx.to_account_number ?? 'N/A'}</td>
-                                        <td class="${
-                                            trx.status === "in"
-                                                ? "text-success"
-                                                : "text-danger"
-                                        }">
-                                            ${VSMoney.formatAmount(trx.amount, employee.currency_code ?? 'USD')}
-                                        </td>
-                                        <td>${trx.created_at}</td>
-                                        <td>
-                                            <span class="badge ${
-                                                trx.status === "in"
-                                                    ? "bg-success"
-                                                    : "bg-danger"
-                                            }">
-                                                ${trx.status === "in" ? "Money In" : "Money Out"}
-                                            </span>
-                                        </td>
-                                        <td>${trx.remarks ?? 'N/A'}</td>
-                                    </tr>
-                                `
-                                    )
-                                    .join("")}
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
+   mThis.renderTransaction = (data) => {
+    if (!Array.isArray(data) || !data.length || !data[0]) {
+        console.error("Invalid transaction data.");
+        mThis._transaction_info.innerHTML = `
+            <div class="text-center text-muted py-4">
+                No transaction information available.
             </div>
         `;
+        return;
+    }
 
-        mThis._transaction_info.innerHTML = html;
+    const employee = data[0];
+    const transactions = Array.isArray(employee.trx)
+        ? employee.trx
+        : [];
+
+    const currency = employee.currency_code ?? "USD";
+
+    const escapeHtml = (value) => {
+        if (value === null || value === undefined || value === "") {
+            return "-";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     };
+
+    const formatAmount = (amount) => {
+        return VSMoney.formatAmount(
+            amount ?? 0,
+            currency
+        );
+    };
+
+    const getTransactionType = (type) => {
+        switch (Number(type)) {
+            case 1:
+                return "Deposit";
+
+            case 2:
+                return "Withdrawal";
+
+            default:
+                return "Transfer";
+        }
+    };
+
+    const getStatus = (status) => {
+        return String(status ?? "").toLowerCase() === "in";
+    };
+
+    const transactionRows = transactions.length
+        ? transactions
+              .map((trx) => {
+                  const moneyIn = getStatus(trx.status);
+                  const trxType = getTransactionType(
+                      trx.trx_type
+                  );
+
+                  return `
+                    <tr>
+                        <td class="text-center text-nowrap">
+                            ${escapeHtml(trxType)}
+                        </td>
+
+                        <td class="account-number">
+                            ${escapeHtml(
+                                trx.from_account_number
+                            )}
+                        </td>
+
+                        <td class="account-number">
+                            ${escapeHtml(
+                                trx.to_account_number
+                            )}
+                        </td>
+
+                        <td class="text-end ${
+                            moneyIn
+                                ? "text-success"
+                                : "text-danger"
+                        } amount">
+                            ${
+                                moneyIn ? "+" : "-"
+                            }${formatAmount(trx.amount)}
+                        </td>
+
+                        <td class="text-center text-nowrap">
+                            ${escapeHtml(trx.created_at)}
+                        </td>
+
+                        <td class="text-center">
+                            <span class="status-badge ${
+                                moneyIn
+                                    ? "status-in"
+                                    : "status-out"
+                            }">
+                                ${
+                                    moneyIn
+                                        ? "Money In"
+                                        : "Money Out"
+                                }
+                            </span>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(trx.remarks)}
+                        </td>
+                    </tr>
+                `;
+              })
+              .join("")
+        : `
+            <tr>
+                <td
+                    colspan="7"
+                    class="text-center text-muted py-4"
+                >
+                    No transactions found.
+                </td>
+            </tr>
+        `;
+
+    const html = `
+        <div id="full_elbody" style="zoom:95%">
+
+            <style>
+                /* =====================================
+                   Report Base
+                ===================================== */
+
+                #full_elbody {
+                    font-family:
+                        "Khmer OS Battambang",
+                        Arial,
+                        sans-serif;
+                    font-size: 12px;
+                    color: #000;
+                    background: #fff;
+                }
+
+               
+                /* =====================================
+                   Report Header
+                ===================================== */
+
+                .report-header {
+                    text-align: center;
+                    margin-bottom: 18px;
+                }
+
+                .report-header .kh-title {
+                    margin: 0;
+                    font-family:
+                        "Khmer OS Muol Light",
+                        Arial,
+                        sans-serif;
+                    font-size: 16px;
+                    line-height: 1.6;
+                }
+
+                .report-header .en-title {
+                    margin: 2px 0 0;
+                    font-size: 14px;
+                    font-weight: bold;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                }
+
+                .report-header .report-line {
+                    width: 100%;
+                    height: 1px;
+                    background: #000;
+                    margin-top: 10px;
+                }
+
+                /* =====================================
+                   Account Information
+                ===================================== */
+
+                .account-info {
+                    width: 100%;
+                    margin-bottom: 18px;
+                    border: 1px solid #000;
+                    border-radius: 4px;
+                    padding: 10px 14px;
+                }
+
+                .account-info-row {
+                    display: flex;
+                    width: 100%;
+                }
+
+                .account-info-column {
+                    width: 50%;
+                    padding: 0 12px;
+                }
+
+                .account-info-column:first-child {
+                    padding-left: 0;
+                }
+
+                .account-info-column:last-child {
+                    padding-right: 0;
+                }
+
+                .info-item {
+                    display: flex;
+                    align-items: center;
+                    min-height: 25px;
+                }
+
+                .info-label {
+                    width: 125px;
+                    flex-shrink: 0;
+                    color: #555;
+                    font-weight: normal;
+                }
+
+                .info-separator {
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .info-value {
+                    flex: 1;
+                    font-weight: 600;
+                    color: #000;
+                }
+
+                .balance-value {
+                    font-weight: bold;
+                    font-size: 13px;
+                }
+
+                /* =====================================
+                   Section Title
+                ===================================== */
+
+                .section-title {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                }
+
+                .section-title .title {
+                    font-size: 13px;
+                    font-weight: bold;
+                }
+
+                .section-title .count {
+                    font-size: 11px;
+                    color: #666;
+                }
+
+                /* =====================================
+                   Transaction Table
+                ===================================== */
+
+                .table-report {
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: fixed;
+                }
+
+                .table-report th,
+                .table-report td {
+                    border: 1px solid #000;
+                    padding: 5px 6px;
+                    vertical-align: middle;
+                }
+
+                .table-report thead th {
+                    background: #ffff99;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 11px;
+                    white-space: nowrap;
+                }
+
+                .table-report tbody td {
+                    font-size: 10.5px;
+                }
+
+                .table-report tbody tr {
+                    page-break-inside: avoid;
+                }
+
+                /* Column Width */
+
+                .table-report th:nth-child(1),
+                .table-report td:nth-child(1) {
+                    width: 13%;
+                }
+
+                .table-report th:nth-child(2),
+                .table-report td:nth-child(2) {
+                    width: 15%;
+                }
+
+                .table-report th:nth-child(3),
+                .table-report td:nth-child(3) {
+                    width: 15%;
+                }
+
+                .table-report th:nth-child(4),
+                .table-report td:nth-child(4) {
+                    width: 13%;
+                }
+
+                .table-report th:nth-child(5),
+                .table-report td:nth-child(5) {
+                    width: 13%;
+                }
+
+                .table-report th:nth-child(6),
+                .table-report td:nth-child(6) {
+                    width: 12%;
+                }
+
+                .table-report th:nth-child(7),
+                .table-report td:nth-child(7) {
+                    width: 19%;
+                }
+
+                .account-number {
+                    font-family: Arial, sans-serif;
+                    font-size: 10px;
+                }
+
+                .amount {
+                    white-space: nowrap;
+                    font-weight: bold;
+                }
+
+                /* =====================================
+                   Status
+                ===================================== */
+
+                .status-badge {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 10px;
+                    font-size: 9px;
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+
+                .status-in {
+                    color: #198754;
+                    background: #d1e7dd;
+                }
+
+                .status-out {
+                    color: #dc3545;
+                    background: #f8d7da;
+                }
+
+                /* =====================================
+                   Print
+                ===================================== */
+
+                @page {
+                    size: A4 portrait;
+                    margin: 12mm;
+                }
+
+            </style>
+
+            <div class="page">
+
+                <!-- Report Header -->
+                <div class="report-header">
+
+                    <p class="kh-title">
+                        ប្រវត្តិប្រតិបត្តិការគណនី
+                    </p>
+
+                    <p class="en-title">
+                        Transaction History
+                    </p>
+
+                    <div class="report-line"></div>
+
+                </div>
+
+                <!-- Account Information -->
+                <div class="account-info">
+
+                    <div class="account-info-row">
+
+                        <!-- Left -->
+                        <div class="account-info-column">
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Employee Name
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value">
+                                    ${escapeHtml(
+                                        employee.emp_name
+                                    )}
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Account Number
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value">
+                                    ${escapeHtml(
+                                        employee.account_number
+                                    )}
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Balance
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value balance-value">
+                                    ${formatAmount(
+                                        employee.balance
+                                    )}
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <!-- Right -->
+                        <div class="account-info-column">
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Account Type
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value">
+                                    ${escapeHtml(
+                                        employee.account_type
+                                    )}
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Account Currency
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value">
+                                    ${escapeHtml(currency)}
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    Last Balance Date
+                                </span>
+
+                                <span class="info-separator">
+                                    :
+                                </span>
+
+                                <span class="info-value">
+                                    ${escapeHtml(
+                                        employee.last_balance_date
+                                    )}
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Transaction Section -->
+                <div class="section-title">
+
+                    <span class="title">
+                        Transaction Details
+                    </span>
+
+                    <span class="count">
+                        ${transactions.length}
+                        transaction${
+                            transactions.length !== 1
+                                ? "s"
+                                : ""
+                        }
+                    </span>
+
+                </div>
+
+                <!-- Transaction Table -->
+                <table class="table-report">
+
+                    <thead>
+                        <tr>
+                            <th>Trx Type</th>
+                            <th>From Account</th>
+                            <th>To Account</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${transactionRows}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    `;
+
+    mThis._transaction_info.innerHTML = html;
+};
 
     mThis.btnPrintTransaction.addEventListener("click", () => {
         windowPrintTransaction(mThis._transaction_info.innerHTML);
@@ -400,10 +774,10 @@ var PayrollAccountComponent = (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Cash Deposit">Cash Deposit</span>',
+                    html: '<span class="ps-2" vslang="titles.Deposit to Account"></span>',
                     icon: `<i class="fa fa-calculator text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "cash_deposit",
+                    name: "deposit_to_account",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transactios">View Transaction</span>',
@@ -445,8 +819,8 @@ var PayrollAccountComponent = (function () {
                         mThis.transfer(id, menuLink);
                         break;
                     }
-                    case "cash_deposit": {
-                        mThis.cash_deposit(id, menuLink);
+                    case "deposit_to_account": {
+                        mThis.depositToAccount(id, menuLink);
                         break;
                     }
                     case "view_transaction": {
@@ -481,7 +855,7 @@ var PayrollAccountComponent = (function () {
         if (!AuthManager.allowed(371,false)) return;
         TransferDialog.show(op);
     };
-    mThis.cash_deposit = (id, menuLink) => {
+    mThis.depositToAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -588,7 +962,6 @@ var PayrollAccountComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(23,p);
         
         return p;
     };
@@ -689,12 +1062,9 @@ const PayrollAccountDialog = (() => {
                             name: "Name",
                         },
                         onSelect: (employee) => {
-                           if (me.controls.emp_id) {
-                                    me.controls.emp_id.value =
-                                        employee.id || "";
-                            console.log("Selected employee:", me.controls.emp_id.value);
-
-                                }
+                            if (me.controls.emp_id) {
+                                me.controls.emp_id.value = employee.id || "";
+                            }
                             if (me.controls.account_number) {
                                 me.controls.account_number.value = `${employee.code}-P`;
                             }
@@ -723,9 +1093,7 @@ const PayrollAccountDialog = (() => {
                         cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
-
                             p.id = me.dataOptions.id;
-
                             vsapi
                                 .call(
                                     [
@@ -770,7 +1138,7 @@ const PayrollAccountDialog = (() => {
                     }
                     me.controls.account_type.value = "Payroll";
                     const isEdit = me.dataOptions.id > 0;
-                     const details = data?.account || {};
+                    const details = data?.account || {};
                     if (isEdit) {
                         me.controls.balance.disabled = true;
                         me.controls.employee.disabled = true;
@@ -881,8 +1249,8 @@ const DepositDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Cash Deposit",
-                    modifyTitle: "Cash Deposit",
+                    createTitle: "Deposit To Account",
+                    modifyTitle: "Deposit To Account",
                     targetProp: "account",
                     api: {
                         endpoint: [

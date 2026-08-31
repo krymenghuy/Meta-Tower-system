@@ -2,10 +2,7 @@
 var HolidayComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_holidayComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_holidayComponent");
     mThis.title_prop = "holidays";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_holiday");
@@ -162,7 +159,6 @@ var HolidayComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
         return p;
     };
 
@@ -174,13 +170,13 @@ var HolidayComponent = (function () {
 
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Holiday"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_holiday",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Holiday"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_holiday",
@@ -232,7 +228,7 @@ var HolidayComponent = (function () {
         cv_interact.confirm(
             "delete_holiday",
             {
-                title: "Delete Holiday",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -253,15 +249,11 @@ var HolidayComponent = (function () {
                                     mThis.getFilterData(),
                                 );
                             } else {
-                                cv_interact.error(
-                                    "Deletion failed. Try again.",
-                                );
+                                cv_interact.error("Deletion failed. Try again.");
                             }
                         })
                         .catch(() => {
-                            cv_interact.error(
-                                "An error occurred. Please try again.",
-                            );
+                            cv_interact.error("An error occurred. Please try again.");
                         })
                         .finally(() => {
                             menuLink.disabled = false;
@@ -283,15 +275,7 @@ var HolidayComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elHolidayType,
-                    d.holiday_types || [],
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Types", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elHolidayType,d.holiday_types || [],"id","name","",LocaleManager.trans("All Types", "titles"),"");
             });
     };
 
@@ -375,9 +359,7 @@ const HolidayDialog = (() => {
                     cssClass: "btn-vs-save",
                     click: (me, btn) => {
                         const p = me.getData();
-
                         p.id = me.dataOptions.id;
-
                         vsapi
                             .call(
                                 [main_view.base_url, "/mhr/holiday/save"].join(
@@ -391,13 +373,9 @@ const HolidayDialog = (() => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "update_success_holiday",
-                                        );
+                                        cv_interact.success("update_success_holiday");
                                     } else {
-                                        cv_interact.success(
-                                            "create_success_holiday",
-                                        );
+                                        cv_interact.success("create_success_holiday");
                                     }
                                 } else cv_interact.error(res.error_message);
                             });

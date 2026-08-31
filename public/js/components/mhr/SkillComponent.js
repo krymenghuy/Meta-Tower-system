@@ -1,6 +1,6 @@
 "use strict";
 
-var SkillsComponent = (function () {
+var SkillComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_skillsComponent");
@@ -66,8 +66,7 @@ var SkillsComponent = (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        mThis.SkillsListView = new ListView("_skills_lists", {
+        mThis.SkillListView = new ListView("_skills_lists", {
             fetchApi: `${mThis.base_url}/mhr/skills/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -75,26 +74,23 @@ var SkillsComponent = (function () {
             tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
-
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () => {
-                mThis.SkillsListView.showPage(mThis.getFilterData());
+                mThis.SkillListView.showPage(mThis.getFilterData());
             };
         });
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             if (!AuthManager.allowed(386,false)) return;
-            SkillListDialog.show({
+            CreateSkillDialog.show({
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SkillsListView.showPage(mThis.getFilterData());
+                    mThis.SkillListView.showPage(mThis.getFilterData());
                 },
             });
         };
-
-        mThis.listContainer = mThis.SkillsListView.getListContainer();
+        mThis.listContainer = mThis.SkillListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 170 + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -114,14 +110,14 @@ var SkillsComponent = (function () {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                        '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "btn_edit_skill"
                 },
                 {
                     html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                        '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "btn_delete_skill"
@@ -146,16 +142,14 @@ var SkillsComponent = (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-
     mThis.elSearch.addEventListener("keyup", () => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.SkillsListView) {
-                mThis.SkillsListView.showPage(mThis.getFilterData());
+            if (mThis.SkillListView) {
+                mThis.SkillListView.showPage(mThis.getFilterData());
             }
         }, 200);
     });
-
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
@@ -168,24 +162,20 @@ var SkillsComponent = (function () {
         });
         return p;
     };
-
-    
-
-    mThis.editSkill = (id, menulink) => {
+    mThis.editSkill = (id, menuLink) => {
         if (!AuthManager.allowed(387,false)) return;
-        SkillListDialog.show({
+        CreateSkillDialog.show({
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
-                mThis.SkillsListView.showPage(mThis.getFilterData());
+                mThis.SkillListView.showPage(mThis.getFilterData());
             },
         });
     };
-
-    mThis.deleteSkill = (id, menulink) => {
+    mThis.deleteSkill = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
         };
         if (!AuthManager.allowed(388,false)) return;
         cv_interact.confirm(
@@ -208,7 +198,7 @@ var SkillsComponent = (function () {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("delete_success_skill");
-                                mThis.SkillsListView.showPage(mThis.getFilterData());
+                                mThis.SkillListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -217,26 +207,24 @@ var SkillsComponent = (function () {
                             cv_interact.error("An error occurred. Please try again.");
                         })
                         .finally(() => {
-                            menulink.disabled = false;
+                            menuLink.disabled = false;
                         });
                 } else {
-                    menulink.disabled = false;
+                    menuLink.disabled = false;
                 }
             }
         );
     };
-
     mThis.show = function () {
         mThis.init();
-        mThis.SkillsListView.showPage(mThis.getFilterData(), null, () => {
+        mThis.SkillListView.showPage(mThis.getFilterData(), null, () => {
             main_view.setContentView(mThis.self, mThis.title_prop);
         });
     };
-
     return mThis;
 })();
 
-const SkillListDialog = (() => {
+const CreateSkillDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -304,7 +292,7 @@ const SkillListDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Skill",
-                    modifyTitle: "vslang:titles.Edit Skill",
+                    modifyTitle: "vslang:titles.Modify Skill",
                     targetProp: "skills",
                     api: {
                         endpoint: [main_view.base_url, "/mhr/skills/form-options"].join(""),

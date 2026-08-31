@@ -2,10 +2,7 @@
 var DepartmentComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_departmentComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_departmentComponent");
     mThis.title_prop = "departments";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddDepartment");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");

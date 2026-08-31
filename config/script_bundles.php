@@ -248,7 +248,7 @@ return [
                 '/js/components/mhr/EmployeeComponent.js',
                 '/js/components/mhr/MovementComponent.js',
                 '/js/components/mhr/WorkShiftComponent.js',
-                '/js/components/mhr/skillsComponent.js',
+                '/js/components/mhr/SkillComponent.js',
                 '/js/components/mhr/BenefitDisbursementComponent.js',
                 '/js/components/mhr/LeaveComponent.js',
                 '/js/components/mhr/UninformedLeaveComponent.js',

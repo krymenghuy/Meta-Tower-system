@@ -273,7 +273,7 @@ var TenantComponent = (function () {
                     <div class="row">
                         <div class="col-3">
                             <div class="d-flex align-items-to">
-                                <div class=" position-relative" style="max-width: 120px;">
+                                <div class="position-relative" style="max-width: 120px;">
                                     <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png" alt="Company Logo"class="img-fluid">
                                 </div>
                             </div>

@@ -4,7 +4,6 @@ var BenefitComponent =  (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_benefit_component");
- 
     mThis.title_prop = "benefit_list";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -134,14 +133,14 @@ var BenefitComponent =  (function () {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                        '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_benefit"
                 },
                 {
                     html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                        '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_benefit"
@@ -186,7 +185,7 @@ var BenefitComponent =  (function () {
         cv_interact.confirm(
             "confirm_delete",
             {
-                title: "Delete Benefit",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
