@@ -2,6 +2,7 @@
 
 namespace App\Models\Mhr;
 
+use App\Models\Prm\GeneralSettings;
 use DV;
 use DBX;
 use Illuminate\Support\Facades\DB;
@@ -56,19 +57,25 @@ class BenefitDisbursePolicy
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $str_search = '1=1';
+        $str_moreWhere = '2=2';
         $benefit_id = $d->benefit_id ?? null;
-
-        $query = DB::table('benefit_disburse_policies as bdp')
-            ->join('benefits as b', 'b.id', '=', 'bdp.benefit_id')
-            ->selectRaw('bdp.id, bdp.benefit_id, b.name as benefit_name, bdp.target_month, bdp.target_year, bdp.withdraw_rate');
-
-        if ($search_value) {
+        $target_year = $d->target_year ?? null;
+        if($search_value){
             $search_value = escape_like_str($search_value);
-            $query->where('b.name', 'like', '%' . $search_value . '%');
+            $str_search = "(b.name LIKE '%" .$search_value . "%')";
         }
         if($benefit_id){
-            $query->where('bdp.benefit_id', $benefit_id);
+            $str_moreWhere .= ' AND bdp.benefit_id = '. $benefit_id;
         }
+        if($target_year){
+            $str_moreWhere .= ' AND bdp.target_year = '. $target_year;
+        }
+        $query = DB::table('benefit_disburse_policies as bdp')
+            ->join('benefits as b', 'b.id', '=', 'bdp.benefit_id')
+            ->whereRaw($str_moreWhere)
+            ->whereRaw($str_search)
+            ->selectRaw('bdp.id, bdp.benefit_id, b.name as benefit_name, bdp.target_month, bdp.target_year, bdp.withdraw_rate');
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -101,6 +108,7 @@ class BenefitDisbursePolicy
         if ($id)   $bdp = self::getDetails($id, $ss);
         return (object) [
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
+            'years' => GeneralSettings::options_calendar_year($ss),
             "disburse_policy" => $bdp,
         ];
     }

@@ -120,27 +120,27 @@ var JobsLevelComponent = (function () {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                        '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_jobevel"
+                    name: "edit_job_level"
                 },
                 {
                     html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                        '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_jobevel"
+                    name: "delete_job_level"
                 }
             ],
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "edit_jobevel": {
+                    case "edit_job_level": {
                         mThis.editJobLevel(id, menuLink);
                         break;
                     }
-                    case "delete_jobevel": {
+                    case "delete_job_level": {
                         mThis.deleteJobLevel(id, menuLink);
                         break;
                     }
@@ -163,10 +163,10 @@ var JobsLevelComponent = (function () {
         return p;
     };
 
-    mThis.editJobLevel = (id, menulink) => {
+    mThis.editJobLevel = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.JobLevelListView.showPage();
             },
@@ -175,10 +175,10 @@ var JobsLevelComponent = (function () {
         JobLevelDialog.show(op);
     };
 
-    mThis.deleteJobLevel = (id, menulink) => {
+    mThis.deleteJobLevel = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.JobLevelListView.showPage();
             },
@@ -187,7 +187,7 @@ var JobsLevelComponent = (function () {
         cv_interact.confirm(
             "delete_job_level?",
             {
-                title: "Delete Job level",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -308,7 +308,7 @@ const JobLevelDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success( 'update_job_level_successfully');
+                                            cv_interact.success('update_job_level_successfully');
                                         }
                                         else
                                         {

@@ -55,37 +55,29 @@ class Skill extends VSModel
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = "(s.title LIKE '%" . $search_value . "%')";
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
         if ($search_value) {
             $skip_rows = 0;
         }
-
         $query = DB::table('skills as s')
             ->whereRaw($str_search)
             ->selectRaw('s.id, s.title, s.title AS name, s.description, s.updated_at, s.update_user')
             ->orderBy('s.id', 'DESC');
-
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
         foreach ($rows as $row) {
             setOfficialDates($row, [''], ['updated_at'], ['']);
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

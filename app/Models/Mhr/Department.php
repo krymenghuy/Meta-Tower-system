@@ -40,19 +40,15 @@ class Department extends VSModel
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-
         $err = self::checkDuplicateName($inputs['name'], $id, $branch_id);
         if ($err) {
             return DV::error($err);
         }
-
         $id = DBX::saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
         if ($id > 0) {
             return DV::depends($id, ['departments' => $inputs, 'id' => $id]);
         }
-
         return DV::error('Error saving department');
 
     }
@@ -62,11 +58,9 @@ class Department extends VSModel
         $query = DB::table('departments as d')
             ->where('d.branch_id', $branch_id)
             ->where('d.name', $name);
-
         if ($id) {
             $query->where('d.id', '<>', $id);
         }
-
         $test = $query->select('id')->first();
         if ($test) {
             return 'department_exist';
@@ -118,23 +112,14 @@ class Department extends VSModel
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
         if (!$id) {
             return DV::error('Department ID is not valid.');
         }
-
-        $exists = DB::table('positions')
-            ->where('department_id', $id)
-            ->exists();
-
+        $exists = DB::table('positions')->where('department_id', $id)->exists();
         if ($exists) {
             return DV::error('Department is assigned to positions.');
         }
-
-        $deleted = DB::table('departments')
-            ->where('id', $id)
-            ->delete();
-
+        $deleted = DB::table('departments')->where('id', $id)->delete();
         return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete department.');
     }
 

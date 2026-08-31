@@ -5,9 +5,9 @@
                 <input type="text" class="filter-field rounded-2 input-search" id="_skills_list_search"
                 placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
             </div>
-            <div class="ms-md-auto col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddSkill">
-                    <i class="fa-solid fa-brain" style="color: rgb(255, 255, 255);"></i>
+                    <i class="fa-solid fa-brain"></i>
                     <span vslang="buttons.Create Skill"></span>
                 </button>
             </div>

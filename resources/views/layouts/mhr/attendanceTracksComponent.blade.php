@@ -337,9 +337,9 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <select id="el_work_shift" name="shifts" class="filter-field data-input" data-field="shifts"></select>
             </div>
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
-                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddShiftDetail" title="Create new shift">
-                    <i class="fa-solid fa-qrcode" style="color: rgb(255, 255, 255);"></i>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddShiftDetail">
+                    <i class="fa-solid fa-qrcode"></i>
                     
                     <span vslang="buttons.Create Scan Time"></span>
                 </button>

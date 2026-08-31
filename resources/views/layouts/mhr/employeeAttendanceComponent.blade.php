@@ -17,7 +17,7 @@
                 </div>
             </div>
             
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddStaffAttendance">
                     <i class="fa-regular fa-plus me-2"></i>
                     <span vslang="buttons.New Scan"></span>

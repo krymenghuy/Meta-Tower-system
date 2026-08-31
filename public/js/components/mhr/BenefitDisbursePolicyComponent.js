@@ -8,6 +8,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.title_prop = "disburse_policies";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+    mThis.elTargetYear = mThis.self.querySelector("#target_year");
 
     const monthNames = [
         "All Months",
@@ -175,13 +176,13 @@ var BenefitDisbursePolicyComponent =  (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify">Modify Policy</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_bdp"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Delete">Delete Policy</span>',
+                    html: '<span class="ps-2 " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_bdp"
@@ -211,7 +212,9 @@ var BenefitDisbursePolicyComponent =  (function () {
         BdpDialog.show({
             id,
             btn,
-            onClose: () => mThis.BdpListView.showPage(mThis.getDataFormFilter()),
+            onClose: () =>{
+                mThis.BdpListView.showPage(mThis.getDataFormFilter());
+            } 
         });
     };
 
@@ -227,7 +230,7 @@ var BenefitDisbursePolicyComponent =  (function () {
         cv_interact.confirm(
             "Delete this benefit disbursement policy?",
             {
-                title: "Delete Benefit Disbursement Policy",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -258,6 +261,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.getDataFormFilter = () => {
         let filters = {
             benefit_id: mThis.elBenefit.value,
+            target_year: mThis.elTargetYear.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             filters[el.dataset.field] = el.value;
@@ -270,16 +274,8 @@ var BenefitDisbursePolicyComponent =  (function () {
             .call(`${main_view.base_url}/mhr/disburse-policy/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-
-                VSUtil.setComboItems(
-                    mThis.elBenefit,
-                    d.benefits,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Benefits","titles"),
-                    ""
-                );
+                VSUtil.setComboItems(mThis.elBenefit,d.benefits,"id","name","",LocaleManager.trans("All Benefits","titles"),"");
+                VSUtil.setComboItems(mThis.elTargetYear,d.years,"year","year","",LocaleManager.trans("All Years","titles"),"");
             });
     };
 

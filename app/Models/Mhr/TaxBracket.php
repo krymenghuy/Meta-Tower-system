@@ -69,23 +69,16 @@ class TaxBracket //extends VSModel
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-
-
-
         $query = DB::table('tax_brackets as tb')
             ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code, tb.update_user,tb.updated_at')
-            ->where('tb.branch_id', $branch_id)
-            ->orderBy('tb.lower_amount', 'asc') // Order by lower_amount first
-            ->orderBy('tb.upper_amount', 'asc'); // Then order by upper_amount
-
-
+            ->orderBy('tb.lower_amount', 'asc') 
+            ->orderBy('tb.upper_amount', 'asc'); 
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
             setOfficialDates($row,[''],['updated_at'],['']);
 
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

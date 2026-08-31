@@ -6,7 +6,7 @@
                         <input type="text" class="filter-field rounded-2 input-search" id="_sdl_search_account" 
                         placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
                     </div>
-                    <div class="col-12 col-md-6 col-lg-2">
+                    <div class="col-12 col-md-6 col-lg-3">
                         <select id="el_department" class="data-input filter-field form-control" data-field="department_id">
                         </select>
                     </div>
@@ -16,7 +16,7 @@
                             <option value="0" selected>Staff Account</option> -->
                         </select>
                     </div>
-                    <div class="ms-md-auto col-12 col-md-6 col-lg-5">
+                    <div class="ms-md-auto col-12 col-md-6 col-lg-4">
                         <div class="justify-content-end row g-2">
                             <div class="col-12 col-md-auto">
                                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddAccount">

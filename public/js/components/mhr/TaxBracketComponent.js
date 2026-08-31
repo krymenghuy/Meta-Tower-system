@@ -2,10 +2,7 @@
 var TaxBracketComponent = (function() {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_taxBracketComponent"
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_taxBracketComponent");
     mThis.title_prop = "tax_brackets";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTaxBracket");
     mThis.divFilter =
@@ -142,14 +139,14 @@ var TaxBracketComponent = (function() {
             menus: [
                 {
                     html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Tax Bracket</span>',
+                        '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_taxBracket"
                 },
                 {
                     html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Tax Bracket</span>',
+                        '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_taxBracket"
@@ -200,7 +197,7 @@ var TaxBracketComponent = (function() {
         cv_interact.confirm(
             "Delete this tax bracket?",
             {
-                title: "Delete Tax Bracket",
+                title: "Delete",
                 context: "delete",
                 confirmButtonText: "Delete"
             },

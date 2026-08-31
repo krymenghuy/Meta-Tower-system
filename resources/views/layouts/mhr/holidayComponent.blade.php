@@ -8,9 +8,9 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="holiday_type" class="filter-field data-input" data-field="holiday_type_id" placeholder=""></select>
             </div>
-            <div class="ms-md-auto text-md-end col-12 col-md-auto" style="overflow:visible;">
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddHoliday">
-                    <i class="fa-solid fa-calendar-day" style="color: rgb(255, 255, 255);"></i>
+                    <i class="fa-solid fa-calendar-day"></i>
                     <span vslang="buttons.Create Holiday"></span>
                 </button>
             </div>

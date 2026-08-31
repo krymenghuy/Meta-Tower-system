@@ -82,7 +82,6 @@ class Position extends VSModel
 
     public function getList($arr, $ss)
     {
-        $branch_id = $ss->branch_id;
         $d = (object) $arr;
 
         $current_page = $d->current_page ?? 1;
@@ -93,25 +92,28 @@ class Position extends VSModel
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_department = $d->department_id ?? null;
+        $department_id = $d->department_id ?? null;
         $str_search = '1=1';
+        $str_moreWhere = "2=2";
+
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = "(p.name LIKE '%" . $search_value . "%' OR p.name_kh = '" . $search_value . "')";
         }
-
+        if ($department_id) {
+            $str_moreWhere .= ' AND p.department_id = ' . $department_id;
+        }
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->join('job_levels as job', 'job.id', '=', 'p.job_level_id')
             ->leftJoin('staff_groups as sg', 'sg.id', '=', 'p.staff_group_id')
             ->where('p.inactive', 0)
             ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw('p.id, p.name, p.name_kh, p.code, p.description, p.staff_group_id, sg.name as staff_group, p.department_id, p.job_level_id, job.name as level, p.salary, p.currency_code, d.name as department, p.updated_at, p.update_user')
             ->orderByRaw('job.rank ASC, d.name ASC');
             // ->orderByRaw('p.id DESC');
-        if ($search_department) {
-            $query->where('p.department_id', $search_department);
-        }
+       
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

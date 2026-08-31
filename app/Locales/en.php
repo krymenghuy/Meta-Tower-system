@@ -226,6 +226,12 @@ return [
         'amount_is_required' => 'Amount is required.',
         'select_leave_type' => 'Please select a leave type.',
 
+        'employee_required' => 'Please select a valid employee.',
+        'account_number_required' => 'Account number is required.',
+        'employee_already_has_account' => 'Employee already has this account.',
+        'account_number_already_exists' => 'Account number already exists.',
+
+
         'emp_already_leave' => 'The employee already has leave for the specified date range.',
         'skill_name_already_exists' => 'Skill name already exists.',
         'import_error_invalid_format' => 'There were some problems during the import. This is likely due to an incorrect data format in the Excel file.',
@@ -289,6 +295,7 @@ return [
         'checkpoint_evaluation' => 'Checkpoint Evaluation',
         'checkpoints' => 'Checkpoints',
         'import_employee_note' => 'Please download the sample template before importing employees. Make sure your data columns match the template exactly.',
+        'All Years' => 'All Years',
 
 
 

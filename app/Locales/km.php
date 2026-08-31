@@ -265,6 +265,10 @@ return [
 
         'enter_rank' => 'សូមបញ្ចូលចំណាត់ថ្នាក់។',
 
+        'employee_required' => 'សូមជ្រើសរើសបុគ្គលិកដែលត្រឹមត្រូវ។',
+        'account_number_required' => 'សូមបញ្ចូលលេខគណនី។',
+        'employee_already_has_account' => 'បុគ្គលិកមានប្រភេទគណនីនេះរួចហើយ។',
+        'account_number_already_exists' => 'លេខគណនីនេះមានរួចហើយ។',
 
         'work_shift_is_assigned_to_employee' => 'វេនការងារនេះត្រូវបានកំណត់ឱ្យបុគ្គលិករួចហើយ។',
         'select_leave_type' => 'សូមជ្រើសរើសប្រភេទថ្ងៃឈប់សម្រាក។',
@@ -707,7 +711,7 @@ return [
         'staff_wallet' => 'គណនីឌីជីថលបុគ្គលិក',
         'benefit_disbursements' => 'ការបើកផ្តល់អត្ថប្រយោជន៍',
         'benefit_list' => 'បញ្ជីអត្ថប្រយោជន៍',
-        'disburse_policies' => 'គោលការណ៍ចំណាយ',
+        'disburse_policies' => 'គោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
         'holidays' => 'ថ្ងៃឈប់សម្រាក',
         'tax_brackets' => 'កម្រិតពន្ធ',
         'departments' => 'នាយកដ្ឋាន',
@@ -720,6 +724,7 @@ return [
         'File Type' => 'ទម្រង់ឯកសារ',
         'Imported By' => 'នាំចូលដោយ',
         'import_employee_note' => 'សូមទាញយកឯកសារគំរូជាមុនសិន មុនពេលនាំចូលបុគ្គលិក។ សូមប្រាកដថាជួរឈរទិន្នន័យរបស់អ្នកត្រូវគ្នាយ៉ាងពិតប្រាកដជាមួយឯកសារគំរូ។',
+        'All Years' => 'ឆ្នាំទាំងអស់',
 
 
 
@@ -1071,7 +1076,7 @@ return [
         'staff_wallet' => 'គណនីឌីជីថលបុគ្គលិក',
         'benefit_disbursements' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
         'benefit_list' => 'បញ្ជីអត្ថប្រយោជន៍',
-        'disburse_policies' => 'គោលការណ៍ចំណាយទូទៅ',
+        'disburse_policies' => 'គោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
         'holidays' => 'ថ្ងៃឈប់សម្រាក',
         'tax_brackets' => 'កម្រិតពន្ធ',
         'departments' => 'នាយកដ្ឋាន',
@@ -1236,7 +1241,7 @@ return [
         'Access Card' => 'កាតចេញចូល',
         'Create Access Card' => 'បង្កើតកាតចេញចូល',
 
-        'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
+        'Create Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
         'Create Evaluation' => 'បង្កើតការវាយតម្លៃ',
 
         'Create Work Shift' => 'បង្កើតវេនការងារ',

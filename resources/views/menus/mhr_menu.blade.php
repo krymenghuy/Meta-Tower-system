@@ -346,7 +346,7 @@ function v_display($mod_id, $module_ids = null)
                                 </a>
                             </li>
                             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(423); ?>>
-                                <a href="SkillsComponent" modid="423" class="menu-item kt-menu__link">
+                                <a href="SkillComponent" modid="423" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="opacity-icons icons"
                                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />

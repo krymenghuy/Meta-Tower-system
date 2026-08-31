@@ -26,8 +26,8 @@ class JobLevel //extends Model
         $ss = $userInfo ?? $this->userInfo;
         $v_rule = [
             'name' => '1|string|0-100|text=name_required::@key;@max;@value',
-            'description' => '0|string|0-250',
             'rank' => '1|number|0-100|text=enter_rank',
+            'description' => '0|string|0-300',
         ];
         $job_char = ['$','#','@','!','/','.','-','_','=','?'];
 
@@ -71,48 +71,34 @@ class JobLevel //extends Model
         if (!$id) {
             return DV::error('Level ID is not valid.');
         }
-        $exists = DB::table('positions')
-            ->where('level_id', $id)
-            ->exists();
+        $exists = DB::table('positions')->where('level_id', $id)->exists();
         if ($exists) {
             return DV::error('Level is assigned to positions.');
         }
-        $deleted = DB::table('job_levels')
-            ->where('id', $id)
-            ->delete();
+        $deleted = DB::table('job_levels')->where('id', $id)->delete();
         return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete level.');
     }
 
     function getList($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 20;
-        $skip_rows = ($current_page - 1) * $per_page;
-
+        $per_page = $d->per_page ?? 10;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
         $str_search = '1=1';
-        $query = DB::table('job_levels as l')
-        ->whereRaw($str_search)
-        ->selectRaw('l.id, l.name, l.description, l.rank,l.updated_at, l.update_user')
-        ->orderBy('l.rank', 'ASC'); 
-
-        if ($search_id) {
-            $query->where('l.id', $search_id);
-        }
-        if ($search_status_id) {
-            $query->where('l.description', $search_status_id);
-        }
-        if ($search_value) {
+        if($search_value){
             $search_value = escape_like_str($search_value);
-            $str_search = "l.name LIKE '%{$search_value}%' OR l.description LIKE '%{$search_value}%'";
-            $query->whereRaw($str_search);
-        }
+            $str_search = "(l.name LIKE '%" . $search_value . "%')";
 
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $query = DB::table('job_levels as l')
+            ->whereRaw($str_search)
+            ->selectRaw('l.id, l.name, l.description, l.rank,l.updated_at, l.update_user')
+            ->orderBy('l.rank', 'ASC'); 
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
