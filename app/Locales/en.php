@@ -321,6 +321,8 @@ return [
         'disbursement' => 'Disbursement',
         "Edit Payroll" => "Edit Payroll",
         "Delete Payroll" => "Delete Payroll",
+        'Modify Work Shift' => 'Modify Work Shift',
+        'Delete Work Shift' => 'Delete Work Shift'
 
 
 
@@ -627,6 +629,9 @@ return [
         'create_success_work_shift' => 'Work shift has been created successfully.',
         'update_success_work_shift' => 'Work shift has been updated successfully.',
         'delete_success_work_shift' => 'Work shift has been deleted successfully.',
+        'create_success_shift_detail' => 'Shift detail has been created successfully.',
+        'update_success_shift_detail' => 'Shift detail has been updated successfully.',
+        'delete_success_shift_detail' => 'Shift detail has been deleted successfully.',
         'create_success_exit_form' => 'Exit form has been created successfully.',
         'update_success_exit_form' => 'Exit form has been updated successfully.',
         'delete_success_exit_form' => 'Exit form has been deleted successfully.',

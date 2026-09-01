@@ -2,17 +2,12 @@
 var EmployeeAttendanceComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_staffAttendanceComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_staffAttendanceComponent");
     mThis.title_prop = "employee_attendance";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_attendance_search");
     mThis.elWorkShift = mThis.self.querySelector("#work_shift");
-    mThis.containerFilter = mThis.self.querySelector(
-        "#_divFilter_staff_attendance",
-    );
+    mThis.containerFilter = mThis.self.querySelector("#_divFilter_staff_attendance");
     mThis.divListView = mThis.self.querySelector("#_staff_attendance_list");
 
     mThis.cols = [
@@ -206,14 +201,10 @@ var EmployeeAttendanceComponent = (function () {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
 
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
                 el.onchange = (e) => {
                     e.preventDefault();
-                    mThis.StaffAttendanceListView.showPage(
-                        mThis.getFilterData(),
-                    );
+                    mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
                 };
             });
 
@@ -237,15 +228,7 @@ var EmployeeAttendanceComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elWorkShift,
-                    d.work_shifts || [],
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Shifts", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elWorkShift,d.work_shifts || [],"id","name","",LocaleManager.trans("All Shifts", "titles"),"");
             });
     };
 
@@ -253,14 +236,10 @@ var EmployeeAttendanceComponent = (function () {
         let p = {
             search_value: mThis.elSearch.value,
         };
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
                 const f = el.dataset.field;
                 p[f] = el.value;
             });
-        console.log(22122,p);
-        
         return p;
     };
 
@@ -342,7 +321,7 @@ var EmployeeAttendanceComponent = (function () {
                         cv_interact.success('attendance_delete_successfully');
                         mThis.StaffAttendanceListView.showPage();
                     } else {
-                        cv_interact.error(res.error_message || 'An error occurred while deleting');
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
@@ -470,13 +449,9 @@ const CreateAttendanceDialog = (() => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "attendance_update_successfully",
-                                        );
+                                        cv_interact.success("attendance_update_successfully");
                                     } else {
-                                        cv_interact.success(
-                                            "attendance_create_successfully",
-                                        );
+                                        cv_interact.success("attendance_create_successfully");
                                     }
                                 } else cv_interact.error(res.error_message);
                             });

@@ -3,7 +3,6 @@ var WorkShiftComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_workShiftComponent");
-
     mThis.title_prop = "work_shifts";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
@@ -82,7 +81,7 @@ var WorkShiftComponent = (function () {
                 },
             };
             if (!AuthManager.allowed(343,false)) return;
-            CreateShiftDialog.show(op);
+            CreateWorkShiftDialog.show(op);
         };
         mThis.listContainer = mThis.WorkShiftListsView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -125,15 +124,13 @@ var WorkShiftComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify Job Level</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_work_shift"
                 },
                 {
-                    html:
-                        '<span class="ps-2  " vslang="titles.Delete">Delete Job Level</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_work_shift"
@@ -158,21 +155,21 @@ var WorkShiftComponent = (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    mThis.editWorkShift = (id, menulink) => {
+    mThis.editWorkShift = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.WorkShiftListsView.showPage();
             },
         };
         if (!AuthManager.allowed(344,false)) return;
-        CreateShiftDialog.show(op);
+        CreateWorkShiftDialog.show(op);
     };
-    mThis.deleteWorkShift = (id, menulink) => {
+    mThis.deleteWorkShift = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.WorkShiftListsView.showPage();
             },
@@ -209,10 +206,10 @@ var WorkShiftComponent = (function () {
                             );
                         })
                         .finally(() => {
-                            menulink.disabled = false;
+                            menuLink.disabled = false;
                         });
                 } else {
-                    menulink.disabled = false;
+                    menuLink.disabled = false;
                 }
             }
         );
@@ -230,7 +227,7 @@ var WorkShiftComponent = (function () {
     };
     return mThis;
 })();
-const CreateShiftDialog = (() => {
+const CreateWorkShiftDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -266,9 +263,7 @@ const CreateShiftDialog = (() => {
                         cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const p = me.getData();
-
                             p.id = me.dataOptions.id;
-
                             vsapi
                                 .call(
                                     [
@@ -293,8 +288,8 @@ const CreateShiftDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Create Shift",
-                    modifyTitle: "vslang:titles.Edit Shift",
+                    createTitle: "vslang:titles.Create Work Shift",
+                    modifyTitle: "vslang:titles.Modify Work Shift",
                     targetProp: "work_shifts",
                     api: {
                         endpoint: [
@@ -305,10 +300,6 @@ const CreateShiftDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                },
-
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                 },
             });
 

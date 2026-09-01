@@ -778,6 +778,8 @@ return [
         'Work Shift' => 'វេនការងារ',
         'Joining Date' => 'ថ្ងៃចូលបម្រើការងារ',
         'Edit Shift' => 'កែប្រែវេនការងារ',
+        'Modify Work Shift' => 'កែប្រែវេនការងារ',
+        'Delete Work Shift' => 'លុបវេនការងារ',
         'Delete Shift' => 'លុបវេនការងារ',
         'Create Shift' => 'បង្កើតវេនការងារ',
         'Total Fee' => 'តម្លៃសរុប',
@@ -1823,6 +1825,11 @@ return [
         'create_success_work_shift' => 'វេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_work_shift' => 'វេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_work_shift' => 'វេនការងារត្រូវបានលុបដោយជោគជ័យ។',
+
+        'create_success_shift_detail' => 'ព័ត៌មានវេនការងារត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_shift_detail' => 'ព័ត៌មានវេនការងារត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_shift_detail' => 'ព័ត៌មានវេនការងារត្រូវបានលុបដោយជោគជ័យ។',
+
         'create_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានបង្កើតដោយជោគជ័យ។',
         'update_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានកែប្រែដោយជោគជ័យ។',
         'delete_success_exit_form' => 'ទម្រង់ចាកចេញត្រូវបានលុបដោយជោគជ័យ។',
