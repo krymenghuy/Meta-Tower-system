@@ -301,7 +301,7 @@ class Payroll extends VSModel
             return DV::error('Master account not found! NOTE: master account is the Cash Account of the company that is used to send cash to staff`s payroll accounts');
         }
         $master_account_balance = $master_account->balance ?? 0;
-        if ($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
+        if ($master_account_balance <= 0) return DV::error('master_payroll_account_balance_zero');
         if (self::isDisbursed($payroll_id)) {
             return DV::error('payroll_not_disbursed');
         }
@@ -309,14 +309,14 @@ class Payroll extends VSModel
         if ($payroll->currency_code != $master_account->currency_code) {
             $master_amount = VSMoney::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
         } else if (!$payroll->currency_code) {
-            return DV::error('Either payroll currency or master payroll account currency is not valid!');
+            return DV::error('either_payroll_or_master_account_currency_invalid');
         } else {
             $master_amount = $master_account->balance ?? 0;
         }
 
         if ($master_amount < $payroll->total) {
             $p_amount = $payroll->currency_code . ' ' . $payroll->total;
-            return DV::error('Insufficient balance of the Master Payroll Account. ?? is required for overall payroll disbursements::' . $p_amount);
+            return DV::error('insufficient_master_payroll_balance');
         }
 
         $payrollEntries = DB::table('payroll_list as pl')
@@ -331,16 +331,16 @@ class Payroll extends VSModel
         $success_count = 0;
         $failed_count = 0;
         $failed_emps = [];
-        if ($payrollEntries->isEmpty()) return DV::error('It looks like there are no staff in the payroll list');
+        if ($payrollEntries->isEmpty()) return DV::error('no_staff_in_payroll_list');
         $disburse_id = self::createDisburseTrack($payroll, $payroll_id, $ss);
-        if (!$disburse_id) return DV::error('Failed to create disbursement track!');
+        if (!$disburse_id) return DV::error('failed_to_create_disbursement_track');
         $bin_disburse_id = hex2bin($disburse_id);
         DB::beginTransaction();
         foreach ($payrollEntries as &$emp) {
             $payroll_account = Employee::getPayrollAccount($emp->emp_id);
             if (!$payroll_account) {
                 DB::rollback();
-                return DV::error('Staff named ?? does not have payroll account yet!::' . $emp->name);
+                return DV::error('employee_payroll_account_required');
             } else {
                 $emp->account_id = $payroll_account->account_id;
             }
@@ -446,7 +446,7 @@ class Payroll extends VSModel
             ->selectRaw('id,total as amount')
             ->first();
         if (!$total || $total->amount <= 0) {
-            return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
+            return DV::error('payroll_total_zero');
         }
 
         $default_account = DB::table('accounts as a')
@@ -959,13 +959,13 @@ class Payroll extends VSModel
 
     $payroll = self::getProps($payroll_id,'id,name,authorized,disbursed,month,year,start_date,end_date,currency_code');
     if (!$payroll) {
-        return DV::error('No Payroll ID provided');
+        return DV::error('payroll_id_required');
     }
     if ($payroll->authorized == 1) {
-        return DV::error('Cannot calculate payroll that has been authorized! The next step is to disburse payments to all staffs.');
+        return DV::error('cannot_calculate_authorized_payroll');
     }
     if ($payroll->disbursed == 1) {
-        return DV::error('Cannot calculate any amounts because this payroll has already been disbursed!');
+        return DV::error('cannot_calculate_disbursed_payroll');
     }
     $db_start_date = convertDate($payroll->start_date);
     $db_end_date = convertDate($payroll->end_date);
@@ -977,7 +977,7 @@ class Payroll extends VSModel
     $day_in_month = days_in_month($payroll->month,$payroll->year);
     $payroll_days = dateDiff_days($payroll->start_date,$payroll->end_date) + 1;
     if ($day_in_month <= 0 || $payroll_days <= 0) {
-        return DV::error('Invalid payroll date range');
+        return DV::error('invalid_payroll_date_range');
     }
     $payroll->days = $payroll_days;
     $payroll->total_days = $day_in_month;
@@ -1014,9 +1014,7 @@ class Payroll extends VSModel
         ->get();
 
     if ($emps->isEmpty()) {
-        return DV::error(
-            'It seems you have not yet imported active staffs into the payroll'
-        );
+        return DV::error('active_staff_not_imported');
     }
     $issues = [];
     $issues_count = 0;
@@ -1202,14 +1200,14 @@ class Payroll extends VSModel
         $payroll_id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        if (!$payroll_id)  return DV::error('No payroll ID provided');
+        if (!$payroll_id)  return DV::error('payroll_id_required');
         $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed,start_date,end_date');
-        if (!$payroll) return DV::error('Payroll period not found');
+        if (!$payroll) return DV::error('payroll_period_not_found');
         $start_date = convertDate($payroll->start_date);
         $end_date = convertDate($payroll->end_date);
 
-        if ($payroll->authorized == 1) return DV::error('Cannot import payroll that as been authorized! The next step is to disburse payments to all staffs');
-        if ($payroll->disbursed == 1) return DV::error('Cannot import any amounts because this payroll has been disbursed already!');
+        if ($payroll->authorized == 1) return DV::error('cannot_import_authorized_payroll');
+        if ($payroll->disbursed == 1) return DV::error('cannot_import_disbursed_payroll');
 
         $payroll_info = DB::table('payrolls')->where('id', $payroll_id)->selectRaw('currency_code, exchange_rate')->first();
         $currency_code = $payroll_info->currency_code;

@@ -389,7 +389,7 @@ var PayrollListComponent = (()=> {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/mhr/payroll/disburse-all'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Salary disbursements were successful!');
+                            cv_interact.success('salary_disbursement_successful');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });
@@ -416,9 +416,7 @@ var PayrollListComponent = (()=> {
                              .call(`${mThis.base_url}/mhr/payroll/authorize`, op)
                              .then((res) => {
                                  if (res.status_code === 200) {
-                                     cv_interact.success(
-                                         "Payroll is now authorized successfully"
-                                     );
+                                     cv_interact.success("payroll_already_authorized");
                                     //  mThis.PayrollList_ListView.showPage();
                                  } else cv_interact.error(res.error_message);
                              });
@@ -441,7 +439,7 @@ var PayrollListComponent = (()=> {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/mhr/payroll/reverse'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Salary reverse to master account successfully!');
+                            cv_interact.success('salary_reversed_successfully');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });
@@ -913,7 +911,7 @@ var PayrollListComponent = (()=> {
                         vsapi.call([main_view.base_url, '/mhr/payroll/staff/add-deduction'].join(''), payload, menuLink, null)
                             .then(saveRes => {
                                 if (saveRes.status_code === 200) {
-                                    cv_interact.success("Deduction saved successfully");
+                                    cv_interact.success("deduction_saved_successfully");
                                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(saveRes.error_message);
@@ -948,7 +946,7 @@ var PayrollListComponent = (()=> {
             //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             // }
         };
-        cv_interact.confirm('Disburse this payroll ?',{
+        cv_interact.confirm('confirm_disburse_payroll',{
             title: 'Disburse Payroll List',
             context: 'disburse',
             confirmButtonText:"Disburse"
@@ -957,7 +955,7 @@ var PayrollListComponent = (()=> {
                 vsapi.call(`${main_view.base_url}/mhr/payroll/disburse-one`, p, false, false, false).then(res => {
 
                     if(res.status_code == 200){
-                        cv_interact.success('Disbursed successfully');
+                        cv_interact.success('payroll_disbursement_successful');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                     else{
@@ -978,7 +976,7 @@ var PayrollListComponent = (()=> {
             }
         };
          if (!AuthManager.allowed(365,false)) return;
-        cv_interact.confirm('Remove this staff from payroll?',{
+        cv_interact.confirm('confirm_remove_staff_from_payroll',{
             title: 'Remove Staff from Payroll',
             context: 'delete',
             confirmButtonText:"Remove"
@@ -986,7 +984,7 @@ var PayrollListComponent = (()=> {
             if(e){
                 vsapi.call(`${main_view.base_url}/mhr/payroll/staff/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.info('The staff has been removed from payroll!');
+                        cv_interact.success('staff_removed_from_payroll');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                 })

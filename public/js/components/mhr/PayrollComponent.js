@@ -48,7 +48,7 @@ var PayrollComponent = new (function () {
         `,
     },
     {
-        transTitle: "titles.Employees",
+        transTitle: "titles.employees",
         className: "text-center align-middle",
         data: (data) => `
             <a href="javascript:void(0)"
@@ -60,7 +60,7 @@ var PayrollComponent = new (function () {
         `,
     },
     {
-        transTitle: "titles.Payroll Period",
+        transTitle: "titles.payroll_period",
         className: "align-middle",
         data: (data) => `
             <span class="text-prm-custom text-nowrap">
@@ -97,7 +97,7 @@ var PayrollComponent = new (function () {
             </div>`,
     },
    {
-        transTitle: "titles.Authorization",
+        transTitle: "titles.authorization",
         className: "align-middle text-nowrap text-center",
         data: (data) => {
             const authorized = Number(data.authorized) === 1;
@@ -122,7 +122,7 @@ var PayrollComponent = new (function () {
         },
     },
     {
-        transTitle: "titles.Disbursement",
+        transTitle: "titles.disbursement",
         className: "align-middle text-nowrap text-center",
         data: (data) => {
             const disbursed = Number(data.disbursed) === 1;
@@ -310,25 +310,25 @@ var PayrollComponent = new (function () {
                 {
                     html: '<span class="ps-2" vslang=titles.Authorize>Authorize</span>',
                     icon: '<i class="fa-regular fa-circle-check fs-5 text-primary"></i>',
-                    name: "change_authorize",
+                    name: "authorize_payroll",
                 },
                 {
-                    html: '<span class="ps-2" vslang=titles.Reset> Reset</span>',
+                    html: '<span class="ps-2" vslang=titles.Reset></span>',
                     icon: '<i class="fa fa-reply fs-5 text-danger"></i>',
                     name: "reset_authorize",
                 },
                 {
-                    html: '<span class="ps-2" vslang=titles.Disburse All> Disburse All</span>',
+                    html: '<span class="ps-2" vslang=titles.Disburse All></span>',
                     icon: '<i class="fa-solid fa-square-check fs-5 text-success"></i>',
-                    name: "change_disbursed",
+                    name: "disburse_payroll",
                 },
                 {
-                    html: '<span class="ps-2" vslang=titles.Edit Payroll>Edit Payroll</span>',
+                    html: '<span class="ps-2" vslang=titles.Edit></span>',
                     icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>',
                     name: "edit_payroll",
                 },
                 {
-                    html: '<span class="ps-2" vslang=titles.Delete Payroll>Delete Payroll</span>',
+                    html: '<span class="ps-2" vslang=titles.Delete></span>',
                     icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>',
                     name: "delete_payroll",
                 },
@@ -346,7 +346,7 @@ var PayrollComponent = new (function () {
                                 menu[item].dataset.mnuaction ===
                                     "delete_payroll" ||
                                 menu[item].dataset.mnuaction ===
-                                    "change_authorize"
+                                    "authorize_payroll"
                                     ? "none"
                                     : "block";
                         }
@@ -355,13 +355,13 @@ var PayrollComponent = new (function () {
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_authorize":
+                    case "authorize_payroll":
                         mThis.authorizePayroll(id, menuLink);
                         break;
                     case "reset_authorize":
                         mThis.resetPayroll(id, menuLink);
                         break;
-                    case "change_disbursed":
+                    case "disburse_payroll":
                         mThis.disbursePayroll_all(id, menuLink);
                         break;
                     case "edit_payroll":
@@ -404,9 +404,9 @@ var PayrollComponent = new (function () {
 
         if (!AuthManager.allowed(357,false)) return;
         cv_interact.confirm(
-            "authorize_payroll",
+            "confirm_authorize_payroll",
             {
-                title: "Authorize Payroll",
+                title: "Authorize",
                 context: "authorize",
                 confirmButtonText: LocaleManager.trans("Authorize", "buttons"),
             },
@@ -416,7 +416,7 @@ var PayrollComponent = new (function () {
                         .call(`${mThis.base_url}/mhr/payroll/authorize`, p)
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Authorized successfully");
+                                cv_interact.success("authorized_successfully");
                                 mThis.PayrollListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -436,7 +436,7 @@ var PayrollComponent = new (function () {
         };
         if (!AuthManager.allowed(359,false)) return;
         cv_interact.confirm(
-            'html:<span class="d-block">Are you sure you want to reset this payroll?</span> <small>This action will reverse all payroll transactions from staff payroll accounts back to the master payroll account!</small>',
+            'confirm_reset_payroll',
             {
                 title: "Reset Payroll",
                 context: "delete",
@@ -454,10 +454,8 @@ var PayrollComponent = new (function () {
 
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Payroll has been reset!");
-                                mThis.PayrollListView.showPage(
-                                    mThis.getFilterData(),
-                                );
+                                cv_interact.success("payroll_reset_successfully");
+                                mThis.PayrollListView.showPage(mThis.getFilterData());
                             } else cv_interact.error(res.error_message);
                         });
                 }
@@ -474,9 +472,9 @@ var PayrollComponent = new (function () {
         };
         if (!AuthManager.allowed(358,false)) return;
         cv_interact.confirm(
-            "disburse_payroll",
+            "confirm_disburse_payroll",
             {
-                title: "Disburse Payroll",
+                title: "Disburse",
                 context: "disburse",
                 confirmButtonText: LocaleManager.trans("Disburse", "buttons"),
             },
@@ -490,9 +488,7 @@ var PayrollComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success(
-                                    "Payroll disbursement was successful!",
-                                );
+                                cv_interact.success("payroll_disbursement_successful");
                                 mThis.PayrollListView.showPage();
                             } else cv_interact.error(res.error_message);
                         });
@@ -571,24 +567,8 @@ var PayrollComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elAuthorized,
-                    d.authorized,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("Authorization Status", "titles"),
-                    "",
-                );
-                VSUtil.setComboItems(
-                    mThis.elDisbursed,
-                    d.disbursed,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("Disbursement Status", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elAuthorized,d.authorized,"id","name","",LocaleManager.trans("authorization", "titles"),"");
+                VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,"id","name","",LocaleManager.trans("disbursement", "titles"),"");
             });
     };
     mThis.show = function () {
