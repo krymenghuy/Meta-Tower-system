@@ -5,7 +5,6 @@ var LeaveComponent = (function () {
     mThis.title_prop = "leave_request";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_emp_leave_component");
-
     mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_emp_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
@@ -30,11 +29,11 @@ var LeaveComponent = (function () {
             transTitle: "titles.Employee Name",
             className: "align-middle text-nowrap",
             data: (data, index) => {
-                return `
-                        <div class="d-flex flex-column">
-                            ${data.employee_name ?? "-"}
-                            <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
-                        </div>`;
+            return `
+                <div class="d-flex flex-column">
+                    ${data.employee_name ?? "-"}
+                    <span class="d-block text-muted" style="font-size:12px;">${data.position ?? "-"}</span>
+                </div>`;
             },
         },
 

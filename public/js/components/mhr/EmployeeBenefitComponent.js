@@ -3,12 +3,8 @@
 var EmployeeBenefitComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_employee_benefit_component",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_employee_benefit_component");
     mThis.title_prop = "employee_benefits";
-
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
     mThis.btnImport = mThis.self.querySelector("#_btn_import_benefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
@@ -179,8 +175,7 @@ var EmployeeBenefitComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 235 + "px";
         };
-        mThis.elSearch.addEventListener(
-            "keyup",
+        mThis.elSearch.addEventListener("keyup",
             mThis.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             }, 300),
@@ -285,12 +280,8 @@ var EmployeeBenefitComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "delete_success_employee_benefit",
-                                );
-                                mThis.EmployeeBenefitListView.showPage(
-                                    mThis.getFilterData(),
-                                );
+                                cv_interact.success("delete_success_employee_benefit");
+                                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
                             }

@@ -3,10 +3,7 @@ var AttendanceTracksComponent = (function () {
     const mThis = {};
     mThis.title_prop = "attendance_tracking";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_work_shiftComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_work_shiftComponent");
     mThis.btnAddShiftDetail = mThis.self.querySelector("#_btnAddShiftDetail");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.work_shift_header = mThis.self.querySelector("#_work_shift_header");
@@ -16,7 +13,7 @@ var AttendanceTracksComponent = (function () {
 
     mThis.init = function () {
         if (mThis.initAlready) return;
-        mThis.WorkshiftListView = () => {
+        mThis.WorkShiftListView = () => {
             vsapi
                 .call(
                     `${mThis.base_url}/mhr/shift-details/list-paginate`,
@@ -54,10 +51,7 @@ var AttendanceTracksComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success(
-                        "Scanpoint has been saved successfully!",
-                    );
-                    mThis.WorkshiftListView();
+                    mThis.WorkShiftListView();
                 },
             };
             if (!AuthManager.allowed(346,false)) return;
@@ -66,7 +60,7 @@ var AttendanceTracksComponent = (function () {
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.WorkshiftListView(mThis.getFilterData());
+                mThis.WorkShiftListView(mThis.getFilterData());
             };
         });
 
@@ -198,7 +192,7 @@ var AttendanceTracksComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WorkshiftListView();
+                mThis.WorkShiftListView();
             },
         };
         if (!AuthManager.allowed(347,false)) return;
@@ -229,8 +223,8 @@ var AttendanceTracksComponent = (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted shift details successfully!");
-                                mThis.WorkshiftListView();
+                                cv_interact.success("delete_success_shift_detail");
+                                mThis.WorkShiftListView();
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -256,11 +250,11 @@ var AttendanceTracksComponent = (function () {
             });
     };
 
-    mThis.show = function () {
+    mThis.show =  (options) => {
         mThis.init();
-
+        if (!options) options = {};
         mThis.prepareFormOptions();
-        mThis.WorkshiftListView();
+        mThis.WorkShiftListView();
         if (typeof LocaleManager !== "undefined") {
             LocaleManager.translateZone(mThis.self);
         }
@@ -400,9 +394,9 @@ const CreateScanTimeDialog = (() => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update success shift details");
+                                            cv_interact.success("update_success_shift_detail");
                                         } else {
-                                            cv_interact.success("create success shift details");
+                                            cv_interact.success("create_success_shift_detail");
                                         }
                                 } else cv_interact.error(res.error_message);
                             });

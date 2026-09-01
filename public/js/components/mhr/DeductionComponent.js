@@ -2,16 +2,12 @@
 var DeductionComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_deductionComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_deductionComponent");
     mThis.title_prop = "employee_deduction";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddDeduction");
     mThis.elSearch = mThis.self.querySelector("#_deduction_search");
     mThis.containerFilter = mThis.self.querySelector("#_divFilter_deduction");
     mThis.elDeductionType = mThis.self.querySelector("#deduction_type");
-
     mThis.divListView = mThis.self.querySelector("#_deduction_list");
 
     mThis.cols = [
@@ -138,15 +134,12 @@ var DeductionComponent = (function () {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
 
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
-                el.onchange = (e) => {
-                    e.preventDefault();
-                    mThis.DeductListView.showPage(mThis.getFilterData());
-                };
-            });
-
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.DeductListView.showPage(mThis.getFilterData());
+            };
+        });
         mThis.elSearch.addEventListener("keyup", (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
@@ -168,15 +161,7 @@ var DeductionComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elWarningType,
-                    d.warning_types || [],
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("Warning Type", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elWarningType,d.warning_types || [],"id","name","",LocaleManager.trans("Warning Type", "titles"),"");
             });
     };
 
@@ -184,9 +169,7 @@ var DeductionComponent = (function () {
         let p = {
             search_value: mThis.elSearch.value,
         };
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
                 const f = el.dataset.field;
                 p[f] = el.value;
             });
@@ -266,7 +249,7 @@ var DeductionComponent = (function () {
                                 cv_interact.success("deduction_delete_successfully");
                                 mThis.DeductListView.showPage();
                             } else {
-                                cv_interact.error(res.error_message || 'An error occurred while deleting.');
+                                cv_interact.error(res.error_message);
                             }
                         })
                     }

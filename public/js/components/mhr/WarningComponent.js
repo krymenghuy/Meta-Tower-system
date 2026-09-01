@@ -2,16 +2,12 @@
 var WarningComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_warningComponent",
-    );
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_warningComponent");
     mThis.title_prop = "employee_warning";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddWarning");
     mThis.elSearch = mThis.self.querySelector("#_warning_search");
     mThis.containerFilter = mThis.self.querySelector("#_divFilter_warning");
     mThis.elWarningType = mThis.self.querySelector("#warning_type");
-
     mThis.divListView = mThis.self.querySelector("#_warning_list");
 
     mThis.cols = [
@@ -148,9 +144,7 @@ var WarningComponent = (function () {
             sh_parent.style.maxHeight = window.innerHeight - 170 + "px";
         };
 
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
                 el.onchange = (e) => {
                     e.preventDefault();
                     mThis.WarningListView.showPage(mThis.getFilterData());
@@ -178,15 +172,7 @@ var WarningComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elWarningType,
-                    d.warning_types || [],
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Types", "titles"),
-                    "",
-                222222222222222222222222222);
+                VSUtil.setComboItems(mThis.elWarningType,d.warning_types || [],"id","name","",LocaleManager.trans("All Types", "titles"),"");
             });
     };
 
@@ -194,9 +180,7 @@ var WarningComponent = (function () {
         let p = {
             search_value: mThis.elSearch.value,
         };
-        mThis.containerFilter
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
                 const f = el.dataset.field;
                 p[f] = el.value;
             });
@@ -278,7 +262,7 @@ var WarningComponent = (function () {
                                 cv_interact.success("warning_delete_successfully");
                                 mThis.WarningListView.showPage();
                             } else {
-                                cv_interact.error(res.error_message || 'An error occurred while deleting.');
+                                cv_interact.error(res.error_message);
                             }
                         })
                     }

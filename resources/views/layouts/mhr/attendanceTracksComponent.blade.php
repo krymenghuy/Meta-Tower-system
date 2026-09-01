@@ -51,14 +51,7 @@
         padding: 5px;
     }
 
-    #_main_workshiftComponent .row {
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        height: 440px;
-        border-radius: 8px;
-        width: 100%;
-    }
+    
 
     .day_card {
         display: flex;
@@ -150,11 +143,6 @@
         padding: 8px;
         cursor: pointer;
         border-radius: 20px;
-    }
-
-    #_main_workshiftComponent {
-        height: 400px;
-        gap: 1rem;
     }
 
     #_work_shift_list {
