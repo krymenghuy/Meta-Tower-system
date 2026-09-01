@@ -238,6 +238,27 @@ return [
         'benefit_name_already_exists' => 'Benefit name already exists.',
         'disbursement_already_exists' => 'Disbursement already exists.',
         'disburse_policy_already_exists' => 'Disbursement policy already exists.',
+        'cannot_authorize_empty_payroll' => 'Cannot authorize empty payroll.',
+        'payroll_not_authorized' => 'Payroll is not authorized.',
+        'payroll_total_zero' => 'The payroll total is zero. You may need to click the Calculate button on the Payroll List.',
+        'master_payroll_account_balance_zero' => 'The master payroll account balance is now zero!',
+        'either_payroll_or_master_account_currency_invalid' => 'Either the payroll currency or the master payroll account currency is invalid.',
+        'insufficient_master_payroll_balance' => 'Insufficient balance in the Master Payroll Account. Amount is required for the overall payroll disbursement.',
+        'no_staff_in_payroll_list' => 'No employees found in the payroll list.',
+        'employee_payroll_account_required' => 'Employee does not have a payroll account.',
+        'failed_to_create_disbursement_track' => 'Failed to create the payroll disbursement record.',
+        'payroll_id_required' => 'No payroll ID provided.',
+        'payroll_period_not_found' => 'Payroll period not found.',
+        'cannot_import_authorized_payroll' => 'Cannot import an authorized payroll. The next step is to disburse payments to all employees.',
+        'cannot_import_disbursed_payroll' => 'Cannot import any amounts because this payroll has already been disbursed.',
+        'cannot_calculate_authorized_payroll' => 'Cannot calculate an authorized payroll. The next step is to disburse payments to all employees.',
+        'cannot_calculate_disbursed_payroll' => 'Cannot calculate any amounts because this payroll has already been disbursed.',
+        'invalid_payroll_date_range' => 'Invalid payroll date range.',
+        'active_staff_not_imported' => 'No active employees have been imported into the payroll yet.',
+
+
+
+
 
     ],
     'api_body_keys' => [
@@ -296,11 +317,10 @@ return [
         'checkpoints' => 'Checkpoints',
         'import_employee_note' => 'Please download the sample template before importing employees. Make sure your data columns match the template exactly.',
         'All Years' => 'All Years',
-
-
-
-
-
+        'authorization' => 'Authorization',
+        'disbursement' => 'Disbursement',
+        "Edit Payroll" => "Edit Payroll",
+        "Delete Payroll" => "Delete Payroll",
 
 
 
@@ -387,6 +407,7 @@ return [
         // Menu for MHR Management
 
         'employees' => 'Employees',
+        'payroll_period' => 'Payroll Period',
         'employee_actions' => 'Employee Actions',
         'benefits' => 'Benefits',
         'movements' => 'Movements',
@@ -733,11 +754,20 @@ return [
         'failed_reset_payroll_transaction' => 'Failed to reset payroll because some payment transactions could not be reversed to the master payroll account.',
         'cannot_delete_master_account' => 'Cannot delete master account.',
         'failed_delete_account' => 'Failed to delete account.',
-        'cannot_authorize_empty_payroll' => 'Cannot authorize payroll because no employees have been added.',
-        'payroll_already_authorized' => 'Payroll is already authorized.',
         'master_payroll_account_not_created' => 'Master payroll account has not been created yet!',
 
-
+        'confirm_authorize_payroll' => 'Are you sure you want to authorize this payroll?',
+        'confirm_disburse_payroll' => 'Are you sure you want to disburse this payroll?',
+        'payroll_disbursement_successful' => 'Payroll disbursement was successful!',
+        'authorized_successfully' => 'Authorized successfully.',
+        'confirm_reset_payroll' => 'Are you sure you want to reset this payroll? This action will reverse all payroll transactions from employee payroll accounts back to the Master Payroll Account.',
+        'payroll_reset_successfully' => 'Payroll has been reset successfully.',
+        'salary_disbursement_successful' => 'Salary disbursements were successful.',
+        'salary_reversed_successfully' => 'Salary was successfully reversed to the Master Payroll Account.',
+        'confirm_remove_staff_from_payroll' => 'Are you sure you want to remove this employee from the payroll?',
+        'staff_removed_from_payroll' => 'Employee has been removed from the payroll.',
+        'deduction_saved_successfully' => 'Deduction saved successfully.',
+        'payroll_already_authorized' => 'Payroll is already authorized.',
 
 
         "Confirm" => 'Confirm',

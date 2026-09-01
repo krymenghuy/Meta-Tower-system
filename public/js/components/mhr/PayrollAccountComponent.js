@@ -330,10 +330,6 @@ var PayrollAccountComponent = (function () {
         <div id="full_elbody" style="zoom:95%">
 
             <style>
-                /* =====================================
-                   Report Base
-                ===================================== */
-
                 #full_elbody {
                     font-family:
                         "Khmer OS Battambang",
@@ -343,11 +339,6 @@ var PayrollAccountComponent = (function () {
                     color: #000;
                     background: #fff;
                 }
-
-               
-                /* =====================================
-                   Report Header
-                ===================================== */
 
                 .report-header {
                     text-align: center;
@@ -378,10 +369,6 @@ var PayrollAccountComponent = (function () {
                     background: #000;
                     margin-top: 10px;
                 }
-
-                /* =====================================
-                   Account Information
-                ===================================== */
 
                 .account-info {
                     width: 100%;
@@ -438,10 +425,6 @@ var PayrollAccountComponent = (function () {
                     font-size: 13px;
                 }
 
-                /* =====================================
-                   Section Title
-                ===================================== */
-
                 .section-title {
                     display: flex;
                     justify-content: space-between;
@@ -458,15 +441,10 @@ var PayrollAccountComponent = (function () {
                     font-size: 11px;
                     color: #666;
                 }
-
-                /* =====================================
-                   Transaction Table
-                ===================================== */
-
                 .table-report {
                     width: 100%;
                     border-collapse: collapse;
-                    table-layout: fixed;
+                    
                 }
 
                 .table-report th,
@@ -574,39 +552,20 @@ var PayrollAccountComponent = (function () {
             </style>
 
             <div class="page">
-
-                <!-- Report Header -->
                 <div class="report-header">
-
-                    <p class="kh-title">
-                        ប្រវត្តិប្រតិបត្តិការគណនី
-                    </p>
-
-                    <p class="en-title">
-                        Transaction History
-                    </p>
-
+                    <p class="en-title">Transaction History</p>
                     <div class="report-line"></div>
-
                 </div>
-
-                <!-- Account Information -->
                 <div class="account-info">
-
                     <div class="account-info-row">
-
-                        <!-- Left -->
                         <div class="account-info-column">
-
                             <div class="info-item">
                                 <span class="info-label">
                                     Employee Name
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value">
                                     ${escapeHtml(
                                         employee.emp_name
@@ -618,98 +577,72 @@ var PayrollAccountComponent = (function () {
                                 <span class="info-label">
                                     Account Number
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value">
                                     ${escapeHtml(
                                         employee.account_number
                                     )}
                                 </span>
                             </div>
-
                             <div class="info-item">
                                 <span class="info-label">
                                     Balance
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value balance-value">
                                     ${formatAmount(
                                         employee.balance
                                     )}
                                 </span>
                             </div>
-
                         </div>
-
-                        <!-- Right -->
                         <div class="account-info-column">
-
                             <div class="info-item">
                                 <span class="info-label">
                                     Account Type
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value">
                                     ${escapeHtml(
                                         employee.account_type
                                     )}
                                 </span>
                             </div>
-
                             <div class="info-item">
                                 <span class="info-label">
                                     Account Currency
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value">
                                     ${escapeHtml(currency)}
                                 </span>
                             </div>
-
                             <div class="info-item">
                                 <span class="info-label">
                                     Last Balance Date
                                 </span>
-
                                 <span class="info-separator">
                                     :
                                 </span>
-
                                 <span class="info-value">
                                     ${escapeHtml(
                                         employee.last_balance_date
                                     )}
                                 </span>
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
-                <!-- Transaction Section -->
                 <div class="section-title">
-
-                    <span class="title">
-                        Transaction Details
-                    </span>
-
+                    <span class="title">Transaction Details</span>
                     <span class="count">
                         ${transactions.length}
                         transaction${
@@ -718,12 +651,8 @@ var PayrollAccountComponent = (function () {
                                 : ""
                         }
                     </span>
-
                 </div>
-
-                <!-- Transaction Table -->
                 <table class="table-report">
-
                     <thead>
                         <tr>
                             <th>Trx Type</th>
@@ -732,16 +661,13 @@ var PayrollAccountComponent = (function () {
                             <th>Amount</th>
                             <th>Date</th>
                             <th>Status</th>
-                            <th>Remarks</th>
+                            <th style="width: 200px;">Remarks</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         ${transactionRows}
                     </tbody>
-
                 </table>
-
             </div>
         </div>
     `;
@@ -751,7 +677,6 @@ var PayrollAccountComponent = (function () {
 
     mThis.btnPrintTransaction.addEventListener("click", () => {
         windowPrintTransaction(mThis._transaction_info.innerHTML);
-        // window.print();
     });
 
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -1196,7 +1121,7 @@ const DepositDialog = (() => {
                             </div>
                         </div>
                          <div class="col-6">
-                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency", "labels")}" ></select>
+                            <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" disabled placeholder="${LocaleManager.trans("Currency", "labels")}" ></select>
                         </div>
                        <div class="col-12">
                             <div class="vs-material-field">
@@ -1314,7 +1239,7 @@ const TransferDialog = (() => {
                                 </div>
                             </div>  
                             <div class="col-3">
-                                <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="${LocaleManager.trans("Currency", "labels")}" ></select>
+                                <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" disabled placeholder="${LocaleManager.trans("Currency", "labels")}" ></select>
                             </div>
 
                             <div class="text-prm-custom fs-6 p-2 mx-2 mb-2 border rounded-2 bg-primary-subtle">To Account</div>
@@ -1326,13 +1251,13 @@ const TransferDialog = (() => {
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
-                                    <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
+                                    <input type="text" name="amount" class="data-input form-control" data-field="amount" placeholder=" " />
                                     <label vslang="titles.Amount"></label>
                                 </div>
                             </div>  
                             <div class="col-3 exchange_rate">
                                 <div class="vs-material-field">
-                                    <input type="number" name="exchange_rate" class="form-control data-input" data-field="exchange_rate" placeholder=" " />
+                                    <input type="text" name="exchange_rate" class="form-control data-input" data-field="exchange_rate" placeholder=" " />
                                     <label vslang="labels.Exchange Rate"></label>
                                 </div>
                             </div>
@@ -1343,7 +1268,10 @@ const TransferDialog = (() => {
                         </div>
                     `;
                 },
-                contentCreated: (me) => {},
+                contentCreated: (me) => {
+                    applyNumberInput(me.controls.amount);
+                    applyNumberInput(me.controls.exchange_rate);
+                },
                 prepareFormOptions: {
                     createTitle: "Add Account",
                     modifyTitle: "Transfer",
@@ -1380,8 +1308,6 @@ const TransferDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     let d = res.data;
-                                    console.log(12,d);
-                                    
                                     me.to_account_type = d.account_type;
                                     me.to_account_currency_code = d.currency_code;
                                     let div = "";
@@ -1539,21 +1465,9 @@ function windowPrintTransaction(html = null) {
             <head>
                 <title>Pay Slip</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
-                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/bhr_style.css"/>
-                <style>
-                     *{
-                        margin:0;
-                        padding:0;
-                        box-sizing: border-box;
-                        font-size:11px;
-                    }
-                    table{
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-
-                </style>
-
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
             </head>
             <body>${HtmlString}</body>
         </html>`);

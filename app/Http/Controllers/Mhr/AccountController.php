@@ -140,7 +140,7 @@ class AccountController extends Controller
     }
     public function transferTo(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 327);
+        $ss = XAuthService::verifyAuth($req, -1);
         $id = $req->id;
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
@@ -151,7 +151,7 @@ class AccountController extends Controller
 
     public function getAccountInfo(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, 211);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
