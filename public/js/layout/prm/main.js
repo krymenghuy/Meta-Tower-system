@@ -189,7 +189,7 @@ var main_view = (() => {
         // console.log(1233, mThis.side_menus);
         mThis.lnkLogout.onclick = (e) => {
             cv_interact.confirm(
-                "Do you want to log out?",
+                "confirm_logout",
                 {
                     title: "Sign Out",
                     confirmButtonText: "Log Out",
@@ -215,11 +215,11 @@ var main_view = (() => {
 
         mThis.mnuLogout.addEventListener("click", (e) => {
             cv_interact.confirm(
-                "Do you want to log out?",
+                "confirm_logout",
                 {
                     title: "Sign Out",
                     confirmButtonText: "Log Out",
-                    cancelButtonText: "No, I stay in",
+                    cancelButtonText: "stay_logged_in",
                     context: "delete",
                     translate: true,
                 },

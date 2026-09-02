@@ -216,10 +216,10 @@ mThis.init_vsapi = async () => {
         // });
 
         mThis.mnuLogout.addEventListener('click',e => {
-            cv_interact.confirm("Do you want to log out?",{
+            cv_interact.confirm("confirm_logout",{
                 title: "Sign Out",
                 confirmButtonText: "Log Out",
-                cancelButtonText: "No, I stay in",
+                cancelButtonText: "stay_logged_in",
                 context: "delete",
                 translate: true
             },(e) => {
