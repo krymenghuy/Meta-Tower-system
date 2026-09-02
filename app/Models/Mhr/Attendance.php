@@ -22,7 +22,6 @@ class Attendance
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
     function save($arr = [], $id = null, $ss = null)
     {
 
@@ -79,7 +78,6 @@ class Attendance
         $newID = DBX::saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
         return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], 'Error message if any');
     }
-
     public function getStaffAttendanceListPaginate($filter = [], $ss = null)
     {
         $filter = (object) $filter;
@@ -157,7 +155,6 @@ class Attendance
         $rows = $query->get();
         return $rows;
     }
-
     function getDetails($id)
     {
         if (empty($id)) {
@@ -175,7 +172,6 @@ class Attendance
         }
         return $row;
     }
-
     function deleteAttendance($id = null)
     {
         $id = $id ?? $this->id;
@@ -210,7 +206,6 @@ class Attendance
             'attendance' => $attendance,
         ];
     }
-
     // function scanAttendance($arr = [], $ss = null)
     // {
     //     $ss = $ss ?? $this->userInfo;
@@ -467,7 +462,6 @@ class Attendance
         // }
         return DV::depends(1, $rows);
     }
-
     static function getWorkShift($scan_date)
     {
         $scan_date = convertDate($scan_date);
@@ -476,7 +470,6 @@ class Attendance
         $col_end_date = DBX::formatDate('t.end_date', 'end_date');
         return DB::table('terms as t')->whereRaw($str_dates)->selectRaw("t.id,t.name,$col_start_date,$col_end_date, t.status_id")->first();
     }
-
     static function getTranslateSession($key_session)
     {
         if (!$key_session) return null;
@@ -488,7 +481,6 @@ class Attendance
         ];
         return $arr_session[$key_session];
     }
-
     static function getActionBySession($session, $action, $str_where, $strsearch_date)
     {
         // $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
@@ -695,7 +687,6 @@ class Attendance
             ]
         ];
     }
-
     function checkAccessScan($arr = [], $ss = null)
     {
         $context = $this->validateAndGetScanContext($arr, $ss);
@@ -711,8 +702,6 @@ class Attendance
             'access' => 1,
         ]);
     }
-
-
     function scanAttendance($arr = [], $ss = null)
     {
         $context = $this->validateAndGetScanContext($arr, $ss);

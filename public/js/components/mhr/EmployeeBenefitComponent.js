@@ -197,13 +197,13 @@ var EmployeeBenefitComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify">Modify</span>',
+                    html: '<span class="ps-2  " vslang="titles.Edit"></span>',
                     icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_emp_benefit",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete">Delete</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_emp_benefit",
