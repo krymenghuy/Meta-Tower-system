@@ -28,7 +28,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
 
 
-        <?php StyleManager::render('umt-style',1,27); ?>
+        <?php StyleManager::render('umt-style',1,28); ?>
         <style>
             /* Custom animations for the modal like Materialize css effect */
             .modal.fade .modal-dialog {
@@ -64,7 +64,7 @@
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1,2);
             ScriptManager::render('umt-primary-defer',1,7);
-            ScriptManager::render('umt-components',1,37);
+            ScriptManager::render('umt-components',1,38);
         ?>
     </head>
     <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
