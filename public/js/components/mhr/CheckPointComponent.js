@@ -323,8 +323,8 @@ const CheckPointDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Create Check Point",
-                    modifyTitle: "vslang:titles.Edit Check Point",
+                    createTitle: "vslang:titles.Create Checkpoint",
+                    modifyTitle: "vslang:titles.Modify Checkpoint",
                     targetProp: "check_points",
                     api: {
                         endpoint: [

@@ -2,7 +2,7 @@
      <div id="_divFilter_amenity" class="bg-white shadow-sm p-3 rounded-2">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input  type="text" class="filter-field rounded-2 input-search" id="_search_amenity" placeholder="{{ \Vsd\Locales\Localization::trans('Search by unit or name', 'titles') }}">
+                <input  type="text" class="filter-field rounded-2 input-search" id="_search_amenity" placeholder="{{ \Vsd\Locales\Localization::trans('search_unit_name', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="building_id" class="filter-field data-input form-control" data-field="building_id" placeholder='vslang="titles.All buildings"'></select>

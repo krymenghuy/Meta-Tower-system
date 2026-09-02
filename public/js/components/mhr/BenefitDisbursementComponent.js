@@ -463,7 +463,7 @@ const BenefitDisburseDialog = (() => {
                 },
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Benefit Disburse",
-                    modifyTitle: "vslang:titles.Edit Benefit Disburse",
+                    modifyTitle: "vslang:titles.Modify Benefit Disburse",
                     targetProp: "benefit_disbursements",
                     api: {
                         endpoint: [

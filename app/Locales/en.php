@@ -270,6 +270,7 @@ return [
         'dashboard' => 'Dashboard',
 
         'search_name' => 'Search by Name',
+        
         'rejoin' => 'Rejoin',
         'set_rejoin' => 'Set Rejoin',
         'Create Warning' => 'Create Warning',
@@ -282,7 +283,6 @@ return [
         'Documents' => 'Documents',
         'No_renewal_history' => 'No renewal history for this contract.',
         'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
-        'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
         'Category' => 'Category',
         'Published' => 'Published',
         'import_data'=> 'Import Data',
@@ -338,8 +338,27 @@ return [
     ],
     'labels' => [
         //Search Data
-        'search_name_code' => 'Search by Name, Code',
         'search_name' => 'Search by Name',
+        'search_name_code' => 'Search by Name, Code',
+        'search_name_phone' => 'Search by Name, Phone',
+        'search_name_code_phone' => 'Search by Name, Code or Phone',
+        'search_unit' => 'Search by Unit',
+        'search_tenant_unit' => 'Search by Tenant or Unit',
+        'search_tenant_phone_unit' => 'Search by Tenant, Phone or Unit',
+        'search_tenant_phone' => 'Search by Tenant, or Phone',
+        'search_tenant_invoice_no' => 'Search by Tenant, or Invoice No',
+        'search_invoice_no_receipt_no' => 'Search by Invoice or Receipt No',
+        'search_request_no_tenant' => 'Search by Request No or Tenant',
+        'search_po_number' => 'Search by Po Number',
+        'search_reference_no' => 'Search by Reference No',
+        'search_vendor' => 'Search by Vendor',
+        'search_unit_name' => 'Search by Unit or Name',
+        'search_announcement' => 'Search by Announcement',
+        'search_receipt_no_tenant' => 'Search by Receipt No or Tenant',
+        'search_amenity' => 'Search by Amenity',
+
+
+
 
         'rejoin_date' => 'Rejoin Date',
 

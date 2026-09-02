@@ -2,7 +2,7 @@
      <div id="_divFilter_vendor" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input  type="text" class="rounded-2 filter-field input-search" id="_search_vendor" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name or phone', 'titles') }}">
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_vendor" placeholder="{{ \Vsd\Locales\Localization::trans('search_name_phone', 'labels') }}">
          </div>
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_vendor_type_id" class="data-input filter-field" data-field="vendor_type_id" placeholder='vslang="titles.All Types"'></select>

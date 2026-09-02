@@ -402,9 +402,8 @@ return [
         'All Types' => 'ប្រភេទទាំងអស់',
         'All Tax Options' => 'ជម្រើសពន្ធទាំងអស់',
         'All Benefits' => 'អត្ថប្រយោជន៍ទាំងអស់',
-        'Search by unit' => 'ស្វែងរកតាមបន្ទប់',
+        'search_unit' => 'ស្វែងរកតាមបន្ទប់',
         'Search by tenant, amenity or phone' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខទូរស័ព្ទ',
-        'Search by tenant or invoice no' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខវិក្កយបត្រ',
         'Search by tenant, phone or unit' => 'ស្វែងរកតាមអ្នកជួល លេខទូរស័ព្ទ ឬ បន្ទប់',
         'Search by invoice no or receipt no' => 'ស្វែងរកតាមលេខវិក្កយបត្រ ឬ លេខបង្កាន់ដៃ',
         'Search tenant, unit' => 'ស្វែងរកអ្នកជួល បន្ទប់',
@@ -692,7 +691,7 @@ return [
         'Benefit' => 'អត្ថប្រយោជន៍',
         'Benefits' => 'អត្ថប្រយោជន៍',
         'Create Benefit' => 'បង្កើតអត្ថប្រយោជន៍',
-        'Edit Benefit' => 'កែប្រែអត្ថប្រយោជន៍',
+        'Modify Benefit' => 'កែប្រែអត្ថប្រយោជន៍',
         'Delete Benefit' => 'លុបអត្ថប្រយោជន៍',
         'Benefit Type' => 'ប្រភេទអត្ថប្រយោជន៍',
         'Benefit List' => 'បញ្ជីអត្ថប្រយោជន៍',
@@ -874,6 +873,7 @@ return [
         'Exchange Rate' => 'អត្រាប្តូរប្រាក់',
         'Create Benefit Disburse' => 'បង្កើតការបើកប្រាក់អត្ថប្រយោជន៍',
         'Edit Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
+        'Modify Benefit Disburse' => 'កែប្រែការបើកប្រាក់អត្ថប្រយោជន៍',
 
         'Search by level' => 'ស្វែងរកតាមកម្រិតការងារ',
         'Ranking' => 'ចំណាត់ថ្នាក់',
@@ -883,6 +883,7 @@ return [
         'Modify Job Level' => 'កែប្រែកម្រិតការងារ',
         "Add Benefit Disburse Policy" => "បង្កើតគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
         "Edit Benefit Disburse Policy" => "កែប្រែគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
+        "Modify Benefit Disburse Policy" => "កែប្រែគោលនយោបាយបើកប្រាក់អត្ថប្រយោជន៍",
         'Month' => 'ខែ',
         'Year' => 'ឆ្នាំ',
         'Withdraw Rate' => 'អត្រាដកប្រាក់',
@@ -933,7 +934,7 @@ return [
         'Form Name' => 'ទម្រង់បែបបទ',
 
         'Add Scan' => 'បង្កើតការស្កេន',
-        'Edit Scan' => 'កែប្រែការស្កេន',
+        'Modify Scan' => 'កែប្រែការស្កេន',
         'Delete Scan' => 'លុបការស្កេន',
         'Scan' => 'ការស្កេន',
         'Days' => 'ថ្ងៃ',
@@ -986,6 +987,7 @@ return [
         'Benefit Disbursement' => 'ការបើកប្រាក់អត្ថប្រយោជន៍',
         'Create Benefit Disburse Policy' => 'បង្កើតគោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
         'Create Deduction' => 'បង្កើតការកាត់ប្រាក់',
+        'Modify Deduction' => 'កែប្រែការកាត់ប្រាក់',
         'Benefit Disbursement Policy' => 'គោលការណ៍បើកប្រាក់អត្ថប្រយោជន៍',
         'Deduct Date' => 'កាលបរិច្ឆេទកាត់ប្រាក់',
         'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់',
@@ -1292,6 +1294,32 @@ return [
         'Payee' => 'Payee'
     ],
     'labels' => [
+
+        'search_name' => 'ស្វែងរកតាមឈ្មោះ',
+        'search_name_code' => 'ស្វែងរកតាមឈ្មោះ  ឬ កូដ',
+        'search_name_phone' => 'ស្វែងរកតាមឈ្មោះ ឬ លេខទូរស័ព្ទ',
+        'search_name_code_phone' => 'ស្វែងរកតាមឈ្មោះ លេខកូដ ឬ លេខទូរស័ព្ទ',
+        'search_unit' => 'ស្វែងរកតាមបន្ទប់',
+        'search_tenant_unit' => 'ស្វែងរកតាមអ្នកជួល ឬ បន្ទប់',
+        'search_tenant_phone_unit' => 'ស្វែងរកតាមអ្នកជួល លេខទូរស័ព្ទ ឬ បន្ទប់',
+        'search_tenant_phone' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខទូរស័ព្ទ',
+        'search_tenant_invoice_no' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខវិក្កយបត្រ',
+        'search_invoice_no_receipt_no' => 'ស្វែងរកតាមលេខវិក្កយបត្រ ឬ លេខបង្កាន់ដៃ',
+        'search_request_no_tenant' => 'ស្វែងរកតាមលេខសំណើ ឬ អ្នកជួល',
+        'search_po_number' => 'ស្វែងរកតាមលេខបញ្ជាទិញ',
+        'search_reference_no' => 'ស្វែងរកតាមលេខឯកសារយោង',
+        'search_vendor' => 'ស្វែងរកតាមអ្នកផ្គត់ផ្គង់',
+        'search_unit_name' => 'ស្វែងរកតាមបន្ទប់ ឬ អ្នកជួល',
+        'search_announcement' => 'ស្វែងរកតាមសេចក្តីជូនដំណឹង',
+        'search_receipt_no_tenant' => 'ស្វែងរកតាមលេខលេខបង្កាន់ដៃ ឬ អ្នកជួល',
+        'search_amenity' => 'ស្វែងរកតាមបរិក្ខារ',
+
+
+
+
+
+
+
         'Objective' => 'គោលបំណង',
         'Full Name (EN)' => 'ឈ្មោះពេញ (អង់គ្លេស)',
         'Full Name (KH)' => 'ឈ្មោះពេញ (ខ្មែរ)',
@@ -1338,8 +1366,8 @@ return [
         'Partner' => 'ដៃគូរ',
         'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
-        'Search by name, code or phone' => 'ស្វែងរកតាមឈ្មោះ លេខកូដ ឬ លេខទូរស័ព្ទ',
-        'Search by tenant, phone or unit' => 'ស្វែងរកតាមអ្នកជួល លេខទូរស័ព្ទ ឬ បន្ទប់',
+        
+
         'National ID Issue Date' => 'ថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
         'Select Charge As' => 'សូមជ្រើសរើសប្រភេទគិតថ្លៃ',
         'Select type' => 'សូមជ្រើសរើសប្រភេទ',
@@ -1509,9 +1537,9 @@ return [
         'Card' => 'កាត',
         'Bank Transfer' => 'ប្រតិបត្តិការធនាគារ',
         'Entered:' => 'បានបញ្ចូល:',
+       
 
-        'search_name_code' => 'ស្វែងរកតាមឈ្មោះ  ឬកូដ',
-        'search_name' => 'ស្វែងរកតាមឈ្មោះ',
+
 
 
         'Occupancy by Floor' => 'តារាងបែងចែកជាន់',

@@ -184,13 +184,13 @@ var DeductionComponent = (function () {
 
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Deduction"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_deduction",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Deduction"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_deduction",

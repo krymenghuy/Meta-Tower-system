@@ -2,7 +2,7 @@
     <div id="_divFilter_access_control" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search form-control" id="_search_access" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
+                <input type="text" class="rounded-2 filter-field input-search form-control" id="_search_access" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('search_name', 'labels') }}">
             </div>
             
             <!-- Status Filter: Hidden in Access Log view, shown in Access Card view -->

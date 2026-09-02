@@ -29,7 +29,7 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_bill"
-                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by Reference No', 'titles') }}">
+                    placeholder="{{ \Vsd\Locales\Localization::trans('search_reference_no', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
                 <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">

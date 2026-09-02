@@ -2,7 +2,7 @@
     <div id="_divFilter_bill" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input  type="text" class="rounded-2 filter-field input-search" id="_search_bill_payment" placeholder="{{ \Vsd\Locales\Localization::trans('Search by vendor', 'titles') }}" >
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_bill_payment" placeholder="{{ \Vsd\Locales\Localization::trans('search_vendor', 'labels') }}" >
             </div>
             <!-- <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_expanse_type_id" class="data-input filter-field form-control" data-field="expense_type_id"></select>

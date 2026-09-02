@@ -406,7 +406,7 @@ const CreateScanTimeDialog = (() => {
 
             prepareFormOptions: {
                 createTitle: "vslang:titles.Create Scan Time",
-                modifyTitle: "vslang:titles.Edit Scan",
+                modifyTitle: "vslang:titles.Modify Scan",
                 targetProp: "shift_details",
                 api: {
                     endpoint: [

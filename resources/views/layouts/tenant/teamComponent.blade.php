@@ -22,7 +22,7 @@
                     <div class="d-flex align-items-center gap-2" style="width: 450px; max-width: 100%;">
                         <div class="position-relative flex-grow-1">
                             <input type="text" class="filter-field form-control rounded-2 ps-5"
-                                   id="_search_member" placeholder="{{ \Vsd\Locales\Localization::trans('Search by request no. or tenant', 'titles') }}">
+                                   id="_search_member" placeholder="{{ \Vsd\Locales\Localization::trans('search_receipt_no_tenant', 'labels') }}">
                             <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                         </div>
                         <select id="_el_member_status" class="filter-field form-select flex-shrink-0"

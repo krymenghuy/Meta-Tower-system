@@ -5,7 +5,7 @@
                 <div class="align-items-center row g-3">
                     <div class="col-12 col-md-6 col-lg-3">
                         <input type="text" class="filter-field rounded-2 input-search" id="_search_deposit"
-                            placeholder="{{ \Vsd\Locales\Localization::trans('Search by Tenant, Unit', 'titles') }}">
+                            placeholder="{{ \Vsd\Locales\Localization::trans('search_tenant_unit', 'labels') }}">
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_deposit_status_id" class="filter-field data-input form-control"
