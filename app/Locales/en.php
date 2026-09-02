@@ -480,6 +480,7 @@ return [
         'created' => 'Data has been created successfully.',
         'updated' => 'Data has been updated successfully.',
         'deleted' => 'Data has been deleted successfully.',
+        'confirm_logout' => 'Do you want to log out?',
         'confirm_cancel' => 'Are you sure you want to cancel this?',
         'confirm_accept' => 'Are you sure you want to accept this request?',
         'cancelled' => 'Cancelled successfully.',
@@ -796,6 +797,7 @@ return [
 
         "Confirm" => 'Confirm',
         "Log Out" => "Log Out",
+       "stay_logged_in" => "No, Stay Logged In",
         "Cancel" => "Cancel",
         "OK" => "OK",
         "Remove" => "Remove",
