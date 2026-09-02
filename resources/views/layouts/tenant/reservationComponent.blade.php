@@ -2,7 +2,7 @@
     <div id="_divFilter_book_amenity" class="bg-white shadow-sm p-3 rounded-2">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_book_amenity" placeholder="{{ \Vsd\Locales\Localization::trans('Search by amenity', 'titles') }}">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_book_amenity" placeholder="{{ \Vsd\Locales\Localization::trans('search_amenity', 'labels') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_book_amenity_status" class="filter-field data-input" data-field="status_id"></select>
@@ -11,12 +11,12 @@
                 <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" " data-field="booking_date" />
-                          <label vslang="titles.From Date" class="form-label">From Date</label>
+                          <label vslang="titles.From Date" class="form-label"></label>
                     </div>
 
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" " data-field="booking_date_to" />
-                        <label vslang="titles.To Date" class="form-label">To Date</label>
+                        <label vslang="titles.To Date" class="form-label"></label>
                     </div>
                 </div>
             </div>

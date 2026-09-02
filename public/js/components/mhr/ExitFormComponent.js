@@ -151,7 +151,7 @@ var ExitFormComponent = (function () {
                     name: "view_exit_form",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Exit Form">Modify Exit Form</span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Exit Form"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_exit_form",

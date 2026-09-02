@@ -306,7 +306,7 @@ const BenefitDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Benefit",
-                    modifyTitle: "vslang:titles.Edit Benefit",
+                    modifyTitle: "vslang:titles.Modify Benefit",
                     targetProp: "benefits",
                     api: {
                         endpoint: [

@@ -27,7 +27,7 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" placeholder="{{ \Vsd\Locales\Localization::trans('Search by unit', 'titles') }}">
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" placeholder="{{ \Vsd\Locales\Localization::trans('search_unit', 'labels') }}">
                 </div>
             </div>
 
@@ -42,6 +42,7 @@
     <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div>
 
 </div>
+
 <style>
     .unit-card {
         background: #fff;

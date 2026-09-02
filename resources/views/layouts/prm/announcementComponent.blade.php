@@ -4,7 +4,7 @@
     <div id="_divFilter_announcement" class="bg-white shadow-sm p-3 rounded-2">
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_announcement" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('Search announcement', 'titles') }}">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_announcement" data-field="search_value" placeholder="{{ \Vsd\Locales\Localization::trans('search_announcement', 'labels') }}">
             </div>
             
             <div class="col-12 col-md-6 col-lg-2">

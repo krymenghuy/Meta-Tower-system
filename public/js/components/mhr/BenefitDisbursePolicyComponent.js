@@ -413,7 +413,7 @@ const BdpDialog = (() => {
 
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create Benefit Disburse Policy",
-                    modifyTitle: "vslang:titles.Edit Benefit Disburse Policy",
+                    modifyTitle: "vslang:titles.Modify Benefit Disburse Policy",
                     targetProp: "disburse_policy",
                     api: {
                         endpoint: [

@@ -46,12 +46,6 @@ var PositionComponent = (function () {
                 `<span class="text-primary-custom ">${data.department ?? '_'}</span>`,
         },
         {
-            transTitle: "titles.Staff Group",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<span class="text-primary-custom">${data.staff_group ?? '_'}</span>`,
-        },
-        {
             transTitle: "titles.Salary",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
