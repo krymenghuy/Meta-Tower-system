@@ -263,11 +263,23 @@ const BenefitDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name_kh" required class="data-input form-control" data-field="name_kh" placeholder=" " />
+                                    <label vslang="labels.Name Kh"></label>
+                                </div>
+                            </div>
+                            <div class="col-12">
                                 <select data-style="material" name="type_id" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
                                     <option value="1" >Remuneration</option>
                                     <option value="2">Fringe Benefit</option>
                                 </select>
                             </div>
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="description" class="form-control data-input form_input" placeholder=" " data-field="description"></textarea>
+                                    <label vslang="labels.Description"></label>
+                                </div>
+                            </div> 
                         </div>`,
                     ].join("");
                 },

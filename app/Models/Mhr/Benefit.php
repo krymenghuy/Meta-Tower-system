@@ -25,7 +25,9 @@ class Benefit extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh' => '1|string|0-150|text=khmer_name_required::@key;@max;@value',
             'type_id' => '1|choice|1,2|text=select_type',
+            'description' => '0|string|0-300',
         ];
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, null);
         if ($res->error) {
@@ -34,6 +36,7 @@ class Benefit extends VSModel
         $inputs = $res->values;
         $exists = DB::table('benefits')
             ->where('name', $inputs['name'])
+            ->where('name_kh', $inputs['name_kh'])
             ->where('type_id', $inputs['type_id'])
             ->when($id, function ($q) use ($id) {
                 $q->where('id', '<>', $id);
@@ -71,7 +74,7 @@ class Benefit extends VSModel
         $query = DB::table('benefits as b')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('b.id, b.name,b.type_id,b.updated_at,b.update_user')
+            ->selectRaw('b.id, b.name,b.name_kh,b.type_id,b.description,b.updated_at,b.update_user')
             ->orderByRaw('b.id ASC');
 
         $clone_query = clone $query;
@@ -87,7 +90,7 @@ class Benefit extends VSModel
     {
         $row = DB::table('benefits as b')
             ->where('b.id', $id)
-            ->selectRaw('b.id,b.name,b.type_id,updated_at')
+            ->selectRaw('b.id,b.name,b.name_kh,b.type_id,b.description,b.updated_at')
             ->first();
         if($row){
             setOfficialDates($row,[''],['updated_at'],['']);
