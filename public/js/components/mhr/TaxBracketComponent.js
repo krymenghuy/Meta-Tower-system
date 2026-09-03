@@ -255,7 +255,7 @@ const TaxBracketDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -285,8 +285,8 @@ const TaxBracketDialog = (() => {
                                     <label vslang="titles.Bias"></label>
                                 </div>
                             </div>
-                             <div class="col-6">
-                                     <select  data-style="material" class="form-control data-input" name="currency_code" data-field="currency_code" placeholder="${LocaleManager.trans('Currency Code', 'labels')}">
+                             <div class="col-12">
+                                     <select  data-style="material" class="form-control data-input" name="currency_code" data-field="currency_code" disabled placeholder="${LocaleManager.trans('Currency Code', 'labels')}">
                                      </select>
                                 </div>
                             </div>
@@ -330,13 +330,9 @@ const TaxBracketDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_tax_bracket",
-                                            );
+                                            cv_interact.success("update_success_tax_bracket");
                                         } else {
-                                            cv_interact.success(
-                                                "create_success_tax_bracket",
-                                            );
+                                            cv_interact.success("create_success_tax_bracket");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -369,7 +365,8 @@ const TaxBracketDialog = (() => {
                     }
                 ],
                 onPrepareForm: (me, data) => {
-                    // me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    
                 }
             });
 

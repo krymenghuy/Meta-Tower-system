@@ -335,13 +335,9 @@ var ReservationComponent = (() => {
                     .then(res => {
                         if (res.status_code === 200) {
                             cv_interact.success("cancel_success_reservation");
-                            mThis.ReservationListView.showPage(
-                                mThis.getFilterData()
-                            );
+                            mThis.ReservationListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(
-                                res.error_message || "cancel_failed"
-                            );
+                            cv_interact.error(res.error_message);
                         }
                     });
             }
@@ -370,13 +366,9 @@ var ReservationComponent = (() => {
                     .then(res => {
                         if (res.status_code === 200) {
                             cv_interact.success("delete_success_reservation");
-                            mThis.ReservationListView.showPage(
-                                mThis.getFilterData()
-                            );
+                            mThis.ReservationListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(
-                                res.error_message || "delete_failed"
-                            );
+                            cv_interact.error(res.error_message);
                         }
                     });
             }
@@ -393,15 +385,7 @@ var ReservationComponent = (() => {
             )
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.reservation_statuses,
-                    "id",
-                    "reservation_status",
-                    "",
-                    LocaleManager.trans("All Statuses", "titles"),
-                    ""
-                );
+                VSUtil.setComboItems(mThis.elFilter_status,d.reservation_statuses,"id","reservation_status","",LocaleManager.trans("All Statuses", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -610,7 +594,7 @@ const CreateReservationDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                             me._selectedTenantId = null;
@@ -618,7 +602,7 @@ const CreateReservationDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
@@ -646,13 +630,9 @@ const CreateReservationDialog = (() => {
                                         me.hide(true, op);
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_reservation"
-                                            );
+                                            cv_interact.success("update_success_reservation");
                                         } else {
-                                            cv_interact.success(
-                                                "create_success_reservation"
-                                            );
+                                            cv_interact.success("create_success_reservation");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

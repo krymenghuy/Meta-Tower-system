@@ -121,7 +121,7 @@ class RequestService extends VSModel
                     'service_request_code_control',
                     'service_requests',
                     ['id' => $save_id],
-                    'REQ-',
+                    'REQ',
                     5,
                     null
                 );

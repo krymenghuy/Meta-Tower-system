@@ -1305,6 +1305,7 @@ return [
         'search_tenant_phone' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខទូរស័ព្ទ',
         'search_tenant_invoice_no' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខវិក្កយបត្រ',
         'search_invoice_no_receipt_no' => 'ស្វែងរកតាមលេខវិក្កយបត្រ ឬ លេខបង្កាន់ដៃ',
+        'search_invoice_no_unit' => 'ស្វែងរកតាមលេខវិក្កយបត្រ ឬ បន្ទប់',
         'search_request_no_tenant' => 'ស្វែងរកតាមលេខសំណើ ឬ អ្នកជួល',
         'search_po_number' => 'ស្វែងរកតាមលេខបញ្ជាទិញ',
         'search_reference_no' => 'ស្វែងរកតាមលេខឯកសារយោង',
@@ -1903,12 +1904,10 @@ return [
         'update_success_check_point' => 'បានកែប្រែចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
         'delete_success_check_point' => 'បានលុបចំណុចត្រួតពិនិត្យដោយជោគជ័យ។',
 
-        'update_success_team' => 'Team updated successfully.',
-
-
 
         'create_success_team' => 'បានបង្កើតក្រុមដោយជោគជ័យ។',
         'update_success_team' => 'បានកែប្រែក្រុមដោយជោគជ័យ។',
+        'delete_success_team' => 'បានលុបក្រុមដោយជោគជ័យ។',
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",

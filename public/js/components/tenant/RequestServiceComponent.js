@@ -3,9 +3,7 @@
 var RequestServiceComponent = (function() {
     const mThis = {};
     mThis.title_prop = "Request Service";
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_service_request_component"
-    );
+    mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
     mThis.elService_category = mThis.self.querySelector(
         "#_service_request_category_id"
@@ -158,9 +156,8 @@ var RequestServiceComponent = (function() {
             data-statusid="${data.status_id ?? ""}"
             data-status-id="${data.request_status_id ?? ""}"
             aria-haspopup="true"
-            aria-expanded="false"
-            title="More options">
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+            aria-expanded="false">
+            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
         </a>`;
     };
 
@@ -384,21 +381,21 @@ var RequestServiceComponent = (function() {
                     cssClass: "border-bottom pb-2"
                 }
             ],
-            onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = Number(container.dataset.statusid);
-                const isPending = status_id === 1;
-                if (menu.edit_request) {
-                    menu.edit_request.style.display = isPending
-                        ? "block"
-                        : "none";
-                }
-                if (menu.cancel_request) {
-                    menu.cancel_request.style.display = isPending
-                        ? "block"
-                        : "none";
-                }
-            },
+            // onShow: (me, container) => {
+            //     const menu = me.getActiveMenus(container);
+            //     const status_id = Number(container.dataset.statusid);
+            //     const isPending = status_id === 1;
+            //     if (menu.edit_request) {
+            //         menu.edit_request.style.display = isPending
+            //             ? "block"
+            //             : "none";
+            //     }
+            //     if (menu.cancel_request) {
+            //         menu.cancel_request.style.display = isPending
+            //             ? "block"
+            //             : "none";
+            //     }
+            // },
             onClick: (menuLink, id, name) => {
                 if (name === "accept_request")
                     mThis.acceptRequest(id, menuLink);
@@ -608,23 +605,8 @@ var RequestServiceComponent = (function() {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.request_statuses,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Statuses", "titles"),
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elService_category,
-                    d.service_categories,
-                    "id",
-                    "service_category",
-                    "",
-                    LocaleManager.trans("All Categories", "titles"),
-                    ""
-                );
+                    mThis.elStatus,d.request_statuses,"id","name","",LocaleManager.trans("All Statuses", "titles"),"");
+                VSUtil.setComboItems(mThis.elService_category,d.service_categories,"id","service_category","",LocaleManager.trans("All Categories", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
     };

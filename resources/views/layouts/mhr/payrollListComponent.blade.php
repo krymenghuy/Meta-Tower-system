@@ -33,7 +33,7 @@
                         <button class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-2"
                             style="width: 30px; height: 30px;" id="_btnCalculate">
                             <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;">
-                                <span class="tool-tiptext fs-6"vslang="buttons.Calculate"></span></i>
+                                <span class="tool-tiptext fs-6" vslang="buttons.Calculate"></span></i>
                         </button>
                         <button class="d-flex justify-content-center align-items-center bg-warning rounded-2 border-0"
                             style="width: 30px; height: 30px;" id="_btnAuthorized">

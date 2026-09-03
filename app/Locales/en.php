@@ -348,6 +348,7 @@ return [
         'search_tenant_phone' => 'Search by Tenant, or Phone',
         'search_tenant_invoice_no' => 'Search by Tenant, or Invoice No',
         'search_invoice_no_receipt_no' => 'Search by Invoice or Receipt No',
+        'search_invoice_no_unit' => 'Search by Invoice No or Unit',
         'search_request_no_tenant' => 'Search by Request No or Tenant',
         'search_po_number' => 'Search by Po Number',
         'search_reference_no' => 'Search by Reference No',
@@ -763,9 +764,9 @@ return [
         'update_success_payroll_account' => 'Payroll account has been updated successfully.',
         'delete_success_payroll_account' => 'Payroll account has been deleted successfully.',
 
-        'create_success_wallet_account' => 'Wallet account created successfully.',
-        'update_success_wallet_account' => 'Wallet account updated successfully.',
-        'delete_success_wallet_account' => 'Wallet account deleted successfully.',
+        'create_success_wallet_account' => 'Wallet account has been created successfully.',
+        'update_success_wallet_account' => 'Wallet account has been updated successfully.',
+        'delete_success_wallet_account' => 'Wallet account has been deleted successfully.',
 
 
         'create_cash_deposit_success' => 'Cash deposit has been created successfully.',
@@ -793,6 +794,10 @@ return [
         'staff_removed_from_payroll' => 'Employee has been removed from the payroll.',
         'deduction_saved_successfully' => 'Deduction saved successfully.',
         'payroll_already_authorized' => 'Payroll is already authorized.',
+
+        'create_success_team' => 'Team has been created successfully.',
+        'update_success_team' => 'Team has been updated successfully.',
+        'delete_success_team' => 'Team has been deleted successfully.',
 
 
         "Confirm" => 'Confirm',

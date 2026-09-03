@@ -3,7 +3,7 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-4" >
                 <div class="position-relative w-100">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_invoice" placeholder="{{ \Vsd\Locales\Localization::trans('search_tenant_invoice_no', 'labels') }}" >
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_invoice" placeholder="{{ \Vsd\Locales\Localization::trans('search_invoice_no_unit', 'labels') }}" >
             </div>
          </div>
 

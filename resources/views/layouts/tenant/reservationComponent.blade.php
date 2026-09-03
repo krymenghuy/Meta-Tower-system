@@ -203,7 +203,7 @@
     justify-content: center;
     min-width: 88px;
     padding: 5px 14px;
-    border-radius: 999px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
     line-height: 1.2;
