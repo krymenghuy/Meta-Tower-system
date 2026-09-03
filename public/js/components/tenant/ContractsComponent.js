@@ -683,24 +683,8 @@ var ContractsComponent = new (function () {
             .call(`${main_view.base_url}/tenant/contract/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.statuses,
-                    "id",
-                    "status_name",
-                    "",
-                    "All Statuses",
-                    "",
-                );
-                VSUtil.setComboItems(
-                    mThis.elBusinessType,
-                    d.business_types,
-                    "id",
-                    "business_type",
-                    "",
-                    "All Business Types",
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elStatus,d.statuses,"id","status_name","","All Statuses","");
+                VSUtil.setComboItems(mThis.elBusinessType,d.business_types,"id","business_type","","All Business Types","");
                 if (typeof onFinish === "function") onFinish();
             });
     };

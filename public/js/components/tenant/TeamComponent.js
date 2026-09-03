@@ -11,9 +11,7 @@ var TeamComponent = new (function() {
     mThis.elSearch = mThis.self.querySelector("#_search_member");
     mThis.elStatus = mThis.self.querySelector("#_el_member_status");
     mThis.btnBack = document.querySelector("#_btn_back_team");
-    mThis.divTenantListContainer = mThis.self.querySelector(
-        "#_team_list_container"
-    );
+    mThis.divTenantListContainer = mThis.self.querySelector("#_team_list_container");
     mThis.divProfileView = document.querySelector("#_team_profile_view");
     mThis.listViewContainer = mThis.self.querySelector("#_team_list_view");
     mThis.teamCardView = mThis.self.querySelector("#_team_card_view");
@@ -60,8 +58,7 @@ var TeamComponent = new (function() {
                     : "Female";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ??
-                            "_"}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
                         <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
                     </div>
                 `;
@@ -87,10 +84,8 @@ var TeamComponent = new (function() {
             transTitle: "titles.Contact Info",
             className: "align-middle",
             data: data =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ??
-                    "_"}</span>
-                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ??
-                     "_"}</span>`
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
+                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`
         },
         {
             transTitle: "titles.Status",
@@ -130,9 +125,8 @@ var TeamComponent = new (function() {
             className: "align-middle",
             data: data => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ??
-                        ""}</span>
-                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? "_"}</span>
+                    <small class="text-muted">${data.updated_at ?? "_"}</small>
                 </div>`;
             }
         },
@@ -191,15 +185,7 @@ var TeamComponent = new (function() {
                     { id: 2, name: "Active" },
                     { id: 3, name: "Inactive" }
                 ];
-          VSUtil.setComboItems(
-                    mThis.elStatus,
-                    statusOptions,
-                    "id",
-                    "name",
-                    "",
-                    LocaleManager.trans("All Statuses", "titles"),
-                    ""
-                );
+          VSUtil.setComboItems(mThis.elStatus,statusOptions,"id","name","",LocaleManager.trans("All Statuses", "titles"),"");
 
         const reloadMemberList = () => {
             if (!mThis.staffListView || !mThis.currentTeamId) return;
@@ -414,20 +400,17 @@ var TeamComponent = new (function() {
 
                             <div style="display: flex; gap: 8px; padding: 10px 16px; background-color: #ffffff; border-top: 1px solid #e2e5f5; justify-content: flex-end; align-items: center;">
                                 <button class="create-member-btn" data-id="${team.id}"
-                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a; transition: all 0.2s;"
-                                        title="Create member">
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a; transition: all 0.2s;">
                                     <i class="fa-solid fa-user-plus"></i>
                                 </button>
                                 
                                 <button class="edit-team-btn " data-id="${team.id}"
-                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb; transition: all 0.2s;"
-                                        title="Edit">
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb; transition: all 0.2s;">
                                     <i class="fa-solid fa-pen p-0"></i>
                                 </button>
                                 
                                 <button class="delete-team-btn" data-id="${team.id}"
-                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #f87171; background: transparent; color: #dc2626; transition: all 0.2s;"
-                                        title="Delete">
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #f87171; background: transparent; color: #dc2626; transition: all 0.2s;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -506,7 +489,6 @@ var TeamComponent = new (function() {
                 e.stopPropagation(); // Prevents card click event
                 const teamId = e.currentTarget.dataset.id; //
                 if (!AuthManager.allowed(316, false)) return;
-                
                 cv_interact.confirm(
                     "confirm_delete",
                     {
@@ -526,10 +508,10 @@ var TeamComponent = new (function() {
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
-                                        mThis.showPage("team_list"); // Refreshes the list
-                                        cv_interact.success("delete_success_tenant"); //
+                                        mThis.showPage("team_list");
+                                        cv_interact.success("delete_success_tenant");
                                     } else {
-                                        cv_interact.error(res.error_message); //
+                                        cv_interact.error(res.error_message);
                                     }
                                 });
                         }
@@ -993,16 +975,7 @@ const CreateTeamDialog = (() => {
                     console.log("AA",spacesList);
                     
 
-                    VSUtil.setComboItems(
-                        me.controls.space_id,
-                        spacesList,
-                        "id", 
-                        "code", 
-                        "",
-                        "Select Space", 
-                        ""
-                    );
-
+                    VSUtil.setComboItems(me.controls.space_id,spacesList,"id", "code", "","Select Space","");
                     // If backend found and returned the team data, bind it to the inputs automatically
                     if (data?.team) {
                         const teamData = Array.isArray(data.team) ? data.team[0] : data.team;
@@ -1015,20 +988,17 @@ const CreateTeamDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: me => {
                             me.hide(false);
                         }
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const payload = me.getData();
-                            
-                            // Ensure the ID accompanies the payload
                             payload.id = me.dataOptions.id || payload.id; 
-
                             vsapi
                                 .call(
                                     `${main_view.base_url}/tenant/team/save`,
@@ -1040,25 +1010,17 @@ const CreateTeamDialog = (() => {
                                     if (res.status_code === 200) {
                                         const newTeamId = res.data?.id || null;
                                         me.hide(true, payload, newTeamId);
-
                                         if (payload.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_team"
-                                            );
+                                            cv_interact.success("update_success_team");
                                         } else {
-                                            cv_interact.success(
-                                                'create_success_team'
-                                            );
+                                            cv_interact.success('create_success_team');
                                         }
                                         
                                         if (typeof op.onClose === 'function') {
                                             op.onClose();
                                         }
                                     } else {
-                                        cv_interact.error(
-                                            res.error_message ||
-                                                "Failed to save team"
-                                        );
+                                        cv_interact.error(res.error_message);
                                     }
                                 });
                         }

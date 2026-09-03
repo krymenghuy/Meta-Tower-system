@@ -76,9 +76,8 @@ var ReservationComponent = (() => {
         return `<a href="javascript:void(0)" class="btn_reservation_action reservation-row__menu-btn"
             data-id="${data.id}"
             data-statusid="${data.status_id ?? ""}"
-            aria-haspopup="true" aria-expanded="false"
-            title="More options">
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+            aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
         </a>`;
     };
     mThis.init = () => {
@@ -296,19 +295,19 @@ var ReservationComponent = (() => {
             cssClass: "reservation-row__dropdown shadow-sm",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Edit"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_reservation",
                 },
                 {
-                    html: '<span class="ps-2">Cancel</span>',
+                    html: '<span class="ps-2" vslang="titles.Cancel"></span>',
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Delete Reservation"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Reservation"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_reservation",
@@ -355,10 +354,10 @@ var ReservationComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
 
-    mThis.editReservation = (id, menulink) => {
+    mThis.editReservation = (id, menuLink) => {
         const op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
@@ -370,11 +369,11 @@ var ReservationComponent = (() => {
     mThis.cancelReservation = (id, menuLink) => {
         if (!AuthManager.allowed(324,false)) return;
         cv_interact.confirm(
-            "Cancel this reservation ?",
+            "confirm_cancel",
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
-                confirmButtonText: "Cancel",
+                confirmButtonText: LocaleManager.trans("Cancel", "buttons")
             },
             (confirmed) => {
                 if (!confirmed) return;
@@ -389,13 +388,9 @@ var ReservationComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             cv_interact.success("Reservation cancelled.");
-                            mThis.ReservationListView.showPage(
-                                mThis.getFilterData(),
-                            );
+                            mThis.ReservationListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(
-                                res.error_message || "Cancel failed",
-                            );
+                            cv_interact.error(res.error_message);
                         }
                     });
             },
@@ -405,11 +400,11 @@ var ReservationComponent = (() => {
     mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(323,false)) return;
         cv_interact.confirm(
-            "Delete this reservation?",
+            "confirm_delete",
             {
                 transTitle: "Delete Reservation",
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans("Delete", "buttons")
             },
             (e) => {
                 if (!e) return;
@@ -424,13 +419,9 @@ var ReservationComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             cv_interact.success("Reservation deleted.");
-                            mThis.ReservationListView.showPage(
-                                mThis.getFilterData(),
-                            );
+                            mThis.ReservationListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(
-                                res.error_message || "Delete failed",
-                            );
+                            cv_interact.error(res.error_message);
                         }
                     });
             },
@@ -447,15 +438,7 @@ var ReservationComponent = (() => {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.reservation_statuses,
-                    "id",
-                    "reservation_status",
-                    "",
-                    LocaleManager.trans("All Statuses", "titles"),
-                    "",
-                );
+                VSUtil.setComboItems(mThis.elFilter_status,d.reservation_statuses,"id","reservation_status","",LocaleManager.trans("All Statuses", "titles"),"");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -652,7 +635,7 @@ const CreateReservationDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: "btn-vs-cancel",
                         click: (me, btn) => {
                             me.hide(false);
                             me._selectedTenantId = null;
@@ -660,7 +643,7 @@ const CreateReservationDialog = (() => {
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: "btn-vs-save",
                         click: (me, btn) => {
                             const op = me.getData();
                             // op.id = me.dataOptions.id;
@@ -690,13 +673,9 @@ const CreateReservationDialog = (() => {
                                         me.hide(true, op);
                                         // me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Reservation has been updated successfully.",
-                                            );
+                                            cv_interact.success("update_success_reservation");
                                         } else {
-                                            cv_interact.success(
-                                                "New reservation has been added successfully.",
-                                            );
+                                            cv_interact.success("create_success_reservation");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

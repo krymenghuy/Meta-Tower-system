@@ -160,25 +160,23 @@ class Team
         return $query->first();
     }
 
+  
     public function deleteTeam($id, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $team = DB::table('tenant_team')->where('id', $id)->first();
-        if (!$team) {
-            return DV::error('Team not found');
+        if (!$team) return DV::error('Team not found');
+        $memberCount = DB::table('team_member')->where('team_id', $id)->count();
+        if ($memberCount > 0) {
+            return DV::error("Cannot delete this team because it has {$memberCount} members. Please remove the members first.");
         }
-        // if($team->tenant_id != $ss->official_id){
-        //     return DV::error('You are not authorized to delete this team');
-        // }
         $deleted = DB::table('tenant_team')->where('id', $id)->delete();
-
         return $deleted
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
-
 
     public function saveTeamMember($arr = [], $id = null, $ss = null)
     {
@@ -415,17 +413,6 @@ class Team
     public function getListTeamMemberPaginate($arr, $ss = null)
     {
         $d = (object) $arr;
-        $v_rule = [
-            'team_id' => '1|integer|text=team_id_required',
-        ];
-
-        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $inputs = $res->values;
-
-
         $team_id       = (int)$d->team_id;
         $branch_id = $ss->branch_id;
         $status_id = $d->status_id ?? null;

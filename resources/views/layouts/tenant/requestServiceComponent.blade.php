@@ -68,10 +68,7 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sr-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-    transform: translateY(-2px);
-}
+
 
 .sr-card__accent {
     width: 5px;
@@ -208,12 +205,12 @@
     gap: 12px;
 }
 
-.sr-card__stub-top {
+/* .sr-card__stub-top {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
     gap: 8px;
-}
+} */
 
 .sr-card__fee-wrap {
     flex: 1;

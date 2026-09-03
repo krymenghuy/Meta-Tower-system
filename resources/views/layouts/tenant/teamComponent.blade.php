@@ -16,22 +16,36 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="bg-white shadow-sm p-3" style="border-radius:12px; border:2px solid #e2e5ec;">
-                <div class="bg-light rounded-2 shadow-sm py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <h6 class="mb-0 px-3 text-prm-custom" vslang="titles.Team Members">Team Members</h6>
-                    <div class="d-flex align-items-center gap-2" style="width: 450px; max-width: 100%;">
-                        <div class="position-relative flex-grow-1">
-                            <input type="text" class="filter-field form-control rounded-2 ps-5"
-                                   id="_search_member" placeholder="{{ \Vsd\Locales\Localization::trans('search_receipt_no_tenant', 'labels') }}">
-                            <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <div class="bg-white shadow-sm p-3"
+                style="border-radius: 12px; border: 2px solid #e2e5ec;">
+                <div class="bg-light rounded-2 shadow-sm py-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-4 col-md-5">
+                            <h6 class="mb-0 px-3 text-prm-custom" vslang="titles.Team Members">
+                                Team Members
+                            </h6>
                         </div>
-                        <select id="_el_member_status" class="filter-field form-select flex-shrink-0"
-                                data-field="status_id"></select>
+                        <div class="col-lg-8 col-md-7">
+                            <div class="row g-2 px-3">
+                                <div class="col-md-8">
+                                    <div class="position-relative">
+                                        <input type="text" class="filter-field rounded-2 input-search" id="_search_member" placeholder="{{ \Vsd\Locales\Localization::trans('search_name_code_phone', 'labels') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="_el_member_status" class="filter-field form-select rounded-2" data-field="status_id"></select>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-                <div class="mt-3" style="height: calc(100vh - 240px); overflow-y: auto;">
+                <div class="mt-3"
+                    style="height: calc(100vh - 240px); overflow-y: auto;">
                     <div id="_team_list_view"></div>
                 </div>
+
             </div>
         </div>
 
