@@ -102,7 +102,7 @@ class Skill extends VSModel
 
         $inUse = DB::table('emp_skills')->where('skill_id', $id)->exists();
         if ($inUse) {
-            return DV::error('Cannot delete this skill because it is assigned to one or more employees.');
+            return DV::error('cannot_delete_assigned_skill');
         }
 
         $deleted = DB::table('skills')->where('id', $id)->delete();

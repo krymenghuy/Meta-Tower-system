@@ -117,7 +117,7 @@ class Department extends VSModel
         }
         $exists = DB::table('positions')->where('department_id', $id)->exists();
         if ($exists) {
-            return DV::error('Department is assigned to positions.');
+            return DV::error('cannot_delete_assigned_department');
         }
         $deleted = DB::table('departments')->where('id', $id)->delete();
         return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete department.');
