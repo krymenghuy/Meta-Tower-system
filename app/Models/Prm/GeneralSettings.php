@@ -293,6 +293,10 @@ class GeneralSettings //extends Model
             'statuses' => self::options_tenant_status($ss),
             'buildings' => self::options_building($ss),
             'vendors' => self::options_vendor($ss),
+            'employees' => self::options_employee(10,$ss),
+            'events' => DB::table('events')->selectRaw('id, name')->get(),
+            'emp_types' => self::options_emp_type(null,$ss),
+            'emp_statuses' => DB::table('employee_statuses')->selectRaw('id,name as status')->get(),
 
 
         ];

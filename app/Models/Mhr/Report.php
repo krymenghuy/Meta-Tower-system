@@ -171,16 +171,19 @@ class Report //extends Model
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
         $d = (object)$filter;
-        $campus_id = $d->campus_id ?? null;
-        $branch_id = $d->branch_id ?? $campus_id;
-
-        $branch_ids = getAccessBranches($ss, $branch_id);
+        $emp_id = $d->emp_id ?? null;
+        $event_id = $d->event_id ?? null;
 
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
 
-        $str_branch_id = '2=2';
-   
+        $str_moreWheres = '2=2';
+        if ($emp_id) {
+            $str_moreWheres = 'emp.id = ' . $emp_id;
+        }
+          if ($event_id) {
+            $str_moreWheres = 'ev.event_id = ' . $event_id;
+        }
 
         $col_event_date = DBX::formatDate('ev.event_date', 'event_date');
 
@@ -199,7 +202,8 @@ class Report //extends Model
             emp.name,
             emp.code,
             ' . $col_event_date
-            );
+            )
+            ->whereRaw($str_moreWheres);
 
         if ($start_date && $end_date) {
             $query->whereBetween('ev.event_date', [$start_date, $end_date]);
@@ -224,189 +228,224 @@ class Report //extends Model
             'company_profile' => CompanyProfile::details($ss)
         ];
     }
-    
-    
-    function getTotalPaymentHistory($arr, $ss)
-{
-    $d = (object) $arr;
+    function getEmployeeBenefitsReport($filter, $ss = null)
+    {
+        $header_list = ['No', 'Name', 'Benefit Type', 'Balance', 'Currency', 'Amount', 'Tax Option', 'Flat Tax Rate', 'Remarks'];
+        $key_list = ['no', 'name', 'benefit_type', 'balance', 'currency', 'amount', 'tax_option_id', 'flat_tax_rate', 'remarks'];
 
-       $start_date = !empty($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
-        $end_date = !empty($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-        $payment_date = DBX::formatDate('bp.payment_date','payment_date');
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $d = (object)$filter;
+        $campus_id = $d->campus_id ?? null;
+        $branch_id = $d->branch_id ?? $campus_id;
+        $staff = $d->staff ?? null;
+        $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+
+        $str_branch_id = '2=2';
+        if ($branch_id) {
+            $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        }
+
+        $col_create_date = DBX::formatDate('b.created_at', 'create_date');
+        $query = DB::table('emp_benefits as b')
+            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+            ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
+            ->selectRaw(
+                'b.id, emp.id as emp_id, emp.name as name, b.currency_code as currency,
+            b.benefit_id, bc.name as benefit_type, b.tax_option_id, b.flat_tax_rate, b.balance, b.amount, b.remarks, b.update_user, b.updated_at, ' . $col_create_date . ', emp.photo_file_name as emp_photo'
+            )
+            ->whereRaw($str_branch_id);
+        if ($staff) {
+            $query->where('emp.id', $staff);
+        }
+        if ($start_date && $end_date) {
+            $query->whereBetween('b.created_at', [$start_date, $end_date]);
+        }
+
+        $rows = $query->get();
+
+        $groupedData = [];
+        foreach ($rows as $i => $row) {
+            $row->no = $i + 1;
+            $row->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
+
+            $row->tax_option_id = match ($row->tax_option_id) {
+                1 => 'Taxable',
+                2 => 'Non Taxable',
+                3 => 'Flat Rate',
+                default => 'Unknown',
+            };
+            $row->flat_tax_rate = $row->flat_tax_rate ? $row->flat_tax_rate . '%' : '0%';
+            $row->tax_base = ($row->tax_base ?? 0);
+            $row->total_salary = ($row->total_salary ?? 0);
+            $row->benefit = ($row->benefit ?? 0);
+            $row->deduction = ($row->deduction ?? 0);
+            $row->allowance = ($row->allowance ?? 0);
+            unset($row->id);
+        }
+
+        $groupedData['data'] = $rows;
+        $start_date = date('d-M-Y', strtotime($start_date));
+        $end_date = date('d-M-Y', strtotime($end_date));
+        $title = 'Employee Benefits Report';
+        $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
+
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,
+            'company_profile' => CompanyProfile::details($ss),
+        ];
+    }
+    function getEmployeeList($filter, $ss = null)
+    {
+        $header_list = ['Code', 'Name', 'Position', 'Salary', 'sex', 'Joining Date', 'Email', 'Nationality', 'Address'];
+        $key_list = ['code', 'name', 'position', 'salary', 'sex', 'joining_date', 'email', 'nationality', 'address'];
+
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $d = (object)$filter;
+
+        $emp_type_id = isset($d->emp_type_id) ? $d->emp_type_id : null;
+        $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $str_search = '1=1';
         $str_between_date =  '1=1';
         if($start_date && $end_date){
-            $str_between_date = "DATE(bp.payment_date) BETWEEN '$start_date' AND '$end_date'";
+            $str_between_date = "DATE(emp.created_at) BETWEEN '$start_date' AND '$end_date'";
         }
-
-    $rows = DB::table('bill_payments as bp')
-        ->leftJoin('bills as b', 'b.id', '=', 'bp.bill_id')
-        ->leftJoin('vendors as v', 'v.id', '=', 'b.vendor_id')
-        ->leftJoin('expense_categories as ex', 'ex.id', '=', 'b.expense_type_id')
-        ->leftJoin('bill_payment_statuses as ps', 'ps.id', '=', 'bp.status_id')
-        ->leftJoin('bill_payment_breakdowns as bpb', 'bpb.bill_payment_id', '=', 'bp.id')
-        ->where('bp.status_id', 1)
-        ->whereRaw($str_between_date)
-        ->selectRaw("
-            bp.id,
-            bp.bill_id,
-            b.bill_number,
-            v.name as vendor_name,
-            b.expense_type_id,
-            ex.name as expense_type_name,
-            $payment_date,
-            bp.total_amount as amount,
-            bp.payer,
-            b.ref_no,
-            bp.currency_code,
-            bp.note as remark,
-            b.total_amount,
-            b.paid_amount,
-            b.balance,
-            b.due_date,
-            bp.status_id,
-            ps.name as payment_status,
-            bp.create_user,
-            bp.update_user,
-            bp.created_at,
-            bp.updated_at,
-            GROUP_CONCAT(
-                CONCAT(bpb.method,' ',bpb.amount,'$')
-                ORDER BY bpb.amount
-                SEPARATOR ', '
-            ) as payment_method
-        ")
-        ->groupBy('bp.id')
-        ->get();
-    foreach($rows as $row){
-        $row->amount = '$' . number_format($row->amount, 2);
-        $row->total_amount = '$' . number_format($row->total_amount, 2);
-        $row->paid_amount = '$' . number_format($row->paid_amount, 2);
-        $row->balance = '$' . number_format($row->balance, 2);
-    }
-
-    $title = 'Payment History Report';
-
-    $sub_title = ($start_date && $end_date)
-        ? date('d-M-Y', strtotime($start_date)) . ' to ' . date('d-M-Y', strtotime($end_date))
-        : 'All Dates';
-
-    $date_rank = (object)[];
-
-    if ($start_date && $end_date) {
-        $date_rank->start_date = date('d-M-Y', strtotime($start_date));
-        $date_rank->end_date = date('d-M-Y', strtotime($end_date));
-    }
-
-    return (object)[
-        'list' => $rows,
-        'title' => $title,
-        'sub_title' => $sub_title,
-        'date_rank' => $date_rank,
-        'form' => 'total_payment_history',
-        'company_profile' => self::getCompanyInfo($ss),
-    ];
-}
-
-function getVendorPaymentReport($arr, $ss)
-    {
-        $d = (object) $arr;
-        $vendor_id = isset($d->vendor_id) ? $d->vendor_id : null;
-        // if (!$vendor_id)
-        //     return DV::error('Vendor must be selected');
-        $payment_date = DBX::formatDate('bp.payment_date','payment_date');
-        $vendor = DB::table('vendors')->where('id',$vendor_id)->selectRaw('id,address,name,phone_number,contact_person,contact_phone')->get()->first();
-        $rows = DB::table('bills as b')
-            ->where('b.vendor_id',$vendor_id)
-            ->join('bill_payments as bp', 'bp.bill_id', '=', 'b.id')
-            ->selectRaw("b.id,$payment_date,b.ref_no, b.total_amount,b.paid_amount,b.balance")->get();
-        foreach($rows as $row){
-            $row->total_amount = '$' . number_format($row->total_amount, 2);
-            $row->paid_amount = '$' . number_format($row->paid_amount, 2);
-            $row->balance = '$' . number_format($row->balance, 2);
+       
+        if($emp_type_id){
+            $str_search .= " AND emp.emp_type_id = $emp_type_id";
         }
+        $query = DB::table('employees as emp')
+            ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+            ->selectRaw('emp.id, emp.work_shift_id, pos.name as position, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date,emp.status_id')
+            ->whereRaw($str_between_date)
+            ->whereRaw($str_search);
+        $rows = $query->get();
 
-        $res = (object) [
-            'form' => 'vendor_payment_list',
-            'vendor_info' => $vendor,
-            'list' => $rows,
-            'title' => 'Vendor Payment',
-            'sub_title' => '',
-            'company_profile' => self::getCompanyInfo($ss)
+        $groupedData = [];
+        // $d = [];
+        foreach ($rows as $row) {
+            unset($row->id);
+        }
+        $groupedData['data'] = $rows;
+        $typeLabels = [
+            1 => '(Internship)',
+            2 => '(In Probation)',
+            3 => '(Staff)',
         ];
-        return DV::success(['data' => $res]);
+
+        $title = 'Employee List Report';
+        if ($emp_type_id && isset($typeLabels[$emp_type_id])) {
+            $title .= ' - ' . $typeLabels[$emp_type_id];
+        }
+
+        $sub_title = ($start_date && $end_date)
+            ? date('d-M-Y', strtotime($start_date)) . ' to ' . date('d-M-Y', strtotime($end_date))
+            : 'All Dates';
+
+        $title = 'Employee List Report ' . ($typeLabels[$emp_type_id] ?? '(All Types)');
+
+        // $title = 'Tenant List Report' . ($statusLabels[$status_id] ?? '(All Statuses)');
+        // $sub_title = $start_date && $end_date ? date('d-M-Y', strtotime($start_date)) .' to '. date('d-M-Y', strtotime($end_date)) : 'All Statuses';
+        $date_rank = (object)[];
+        if($start_date && $end_date ){
+            $date_rank->start_date = date('d-M-Y', strtotime($start_date)) ;
+            $date_rank->end_date = date('d-M-Y', strtotime($end_date)) ;
+        }
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData, //$rows,//
+            // 'company_profile' => self::getCompanyInfo($ss)
+        ];
     }
    
-public static function getTenantDepositList($arr, $ss)
-{
-    $d = (object)$arr;
-    $is_paid = isset($d->status_id) ? (int)$d->status_id : null;
+    function getPayrollList($filter, $ss = null)
+    {
+        $header_list = ['Payroll', 'Employee', 'Salary', 'Taxable BFT', 'Nontaxable BFT	', 'BFT (Flat Tax)', 'Deduction', 'Allowance', 'Tax Rate', 'Bias', 'Tax Base', 'Benefit Tax', 'Total'];
+        $key_list = ['payroll_name', 'employee', 'salary', 'benefit_taxable', 'benefit_non_tax', 'benefit_flat_rate', 'deduction', 'p_allowance', 'tax_rate', 'bias', 'tax_base', 'benefit_tax', 'disburse'];
 
-    $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
-    $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-    $str_date = "DATE(d.deposit_date) >= '$start_date' AND DATE(d.deposit_date) <= '$end_date'";
-    $sub_title = 'Deposit Date From: ' . date('d-M-Y', strtotime($start_date)) . ' To ' . date('d-M-Y', strtotime($end_date));
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
-    $str_search = '1=1';
-    if ($is_paid !== null) $str_search .= ' AND d.status_id = ' . $is_paid;
+        $d = (object)$filter;
+        $emp_id = $d->emp_id ?? null;
+        $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+        $str_search = '1=1';
+        $str_between_date =  '1=1';
+        if($start_date && $end_date){
+            $str_between_date = "DATE(pl.created_at) BETWEEN '$start_date' AND '$end_date'";
+        }
+       
+        if($emp_id){
+            $str_search .= " AND pl.emp_id = $emp_id";
+        }
+   
 
-    $rows = DB::table('deposits as d')
-        ->join('tenants as t', 'd.tenant_id', '=', 't.id')
-        ->selectRaw("
-            t.code as tenant_code,
-            t.name as tenant_name,
-            d.deposit_date,
-            d.amount,
-            d.paid_amount,
-            d.status_id,
-            d.remarks,
-            d.created_at as payment_date,
-            d.updated_at as updated_date
-        ")
-        ->whereRaw($str_search)
-        ->whereRaw($str_date)
-        ->get();
-    foreach($rows as $row){
-        $row->amount = '$' . number_format($row->amount, 2);
-        $row->paid_amount = '$' . number_format($row->paid_amount, 2);
-         $row = setOfficialDates($row, ['deposit_date'], [''], ['']);
+        $query = DB::table('payroll_list as pl')
+            ->join('employees as emp', 'emp.id', '=', 'pl.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->selectRaw('pl.id,
+                    p.id as payroll_id,
+                    p.name as payroll_name,
+                    emp.id as emp_id,
+                    emp.name as employee,
+                    emp.created_at,
+                    pos.name as emp_position,
+                    pl.salary,
+                    emp.apply_payroll_tax,
+                    pl.payroll_id,
+                    pl.p_allowance,
+                    pl.benefit_taxable,
+                    pl.benefit_non_tax,
+                    pl.benefit_flat_rate,
+                    pl.deduction,
+                    pl.tax_rate,
+                    pl.tax_base,
+                    pl.created_at,
+                    pl.benefit_tax,
+                    pl.total_salary,
+                    pl.disbursed,
+                    emp.photo_file_name as emp_photo')
+            ->whereRaw($str_between_date)
+            ->whereRaw($str_search);
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $row->employee = $row->employee . "<br><small>" . $row->emp_position . "</small>";
+            unset($row->id);
+        }
+
+        $groupedData['data'] = $rows;
+
+        $start_date = date('d-M-Y', strtotime($start_date));
+        $end_date = date('d-M-Y', strtotime($end_date));
+        $title = 'Payroll List Report';
+        $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
+
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,
+            'company_profile' => CompanyProfile::details($ss),
+        ];
     }
-    
-    $statusLabel = '(All)';
-
-    switch ($is_paid) {
-        case 1:
-            $statusLabel = '(Pending)';
-            break;
-        case 2:
-            $statusLabel = '(Paid)';
-            break;
-        case 3:
-            $statusLabel = '(Refunded)';
-            break;
-    }
-    $title = $statusLabel . ' Tenant Deposit Report';
-
-    $startDate = date('d-M-Y', strtotime($start_date));
-    $endDate = date('d-M-Y', strtotime($end_date));
-    $sub_title_2 = $startDate . ' To ' . $endDate;
-    $date_rank = (object)[
-        'start_date' => $startDate,
-        'end_date' => $endDate
-    ];
-
-    $company_profile = self::getCompanyInfo($ss);
-
-    return (object)[
-        'title' => $title,
-        'sub_title' => $sub_title,
-        'sub_title_2' =>$sub_title_2,
-        'date_rank' => $date_rank,
-        'list' => $rows,
-        'form' => 'deposit_list',
-        'company_profile' => $company_profile
-    ];
-}
 public static function getIncomeByCategories($arr, $ss)
 {
     $d = (object) $arr;

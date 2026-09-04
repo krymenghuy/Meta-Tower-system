@@ -21,28 +21,33 @@ class ReportController extends Controller
       if ($ss->status_code !== 200) {
           return JDV::raw($ss);
       }
-      $rpt = new Report();
-      return JDV::result($rpt->getEmployeeMovementReport($req->all(),$ss));
+      $report = new Report();
+      return JDV::result($report->getEmployeeMovementReport($req->all(),$ss));
     }
 
-    function getTotalPaymentHistory(Request $req){
-        $ss = XAuthService::verifyAuth($req,290);
-        if($ss->status_code != 200) return $ss;
+    public function getEmployeeBenefitReport(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
         $report = new Report();
-        return JDV::result($report->getTotalPaymentHistory($req->all(),$ss));
+        return JDV::result($report->getEmployeeBenefitsReport($req->all(),$ss));
     }
-
-    function getVendorPaymentReport(Request $req){
-        $ss = XAuthService::verifyAuth($req,299);
-        if($ss->status_code != 200) return $ss;
+    public function getEmployeeList(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
         $report = new Report();
-        return JDV::raw($report->getVendorPaymentReport($req->all(),$ss));
+        return JDV::result($report->getEmployeeList($req->all(),$ss));
     }
-    function getTenantDepositList(Request $req){
-        $ss = XAuthService::verifyAuth($req,300);
-        if($ss->status_code != 200) return $ss;
+    public function getPayrollList(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
         $report = new Report();
-        return JDV::result($report->getTenantDepositList($req->all(),$ss));
+        return JDV::result($report->getPayrollList($req->all(),$ss));
     }
 
     function getIncomeByCategories(Request $req){

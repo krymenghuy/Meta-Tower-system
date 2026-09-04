@@ -73,7 +73,7 @@ class JobLevel //extends Model
         }
         $exists = DB::table('positions')->where('level_id', $id)->exists();
         if ($exists) {
-            return DV::error('Level is assigned to positions.');
+            return DV::error('cannot_delete_assigned_level');
         }
         $deleted = DB::table('job_levels')->where('id', $id)->delete();
         return DV::depends($deleted, ['action' => 'deleted'], 'Failed to delete level.');

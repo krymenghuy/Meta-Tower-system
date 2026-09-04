@@ -44,6 +44,9 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->g
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
+    Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff')->group(function () {
     Route::post('/promotion/form-options', [EmployeeController::class, 'getFormOptions_non_staff']);
@@ -362,9 +365,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->group(function () {
     Route::post('/list', [ReportController::class, 'getReportList']);
     Route::post('employee_movement', [ReportController::class, 'getEmployeeMovementReport']);
-    Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
-    Route::post('vendor_payment_list',[ReportController::class,'getVendorPaymentReport']);
-    Route::post('deposit_list',[ReportController::class,'getTenantDepositList']);
+    Route::post('employee_benefit',[ReportController::class,'getEmployeeBenefitReport']);
+    Route::post('employee_list', [ReportController::class, 'getEmployeeList']);
+    Route::post('payroll_list',[ReportController::class,'getPayrollList']);
     Route::post('income_by_category',[ReportController::class,'getIncomeByCategories']);
 
 

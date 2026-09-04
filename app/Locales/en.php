@@ -198,6 +198,7 @@ return [
         'select_currency_code' => 'Please select a currency code.',
         'select_department' => 'Please select a department.',
         'select_job_level' => 'Please select a job level.',
+        'cannot_delete_assigned_level' => 'Cannot delete this level because it is assigned to one or more positions.',
         'enter_code' => 'Please enter code.',
         'position_exist' => 'Position already exists.',
 
@@ -219,6 +220,7 @@ return [
 
         'enter_rank' => 'Please enter rank.',
         'department_exist' => 'Department name already exists.',
+        'cannot_delete_assigned_department' => 'Cannot delete this department because it is assigned to one or more positions.',
         'work_shift_exist' => 'Work Shift already exists.',
         'work_shift_is_assigned_to_employee' => 'Work shift is assigned to employees.',
         'exit_form_name_already_exists' => 'Name already exists.',
@@ -234,6 +236,7 @@ return [
 
         'emp_already_leave' => 'The employee already has leave for the specified date range.',
         'skill_name_already_exists' => 'Skill name already exists.',
+        'cannot_delete_assigned_skill' => 'Cannot delete this skill because it is assigned to one or more employees.',
         'import_error_invalid_format' => 'There were some problems during the import. This is likely due to an incorrect data format in the Excel file.',
         'benefit_name_already_exists' => 'Benefit name already exists.',
         'disbursement_already_exists' => 'Disbursement already exists.',

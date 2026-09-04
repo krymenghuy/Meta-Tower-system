@@ -97,15 +97,11 @@ public function delete($id = null, $ss = null)
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
 
-    $workShiftExist = DB::table('work_shifts')
-        ->where('id', $id)
-        ->exists();
+    $workShiftExist = DB::table('work_shifts')->where('id', $id)->exists();
     if (!$workShiftExist) {
         return DV::error('Work Shift not found');
     }
-    $employeeExist = DB::table('employees')
-        ->where('work_shift_id', $id)
-        ->exists();
+    $employeeExist = DB::table('employees')->where('work_shift_id', $id)->exists();
     if ($employeeExist) {
         return DV::error('work_shift_is_assigned_to_employee');
     }

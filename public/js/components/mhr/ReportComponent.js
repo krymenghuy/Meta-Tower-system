@@ -126,6 +126,37 @@ var ReportComponent = (() => {
             required: false,
             dot_object: 'vendors'
         },
+
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/mhr/form-option`,
+            api_params: {},
+            name: 'emp_type_id',
+            value_field: 'emp_type_id',
+            text_field: 'emp_type',
+            required: false,
+            dot_object:'emp_types'
+        },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/mhr/form-option`,
+            api_params: {},
+            name: 'emp_id',
+            value_field: 'id',
+            text_field: 'employee_name',
+            required: false,
+            dot_object: 'employees'
+        },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/mhr/form-option`,
+            api_params: {},
+            name: 'event_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: false,
+            dot_object: 'events'
+        },
         {
             type: 'select',
             api_fetch: `${main_view.base_url}/api/form-option`,
@@ -355,7 +386,7 @@ var ReportComponent = (() => {
         adjustTableHeight(containerTable);
         containerTable.innerHTML = `<div class="p-3 text-muted">Loading report...</div>`;
         vsapi.call(`${main_view.base_url}/mhr/reports/${code}`, params, null, { loader: false }).then(res => {
-            console.log(2,res);
+            console.log(2,res); 
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -482,7 +513,7 @@ var ReportComponent = (() => {
 
     mThis.getFormGroupLabelText = (key) => {
         const labels = {
-            'vendor_id': 'Vendor', 'building_id': 'Building', 'campus_id': 'Campus', 'level_id': 'Level',
+            'vendor_id': 'Vendor','emp_id': 'Employee','emp_type_id': 'Employee Type','event_id': 'Event', 'building_id': 'Building', 'campus_id': 'Campus', 'level_id': 'Level',
             'leave_type_id': 'Leave Type', 'status_id': 'All Statuses','term_id': 'Term','ac_year_id': 'Academic Year',
             'from_campus_id': 'From Campus', 'to_campus_id': 'To Campus',
             'fee_type_id': 'Fee Type', 'start_date': 'Start Date', 'end_date': 'End Date',
@@ -602,6 +633,7 @@ var ReportComponent = (() => {
             if (!target) return;
             mThis.selected_report = {code: target.dataset.code,name : target.dataset.name};
             mThis.permissionID = target.dataset.permissionid;
+            
             let params = target.dataset.filter?.replaceAll("'", '"');
             try {
                 params =  params;
@@ -692,6 +724,8 @@ var ReportComponent = (() => {
 
         div.querySelector('.btn-print')?.addEventListener('click', e => {
             e.preventDefault();
+            console.log(34,mThis.permissionID);
+
             if (!AuthManager.allowed(`${mThis.permissionID}.Print`)) return;
             windowPrint();
         });
